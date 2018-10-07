@@ -18,7 +18,7 @@
   <entry>
     <title><![CDATA[【UVALive-7737】解题报告（概率，时间独立性，暴力）]]></title>
     <url>%2F2018%2F10%2F07%2F%E3%80%90UVALive-7737%E3%80%91%E8%A7%A3%E9%A2%98%E6%8A%A5%E5%91%8A%EF%BC%88%E6%A6%82%E7%8E%87%EF%BC%8C%E6%97%B6%E9%97%B4%E7%8B%AC%E7%AB%8B%E6%80%A7%EF%BC%8C%E6%9A%B4%E5%8A%9B%EF%BC%89%2F</url>
-    <content type="text"><![CDATA[原始题目 题目大意Bob想从$n$种硬币中选出一种幸运硬币。选择策略如下： 如果当前没有剩下的硬币或者只剩下一种硬币，则该硬币为幸运硬币。 否则，将现有硬币抛出后，保留所有正面朝上的硬币。 给出每种硬币抛出后正面朝上的概率，计算各种硬币成为幸运硬币的概率。 解题思路由于题目中更说明：每种硬币抛出后正面朝上的概率在0.4和0.6之间 易分析知抛得次数可能是无限的，但连续一百次正面朝上的概率已经很小（精度要求内可忽略不计），想到打表。 $alive[i][j]$ 表示第i种硬币能存留到第j次抛出之前。 $dead[i][j]$ 表示第i种硬币不能存留到第j次抛出之前。 则最终答案 $ans[i]= \sum #]]></content>
+    <content type="text"><![CDATA[原始题目 题目大意Bob想从$n$种硬币中选出一种幸运硬币。选择策略如下： 如果当前没有剩下的硬币或者只剩下一种硬币，则该硬币为幸运硬币。 否则，将现有硬币抛出后，保留所有正面朝上的硬币。 给出每种硬币抛出后正面朝上的概率，计算各种硬币成为幸运硬币的概率。 解题思路由于题目中更说明：每种硬币抛出后正面朝上的概率在0.4和0.6之间 易分析知抛得次数可能是无限的，但连续一百次正面朝上的概率已经很小（精度要求内可忽略不计），想到打表。 $alive[i][j]$ 表示第i种硬币能存留到第j次抛出之前。 $dead[i][j]$ 表示第i种硬币不能存留到第j次抛出之前。 则最终答案为 $ans[i]= \sum (alive[i][j]-alive[i][j+1])*( \sum dead[k][j]) $ 解题代码123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384#include&lt;bits/stdc++.h&gt;#include&lt;algorithm&gt;#define rep(i,a,n) for(int i=a;i&lt;n;++i)#define per(i,a,n) for(int i=n-a;i&gt;=a;--i)#define fi first#define se second#define cl(x,a) memset(x,a,sizeof(x))#define all(x) x.begin(),x.end()#define INF 0x3f3f3f3f#define EPS 1e-9#define mod 1000000007#define FF 150using namespace std;const int maxn=1e3+5;const int maxm=1e5+5;typedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;typedef pair&lt;int,int&gt; pii;int t,n,m;int num[maxn];double p[maxn];double dead[maxn][FF];double alive[maxn][FF];double ans[maxn];double qpow(double a,int x)&#123; double ans=1.0; while(x)&#123; if(x&amp;1) ans *=a; a*=a; x&gt;&gt;=1; &#125; return ans;&#125;void solve()&#123; rep(i,1,n+1)&#123; rep(j,1,FF)&#123; double temp=qpow(p[i],j); dead[i][j]=qpow((1.0-temp),num[i]); alive[i][j]=1.0-dead[i][j]; &#125; &#125;&#125;int main()&#123; ios::sync_with_stdio(false); cin&gt;&gt;t; while(t--)&#123; cin&gt;&gt;n; rep(i,1,n+1)&#123; cin&gt;&gt;num[i]&gt;&gt;p[i]; &#125; if(n==1)&#123; cout&lt;&lt;fixed&lt;&lt;setprecision(6)&lt;&lt;1.0&lt;&lt;endl; continue; &#125; memset(alive,0,sizeof(alive)); memset(dead,0,sizeof(dead)); solve(); rep(i,1,n+1)&#123; ans[i]=0; rep(j,1,FF)&#123; double temp=1.0; rep(k,1,n+1)&#123; if(i==k) continue; else&#123; temp*=dead[k][j]; &#125; &#125; ans[i]+=temp*(alive[i][j]-alive[i][j+1]); &#125; &#125; cout&lt;&lt;fixed&lt;&lt;setprecision(6)&lt;&lt;ans[1]; rep(i,2,n+1)&#123; cout&lt;&lt;" "&lt;&lt;fixed&lt;&lt;setprecision(6)&lt;&lt;ans[i]; &#125; cout&lt;&lt;endl; &#125;&#125; 收获与反思注意分析概率的公式。]]></content>
       <categories>
         <category>编程</category>
         <category>ACM</category>
@@ -110,8 +110,8 @@
         <tag>算法</tag>
         <tag>ACM</tag>
         <tag>CSU</tag>
-        <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
+        <tag>Imitation</tag>
       </tags>
   </entry>
   <entry>
@@ -362,8 +362,8 @@
       <tags>
         <tag>算法</tag>
         <tag>ACM</tag>
-        <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
+        <tag>Imitation</tag>
         <tag>补图</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -479,8 +479,8 @@
       <tags>
         <tag>算法</tag>
         <tag>ACM</tag>
-        <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
+        <tag>Imitation</tag>
         <tag>UVA</tag>
       </tags>
   </entry>
@@ -1359,8 +1359,8 @@
         <tag>算法</tag>
         <tag>ACM</tag>
         <tag>CSU</tag>
-        <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
+        <tag>Imitation</tag>
       </tags>
   </entry>
   <entry>
@@ -1444,8 +1444,8 @@
         <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
-        <tag>规律</tag>
         <tag>2017HDU多校</tag>
+        <tag>规律</tag>
       </tags>
   </entry>
   <entry>
@@ -1461,9 +1461,9 @@
         <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
-        <tag>2017HDU多校</tag>
         <tag>正则匹配</tag>
         <tag>dp</tag>
+        <tag>2017HDU多校</tag>
       </tags>
   </entry>
   <entry>
