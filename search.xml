@@ -1,9 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[【UVA-679】解题报告（二叉树）]]></title>
+    <url>%2F2018%2F10%2F22%2F%E3%80%90UVA-679%E3%80%91%E8%A7%A3%E9%A2%98%E6%8A%A5%E5%91%8A%EF%BC%88%E4%BA%8C%E5%8F%89%E6%A0%91%EF%BC%89%2F</url>
+    <content type="text"><![CDATA[原始题目 题目大意一颗完全二叉树（FBT）初始所有结点标记为false，根结点标号1，对于一个小球从根结点释放，遇到false标记向左下，true标记向右下，直至到达叶子结点。每次经过标记后标记翻转。 给出完全二叉树（FBT）的深度$D$，和小球的次序$I$，求其最终下落的叶子节点标号。 解题思路 考虑根节点，发现奇数次序小球向左下，偶数小球向右。 同理，若为$I$奇数，则其是到达左子树的第$ \frac {I+1}{2}$个小球，序号为$ 2 \times index $。 若位偶数，则其是到达右子树的第$ \frac {I}{2} $个小球，序号为 $ 2 \times index + 1 $。 递推n-1次解题代码12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849#include &lt;cstdio&gt;#include &lt;iostream&gt;#include &lt;iomanip&gt;#include &lt;vector&gt;#include &lt;string&gt;#include &lt;cstring&gt;#define rep(i,a,n) for(int i=a;i&lt;n;++i)#define per(i,a,n) for(int i=n-1;i&gt;=a;--i)#define clint(x,a) memset(x,a,sizeof(int)*n)#define clll(x,a) memset(x,a,sizeof(ll)*n)#define pb push_back#define np next_permutation#define mp make_pair#define fi first#define se second#define INF 0x3f3f3f3f#define EPS 1e-8#define PI acos(-1.0)using namespace std;const int maxn=1e5+5;const int maxm=1e5+5;const int maxl=26;typedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;typedef pair&lt;int,int&gt; pii;typedef pair&lt;string,string&gt; pss;ll t,d,ii;int main()&#123; ios::sync_with_stdio(false); cin&gt;&gt;t; rep(tt,1,t+1)&#123; cin&gt;&gt;d&gt;&gt;ii; ll ans=1; for(int i=1;i&lt;d;i++)&#123; if(ii&amp;1)&#123; ans*=2; ii=(ii+1)/2; &#125; else&#123; ans=ans*2+1; ii=ii/2; &#125; &#125; cout&lt;&lt;ans&lt;&lt;endl; &#125; cin&gt;&gt;t;&#125; 收获与反思 注意奇偶性规律]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>算法</tag>
+        <tag>ACM</tag>
+        <tag>数据结构</tag>
+        <tag>2018秋季训练</tag>
+        <tag>UVA</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【UVA-12657】解题报告（双端链表）]]></title>
+    <url>%2F2018%2F10%2F22%2F%E3%80%90UVA-12657%E3%80%91%E8%A7%A3%E9%A2%98%E6%8A%A5%E5%91%8A%EF%BC%88%E5%8F%8C%E7%AB%AF%E9%93%BE%E8%A1%A8%EF%BC%89%2F</url>
+    <content type="text"><![CDATA[原始题目 题目大意有$n$个箱子，初始标号从左到右由$1$到$n$，有以下四种操作 把X移动到Y左边 把X移动到Y右边 交换X和Y的位置 全体翻转颠倒 其中1，2若已经符合状态则不操作 给出$n$和所有的操作，输出从左到右奇数位的和。 解题思路 数组形式双端链表 $left[i],right[i]$，模拟实现 简化实现：3不受4影响，4的翻转可以记录状态，且翻转状态下2-&gt;1，1-&gt;2。 交换需要分类，相邻时特判 解题代码123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113#include &lt;cstdio&gt;#include &lt;iostream&gt;#include &lt;iomanip&gt;#include &lt;vector&gt;#include &lt;string&gt;#include &lt;cstring&gt;#define rep(i,a,n) for(int i=a;i&lt;n;++i)#define per(i,a,n) for(int i=n-1;i&gt;=a;--i)#define clint(x,a) memset(x,a,sizeof(int)*n)#define clll(x,a) memset(x,a,sizeof(ll)*n)#define pb push_back#define np next_permutation#define mp make_pair#define fi first#define se second#define INF 0x3f3f3f3f#define EPS 1e-8#define PI acos(-1.0)using namespace std;const int maxn=1e5+5;const int maxm=1e5+5;const int maxl=26;typedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;typedef pair&lt;int,int&gt; pii;typedef pair&lt;string,string&gt; pss;int a[maxn],lleft[maxn],rright[maxn];int n,m;void init()&#123; rep(i,1,n+1)&#123; lleft[i]=i-1; rright[i]=(i+1); &#125; rright[0]=1; lleft[n+1]=n;&#125;void link(int l,int r)&#123; rright[l]=r;lleft[r]=l;&#125;int main()&#123; ios::sync_with_stdio(false); int kase=0; while(cin&gt;&gt;n&gt;&gt;m)&#123; init(); int op,aa,bb,status=0; rep(i,0,m)&#123; cin&gt;&gt;op; if(op==4)&#123; status=!status; &#125; else&#123; cin&gt;&gt;aa&gt;&gt;bb; if(status &amp;&amp; op!=3) op=3-op; //改变操作 if(op==3 &amp;&amp; rright[bb]==aa) swap(aa,bb); int laa=lleft[aa],raa=rright[aa],lbb=lleft[bb],rbb=rright[bb]; if(op==1)&#123; if(aa==lbb) continue; else &#123; link(laa,raa); link(lbb,aa); link(aa,bb); &#125; &#125; else if(op==2)&#123; if(aa==rbb) continue; else &#123; link(laa,raa); link(bb,aa); link(aa,rbb); &#125; &#125; else if(op==3)&#123; if(raa==bb)&#123; link(laa,bb); link(bb,aa); link(aa,rbb); &#125; else&#123; link(laa,bb); link(bb,raa); link(lbb,aa); link(aa,rbb); &#125; &#125; &#125; &#125; ll sum=0; int b; if(status) b=n+1; else b=0; for(int i=1;i&lt;=n;++i)&#123; if(status)&#123; b=lleft[b]; &#125; else b=rright[b]; if(i&amp;1) sum+=b; &#125; cout&lt;&lt;"Case "&lt;&lt;++kase&lt;&lt;": "&lt;&lt;sum&lt;&lt;endl;// int c=0;// for(int i=1;i&lt;=n;++i)&#123;// c=rright[c];// cout&lt;&lt;c&lt;&lt;" ";// &#125;// cout&lt;&lt;endl; &#125;&#125; 收获与反思 数组形式双端链表$left[i],right[i]$，分别表示前驱结点和后继结点的指针。 //link操作，将两结点连接在一起。 void link(int l,int r){ rright[l]=r;lleft[r]=l; } 对于1，2操作，需要考虑连接顺序，记录原始的lx，ly，rx，ry，然后从左到右一一link就好。 注意记录原始的lx，ly，rx，ry，后面会改变]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>算法</tag>
+        <tag>ACM</tag>
+        <tag>Imitation</tag>
+        <tag>2018秋季训练</tag>
+        <tag>UVA</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[【UVA-11988】解题报告（链表）]]></title>
     <url>%2F2018%2F10%2F21%2F%E3%80%90UVA-11988%E3%80%91%E8%A7%A3%E9%A2%98%E6%8A%A5%E5%91%8A%EF%BC%88%E9%93%BE%E8%A1%A8%EF%BC%89%2F</url>
-    <content type="text"><![CDATA[原始题目 题目大意给出一段输入，‘[’表示“Home”键，即输入跳转到开头，‘]’表示“End”键，即输入跳至结尾。输出最终实际文字。 解题思路数组形式链表模拟。加空开头和尾。 解题代码12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849#include &lt;cstdio&gt;#include &lt;bits/stdc++.h&gt;#define rep(i,a,n) for(int i=a;i&lt;n;++i)#define per(i,a,n) for(int i=n-1;i&gt;=a;--i)#define clint(x,a) memset(x,a,sizeof(int)*n)#define clll(x,a) memset(x,a,sizeof(ll)*n)#define pb push_back#define np next_permutation#define mp make_pair#define fi first#define se second#define INF 0x3f3f3f3f#define EPS 1e-8#define PI acos(-1.0)using namespace std;const int maxn=1e5+5;const int maxm=1e5+5;const int maxl=26;char ss[maxn];int nextt[maxn];int main()&#123; ios::sync_with_stdio(false); while(cin&gt;&gt;ss+1)&#123; int last=0,cur=0; memset(nextt,0,sizeof(nextt)); int len=strlen(ss+1); rep(i,1,len+1)&#123; if(ss[i]=='[')&#123; cur=0; &#125; else if(ss[i]==']') &#123; cur=last; &#125; else &#123; nextt[i]=nextt[cur]; nextt[cur]=i; if(cur==last) last=i; cur=i; &#125; &#125; for(int i=nextt[0];i!=0;i=nextt[i])&#123; cout&lt;&lt;ss[i]; &#125; cout&lt;&lt;endl; &#125;&#125; 收获与反思 数组形式链表，数组标号0作为空头结点，next[0]作为头节点的指针。 添加结点的操作为 12345next[i]=next[cur] //加入结点的指针与前一结点的指针相同next[cur]=i; //前一结点指针指向新结点//由于本题还需要记录尾结点的序号所以有//if(cur==last) last=i;cur=i; //指针移向当前结点]]></content>
+    <content type="text"><![CDATA[原始题目 题目大意给出一段输入，‘[’表示“Home”键，即输入跳转到开头，‘]’表示“End”键，即输入跳至结尾。输出最终实际文字。 解题思路数组形式链表模拟。加空开头和尾。 解题代码12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849#include &lt;cstdio&gt;#include &lt;bits/stdc++.h&gt;#define rep(i,a,n) for(int i=a;i&lt;n;++i)#define per(i,a,n) for(int i=n-1;i&gt;=a;--i)#define clint(x,a) memset(x,a,sizeof(int)*n)#define clll(x,a) memset(x,a,sizeof(ll)*n)#define pb push_back#define np next_permutation#define mp make_pair#define fi first#define se second#define INF 0x3f3f3f3f#define EPS 1e-8#define PI acos(-1.0)using namespace std;const int maxn=1e5+5;const int maxm=1e5+5;const int maxl=26;char ss[maxn];int nextt[maxn];int main()&#123; ios::sync_with_stdio(false); while(cin&gt;&gt;ss+1)&#123; int last=0,cur=0; memset(nextt,0,sizeof(nextt)); int len=strlen(ss+1); rep(i,1,len+1)&#123; if(ss[i]=='[')&#123; cur=0; &#125; else if(ss[i]==']') &#123; cur=last; &#125; else &#123; nextt[i]=nextt[cur]; nextt[cur]=i; if(cur==last) last=i; cur=i; &#125; &#125; for(int i=nextt[0];i!=0;i=nextt[i])&#123; cout&lt;&lt;ss[i]; &#125; cout&lt;&lt;endl; &#125;&#125; 收获与反思 数组形式链表，数组标号0作为空头结点，next[0]作为头节点的指针。 添加结点的操作为 next[i]=next[cur] //加入结点的指针与前一结点的指针相同 next[cur]=i; //前一结点指针指向新结点 //由于本题还需要记录尾结点的序号所以有 //if(cur==last) last=i; cur=i; //指针移向当前结点]]></content>
       <categories>
         <category>编程</category>
         <category>ACM</category>
@@ -282,8 +314,8 @@
         <tag>算法</tag>
         <tag>ACM</tag>
         <tag>CSU</tag>
-        <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
+        <tag>Imitation</tag>
       </tags>
   </entry>
   <entry>
@@ -520,8 +552,8 @@
       <tags>
         <tag>算法</tag>
         <tag>ACM</tag>
-        <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
+        <tag>Imitation</tag>
         <tag>补图</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -637,8 +669,8 @@
       <tags>
         <tag>算法</tag>
         <tag>ACM</tag>
-        <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
+        <tag>Imitation</tag>
         <tag>UVA</tag>
       </tags>
   </entry>
@@ -1221,8 +1253,8 @@
         <tag>算法</tag>
         <tag>ACM</tag>
         <tag>2018暑假集训</tag>
-        <tag>计算几何</tag>
         <tag>POJ</tag>
+        <tag>计算几何</tag>
       </tags>
   </entry>
   <entry>
@@ -1253,8 +1285,8 @@
         <tag>算法</tag>
         <tag>ACM</tag>
         <tag>2018暑假集训</tag>
-        <tag>计算几何</tag>
         <tag>POJ</tag>
+        <tag>计算几何</tag>
       </tags>
   </entry>
   <entry>
@@ -1269,8 +1301,8 @@
         <tag>算法</tag>
         <tag>ACM</tag>
         <tag>2018暑假集训</tag>
-        <tag>计算几何</tag>
         <tag>POJ</tag>
+        <tag>计算几何</tag>
       </tags>
   </entry>
   <entry>
@@ -1451,8 +1483,8 @@
       <tags>
         <tag>算法</tag>
         <tag>ACM</tag>
-        <tag>二分</tag>
         <tag>2018暑假集训</tag>
+        <tag>二分</tag>
         <tag>POJ</tag>
       </tags>
   </entry>
@@ -1483,8 +1515,8 @@
       <tags>
         <tag>算法</tag>
         <tag>ACM</tag>
-        <tag>二分</tag>
         <tag>2018暑假集训</tag>
+        <tag>二分</tag>
         <tag>水题</tag>
         <tag>CodeForces</tag>
       </tags>
@@ -1500,8 +1532,8 @@
       <tags>
         <tag>算法</tag>
         <tag>ACM</tag>
-        <tag>二分</tag>
         <tag>2018暑假集训</tag>
+        <tag>二分</tag>
         <tag>CodeForces</tag>
       </tags>
   </entry>
@@ -1517,8 +1549,8 @@
         <tag>算法</tag>
         <tag>ACM</tag>
         <tag>CSU</tag>
-        <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
+        <tag>Imitation</tag>
       </tags>
   </entry>
   <entry>
