@@ -1,6 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[【CSU-2187】解题报告（维护顺序极差）]]></title>
+    <url>%2F2018%2F11%2F29%2F%E3%80%90CSU-2187%E3%80%91%E8%A7%A3%E9%A2%98%E6%8A%A5%E5%91%8A%EF%BC%88%E7%BB%B4%E6%8A%A4%E9%A1%BA%E5%BA%8F%E6%9E%81%E5%B7%AE%EF%BC%89%2F</url>
+    <content type="text"><![CDATA[原始题目2187: 翻转游戏加强版 Time Limit: 1 Sec Memory Limit: 128 Mb Submitted: 101 Solved: 23 Description给当一个01串，最多可以对一段区间里的01取反一次，求最多能取得的1的个数 Input多组数据，第一行为数组组数$T(T≤10)$ 每组数据第一行一个整数$N(1≤N≤{10}^{6})$ 第二行一个长度为$N$的01字符串 Output每组数据输出一行代表答案 Sample Input2 4 1001 4 1111 Sample Output4 4 HintSource题目大意如题 解题思路 小规模数据采取枚举分界点的方法，时间复杂度$O(n^{2})$ 仔细想一下，我们要找的是一个区间，里面0的数量与1的数量差最大。如果直接寻找区间有点难理解的话，我们可以换一个角度，记录出现0和出现1的差值，求差值在翻转以后的最小值。 如图 那么如何求翻转以后的最小值？如果对每个区间下限进行计数，遇1减减，遇0加加，我们的答案就是不同起点的所有cnt值得最大值。 实际上我们就是找图中一个极小值（包括头点）与一个极大值（包括末尾）极差得最大值，而且需要注意得是我们求的是1的翻转次数最大，所以要求是一个极小值在左，极大值在右，左低右高。 再如图 线性从头扫一遍，维护最小值，同时重新计数cnt，最后求cnt的最大值。 解题代码12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364#include &lt;cstdio&gt;#include &lt;cstring&gt;#include &lt;queue&gt;#include &lt;stack&gt;#include &lt;cstring&gt;#include &lt;algorithm&gt;#include &lt;vector&gt;#include &lt;string&gt;#include &lt;bits/stdc++.h&gt;using namespace std;const int maxn=1e6+5;const int maxm=1e6+5;#define INF 0x3f3f3f3f#define EPS 1e-8#define rep(i,a,n) for(int i=a;i&lt;n;++i)#define per(i,a,n) for(int i=n-1;i&gt;=a;--i)#define fi first#define se second#define pb push_back#define np next_permutation#define mp make_pairtypedef long long ll;typedef unsigned long long ull;typedef vector &lt;int&gt; vi;typedef pair&lt;string,string&gt; pss;typedef pair&lt;int, int&gt; pii;int main()&#123; ios::sync_with_stdio(false);// freopen("in.txt","r",stdin); int t; cin&gt;&gt;t; while(t--)&#123; int n; cin&gt;&gt;n; string s; cin&gt;&gt;s; int ans=0,cnt=0,ccnt=0; int mmin=0; rep(i,0,n)&#123; if(s[i]=='0') ans++,cnt++; else ans--,cnt--; if(i==n-1 &amp;&amp; s[i]=='0') ccnt=max(ccnt,cnt); if(i!=n-1)&#123; if(s[i]=='1' &amp;&amp; s[i+1]=='0' &amp;&amp; ans&lt;mmin) mmin=ans,cnt=0; if(s[i]=='0' &amp;&amp; s[i+1]=='1') ccnt=max(ccnt,cnt); &#125; &#125; if(ccnt==0) cout&lt;&lt;n&lt;&lt;endl; else&#123;// cout&lt;&lt;"min="&lt;&lt;mmin&lt;&lt;" max="&lt;&lt;mmax&lt;&lt;endl; ans= ans-2*(ccnt); cout&lt;&lt;(n-ans)/2&lt;&lt;endl; &#125; &#125;&#125; 收获与反思考虑单调性，维护记录值，最大/最小值。]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>算法</tag>
+        <tag>ACM</tag>
+        <tag>CSU</tag>
+        <tag>2018秋季训练</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【CSU-2179】解题报告（水题）]]></title>
+    <url>%2F2018%2F11%2F29%2F%E3%80%90CSU-2179%E3%80%91%E8%A7%A3%E9%A2%98%E6%8A%A5%E5%91%8A%EF%BC%88%E6%B0%B4%E9%A2%98%EF%BC%89%2F</url>
+    <content type="text"><![CDATA[原始题目2179: 找众数 Time Limit: 1 Sec Memory Limit: 128 Mb Submitted: 86 Solved: 32 Description由文件给出$N$个$1$到$30000$间无序数正整数，其中$1≤N≤10000$，同一个正整数可能会出现多次，出现次数最多的整数称为众数。求出它的众数及它出现的次数。 Input输入文件第一行是正整数的个数$N$，第二行开始为$N$个正整数。 Output输出文件有若干行，每行两个数，第一个是众数，第二个是众数出现的次数。 Sample Input12 2 4 2 3 2 5 3 7 2 3 4 3 Sample Output2 4 3 4 HintSource题目大意如题 解题思路记录出现次数，加入动态数组中按次数大小快速排序，最后输出（众数多个注意排序的时候按字典序）。 解题代码1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859#include &lt;cstdio&gt;#include&lt;cstring&gt;#include&lt;iostream&gt;#include&lt;set&gt;#include &lt;queue&gt;#include&lt;vector&gt;#include &lt;bits/stdc++.h&gt;using namespace std;const int maxn=1e5+5;const int maxm=1e5+5;typedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;typedef pair&lt;int,int &gt; pii;typedef pair&lt;string,string&gt; pss;#define rep(i,a,n) for(int i=a;i&lt;n;++i)#define per(i,a,n) for(int i=n-1;i&gt;=a;--i)#define fi first#define se second#define pb push_back#define np next_permutation#define mp make_pair#define all(x) x.begin(),x.end()int n;int a[maxn];int ans1=0,ans2=0;vi ans;bool cmp(int c,int d)&#123; if(a[c]==a[d]) return c&lt;d; else return a[c]&gt;a[d];&#125;int main()&#123; ios::sync_with_stdio(false); while(cin&gt;&gt;n)&#123; memset(a,0,sizeof(a)); ans.clear(); rep(i,0,n)&#123; int temp; cin&gt;&gt;temp; if(!a[temp]) ans.pb(temp); a[temp]++; &#125; sort(all(ans),cmp); int len=ans.size(); cout&lt;&lt;ans[0]&lt;&lt;" "&lt;&lt;a[ans[0]]&lt;&lt;endl; for(int i=1;i&lt;len;i++)&#123; if(a[ans[i]]&lt;a[ans[0]]) break; cout&lt;&lt;ans[i]&lt;&lt;" "&lt;&lt;a[ans[0]]&lt;&lt;endl; &#125; &#125;&#125; 收获与反思出题者没说清楚，应该加个特判的，所以注意排序以字典序为第二关键字。]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>算法</tag>
+        <tag>ACM</tag>
+        <tag>CSU</tag>
+        <tag>2018秋季训练</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[【CSU-2185】解题报告（水题）]]></title>
     <url>%2F2018%2F11%2F29%2F%E3%80%90CSU-2185%E3%80%91%E8%A7%A3%E9%A2%98%E6%8A%A5%E5%91%8A%EF%BC%88%E6%B0%B4%E9%A2%98%EF%BC%89%2F</url>
     <content type="text"><![CDATA[原始题目2185: a simple problem Time Limit: 1 Sec Memory Limit: 128 Mb Submitted: 78 Solved: 46 DescriptionMy girlfriend loves 7 very much, she thinks it is lucky! If an integer contains one or more 7, she will think it is lucky too! InputThere are multiple test files and each contains one case.The number of cases is at most 100. For each test case, there is only one line with an integer $X ( 1 ≤ X ≤ {10}^{9} )$. OutputFor each test case, if $X$ contains one or more 7, output “Lucky”(without quotation marks),otherwise output “Unlucky”(without quotation marks). Sample Input17171 Sample OutputLucky HintSource题目大意输入一串字符，字符中有7则输出“Lucky”，否则输出“Unlucky” 解题思路逐位判断 解题代码12345678910111213141516171819202122232425262728293031323334353637383940414243444546#include &lt;cstdio&gt;#include&lt;cstring&gt;#include&lt;cmath&gt;#include&lt;iostream&gt;#include&lt;set&gt;#include&lt;queue&gt;#include&lt;map&gt;#include &lt;algorithm&gt;#include &lt;stack&gt;#include &lt;bits/stdc++.h&gt;#define INF 0x3f3f3f3f#define EPS 1e-8#define fi first#define se second#define mp make_pair#define pb push_back#define np next_permutation#define cl(x,a) memeset(x,a,sizeof(x))#define rep(i,a,n) for(int i=a;i&lt;n;++i)#define per(i,a,n) for(int i=n-1;i&gt;=a;--i)using namespace std;const int maxn=1e5+5;const int maxm=1e5+5;typedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;typedef pair&lt;int,int&gt; pii;typedef pair&lt;string,string&gt; pss;int n,t;int main()&#123; while(~scanf("%d",&amp;n))&#123; int flag=0; while(n)&#123; if(n%10==7)&#123; flag=1; break; &#125; n/=10; &#125; if(flag) printf("Lucky\n"); else printf("Unlucky\n"); &#125;&#125; 收获与反思无]]></content>
@@ -63,7 +93,7 @@
   <entry>
     <title><![CDATA[【CSU-2181】解题报告（枚举分界点）]]></title>
     <url>%2F2018%2F11%2F29%2F%E3%80%90CSU-2181%E3%80%91%E8%A7%A3%E9%A2%98%E6%8A%A5%E5%91%8A%EF%BC%88%E6%9E%9A%E4%B8%BE%E5%88%86%E7%95%8C%E7%82%B9%EF%BC%89%2F</url>
-    <content type="text"><![CDATA[原始题目2181: 翻转游戏 Time Limit: 1 Sec Memory Limit: 128 Mb Submitted: 115 Solved: 34 Description给当一个01串，最多可以对一段区间里的01取反一次，求最多能取得的1的个数 Input多组数据，第一行为数组组数$T(T ≤ 10)$ 每组数据第一行一个整数 $N(1 ≤ N ≤ 100)$ 第二行一个长度为$N$的01字符串 Output每组数据输出一行代表答案 Sample Input2 4 1001 4 1111 Sample Output4 4 HintSourceAuthorWells 题目大意如题 解题思路枚举分界点，暴力更新最大值 解题代码12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879808182#include &lt;cstdio&gt;#include &lt;cstring&gt;#include &lt;iostream&gt;#include &lt;string&gt;#include &lt;set&gt;#include &lt;queue&gt;#include &lt;vector&gt;#include &lt;bits/stdc++.h&gt;using namespace std;const int maxn=1e5+5;const int maxm=1e5+5;#define rep(i,a,n) for(int i=a;i&lt;n;++i)#define per(i,a,n) for(int i=n-1;i&gt;=a;--i)#define fi first#define se second#define INF 0x3f3f3f3f#define EPS 1e-8#define mp make_pair#define np next_permutation#define pb push_backtypedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;typedef pair&lt;int,int&gt; pii;typedef pair&lt;string,string&gt; pss;int t,n;vi le,ri;int a[maxn];int b[maxn];int main()&#123; ios::sync_with_stdio(false); cin&gt;&gt;t; while(t--)&#123; cin&gt;&gt;n; string s; cin&gt;&gt;s; int len=s.length(); le.clear(); ri.clear(); memset(a,0,sizeof(a)); memset(b,0,sizeof(b)); rep(i,0,n)&#123; if(s[i]=='1')&#123; a[i+1]=a[i]+1; b[i+1]=b[i]; &#125; else &#123; a[i+1]=a[i]; b[i+1]=b[i]+1; &#125; if(s[i]=='0' &amp;&amp; i==0 || s[i]=='0' &amp;&amp; s[i-1]=='1') le.push_back(i+1); if(s[i]=='0' &amp;&amp; i==n-1 || s[i]=='0' &amp;&amp; s[i+1]=='1') ri.push_back(i+1); &#125;// rep(i,1,n+1)&#123; cout&lt;&lt;"#"&lt;&lt;a[i]&lt;&lt;" "&lt;&lt;b[i]&lt;&lt;endl;&#125; if(le.empty() &amp;&amp; ri.empty())&#123; cout&lt;&lt;n&lt;&lt;endl; continue; &#125; int all=a[n]; int ans=-INF; for(int i=0;i&lt;le.size();i++)&#123; for(int j=0;j&lt;ri.size();j++)&#123; if(le[i]&gt;ri[j]) continue;// cout&lt;&lt;"left="&lt;&lt;le[i]&lt;&lt;" right="&lt;&lt;ri[j]&lt;&lt;endl; int temp1=a[ri[j]]-a[le[i]-1]; int temp0=b[ri[j]]-b[le[i]-1];// cout&lt;&lt;temp1&lt;&lt;" "&lt;&lt;temp0&lt;&lt;endl; ans=max(all-temp1+temp0,ans);// cout&lt;&lt;"tempans="&lt;&lt;ans&lt;&lt;endl; &#125; &#125; cout&lt;&lt;ans&lt;&lt;endl; &#125;&#125; 收获与反思合理枚举]]></content>
+    <content type="text"><![CDATA[强化题目和线性做法在这里【CSU-2187】解题报告（维护顺序极差） 原始题目2181: 翻转游戏 Time Limit: 1 Sec Memory Limit: 128 Mb Submitted: 115 Solved: 34 Description给当一个01串，最多可以对一段区间里的01取反一次，求最多能取得的1的个数 Input多组数据，第一行为数组组数$T(T ≤ 10)$ 每组数据第一行一个整数 $N(1 ≤ N ≤ 100)$ 第二行一个长度为$N$的01字符串 Output每组数据输出一行代表答案 Sample Input2 4 1001 4 1111 Sample Output4 4 HintSourceAuthorWells 题目大意如题 解题思路枚举分界点，暴力更新最大值 解题代码12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879808182#include &lt;cstdio&gt;#include &lt;cstring&gt;#include &lt;iostream&gt;#include &lt;string&gt;#include &lt;set&gt;#include &lt;queue&gt;#include &lt;vector&gt;#include &lt;bits/stdc++.h&gt;using namespace std;const int maxn=1e5+5;const int maxm=1e5+5;#define rep(i,a,n) for(int i=a;i&lt;n;++i)#define per(i,a,n) for(int i=n-1;i&gt;=a;--i)#define fi first#define se second#define INF 0x3f3f3f3f#define EPS 1e-8#define mp make_pair#define np next_permutation#define pb push_backtypedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;typedef pair&lt;int,int&gt; pii;typedef pair&lt;string,string&gt; pss;int t,n;vi le,ri;int a[maxn];int b[maxn];int main()&#123; ios::sync_with_stdio(false); cin&gt;&gt;t; while(t--)&#123; cin&gt;&gt;n; string s; cin&gt;&gt;s; int len=s.length(); le.clear(); ri.clear(); memset(a,0,sizeof(a)); memset(b,0,sizeof(b)); rep(i,0,n)&#123; if(s[i]=='1')&#123; a[i+1]=a[i]+1; b[i+1]=b[i]; &#125; else &#123; a[i+1]=a[i]; b[i+1]=b[i]+1; &#125; if(s[i]=='0' &amp;&amp; i==0 || s[i]=='0' &amp;&amp; s[i-1]=='1') le.push_back(i+1); if(s[i]=='0' &amp;&amp; i==n-1 || s[i]=='0' &amp;&amp; s[i+1]=='1') ri.push_back(i+1); &#125;// rep(i,1,n+1)&#123; cout&lt;&lt;"#"&lt;&lt;a[i]&lt;&lt;" "&lt;&lt;b[i]&lt;&lt;endl;&#125; if(le.empty() &amp;&amp; ri.empty())&#123; cout&lt;&lt;n&lt;&lt;endl; continue; &#125; int all=a[n]; int ans=-INF; for(int i=0;i&lt;le.size();i++)&#123; for(int j=0;j&lt;ri.size();j++)&#123; if(le[i]&gt;ri[j]) continue;// cout&lt;&lt;"left="&lt;&lt;le[i]&lt;&lt;" right="&lt;&lt;ri[j]&lt;&lt;endl; int temp1=a[ri[j]]-a[le[i]-1]; int temp0=b[ri[j]]-b[le[i]-1];// cout&lt;&lt;temp1&lt;&lt;" "&lt;&lt;temp0&lt;&lt;endl; ans=max(all-temp1+temp0,ans);// cout&lt;&lt;"tempans="&lt;&lt;ans&lt;&lt;endl; &#125; &#125; cout&lt;&lt;ans&lt;&lt;endl; &#125;&#125; 收获与反思合理枚举]]></content>
       <categories>
         <category>编程</category>
         <category>ACM</category>
@@ -291,8 +321,8 @@
       <tags>
         <tag>算法</tag>
         <tag>ACM</tag>
-        <tag>2018秋季训练</tag>
         <tag>数据结构</tag>
+        <tag>2018秋季训练</tag>
         <tag>UVA</tag>
       </tags>
   </entry>
@@ -536,8 +566,8 @@
         <tag>算法</tag>
         <tag>ACM</tag>
         <tag>CSU</tag>
-        <tag>2018暑假集训</tag>
         <tag>字典树</tag>
+        <tag>2018暑假集训</tag>
       </tags>
   </entry>
   <entry>
@@ -552,8 +582,8 @@
         <tag>算法</tag>
         <tag>ACM</tag>
         <tag>CSU</tag>
-        <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
+        <tag>Imitation</tag>
       </tags>
   </entry>
   <entry>
@@ -600,8 +630,8 @@
         <tag>算法</tag>
         <tag>ACM</tag>
         <tag>CSU</tag>
-        <tag>2018暑假集训</tag>
         <tag>字典树</tag>
+        <tag>2018暑假集训</tag>
       </tags>
   </entry>
   <entry>
@@ -790,8 +820,8 @@
       <tags>
         <tag>算法</tag>
         <tag>ACM</tag>
-        <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
+        <tag>Imitation</tag>
         <tag>补图</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -907,8 +937,8 @@
       <tags>
         <tag>算法</tag>
         <tag>ACM</tag>
-        <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
+        <tag>Imitation</tag>
         <tag>UVA</tag>
       </tags>
   </entry>
@@ -1249,8 +1279,8 @@
         <tag>算法</tag>
         <tag>ACM</tag>
         <tag>DP</tag>
-        <tag>2018暑假集训</tag>
         <tag>字典树</tag>
+        <tag>2018暑假集训</tag>
         <tag>UVALive</tag>
       </tags>
   </entry>
@@ -1266,8 +1296,8 @@
         <tag>算法</tag>
         <tag>ACM</tag>
         <tag>CSU</tag>
-        <tag>2018暑假集训</tag>
         <tag>字典树</tag>
+        <tag>2018暑假集训</tag>
       </tags>
   </entry>
   <entry>
@@ -1281,8 +1311,8 @@
       <tags>
         <tag>算法</tag>
         <tag>ACM</tag>
-        <tag>2018暑假集训</tag>
         <tag>字典树</tag>
+        <tag>2018暑假集训</tag>
         <tag>HDU</tag>
       </tags>
   </entry>
@@ -1297,8 +1327,8 @@
       <tags>
         <tag>算法</tag>
         <tag>ACM</tag>
-        <tag>2018暑假集训</tag>
         <tag>字典树</tag>
+        <tag>2018暑假集训</tag>
         <tag>HDU</tag>
       </tags>
   </entry>
@@ -1378,8 +1408,8 @@
       <tags>
         <tag>阅读</tag>
         <tag>小说</tag>
-        <tag>刺杀骑士团长</tag>
         <tag>村上春树</tag>
+        <tag>刺杀骑士团长</tag>
       </tags>
   </entry>
   <entry>
@@ -1475,8 +1505,8 @@
         <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
-        <tag>计算几何</tag>
         <tag>2018杭电多校</tag>
+        <tag>计算几何</tag>
       </tags>
   </entry>
   <entry>
@@ -1491,8 +1521,8 @@
         <tag>算法</tag>
         <tag>ACM</tag>
         <tag>2018暑假集训</tag>
-        <tag>计算几何</tag>
         <tag>POJ</tag>
+        <tag>计算几何</tag>
       </tags>
   </entry>
   <entry>
@@ -1523,8 +1553,8 @@
         <tag>算法</tag>
         <tag>ACM</tag>
         <tag>2018暑假集训</tag>
-        <tag>计算几何</tag>
         <tag>POJ</tag>
+        <tag>计算几何</tag>
       </tags>
   </entry>
   <entry>
@@ -1539,8 +1569,8 @@
         <tag>算法</tag>
         <tag>ACM</tag>
         <tag>2018暑假集训</tag>
-        <tag>计算几何</tag>
         <tag>POJ</tag>
+        <tag>计算几何</tag>
       </tags>
   </entry>
   <entry>
@@ -1787,8 +1817,8 @@
         <tag>算法</tag>
         <tag>ACM</tag>
         <tag>CSU</tag>
-        <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
+        <tag>Imitation</tag>
       </tags>
   </entry>
   <entry>
@@ -1906,8 +1936,8 @@
         <tag>算法</tag>
         <tag>ACM</tag>
         <tag>CSU</tag>
-        <tag>2018暑期选拔</tag>
         <tag>数据结构</tag>
+        <tag>2018暑期选拔</tag>
       </tags>
   </entry>
   <entry>
@@ -1922,8 +1952,8 @@
         <tag>算法</tag>
         <tag>ACM</tag>
         <tag>CSU</tag>
-        <tag>BFS</tag>
         <tag>2018暑期选拔</tag>
+        <tag>BFS</tag>
       </tags>
   </entry>
   <entry>
