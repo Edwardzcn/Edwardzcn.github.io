@@ -1,13 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title><![CDATA[【POJ-1182】解题报告（带权并查集）]]></title>
-    <url>%2F2018%2F12%2F05%2F%E3%80%90POJ-1182%E3%80%91%E8%A7%A3%E9%A2%98%E6%8A%A5%E5%91%8A%EF%BC%88%E5%B8%A6%E6%9D%83%E5%B9%B6%E6%9F%A5%E9%9B%86%EF%BC%89%2F</url>
-    <content type="text"></content>
+    <title><![CDATA[【HDU-1829】解题报告（带权并查集）]]></title>
+    <url>%2F2018%2F12%2F05%2F%E3%80%90HDU-1829%E3%80%91%E8%A7%A3%E9%A2%98%E6%8A%A5%E5%91%8A%EF%BC%88%E5%B8%A6%E6%9D%83%E5%B9%B6%E6%9F%A5%E9%9B%86%EF%BC%89%2F</url>
+    <content type="text"><![CDATA[原始题目A Bug’s Life Time Limit: 15000/5000 MS (Java/Others) Memory Limit: 32768/32768 K (Java/Others) Total Submission(s): 20239 Accepted Submission(s): 6472 Problem Description Background Professor Hopper is researching the sexual behavior of a rare species of bugs. He assumes that they feature two different genders and that they only interact with bugs of the opposite gender. In his experiment, individual bugs and their interactions were easy to identify, because numbers were printed on their backs. Problem Given a list of bug interactions, decide whether the experiment supports his assumption of two genders with no homosexual bugs or if it contains some bug interactions that falsify it. InputThe first line of the input contains the number of scenarios. Each scenario starts with one line giving the number of bugs (at least one, and up to 2000) and the number of interactions (up to 1000000) separated by a single space. In the following lines, each interaction is given in the form of two distinct bug numbers separated by a single space. Bugs are numbered consecutively starting from one. OutputThe output for every scenario is a line containing “Scenario #i:”, where i is the number of the scenario starting at 1, followed by one line saying either “No suspicious bugs found!” if the experiment is consistent with his assumption about the bugs’ sexual behavior, or “Suspicious bugs found!” if Professor Hopper’s assumption is definitely wrong. Sample Input2 3 3 1 2 2 3 1 3 4 2 1 2 3 4 Sample OutputScenario #1: Suspicious bugs found! Scenario #2: No suspicious bugs found! HintHuge input,scanf is recommended. SourceTUD Programming Contest 2005, Darmstadt, Germany Recommendlinle 题目大意一种虫子具有两种性别，如果假定虫子只跟异性交配，给出交配的虫子号码，判断是否符合假设（即是否存在同性交配的虫子）。 解题思路 二元关系的带权并查集（或者称之为二元种类并查集） 解题代码12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879808182838485868788#include&lt;cstdio&gt;#include&lt;cstring&gt;#include&lt;cmath&gt;#include&lt;iostream&gt;#include&lt;iomanip&gt;#include&lt;set&gt;#include&lt;queue&gt;#include&lt;unordered_map&gt;#include&lt;string&gt;#include&lt;sstream&gt;using namespace std;const int maxn=1e5+5;const int maxm=1e5+5;const int maxl=26;typedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;typedef pair&lt;int, int&gt; pii;typedef pair&lt;string,string&gt; pss;#define rep(i,a,n) for(int i=a;i&lt;n;++i)#define per(i,a,n) for(int i=n-1;i&gt;=a;--i)#define fi first#define se second#define pb push_back#define np next_permutation#define pb push_back#define INF 0x3f3f3f3f#define EPS 1e-8int fa[maxn],cnt[maxn],relate[maxn];int n,t,m;void init()&#123; rep(i,0,maxn)&#123; fa[i]=i; cnt[i]=1; relate[i]=0; &#125;&#125;int find(int x)&#123; if(x==fa[x]) return x; else&#123; int temp=fa[x]; fa[x]=find(fa[x]); relate[x]=(relate[x]+relate[temp])%2; return fa[x]; &#125;&#125;int flag;bool merge(int x,int y)&#123; int fx=find(x); int fy=find(y); if(fx==fy)&#123; //已有关系 return relate[x]==relate[y]; &#125; else&#123; fa[fx]=fy; int temp=(1+relate[y])%2; relate[fx]=(temp+2-relate[x])%2; return false; &#125;&#125;int main()&#123; scanf("%d",&amp;t); rep(j,1,t+1)&#123; init(); scanf("%d%d",&amp;n,&amp;m); flag=false; int a,b; rep(i,0,m)&#123; scanf("%d%d",&amp;a,&amp;b); if(flag) continue; flag = merge(a,b); &#125; printf("Scenario #%d:\n",j); if(flag) printf("Suspicious bugs found!\n"); else printf("No suspicious bugs found!\n"); printf("\n"); &#125;&#125; 收获与反思 手敲并查集和带权并查集，注意输出格式，PE了两次。]]></content>
       <categories>
         <category>编程</category>
         <category>ACM</category>
       </categories>
+      <tags>
+        <tag>算法</tag>
+        <tag>ACM</tag>
+        <tag>2018秋季训练</tag>
+        <tag>HDU</tag>
+        <tag>并查集</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【POJ-1182】解题报告（带权并查集）]]></title>
+    <url>%2F2018%2F12%2F05%2F%E3%80%90POJ-1182%E3%80%91%E8%A7%A3%E9%A2%98%E6%8A%A5%E5%91%8A%EF%BC%88%E5%B8%A6%E6%9D%83%E5%B9%B6%E6%9F%A5%E9%9B%86%EF%BC%89%2F</url>
+    <content type="text"><![CDATA[原始题目食物链 Time Limit: 1000MS Memory Limit: 10000K Total Submissions: 95522 Accepted: 28832 Description动物王国中有三类动物A,B,C，这三类动物的食物链构成了有趣的环形。A吃B， B吃C，C吃A。现有N个动物，以1－N编号。每个动物都是A,B,C中的一种，但是我们并不知道它到底是哪一种。有人用两种说法对这N个动物所构成的食物链关系进行描述：第一种说法是”1 X Y”，表示X和Y是同类。第二种说法是”2 X Y”，表示X吃Y。此人对N个动物，用上述两种说法，一句接一句地说出K句话，这K句话有的是真的，有的是假的。当一句话满足下列三条之一时，这句话就是假话，否则就是真话。 当前的话与前面的某些真的话冲突，就是假话； 当前的话中X或Y比N大，就是假话； 当前的话表示X吃X，就是假话。 你的任务是根据给定的N（1 &lt;= N &lt;= 50,000）和K句话（0 &lt;= K &lt;= 100,000），输出假话的总数。 Input第一行是两个整数N和K，以一个空格分隔。 以下K行每行是三个正整数 D，X，Y，两数之间用一个空格隔开，其中D表示说法的种类。 若D=1，则表示X和Y是同类。 若D=2，则表示X吃Y。 Output只有一个整数，表示假话的数目。 Sample Input100 7 1 101 1 2 1 2 2 2 3 2 3 3 1 1 3 2 3 1 1 5 5 Sample Output3 SourceNoi 01 题目大意如题 解题思路 不仅要储存集合的关系，且要表示集合间相互元素的关系，关系可合并（推导），考虑带权并查集 维护一个relate数组，$relate[i]$表示i对根结点的关系。 0：与根同类 1：吃根 2：被根吃 推导规则（由于循环食物链，考虑模数关系）： A对B的关系为x，B对C的关系为y，则A对C的关系为$(x+y)%3$ A对B的关系为x，A对C的关系为y，则B对C的关系为$(y-x+3)%3$ 解题代码12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879808182838485868788899091929394#include &lt;cstdio&gt;#include &lt;cstring&gt;#include &lt;iostream&gt;#include &lt;iomanip&gt;#include &lt;string&gt;#include &lt;stack&gt;#include &lt;queue&gt;#include &lt;vector&gt;#include &lt;set&gt;#include &lt;cmath&gt;#include &lt;list&gt;using namespace std;const int maxn=1e5+5;const int maxm=1e5+5;typedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;typedef pair&lt;int,int&gt; pii;typedef pair&lt;string,string&gt; pss;#define rep(i,a,n) for(int i=a;i&lt;n;++i)#define per(i,a,n) for(int i=n-1;i&gt;=a;--i)#define fi first#define se second#define mp make_pair#define np next_permutation#define pb push_back#define INF 0x3f3f3f3f#define EPS 1e-8#define cl(x,a) memset(x,a,sizeof(x))#define all(x) x.bein(),x.end()const int maxl=26;int n,k,d,x,y;int fa[maxn],relate[maxn];void init()&#123; rep(i,0,maxn)&#123; fa[i]=i; relate[i]=0; &#125;&#125;int find(int x)&#123; if(fa[x]==x)&#123; return x; &#125; else &#123; int temp=fa[x]; fa[x]=find(fa[x]); relate[x]=(relate[x]+relate[temp])%3; return fa[x]; &#125;&#125;bool merge(int r, int x, int y)&#123; int fx= find(x); int fy=find(y); if(fx==fy)&#123; if((relate[x]-relate[y]+3)%3==d) return true; else return false; &#125; else&#123; fa[fx]=fy; relate[fx]=(r+relate[y]-relate[x]+3)%3; return true; &#125;&#125;int main()&#123; scanf("%d%d",&amp;n,&amp;k); init(); int a,b,c,ccnt=0; rep(i,0,k)&#123; scanf("%d%d%d",&amp;d,&amp;x,&amp;y); d--; if(x&gt;n || y&gt;n )&#123; ccnt++; continue; &#125; if(d &amp;&amp; x==y)&#123; ccnt++; continue; &#125; if(merge(d,x,y)==false) ccnt++; &#125; printf("%d\n",ccnt);&#125; 收获与反思 并查集知识待补充。]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>算法</tag>
+        <tag>ACM</tag>
+        <tag>2018秋季训练</tag>
+        <tag>待补充</tag>
+        <tag>并查集</tag>
+        <tag>POJ</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[【HDU-1272】解题报告（并查集，集合数量）]]></title>
@@ -37,8 +61,8 @@
         <tag>算法</tag>
         <tag>ACM</tag>
         <tag>HDU</tag>
-        <tag>并查集</tag>
         <tag>待补充</tag>
+        <tag>并查集</tag>
         <tag>2018球季训练</tag>
       </tags>
   </entry>
@@ -54,8 +78,8 @@
         <tag>算法</tag>
         <tag>ACM</tag>
         <tag>2018秋季训练</tag>
-        <tag>并查集</tag>
         <tag>待补充</tag>
+        <tag>并查集</tag>
         <tag>POJ</tag>
       </tags>
   </entry>
@@ -389,8 +413,8 @@
       <tags>
         <tag>算法</tag>
         <tag>ACM</tag>
-        <tag>2018秋季训练</tag>
         <tag>数据结构</tag>
+        <tag>2018秋季训练</tag>
         <tag>UVA</tag>
       </tags>
   </entry>
@@ -650,8 +674,8 @@
         <tag>算法</tag>
         <tag>ACM</tag>
         <tag>CSU</tag>
-        <tag>2018暑假集训</tag>
         <tag>Imitation</tag>
+        <tag>2018暑假集训</tag>
       </tags>
   </entry>
   <entry>
@@ -888,8 +912,8 @@
       <tags>
         <tag>算法</tag>
         <tag>ACM</tag>
-        <tag>2018暑假集训</tag>
         <tag>Imitation</tag>
+        <tag>2018暑假集训</tag>
         <tag>补图</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -1005,8 +1029,8 @@
       <tags>
         <tag>算法</tag>
         <tag>ACM</tag>
-        <tag>2018暑假集训</tag>
         <tag>Imitation</tag>
+        <tag>2018暑假集训</tag>
         <tag>UVA</tag>
       </tags>
   </entry>
@@ -1819,8 +1843,8 @@
       <tags>
         <tag>算法</tag>
         <tag>ACM</tag>
-        <tag>2018暑假集训</tag>
         <tag>二分</tag>
+        <tag>2018暑假集训</tag>
         <tag>POJ</tag>
       </tags>
   </entry>
@@ -1851,8 +1875,8 @@
       <tags>
         <tag>算法</tag>
         <tag>ACM</tag>
-        <tag>2018暑假集训</tag>
         <tag>二分</tag>
+        <tag>2018暑假集训</tag>
         <tag>水题</tag>
         <tag>CodeForces</tag>
       </tags>
@@ -1868,8 +1892,8 @@
       <tags>
         <tag>算法</tag>
         <tag>ACM</tag>
-        <tag>2018暑假集训</tag>
         <tag>二分</tag>
+        <tag>2018暑假集训</tag>
         <tag>CodeForces</tag>
       </tags>
   </entry>
@@ -1885,8 +1909,8 @@
         <tag>算法</tag>
         <tag>ACM</tag>
         <tag>CSU</tag>
-        <tag>2018暑假集训</tag>
         <tag>Imitation</tag>
+        <tag>2018暑假集训</tag>
       </tags>
   </entry>
   <entry>
