@@ -306,16 +306,6 @@
           </a>
         </li>
       
-        
-        <li class="menu-item menu-item-commonweal">
-          <a href="/404/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
-            
-            公益404
-          </a>
-        </li>
-      
 
       
         <li class="menu-item menu-item-search">
@@ -373,6 +363,1076 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/2018/11/13/算法与数据结构学习——最小生成树/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/11/13/算法与数据结构学习——最小生成树/" itemprop="url">算法与数据结构学习——最小生成树</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-13T10:33:53+08:00">
+                2018-11-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/编程/" itemprop="url" rel="index">
+                    <span itemprop="name">编程</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/编程/ACM/" itemprop="url" rel="index">
+                    <span itemprop="name">ACM</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/编程/ACM/数据结构与算法/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  939
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  3
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h1><p>在之前的学习中，我们已经介绍了图的储存方式等相关内容。</p>
+<p>（这里待补坑）</p>
+<p>数据结构课本上引入：</p>
+<blockquote>
+<p>“假设要在n个城市之间建立通信联络网，则连通n个城市只需要n-1条线路。这时，自然会考虑<br>这样一个问题，如何在最节省经费的前提下建立这个通信网”</p>
+</blockquote>
+<p>在含有n个结点的连通网中挑选n-1条边构造一颗边权和最小（耗费最小），这个问题就是最小代价生成树（<br>Minimum Cost Spanning Tree）（简称<strong>最小生成树</strong>）构造问题。</p>
+<h2 id="定义补充"><a href="#定义补充" class="headerlink" title="定义补充"></a>定义补充</h2><p>关于图的几个概念定义：</p>
+<p><strong>连通图</strong>：在无向图中，若任意两个顶点vivi与vjvj都有路径相通，则称该无向图为连通图。</p>
+<p><strong>强连通图</strong>：在有向图中，若任意两个顶点vivi与vjvj都有路径相通，则称该有向图为强连通图。</p>
+<p><strong>连通网</strong>：在连通图中，若图的边具有一定的意义，每一条边都对应着一个数，称为权；权代表着连接连个顶点的代价，称这种连通图叫做连通网。</p>
+<p><strong>生成树</strong>：一个连通图的生成树是指一个连通子图，它含有图中全部n个顶点，但只有足以构成一棵树的n-1条边。一颗有n个顶点的生成树有且仅有n-1条边，如果生成树中再添加一条边，则必定成环。</p>
+<p><strong>最小生成树</strong>：在连通网的所有生成树中，所有边的代价和最小的生成树，称为最小生成树。 </p>
+<img src="/2018/11/13/算法与数据结构学习——最小生成树/1.jpg">
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/11/13/算法与数据结构学习——最小生成树/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/2018/11/11/算法与数据结构学习——线索二叉树/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/11/11/算法与数据结构学习——线索二叉树/" itemprop="url">算法与数据结构学习——线索二叉树</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-11T16:40:00+08:00">
+                2018-11-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/编程/" itemprop="url" rel="index">
+                    <span itemprop="name">编程</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/编程/ACM/" itemprop="url" rel="index">
+                    <span itemprop="name">ACM</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/编程/ACM/数据结构与算法/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  645
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  2
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h1><p>在之前的学习中，我们能够感觉到，二叉树的非递归遍历需要用到栈结构的原因是需要之前遍历的信息。</p>
+<p>以<strong>二叉链表</strong>作为存储结构时，只能找到<strong>结点的左、右孩子信息</strong>，而不能直接得到结点在任一序列中的前驱和<br>后继信息，这种信息只能在动态过程中才能得到。</p>
+<p>我们想保存这个信息，该怎么办？</p>
+<p>通过考察各种二叉链表，不管形态如何，空链域的个数总是多过非空链域的个数。<br>准确的说，<strong>n个结点的二叉链表共有2n个链域，非空链域为n-1个，其中的空链域必定有n+1个</strong>。如下图所示。</p>
+<img src="/2018/11/11/算法与数据结构学习——线索二叉树/1.png">
+<p>实际上，我们可以利用好这些空链域来存放结点的前驱和后继信息。</p>
+<h1 id="线索二叉树"><a href="#线索二叉树" class="headerlink" title="线索二叉树"></a>线索二叉树</h1><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 二叉树的二叉线索存储表示</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">enum</span> PointerTag</span><br><span class="line">&#123;</span><br><span class="line">    Link,</span><br><span class="line">    Thread</span><br><span class="line">&#125;; <span class="comment">//0 为孩子指针  1为线索指针</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">BiThrNode</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    TElemType data;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">BiThrNode</span> *<span class="title">lchild</span>, *<span class="title">rchild</span>;</span> <span class="comment">//左右孩子/线索指针</span></span><br><span class="line">    PointerTag LTag, RTag;             <span class="comment">//左右标识</span></span><br></pre></td></tr></table></figure>
+<p>线索化的实质就是将二叉链表中的空指针改为指向前驱或后继的线索。<br>由于前驱和后继信息只有在遍历该二叉树时才能得到，<br>所以，线索化的过程就是在遍历的过程中修改空指针的过程。<br><strong>遍历即线索化过程</strong>。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/11/11/算法与数据结构学习——线索二叉树/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/2018/11/07/金融学辅修——金融学笔记（六）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/11/07/金融学辅修——金融学笔记（六）/" itemprop="url">金融学辅修——金融学笔记（六）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-07T19:03:54+08:00">
+                2018-11-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/金融/" itemprop="url" rel="index">
+                    <span itemprop="name">金融</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/金融/金融学/" itemprop="url" rel="index">
+                    <span itemprop="name">金融学</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,457
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  5
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="课前小组分享"><a href="#课前小组分享" class="headerlink" title="课前小组分享"></a>课前小组分享</h1><h2 id="资本市场和衍生品市场"><a href="#资本市场和衍生品市场" class="headerlink" title="资本市场和衍生品市场"></a>资本市场和衍生品市场</h2><h3 id="我国资本市场的发展历程"><a href="#我国资本市场的发展历程" class="headerlink" title="我国资本市场的发展历程"></a>我国资本市场的发展历程</h3><p>探索阶段——成长阶段——协调发展阶段——深化改革依法治市阶段</p>
+<h3 id="股票市场"><a href="#股票市场" class="headerlink" title="股票市场"></a>股票市场</h3><p>股票发行和流通的场所，可以分为一级和二级：一级发行，二级流通。</p>
+<p>职能：<br>积聚 转让 转化 </p>
+<p>基本性质：<br>不可偿还行 参与性 收益性（可以参与流通） 流通性（可以二次流通） 波动性和风险性</p>
+<p>股票的分类：</p>
+<p>股东权利分类：普通股，优先股，后配股</p>
+<p>上市地区分类：A股，B股，H股（香港），N股（纽约），S股</p>
+<p>按业绩分类：绩优股，垃圾股，蓝筹股</p>
+<h3 id="债券市场"><a href="#债券市场" class="headerlink" title="债券市场"></a>债券市场</h3><p>政府、企业、银行，到期还本付息的？？</p>
+<p>基本性质：<br>偿还性，流通性，安全性，</p>
+<p>企业破产时，债权人索取资产优先于股东</p>
+<p>债券融资的优点和缺点：</p>
+<p>优点：<br>资本成本低，具有财务杠杆作用，所筹集资金属于长期资金，债券投资范围广</p>
+<p>缺点：<br>限制条件多，</p>
+<h3 id="衍生品市场"><a href="#衍生品市场" class="headerlink" title="衍生品市场"></a>衍生品市场</h3><p>远期、期货、互换、期权</p>
+<p>是一种金融合约。XXX</p>
+<ol>
+<li><p>远期合约</p>
+<p> 远期利率协议、远期外汇合约、远期股票合约。</p>
+<p> 相关风险：时间跨度大，不确定因素多，规模和持仓量都不如现期。</p>
+</li>
+<li><p>期货</p>
+<p> 期货交易分类：商品期货和金融期货。</p>
+<p> 最大的区别就是双向交易，可以买多也可以卖空。价格上涨时可以低买高卖。</p>
+</li>
+<li><p>互换</p>
+<p> 互换交易</p>
+</li>
+</ol>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/11/07/金融学辅修——金融学笔记（六）/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/2018/11/06/亚马逊AWS云计算讲座笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/11/06/亚马逊AWS云计算讲座笔记/" itemprop="url">亚马逊AWS云计算讲座笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-06T15:15:50+08:00">
+                2018-11-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/讲座/" itemprop="url" rel="index">
+                    <span itemprop="name">讲座</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  816
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  3
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="亚马逊历史"><a href="#亚马逊历史" class="headerlink" title="亚马逊历史"></a>亚马逊历史</h1><p>1994年发展起来，除大中华区，电商巨头</p>
+<p>云计算 AWS， Amazon Web Service 2006年成立</p>
+<p>Gartner IT行业咨询公司</p>
+<p><strong>市场占有率</strong>：AWS 44.1%，2016数据，</p>
+<h1 id="正式演讲"><a href="#正式演讲" class="headerlink" title="正式演讲"></a>正式演讲</h1><h2 id="云计算的由来"><a href="#云计算的由来" class="headerlink" title="云计算的由来"></a>云计算的由来</h2><p>工业革命：两次对动力系统的革新</p>
+<p>动力轴对比电网供电：稳定性，可调节性，初始投资，动力成本，可拓展性。</p>
+<p>？？So how about 云计算</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/11/06/亚马逊AWS云计算讲座笔记/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/2018/11/05/Python学习——《FlaskWeb开发》笔记（一）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/11/05/Python学习——《FlaskWeb开发》笔记（一）/" itemprop="url">Python学习——《FlaskWeb开发》笔记（一）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-05T21:32:15+08:00">
+                2018-11-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/编程/" itemprop="url" rel="index">
+                    <span itemprop="name">编程</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/编程/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  979
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  4
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="第一部分-Flask简介"><a href="#第一部分-Flask简介" class="headerlink" title="第一部分 Flask简介"></a>第一部分 Flask简介</h1><h2 id="第1章-安装"><a href="#第1章-安装" class="headerlink" title="第1章 安装"></a>第1章 安装</h2><p>Flask有3个主要依赖：</p>
+<ol>
+<li>路由、调试和Web服务器网关接口子系统由Werkzeug提供；</li>
+<li>模板系统由Jinja2提供；</li>
+<li>命令行集成由Click提供。</li>
+</ol>
+<p>这些依赖都是Flask的开发者Armin Ronacher开发的。</p>
+<p>原生不支持数据库访问、Web表单验证和用户身份验证，但是可通过拓展形式实现。</p>
+<ul>
+<li>虚拟环境安装</li>
+</ul>
+<pre><code>pip install virtualenv
+</code></pre><p>Windows 注意修改PATH环境变量</p>
+<h2 id="第2章-应用的基本架构"><a href="#第2章-应用的基本架构" class="headerlink" title="第2章 应用的基本架构"></a>第2章 应用的基本架构</h2><ol>
+<li><p>初始化应用实例</p>
+<p> 所有来自客户端的请求都交由应用实例（Flask类对象）处理。</p>
+</li>
+<li><p>路由和视图函数</p>
+<p> 客户端（Web）浏览器把<strong>请求</strong>发送给Web服务器，Web服务器再把请求发送给Flask应用实例。<br> 应用实例保存URL请求到Python函数的映射关系，处理URL和函数之间关系的程序称之为<strong>路由</strong>。</p>
+<p> 最简单的方法（app.route）装饰器：</p>
+ <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@app.route('/')</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    <span class="title">return</span> '&lt;<span class="title">h1</span>&gt;<span class="title">Hello</span> <span class="title">World</span>!&lt;/<span class="title">h1</span>&gt;'</span></span><br></pre></td></tr></table></figure>
+<p> index()这样处理入站请求的函数称之为<strong>视图函数</strong>，函数的返回值称之为<strong>响应</strong>，是客户端接收到的内容。</p>
+<p> 路由URL中放在尖括号里面的内容是动态部分，任何能匹配到静态部分的URL会映射到这个路由上，调用视图函数时，<br> Flask会将动态部分作为<strong>参数</strong>传入函数</p>
+ <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@app.route('/user/&lt;name&gt;') # 任何匹配静态部分的URL都走这个路由</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">user</span><span class="params">(name)</span>:</span> <span class="comment"># 尖括号里的name作为参数传递进视图函数</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">'&lt;h1&gt;Hello, &#123;&#125;!&lt;/h1&gt;'</span>.format(name)</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<ol>
+<li><p>请求-相应循环</p>
+<ol>
+<li><p>应用和请求上下文</p>
+<p> <strong>请求对象</strong>封装了客户端发送的HTTP请求。方便使用，会通过上下文变为全局可访问。<br> 上下文全局变量：current_app, g, request, session</p>
+</li>
+<li><p>请求分派</p>
+<p> URL映射，路由。Flask为每个路由都制定了请求方法，这样即使不同的请求方法发送到相同URL上，也会<br> 使用不同的视图函数来处理</p>
+</li>
+<li><p>请求对象</p>
+<p> 上下文变量request对外开放请求对象，包含全部信息。</p>
+</li>
+<li><p>请求钩子</p>
+<p> 请求钩子通过装饰器实现，四种钩子：before_request, before_first_request, after_request, teardown_request</p>
+</li>
+<li><p>响应</p>
+<p> 多数情况下，视图函数返回值作为响应内容。字符串，状态。response对象。URL重定向。</p>
+</li>
+<li><p>Flask扩展</p>
+</li>
+</ol>
+</li>
+</ol>
+<h2 id="第3章-模板"><a href="#第3章-模板" class="headerlink" title="第3章 模板"></a>第3章 模板</h2><p><strong>模板</strong>是包含响应文本的文件，其中包含用占位变量表示的动态部分，其具体值只在请求的上下文中才能知道。<br>使用真实值替换变量，再返回最终得到的响应字符串，这一过程称为<strong>渲染</strong>。Jinja2</p>
+<ol>
+<li><p>变量</p>
+<p> 大括号两层括起来的部分就是变量，可以识别复杂类型，加过滤器（渲染时事变变换），如|capitalize, |lower<br> ,|upper, |title, |trim, |striptags. </p>
+<pre><code> {{ name }} 表示name是等待视图函数传递的变量
+ eg
+ &lt;p&gt; A value from a dictionary : {{ mydict['key'] }}, &lt;/p&gt;
+ &lt;p&gt; A value from a list : {{ mylist[-1] }}, &lt;/p&gt;
+ &lt;p&gt; A value from a dictionary with 过滤器: {{ mydict['key']|striptags }}, &lt;/p&gt;
+</code></pre></li>
+<li><p>控制结构</p>
+<p> 条件判断</p>
+<pre><code> {% if user %}
+            Hello, {{ user }}
+        {% else %}
+            Hello. Stranger
+        {% endif %}
+</code></pre><p>  初步尝试</p>
+  <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">&#123;% extends "bootstrap/base.html" %&#125;</span><br><span class="line"></span><br><span class="line">&#123;% block title %&#125;Flasky&#123;% endblock %&#125;</span><br><span class="line"></span><br><span class="line">&#123;% block navbar %&#125;</span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"navbar navbar-inverse"</span> <span class="attr">role</span>=<span class="string">"navigation"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"container"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"navbar-header"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">"button"</span> <span class="attr">class</span>=<span class="string">"navbar-toggle"</span> <span class="attr">data-toggle</span>=<span class="string">"collapse"</span> <span class="attr">data-target</span>=<span class="string">".navbar-collapse"</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">"sr-only"</span>&gt;</span>Toggle navigation<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">"icon-bar"</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">"icon-bar"</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">"icon-bar"</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">"navbar-brand"</span> <span class="attr">href</span>=<span class="string">"/"</span>&gt;</span>Flasky<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"navbar-collapse collapse"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">ul</span> <span class="attr">class</span>=<span class="string">"nav navbar-nav"</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">li</span>&gt;</span><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"/"</span>&gt;</span>Home<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">&#123;% endblock %&#125;</span><br><span class="line"></span><br><span class="line">&#123;% block content %&#125;</span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"container"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"page-header"</span>&gt;</span></span><br><span class="line">        &#123;% if name == "ryx" %&#125;</span><br><span class="line">        &#123;# 注意==符号还有 双引号 #&#125;</span><br><span class="line">            <span class="tag">&lt;<span class="name">h1</span>&gt;</span>Hello, 大哥 &#123;&#123; name|striptags &#125;&#125;!<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">        &#123;% else %&#125;</span><br><span class="line">            <span class="tag">&lt;<span class="name">h1</span>&gt;</span>Hello, 小老弟 &#123;&#123; name|striptags&#125;&#125;! <span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">        &#123;% endif %&#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">&#123;% endblock %&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -1009,1030 +2069,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/2018/10/28/《金融的本质：伯南克四讲美联储》读书笔记/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/10/28/《金融的本质：伯南克四讲美联储》读书笔记/" itemprop="url">《金融的本质：伯南克四讲美联储》读书笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-28T19:19:31+08:00">
-                2018-10-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/阅读/" itemprop="url" rel="index">
-                    <span itemprop="name">阅读</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  6,893
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  23
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="第一讲-美联储的起源与使命"><a href="#第一讲-美联储的起源与使命" class="headerlink" title="第一讲 美联储的起源与使命"></a>第一讲 美联储的起源与使命</h1><p>本讲先说说中央银行的定一、职能、以及他是符合在美国出现的，我还会介绍美联储如何应对其第一次重大挑战，即<br>20世纪30年代的经济大萧条。</p>
-<p>第二讲中，回顾二战后美联储的发展状况、80年代如何战胜通胀，格林斯潘任期内的<br>“大缓和”时期，以及1945年后发生的其它一些变化。危机如何形成，以及导致08~009年经济危机的部分原因。</p>
-<p>第三讲中，近期发生的事件，此轮金融危机最严重的阶段，危机发生的原因和后果，还有美联储褐其他政策制定者对<br>危机的应对等。</p>
-<p>第四讲中，危机的后果，危机后的经济衰退和美联储的应对措施（包括货币政策），以及金融监管方面的变革。此外，还会对<br>金融危机如何改变央行的运作方式，以及美联储未来会如何运作，进行一些前瞻性的讨论。</p>
-<h2 id="央行是什么"><a href="#央行是什么" class="headerlink" title="央行是什么"></a>央行是什么</h2><p>中央银行的职能，第一个是维持宏观经济稳定，即追求经济稳定增长，避免大幅度波动（如衰退等），并维持低通胀，<br>经济稳定只能。另一个职能，也是这一系列讲座重点探讨的一个功能，就是金融稳定职能，中央银行要尽可能保证金融系统<br>的正常运作，尤其要尽可能防止金融恐慌，避免发生金融危机。</p>
-<p>稳定经济方面的工具主要是货币政策：公开市场买卖证券来降低或提高短期利率，调整隔夜拆借利率。</p>
-<p>应对金融恐慌的工具主要是流动性供给：短期信贷平息市场情绪，维持金融机构稳定性，“最后贷款人”工具。</p>
-<p>第三个工具是金融监管：评估，非中央银行独有。系列讲座不予以详谈。</p>
-<h2 id="什么是金融恐慌"><a href="#什么是金融恐慌" class="headerlink" title="什么是金融恐慌"></a>什么是金融恐慌</h2><blockquote>
-<p>P007 “总体来说，金融恐慌是由大家对金融机构失去信心而引起的。”</p>
-<p>P009 “如果金融机构持有期限较长的非流动性资产——非流动性意味着出售这些资产（如贷款）需要花费相当多<br>的时间和精力，而支持这些资产的资金（如发放贷款的资金）却主要来自资产负债表另一侧的短期负债（如储蓄），<br>那么金融恐慌随时都有可能发生。”</p>
-</blockquote>
-<p>关于央行职能和相应政策，白芝浩。</p>
-<blockquote>
-<p>P010 “在恐慌时期，中央银行应大量放款，只要找上门来的人有抵押物，就可以放宽给他，中央银行需要持有<br>安全的抵押物，以确保能收回贷款，因此这些抵押必须是优质安全的，否则贷款时就必须带着计算。当然中央银行<br>还应征收惩罚税率，这样人们才不会利用这种恐慌局势来占便宜。人们愿意支付较高水平的利率，这表明他们确实<br>急需现金。”</p>
-</blockquote>
-<h2 id="金本位的利与弊"><a href="#金本位的利与弊" class="headerlink" title="金本位的利与弊"></a>金本位的利与弊</h2><p>南北战争结束到20世纪30年代，美国实行的一直是金本位制。</p>
-<blockquote>
-<p>P013 “真正的金本位制会创造出一个自我管理的货币体系，而这样的货币体系至少能部分替代央行的职能。”</p>
-<p>P013 “不幸的是，金本位制还远非完善的货币体系。比如，金本位制造成了极大的资源浪费，从一处地下（开采处）<br>转移到另一处地下（美联储），除此以外，实际表明金本位制还会导致许多更严重的金融及经济问题。”</p>
-</blockquote>
-<p>金本位带来的还有：央行货币政策工具受到限制，国家间固定汇率体系，投机冲击。</p>
-<h2 id="美联储的起源"><a href="#美联储的起源" class="headerlink" title="美联储的起源"></a>美联储的起源</h2><blockquote>
-<p>P017 “1913年，在所有研究全部完成以后，国会终于通过了《联邦储备法案》，奠定了美联储成立的基础，威尔逊<br>总统把签署《联邦储备法案》看作自己执政期间最重要的国内政治成就。”</p>
-</blockquote>
-<p>之前有过两次尝试，但是由于以商业街为代表的普通民众和以华尔街为代表的资本家之间存在重大分歧，即美联储是否能<br>代表整个国家的利益，前两次尝试均以失败告终。</p>
-<p>威尔逊总统通过在各城市分散建立12个联邦储备银行，而非在华盛顿建立一家中央银行，解决了两大群体的主要纠纷。12个<br>联邦储备区，其中每一个区都有一家联邦储备银行。华盛顿的联邦储备委员会监管着整个系统。</p>
-<blockquote>
-<p>P019 “当美联储制定货币政策时，它会考虑整个国家所有联邦储备银行的意见，再在国家层面上制定相关政策。”</p>
-</blockquote>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/10/28/《金融的本质：伯南克四讲美联储》读书笔记/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/2018/10/23/金融学辅修——微观经济学笔记（二）/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/10/23/金融学辅修——微观经济学笔记（二）/" itemprop="url">金融学辅修——微观经济学笔记（二）</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-23T16:05:01+08:00">
-                2018-10-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/金融/" itemprop="url" rel="index">
-                    <span itemprop="name">金融</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/金融/微观经济学/" itemprop="url" rel="index">
-                    <span itemprop="name">微观经济学</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  830
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  3
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="第二章-需求、价格与供求关系"><a href="#第二章-需求、价格与供求关系" class="headerlink" title="第二章 需求、价格与供求关系"></a>第二章 需求、价格与供求关系</h1><h2 id="需求曲线"><a href="#需求曲线" class="headerlink" title="需求曲线"></a>需求曲线</h2><ol>
-<li>需求 Demand：在一定时期内，各种可能的价格水平，人们愿意并且能够购买的商品量。</li>
-</ol>
-<p>需求表，函数关系，来表示价格与需求量的关系</p>
-<ol>
-<li>需求曲线<ul>
-<li>绘制：横轴需求量，纵轴价格</li>
-<li>一条向右下方的曲线。</li>
-</ul>
-</li>
-<li><p>需求分类</p>
-<ul>
-<li>个人需求曲线与市场需求曲线：市场需求曲线由个人叠加，个人的较为陡直，市场的较平坦（对价格变化更加敏感） </li>
-</ul>
-</li>
-</ol>
-<h2 id="需求定理"><a href="#需求定理" class="headerlink" title="需求定理"></a>需求定理</h2><ol>
-<li>需求需求的因素<ul>
-<li>商品本身的价格</li>
-<li>相关商品的价格</li>
-<li>消费者的收入及社会分配的公平程度</li>
-<li>消费者爱好（嗜好）    </li>
-<li>消费者对未来的预期</li>
-</ul>
-</li>
-</ol>
-<ol>
-<li><p>需求定理的特例</p>
-<p> 吉芬物品 Giffen’s Goods：需求量于价格成同向变动的特殊商品。</p>
-<p> 饥荒时期的土豆</p>
-<p> 炫耀性物品 Consipicuous Goods：</p>
-<p> 特例总结</p>
-<ol>
-<li>曲线上端回归：稀有物品（古书，名画），预期紧俏的商品。</li>
-<li>曲线下端回归：吉芬物品，吃紧时，随价格上升需求量增加。</li>
-<li>S曲线：原本不值钱物品值钱了，原本不值钱的值钱了。</li>
-<li>横线，价格一定，需求无限大：</li>
-<li>竖线，需求一定，价格无限：军需物品。</li>
-</ol>
-</li>
-</ol>
-<h2 id="供给曲线"><a href="#供给曲线" class="headerlink" title="供给曲线"></a>供给曲线</h2><ol>
-<li><p>供给 ：在一定时间内各种可能的价格原意而且能够提供出售的该种商品的数量。</p>
-</li>
-<li><p>需求曲线</p>
-<ul>
-<li>绘制：横轴供给量，纵轴价格。</li>
-<li>一条向右上方的曲线</li>
-<li>单个厂商的供给曲线对比市场供给曲线：市场供给曲线更加平滑（纵轴价格不变，横轴供给量叠加）<h2 id="供给定理"><a href="#供给定理" class="headerlink" title="供给定理"></a>供给定理</h2></li>
-</ul>
-</li>
-<li><p>影响供给的因素</p>
-<ul>
-<li>厂商的目标</li>
-<li>厂商对未来的预期</li>
-<li>商品本身的价格</li>
-<li>相关商品的价格（替代品，互补品？）</li>
-<li>生产要素的价格（商品本身价格不变，成本上升会使利润减小，供给量下降）</li>
-<li>生产技术的变动（一般情况下，生产技术水平的提高可以提高劳动生产率，从而降低成本，增大产量）</li>
-</ul>
-</li>
-</ol>
-<h2 id="需求函数与供给函数"><a href="#需求函数与供给函数" class="headerlink" title="需求函数与供给函数"></a>需求函数与供给函数</h2><p>数学表达</p>
-<pre><code>D=f(a1,b1,c1,d1...n1)
-a1,b1,c1,d1...n1代表影响需求的因素
-</code></pre><p>理想情况 Qd=f(P)  关于价格的一元函数</p>
-<pre><code>S=f(a2,b2,c2,d2...n2)
-a2,b2,c2,d2...n2代表影响供给的因素    
-</code></pre><p>理想情况 Qs=f(P)  关于价格的一元函数</p>
-<p>价格的变化体现在沿曲线的滑动，除商品自身价格以外的这些其他因素变化所导致的市场需求（供给）数量的变化<br>通常称为需求（供给）的变动。<strong>几何图形中，表示为曲线的平移</strong></p>
-<p>消费者剩余和生产者剩余？？</p>
-<h2 id="均衡价格"><a href="#均衡价格" class="headerlink" title="均衡价格"></a>均衡价格</h2><p>供给曲线和需求曲线的交点，此时达到市场出清的状态。</p>
-<p>供求定理：<strong>在其他条件不变的情况下，需求变动分别引起均衡价格和均衡数量的同方向的变动，供给变动<br>引起均衡价格的反方向的变动，引起均衡数量的同方向的变动。</strong></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/2018/10/23/《枪炮、病菌与钢铁》读书笔记/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/10/23/《枪炮、病菌与钢铁》读书笔记/" itemprop="url">《枪炮、病菌与钢铁》读书笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-23T12:21:16+08:00">
-                2018-10-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/阅读/" itemprop="url" rel="index">
-                    <span itemprop="name">阅读</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  8,528
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  29
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" src="//music.163.com/outchain/player?type=2&id=451991086&auto=1&height=66"></iframe>
-
-<h1 id="内容摘录与笔记"><a href="#内容摘录与笔记" class="headerlink" title="内容摘录与笔记"></a>内容摘录与笔记</h1><h2 id="前言-耶利的问题"><a href="#前言-耶利的问题" class="headerlink" title="前言 耶利的问题"></a>前言 耶利的问题</h2><blockquote>
-<p>P2“耶利的问题：‘为什么你们白人制造了那么多的货物并将它们运到新几内亚来，而我们黑人却几乎没有属于我们自己的货物呢？’”</p>
-<p>P3 “在普通新几内亚人的生活方式和普通欧洲人或普通美国人的生活方式之间仍然存在着巨大的差异。类似的差异同样把世界上其他民族的生活方式区别了开来。<br>这些巨大的差异必定具有人们可能认为显而易见的重要原因。”</p>
-<p>P3 “关于这个问题的解决办法，专业的历史学家们仍然意见不一：大多数人甚至不再问这样的问题了。”</p>
-<p>P3 “在25年后撰写的本书就是试图对耶利的问题作出回答。”</p>
-<p>P10 “在传统的新几内亚社会中，聪明人比不那么聪明的人更有可能逃脱导致高死亡率的死因。然而，在传统的欧洲社会中，流行性疾病造成的死亡率的差异与智力几乎没有任何关系，<br>而是与取决于人体化学细节的遗传抵抗力有关。例如，血型为B或O的人比血型为A的人对天花有更强的抵抗力。就是说，促进智力基因的自然选择，<br>在新几内亚比在人口稠密、政治上复杂的社会可能要无情得多，因为在这样的社会里，对人体化学组成得自然选择反而更有效力。”</p>
-</blockquote>
-<p>如果说之前读到得历史著作对历史进程必然性的分析是基于分布在各大陆的民族在政治、军事、文化等等方面的差异而来的，那么本书想要探究的则是这些差异的来源和产生模式。相较于讨论为什么欧洲人能够<br>屠杀或者正如其他民族的直接原因，这本书着眼于分析，为什么是欧洲人而不是非洲人、亚洲人能够屠杀或者征服其他民族，这种差异是如何从零慢慢演变出来的。是对历史进程终极原因的探索。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/10/23/《枪炮、病菌与钢铁》读书笔记/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/2018/10/22/【UVA-679】解题报告（二叉树）/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/10/22/【UVA-679】解题报告（二叉树）/" itemprop="url">【UVA-679】解题报告（二叉树）</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-22T01:38:12+08:00">
-                2018-10-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/编程/" itemprop="url" rel="index">
-                    <span itemprop="name">编程</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/编程/ACM/" itemprop="url" rel="index">
-                    <span itemprop="name">ACM</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  437
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  2
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="原始题目"><a href="#原始题目" class="headerlink" title="原始题目"></a>原始题目</h1><img src="/2018/10/22/【UVA-679】解题报告（二叉树）/1.png">
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/10/22/【UVA-679】解题报告（二叉树）/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/2018/10/22/【UVA-12657】解题报告（双端链表）/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/10/22/【UVA-12657】解题报告（双端链表）/" itemprop="url">【UVA-12657】解题报告（双端链表）</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-22T01:21:29+08:00">
-                2018-10-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/编程/" itemprop="url" rel="index">
-                    <span itemprop="name">编程</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/编程/ACM/" itemprop="url" rel="index">
-                    <span itemprop="name">ACM</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  737
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  4
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="原始题目"><a href="#原始题目" class="headerlink" title="原始题目"></a>原始题目</h1><img src="/2018/10/22/【UVA-12657】解题报告（双端链表）/1.png">
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/10/22/【UVA-12657】解题报告（双端链表）/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2087,7 +2123,7 @@ a2,b2,c2,d2...n2代表影响供给的因素
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">170</span>
+                  <span class="site-state-item-count">175</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2109,7 +2145,7 @@ a2,b2,c2,d2...n2代表影响供给的因素
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">117</span>
+                  <span class="site-state-item-count">119</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -2215,7 +2251,7 @@ a2,b2,c2,d2...n2代表影响供给的因素
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">152.2k</span>
+    <span title="Site words total count">155.3k</span>
   
 </div>
 
@@ -2457,7 +2493,7 @@ a2,b2,c2,d2...n2代表影响供给的因素
         }
       });
     </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
   
 
 
@@ -2465,5 +2501,5 @@ a2,b2,c2,d2...n2代表影响供给的因素
 
   
 
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script></body>
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --></body>
 </html>
