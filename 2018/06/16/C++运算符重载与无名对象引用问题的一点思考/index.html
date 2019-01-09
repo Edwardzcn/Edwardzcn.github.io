@@ -511,15 +511,15 @@
         <h1>问题的发现</h1>
 <p>今天复习C<ins>运算符重载时候的意外发现：关于类的临时对象以及引用的一些思考。来源于C</ins>程序设计（小红书）上给出了“+”号运算符重载的样例。</p>
 <a id="more"></a>
-<h2 id="基本知识回顾"><a class="header-anchor" href="#基本知识回顾">¶</a>基本知识回顾</h2>
-<h3 id="重载运算符的习惯"><a class="header-anchor" href="#重载运算符的习惯">¶</a>重载运算符的习惯</h3>
+<h2>基本知识回顾</h2>
+<h3>重载运算符的习惯</h3>
 <ul>
 <li>C++规定，赋值运算符=、下标运算符[]、函数调用运算符()、成员运算符-&gt;必须作为成员函数。</li>
 <li>流插入运算符&lt;&lt; 和流提取运算符 &gt;&gt;、类型转换运算符不能定义为类的成员函数，只能作为友元函数。</li>
 <li>一般将单目运算符和复合运算符重载为成员函数</li>
 <li>一般将双目运算符重载为友元函数。</li>
 </ul>
-<h2 id="next"><a class="header-anchor" href="#next">¶</a>Next</h2>
+<h2>Next</h2>
 <p>So 根据上述的习惯，我对着屏幕敲了书上的样例的类定义的代码。</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Complex</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        Complex() &#123;</span><br><span class="line">            real=<span class="number">0</span>;</span><br><span class="line">            imag=<span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        Complex(<span class="keyword">double</span> d)&#123;</span><br><span class="line">			real=d;</span><br><span class="line">			imag=<span class="number">0</span>;</span><br><span class="line">		&#125;</span><br><span class="line">        Complex(<span class="keyword">double</span> r,<span class="keyword">double</span> i)&#123;</span><br><span class="line">			real =r;</span><br><span class="line">			imag=i;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">friend</span> Complex <span class="keyword">operator</span> + (Complex &amp;a,Complex &amp;b);</span><br><span class="line">		<span class="keyword">friend</span> ostream&amp; <span class="keyword">operator</span> &lt;&lt; (ostream &amp;,Complex &amp;); </span><br><span class="line">	<span class="keyword">private</span>:</span><br><span class="line">		<span class="keyword">double</span> real;</span><br><span class="line">		<span class="keyword">double</span> imag;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Complex <span class="keyword">operator</span> +(Complex &amp;a,Complex &amp;b)</span><br><span class="line">&#123;</span><br><span class="line">	Complex temp;</span><br><span class="line">	temp.real=a.real+b.real;</span><br><span class="line">	temp.imag=a.imag+b.imag;</span><br><span class="line">	<span class="keyword">return</span> temp;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ostream&amp; <span class="keyword">operator</span> &lt;&lt; (ostream&amp; output,Complex &amp;a )</span><br><span class="line">&#123;</span><br><span class="line">	<span class="built_in">cout</span>&lt;&lt;<span class="string">"("</span>&lt;&lt;a.real&lt;&lt;<span class="string">","</span>&lt;&lt;a.imag&lt;&lt;<span class="string">"i)"</span>;</span><br><span class="line">	<span class="keyword">return</span> output;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	Complex c1(3,4),c2(5,-10),c3;</span><br><span class="line">	c3=c1+<span class="number">4.0</span>;</span><br><span class="line">	<span class="built_in">cout</span>&lt;&lt;c3&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">	c3=c3+c1;</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt;c3&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>写完感觉看着是没什么问题对吧（我真觉的没什么问题）。<br>
@@ -542,10 +542,10 @@
 <h1>问题展开与解决</h1>
 <p>去掉&quot;&amp;“后程序果然可以正常运行的。不过我考虑了一下程序的实现过程，不对啊，一个简单的相加，我传递一个类对象的引用<br>
 不应该出现什么问题啊，”+&quot;本身又不会对引用的对象进行什么操作，返回类型是一个Complex类的对象。问题出现在哪里了？</p>
-<h2 id="一些奇葩-正经-的实验"><a class="header-anchor" href="#一些奇葩-正经-的实验">¶</a>一些奇葩（正经）的实验</h2>
+<h2>一些奇葩（正经）的实验</h2>
 <p>于是乎我把之前写的简单的&quot;+&quot;重载的程序，函数的形参都改为对象的引用，再运行。结果更奇怪了，除了上述程序，都没有报错。<br>
 这个程序又独特在哪里了？</p>
-<h3 id="问题点"><a class="header-anchor" href="#问题点">¶</a>问题点</h3>
+<h3>问题点</h3>
 <p>再返回去读一读程序，这个样例用到了转换构造函数。</p>
 <pre><code>c3=c1+4.0;
 </code></pre>
@@ -560,7 +560,7 @@
 </code></pre>
 <p>原来最开始的程序并没有成功的调用转换构造函数。编译器没有检测到？<br>
 看来是哪里出了什么之前没考虑过的问题。</p>
-<h3 id="思考"><a class="header-anchor" href="#思考">¶</a>思考</h3>
+<h3>思考</h3>
 <p>（不摔桌！不摔桌！冷静！）如果通过引用进行参数传递，可以免去建立实参的拷贝，空间和时间上都可以得到优化，<br>
 逻辑推理一下，那这种传参的方式应该被推行啊，相近的例子就是流提取和流插入运算符的重载，第二个参数都是自定义类的引用。</p>
 <p>那…为何&quot;+&quot;的重载不采用这种方式呢？看来是有问题的，结合之前的实验，在不出现转换构造函数调用的情况下，形参为引用是行得通的。<br>
@@ -572,8 +572,8 @@
 [Note] no known conversion for argument 2 from 'Complex' to 'Complex&amp;'
 </code></pre>
 <p>最后一句：Complex到Complex&amp;转换出了问题，这个比较稀奇。从类对象到类对象的引用不应该是顺理成章的事情么，别名而已。Emm问题就在这个别名身上</p>
-<h2 id="引用-别名"><a class="header-anchor" href="#引用-别名">¶</a>引用&lt;-&gt;别名</h2>
-<h3 id="转换构造函数出现的无名对象"><a class="header-anchor" href="#转换构造函数出现的无名对象">¶</a>转换构造函数出现的无名对象</h3>
+<h2>引用&lt;-&gt;别名</h2>
+<h3>转换构造函数出现的无名对象</h3>
 <p>转换构造函数是构造函数的重载，在使用转换构造函数的过程中，我们可以建立一个有名对象，也可以建立一个无名对象。<br>
 书上中的代码样例</p>
 <pre><code>Complex c1(3.5); //调用转换构造函数建立对象c1
@@ -825,7 +825,7 @@ Complex(3.6); //调用转换构造函数建立无名对象，合法，但无法�
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">问题的发现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本知识回顾"><span class="nav-number">1.1.</span> <span class="nav-text">¶基本知识回顾</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#重载运算符的习惯"><span class="nav-number">1.1.1.</span> <span class="nav-text">¶重载运算符的习惯</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#next"><span class="nav-number">1.2.</span> <span class="nav-text">¶Next</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text">问题展开与解决</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一些奇葩-正经-的实验"><span class="nav-number">2.1.</span> <span class="nav-text">¶一些奇葩（正经）的实验</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题点"><span class="nav-number">2.1.1.</span> <span class="nav-text">¶问题点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#思考"><span class="nav-number">2.1.2.</span> <span class="nav-text">¶思考</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引用-别名"><span class="nav-number">2.2.</span> <span class="nav-text">¶引用&lt;-&gt;别名</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#转换构造函数出现的无名对象"><span class="nav-number">2.2.1.</span> <span class="nav-text">¶转换构造函数出现的无名对象</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">3.</span> <span class="nav-text">事后诸葛亮</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">问题的发现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">1.1.</span> <span class="nav-text">基本知识回顾</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.1.1.</span> <span class="nav-text">重载运算符的习惯</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">1.2.</span> <span class="nav-text">Next</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text">问题展开与解决</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">2.1.</span> <span class="nav-text">一些奇葩（正经）的实验</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">2.1.1.</span> <span class="nav-text">问题点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">2.1.2.</span> <span class="nav-text">思考</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">2.2.</span> <span class="nav-text">引用&lt;-&gt;别名</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">2.2.1.</span> <span class="nav-text">转换构造函数出现的无名对象</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">3.</span> <span class="nav-text">事后诸葛亮</span></a></li></ol></div>
             
 
           </div>
