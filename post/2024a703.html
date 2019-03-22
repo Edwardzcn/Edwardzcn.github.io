@@ -96,20 +96,20 @@
 
 
 
-<meta name="description" content="集群技术初识——以Linux负载均衡集群学习为例 写在前面本文主要参考：章文嵩博士所写的Linux服务器集群系统介绍，集群技术（原理篇），高俊峰所著《高性能Linux服务器构建实战》，魔软运维社所著《大规模Linux集群架构最佳实践》。 由于查阅资料的时候不懂得地方太多，所以多数只能从概念上简单理解，如想自己深入理解其中的奥妙，还需要完成本门课程，将基础打好，同时熟悉Linux系统的一些基本情况后">
+<meta name="description" content="（可以关注一下 Future Generation Computer Systems） 集群技术初识——以Linux负载均衡集群学习为例 写在前面本文主要参考：章文嵩博士所写的Linux服务器集群系统介绍，集群技术（原理篇），高俊峰所著《高性能Linux服务器构建实战》，魔软运维社所著《大规模Linux集群架构最佳实践》。 由于查阅资料的时候不懂得地方太多，所以多数只能从概念上简单理解，如想自己深">
 <meta name="keywords" content="编程">
 <meta property="og:type" content="article">
 <meta property="og:title" content="操作系统学习——集群技术初识">
 <meta property="og:url" content="http://www.edwardzcn98yx.com/post/2024a703.html">
 <meta property="og:site_name" content="Eddy的个人博客">
-<meta property="og:description" content="集群技术初识——以Linux负载均衡集群学习为例 写在前面本文主要参考：章文嵩博士所写的Linux服务器集群系统介绍，集群技术（原理篇），高俊峰所著《高性能Linux服务器构建实战》，魔软运维社所著《大规模Linux集群架构最佳实践》。 由于查阅资料的时候不懂得地方太多，所以多数只能从概念上简单理解，如想自己深入理解其中的奥妙，还需要完成本门课程，将基础打好，同时熟悉Linux系统的一些基本情况后">
+<meta property="og:description" content="（可以关注一下 Future Generation Computer Systems） 集群技术初识——以Linux负载均衡集群学习为例 写在前面本文主要参考：章文嵩博士所写的Linux服务器集群系统介绍，集群技术（原理篇），高俊峰所著《高性能Linux服务器构建实战》，魔软运维社所著《大规模Linux集群架构最佳实践》。 由于查阅资料的时候不懂得地方太多，所以多数只能从概念上简单理解，如想自己深">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/20190321os1.jpg">
 <meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/20190321os2.jpg">
-<meta property="og:updated_time" content="2019-03-22T04:36:19.272Z">
+<meta property="og:updated_time" content="2019-03-22T05:34:58.876Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="操作系统学习——集群技术初识">
-<meta name="twitter:description" content="集群技术初识——以Linux负载均衡集群学习为例 写在前面本文主要参考：章文嵩博士所写的Linux服务器集群系统介绍，集群技术（原理篇），高俊峰所著《高性能Linux服务器构建实战》，魔软运维社所著《大规模Linux集群架构最佳实践》。 由于查阅资料的时候不懂得地方太多，所以多数只能从概念上简单理解，如想自己深入理解其中的奥妙，还需要完成本门课程，将基础打好，同时熟悉Linux系统的一些基本情况后">
+<meta name="twitter:description" content="（可以关注一下 Future Generation Computer Systems） 集群技术初识——以Linux负载均衡集群学习为例 写在前面本文主要参考：章文嵩博士所写的Linux服务器集群系统介绍，集群技术（原理篇），高俊峰所著《高性能Linux服务器构建实战》，魔软运维社所著《大规模Linux集群架构最佳实践》。 由于查阅资料的时候不懂得地方太多，所以多数只能从概念上简单理解，如想自己深">
 <meta name="twitter:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/20190321os1.jpg">
 
 
@@ -463,7 +463,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  3,814
+                  4,721
                 </span>
               
 
@@ -479,7 +479,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  13
+                  16
                 </span>
               
             </div>
@@ -500,13 +500,14 @@
       
 
       
-        <p>集群技术初识——以Linux负载均衡集群学习为例</p>
+        <p>（可以关注一下 Future Generation Computer Systems）</p>
+<p>集群技术初识——以Linux负载均衡集群学习为例</p>
 <h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>本文主要参考：章文嵩博士所写的<a href="http://www.linuxvirtualserver.org/zh/lvs1.html#author1" target="_blank" rel="noopener">Linux服务器集群系统介绍</a>，<a href="https://blog.51cto.com/jiangzhi2013/1222666" target="_blank" rel="noopener">集群技术（原理篇）</a>，高俊峰所著《高性能Linux服务器构建实战》，魔软运维社所著《大规模Linux集群架构最佳实践》。</p>
 <p>由于查阅资料的时候不懂得地方太多，所以多数只能从概念上简单理解，如想自己深入理解其中的奥妙，还需要完成本门课程，将基础打好，同时熟悉Linux系统的一些基本情况后再做深入且仔细的学习。</p>
-<h2 id="第一部分-什么是集群"><a href="#第一部分-什么是集群" class="headerlink" title="第一部分 什么是集群"></a>第一部分 什么是集群</h2><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>我们在计算机网络中已经学习了<strong>吞吐量</strong>的概念，即单位时间内成功地传送数据的数量（以比特、字节、分组等测量），我们这里着重考量接收端的吞吐能力（以带宽衡量）。</p>
+<h1 id="第一部分-什么是集群"><a href="#第一部分-什么是集群" class="headerlink" title="第一部分 什么是集群"></a>第一部分 什么是集群</h1><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>我们在计算机网络中已经学习了<strong>吞吐量</strong>的概念，即单位时间内成功地传送数据的数量（以比特、字节、分组等测量），我们这里着重考量接收端的吞吐能力（以带宽衡量）。</p>
 <p>Internet的飞速发展给网络带宽和服务器带来巨大的挑战。从网络技术的发展来看，网络带宽的增长远高于处理器速度和内存访问速度的增长，这是什么意思。数据出了小区门（计算机）在<strong>路途中已经可以上高速公路</strong>了，但是在<strong>小区内的行驶速度却成了难题</strong>，越来越多的瓶颈会出现在服务器端。互联网的海洋中对性能的不断提高，高可伸缩性、高可用性、可管理性、价格有效性的网络服务技术将成为网络服务技术的主导。各种平台下的技术方案应运而生。</p>
 <a id="more"></a>
-<h3 id="对称多处理系统"><a href="#对称多处理系统" class="headerlink" title="对称多处理系统"></a>对称多处理系统</h3><blockquote>
+<h2 id="对称多处理系统"><a href="#对称多处理系统" class="headerlink" title="对称多处理系统"></a>对称多处理系统</h2><blockquote>
 <p>对称多处理（Symmetric Multi-Processor，简称SMP）是由多个对称的处理器、和通过总线共享的内存和I/O部件所组成的计算机系统。SMP是一种低并行度的结构，是我们通常所说的”紧耦合多处理系统”，</p>
 </blockquote>
 <p>SMP的可扩展能力有限，但也有相应的优点：</p>
@@ -521,7 +522,7 @@
 <li>越往高端的服务器，所花费的代价越大；</li>
 <li>三是 SMP服务器是单一故障点（Single Point of Failure），一旦该服务器或应用软件失效，会导致整个服务的中断。</li>
 </ul>
-<h3 id="集群的起源"><a href="#集群的起源" class="headerlink" title="集群的起源"></a>集群的起源</h3><p>集群并不是一个全新的概念，其实早在七十年代计算机厂商和研究机构就开始了对集群系统的研究和开发。由于主要用于科学工程计算，所以这些系统并不为大家所熟知。直到Linux集群的出现，集群的概念才得以广为传播。对集群的研究起源于集群系统的良好的性能可扩展性(scalability)。提高CPU主频和总线带宽是最初提供计算机性能的主要手段。但是这一手段对系统性能的提供是有限的。接着人们通过增加CPU个数和内存容量来提高性能，于是出现了向量机，对称多处理机(SMP)等。但是当CPU的个数超过某一阈值，象SMP这些多处理机系统的可扩展性就变的极差。主要瓶颈在于CPU访问内存的带宽并不能随着CPU个数的增加而有效增长。与SMP相反，集群系统的性能随着CPU个数的增加几乎是线性变化的</p>
+<h2 id="集群的起源"><a href="#集群的起源" class="headerlink" title="集群的起源"></a>集群的起源</h2><p>集群并不是一个全新的概念，其实早在七十年代计算机厂商和研究机构就开始了对集群系统的研究和开发。由于主要用于科学工程计算，所以这些系统并不为大家所熟知。直到Linux集群的出现，集群的概念才得以广为传播。对集群的研究起源于集群系统的良好的性能可扩展性(scalability)。提高CPU主频和总线带宽是最初提供计算机性能的主要手段。但是这一手段对系统性能的提供是有限的。接着人们通过增加CPU个数和内存容量来提高性能，于是出现了向量机，对称多处理机(SMP)等。但是当CPU的个数超过某一阈值，象SMP这些多处理机系统的可扩展性就变的极差。主要瓶颈在于CPU访问内存的带宽并不能随着CPU个数的增加而有效增长。与SMP相反，集群系统的性能随着CPU个数的增加几乎是线性变化的</p>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/20190321os1.jpg" alt="1"></p>
 <p>集群恰恰是通过高性能网络或局域网互联的服务器集群正成为实现高可伸缩的、高可用网络服务的有效结构（而非基于单机CPU数量的增长）。这种松耦合结构的服务器集群系统有下列优点：</p>
 <ul>
@@ -554,7 +555,7 @@
 <p>在集群系统上，容易开发应用程序。</p>
 </li>
 </ul>
-<h3 id="集群类型"><a href="#集群类型" class="headerlink" title="集群类型"></a>集群类型</h3><p>通常我们根据需求将集群分为三类：<code>负载均衡集群（Load Balancing LB）</code><br>,<code>高可用性集群（High Availability HA）</code>,<code>高性能也叫科学集群（High Performance HP</code>。</p>
+<h2 id="集群类型"><a href="#集群类型" class="headerlink" title="集群类型"></a>集群类型</h2><p>通常我们根据需求将集群分为三类：<code>负载均衡集群（Load Balancing LB）</code><br>,<code>高可用性集群（High Availability HA）</code>,<code>高性能也叫科学集群（High Performance HP</code>。</p>
 <p>下面做一下详细的介绍（来源自博客），笔者本人学习中只听闻过负载均衡集群。</p>
 <ul>
 <li><p>负载均衡集群（Load Balancing LB）</p>
@@ -567,18 +568,18 @@
 <p>为集群开发并行编程应用程序，以解决复杂的科学问题。这是并行计算的基础，尽管它不使用专门的并行超级计算机，这种超级计算机内部由十至上万个独立处理器组成。但它却使用商业系统，如通过高速连接来链接的一组单处理器或双处理器 PC，并且在公共消息传递层上进行通信以运行并行应用程序。因此，您会常常听说又有一种便宜的 Linux 超级计算机问世了。但它实际是一个计算机集群，其处理能力与真的超级计算机相等，通常一套象样的集群配置开销要超过 $100,000。这对一般人来说似乎是太贵了，但与价值上百万美元的专用超级计算机相比还算是便宜的。</p>
 </li>
 </ul>
-<h3 id="集群的实现"><a href="#集群的实现" class="headerlink" title="集群的实现"></a>集群的实现</h3><p>根据网络资料，已知的负载均衡集群可以通过硬件和软件两种方式实现，其他两种集群的实现方式不太清楚。</p>
+<h2 id="集群的实现"><a href="#集群的实现" class="headerlink" title="集群的实现"></a>集群的实现</h2><p>根据网络资料，已知的负载均衡集群可以通过硬件和软件两种方式实现，其他两种集群的实现方式不太清楚。</p>
 <p>硬件方式：即通过专用的硬件（处理机）进行内容的分发调度，一般而言，硬件负载均衡在功能、性能上优于软件方式，不过成本昂贵。而且最重要的是该专用硬件是单点配置，即具有发生单点故障导致整个集群瘫痪的风险。</p>
 <p>软件方式：软件负载均衡解决方案是指在一台或多台服务器相应的操作系统上安装一个或多个附加软件来实现负载均衡，它的优点是基于特定环境，配置简单，使用灵活，成本低廉，可以满足一般的负载均衡需求。</p>
 <p>后面着重以LVS（著名的开源项目）为例来说明LVS集群系统的实现。</p>
-<h2 id="第二部分-LVS集群系统"><a href="#第二部分-LVS集群系统" class="headerlink" title="第二部分 LVS集群系统"></a>第二部分 LVS集群系统</h2><h3 id="项目诞生"><a href="#项目诞生" class="headerlink" title="项目诞生"></a>项目诞生</h3><blockquote>
+<h1 id="第二部分-LVS集群系统"><a href="#第二部分-LVS集群系统" class="headerlink" title="第二部分 LVS集群系统"></a>第二部分 LVS集群系统</h1><h2 id="项目诞生"><a href="#项目诞生" class="headerlink" title="项目诞生"></a>项目诞生</h2><blockquote>
 <p>针对高可伸缩、高可用网络服务的需求，我们给出了基于IP层和基于内容请求分发的负载平衡调度解决方法，并在Linux内核中实现了这些方法，将一组服务器构成一个实现可伸缩的、高可用网络服务的虚拟服务器。</p>
 <p>虚拟服务器的体系结构如图2所示，一组服务器通过高速的局域网或者地理分布的广域网相互连接，在它们的前端有一个负载调度器（Load Balancer）。负载调度器能无缝地将网络请求调度到真实服务器上，从而使得服务器集群的结构对客户是透明的，客户访问集群系统提供的网络服务就像访 问一台高性能、高可用的服务器一样。客户程序不受服务器集群的影响不需作任何修改。系统的伸缩性通过在服务机群中透明地加入和删除一个节点来达到，通过检 测节点或服务进程故障和正确地重置系统达到高可用性。由于我们的负载调度技术是在Linux内核中实现的，我们称之为Linux虚拟服务器（Linux Virtual Server）。</p>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/20190321os2.jpg" alt="2"></p>
 </blockquote>
-<h3 id="LVS集群的组成与特点"><a href="#LVS集群的组成与特点" class="headerlink" title="LVS集群的组成与特点"></a>LVS集群的组成与特点</h3><p>Linux虚拟服务器（Linux Virtual Server，LVS）是一个由章文嵩开发的一款自由软件，利用LVS可以实现高可用的、可伸缩的Web、Mail、Cache和Media等网络服务。并在此基础上开发支持庞大用户数的、可伸缩的、高可用的电子商务应用。LVS自1998年发展到现在，已经变得比较成熟，目前广泛应用在各种网络服务和电子商务应用中。</p>
+<h2 id="LVS集群的组成与特点"><a href="#LVS集群的组成与特点" class="headerlink" title="LVS集群的组成与特点"></a>LVS集群的组成与特点</h2><p>Linux虚拟服务器（Linux Virtual Server，LVS）是一个由章文嵩开发的一款自由软件，利用LVS可以实现高可用的、可伸缩的Web、Mail、Cache和Media等网络服务。并在此基础上开发支持庞大用户数的、可伸缩的、高可用的电子商务应用。LVS自1998年发展到现在，已经变得比较成熟，目前广泛应用在各种网络服务和电子商务应用中。</p>
 <p>LVS具有很好的可伸缩性、可靠性和可管理性，通过LVS要实现的最终目标是：利用Linux操作系统和LVS集群软件实现一个高可用、高性能、低成本的服务器应用集群。</p>
-<h4 id="LVS-集群的组成"><a href="#LVS-集群的组成" class="headerlink" title="LVS 集群的组成"></a>LVS 集群的组成</h4><p>利用LVS架设的服务器集群由3个部分组成：最前端的是负载均衡层（用Load Balancer表示），中间是服务器群组层（用Server Array表示），底端是数据共享存储层（用Shared Storage表示，这里应该还涉及一些分布式存储？的知识）。在用户看来，整个LVS集群系统的所有内部应用结构都是透明的，最终用户只是在使用一个虚拟服务器提供的高性能服务。</p>
+<h3 id="LVS-集群的组成"><a href="#LVS-集群的组成" class="headerlink" title="LVS 集群的组成"></a>LVS 集群的组成</h3><p>利用LVS架设的服务器集群由3个部分组成：最前端的是负载均衡层（用Load Balancer表示），中间是服务器群组层（用Server Array表示），底端是数据共享存储层（用Shared Storage表示，这里应该还涉及一些分布式存储？的知识）。在用户看来，整个LVS集群系统的所有内部应用结构都是透明的，最终用户只是在使用一个虚拟服务器提供的高性能服务。</p>
 <p>下面对LVS三个组成部分进行详细的介绍：</p>
 <ul>
 <li>负载均衡层：位于整个集群系统的最前端，由一台或多台负载均衡调度器（Director Server），只有一台调度器的时候我们也将其成为Load Balancer，LVS核心模块IPVS就安装在Director Server上，而Director的主要作用类似于一个路由器，它含有为完成LVS功能所设定的路由表，通过这些路由表把用户的请求分发给服务器群组层的应用服务器（Real Server），整个过程对访问集群的用户是透明的。同时，在Director Server上还要安装对Real Server的监控模块Ldirectord，此模块用于监测各个Real Server服务的健康状况。在Real Server不可用时将其从LVS路由表中剔除，在恢复时重新加入（伸缩性的体现）。</li>
@@ -586,12 +587,35 @@
 <li>共享存储层：是为所有Real Server提供共享存储空间和内容一致性的存储区域，一般由磁盘阵列设备组成。为了提供内容的一致性，一般可以通过NFS网络文件系统共享数据，但是NFS在繁忙的业务系统中，性能并不是很好，此时可以采用集群文件系统，例如Red Hat的GFS文件系统，Oracle提供的OCFS2文件系统等。</li>
 </ul>
 <p>从整个LVS结构可以看出，Dirctor Server是整个LVS的核心。目前，用于Director Server的操作系统只有Linux和FreeBSD，Linux 2.6内核完全内置了LVS的各个模块，不用任何设置就可以支持LVS功能。</p>
-<h4 id="LVS集群的特点"><a href="#LVS集群的特点" class="headerlink" title="LVS集群的特点"></a>LVS集群的特点</h4><ol>
+<h3 id="LVS集群的特点"><a href="#LVS集群的特点" class="headerlink" title="LVS集群的特点"></a>LVS集群的特点</h3><ol>
 <li><p>IP负载均衡与负载调度算法</p>
-<p> （）</p>
+<ol>
+<li><p>IP负载均衡技术</p>
+<p>  负载均衡技术有很多实现方案，有<strong>基于DNS域名轮流解析的方法</strong>，有<strong>基于客户端调度访问的方法</strong>，有<strong>基于应用层系统负载的调度方法</strong>，还有<strong>基于IP地址的调度方法</strong>。在这些负载调度算法中，执行效率最高的是IP负载均衡技术。</p>
+<p>  LVS的IP负载均衡技术是通过IPVS模块来实现的。IPVS是LVS集群系统的核心软件，它的主要作用是：安装在Director Server上，同时在Director Server上虚拟出一个IP地址，用户必须通过这个虚拟的IP地址访问服务器。这个虚拟IP一般称为LVS的VIP，即Virtual IP。访问的请求首先经过VIP到达负载调度器，然后由负载调度器从Real Server列表中选择一个服务器节点相应用户的请求。</p>
+<p>  在用户的请求到达负载调度器后，调度器如何请求发送到提供服务的Real Server节点，而Real Server节点如何返回数据给用户，是IPVS实现的重点技术。IPVS实现负载均衡地方式有3种，分别是<strong>NAT</strong>、<strong>TUN</strong>和<strong>DR</strong>。（原书后面有详细介绍，这里就不多写了，有兴趣之后再了解）。</p>
+</li>
+<li><p>负载均衡调度算法</p>
+<p>  动态选择的实现，就是负载调度算法。IPVS实现了8种负载调度算法。分别是，<strong>轮叫调度（Round Robin）</strong>、<strong>加权轮叫调度（Weighted Round Robin）</strong>、<strong>最少连接调度（Least Connections）</strong>、<strong>加权最少连接调度（Weighted Least Connections）</strong>、<strong>基于局部性的最少连接（Locality-Based Least Connections）</strong>、<strong>带复制的基于局部性最少连接（Locality-Based Least Connections with Replication）</strong>、<strong>目标地址散列（Destination Hashing）</strong>和<strong>源地址散列（Source Hashing）</strong>。</p>
+<p>  如果想要进一步了解，请登录<a href="http://zh.linuxvirtualserver.org" target="_blank" rel="noopener">LVS中文站点</a>，查阅更详细的信息。</p>
 </li>
 </ol>
-<h2 id="第三部分-当下集群系统的应用"><a href="#第三部分-当下集群系统的应用" class="headerlink" title="第三部分 当下集群系统的应用"></a>第三部分 当下集群系统的应用</h2>
+</li>
+<li><p>高可用性</p>
+<p> LVS是一个基于内核级别的应用软件，因此具有很高的处理性能。由LVS构建的负载均衡集群系统具有优秀的处理能力，每个服务节点的故障不会影响整个系统的正常使用，又能够实现负载的合理均衡，使应用具有超高负荷的服务能力，可支持上百万个并发连接请求。</p>
+</li>
+<li><p>高可靠性</p>
+<p> LVS负载均衡集群软件已经在企业和学校中得到了很好的普及，国内外很多大型的、关键性的Web站点也都采用了LVS集群软件，所以它的可靠性在实践中得到了很好印证。有很多由LVS构成的负载均衡系统，运行很长时间，从未进行过重新启动。这些都说明了LVS的高稳定性和高可靠性。</p>
+</li>
+<li><p>使用环境</p>
+<p> 目前仅支持Linux和FreeBSD系统作为前端Director Server，但是支持大多数的TCP和UDP协议。支持TCP协议的应用有：HTTP、HTTPS、FTP、SMTP、POP3、IMAP4等等；支持UDP协议的应用有：DNS、NTP、ICP、视频和音频流播放协议等。</p>
+<p> LVS对Real Server的操作系统没有任何限制，Real Server可运行在任何支持TCP/IP的操作系统上，包括Linux，各种UNIX（如FreeBSD、Sun Solaris、HP Unix等），Mac OS和Windows等。</p>
+</li>
+<li><p>开源软件</p>
+<p> LVS集群软件是按GPL（GNU Public License许可证发行的自由软件，因此，使用者可以得到软件的源代码，并且可以根据自己的需要进行各种修改，但是修改必须以GPL方式发行。</p>
+</li>
+</ol>
+<h1 id="第三部分-当下集群系统的应用"><a href="#第三部分-当下集群系统的应用" class="headerlink" title="第三部分 当下集群系统的应用"></a>第三部分 当下集群系统的应用</h1>
       
     </div>
     
@@ -829,7 +853,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#写在前面"><span class="nav-number">1.</span> <span class="nav-text">写在前面</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#第一部分-什么是集群"><span class="nav-number">1.1.</span> <span class="nav-text">第一部分 什么是集群</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景"><span class="nav-number">1.1.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对称多处理系统"><span class="nav-number">1.1.2.</span> <span class="nav-text">对称多处理系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#集群的起源"><span class="nav-number">1.1.3.</span> <span class="nav-text">集群的起源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#集群类型"><span class="nav-number">1.1.4.</span> <span class="nav-text">集群类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#集群的实现"><span class="nav-number">1.1.5.</span> <span class="nav-text">集群的实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第二部分-LVS集群系统"><span class="nav-number">1.2.</span> <span class="nav-text">第二部分 LVS集群系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#项目诞生"><span class="nav-number">1.2.1.</span> <span class="nav-text">项目诞生</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LVS集群的组成与特点"><span class="nav-number">1.2.2.</span> <span class="nav-text">LVS集群的组成与特点</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#LVS-集群的组成"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">LVS 集群的组成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LVS集群的特点"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">LVS集群的特点</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第三部分-当下集群系统的应用"><span class="nav-number">1.3.</span> <span class="nav-text">第三部分 当下集群系统的应用</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#写在前面"><span class="nav-number">1.</span> <span class="nav-text">写在前面</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第一部分-什么是集群"><span class="nav-number">2.</span> <span class="nav-text">第一部分 什么是集群</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">2.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对称多处理系统"><span class="nav-number">2.2.</span> <span class="nav-text">对称多处理系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集群的起源"><span class="nav-number">2.3.</span> <span class="nav-text">集群的起源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集群类型"><span class="nav-number">2.4.</span> <span class="nav-text">集群类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集群的实现"><span class="nav-number">2.5.</span> <span class="nav-text">集群的实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第二部分-LVS集群系统"><span class="nav-number">3.</span> <span class="nav-text">第二部分 LVS集群系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#项目诞生"><span class="nav-number">3.1.</span> <span class="nav-text">项目诞生</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LVS集群的组成与特点"><span class="nav-number">3.2.</span> <span class="nav-text">LVS集群的组成与特点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#LVS-集群的组成"><span class="nav-number">3.2.1.</span> <span class="nav-text">LVS 集群的组成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LVS集群的特点"><span class="nav-number">3.2.2.</span> <span class="nav-text">LVS集群的特点</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第三部分-当下集群系统的应用"><span class="nav-number">4.</span> <span class="nav-text">第三部分 当下集群系统的应用</span></a></li></ol></div>
             
 
           </div>
@@ -864,7 +888,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">187.3k</span>
+    <span title="Site words total count">188.2k</span>
   
 </div>
 
