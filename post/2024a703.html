@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+<meta name="baidu-site-verification" content="ZzhwBFUe1V" />
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/0f81ff2f.js","daovoice")
+  daovoice('init', {
+      app_id: "61c4e5db"
+    });
+  daovoice('update');
+  </script>
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="编程," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="集群技术初识——以Linux负载均衡集群学习为例 写在前面本文主要参考：章文嵩博士所写的Linux服务器集群系统介绍，集群技术（原理篇），高俊峰所著《高性能Linux服务器构建实战》，魔软运维社所著《大规模Linux集群架构最佳实践》。 由于查阅资料的时候不懂得地方太多，所以多数只能从概念上简单理解，如想自己深入理解其中的奥妙，还需要完成本门课程，将基础打好，同时熟悉Linux系统的一些基本情况后">
+<meta name="keywords" content="编程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="操作系统学习——集群技术初识">
+<meta property="og:url" content="http://www.edwardzcn98yx.com/post/2024a703.html">
+<meta property="og:site_name" content="Eddy的个人博客">
+<meta property="og:description" content="集群技术初识——以Linux负载均衡集群学习为例 写在前面本文主要参考：章文嵩博士所写的Linux服务器集群系统介绍，集群技术（原理篇），高俊峰所著《高性能Linux服务器构建实战》，魔软运维社所著《大规模Linux集群架构最佳实践》。 由于查阅资料的时候不懂得地方太多，所以多数只能从概念上简单理解，如想自己深入理解其中的奥妙，还需要完成本门课程，将基础打好，同时熟悉Linux系统的一些基本情况后">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/20190321os1.jpg">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/20190321os2.jpg">
+<meta property="og:updated_time" content="2019-03-22T04:36:19.272Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="操作系统学习——集群技术初识">
+<meta name="twitter:description" content="集群技术初识——以Linux负载均衡集群学习为例 写在前面本文主要参考：章文嵩博士所写的Linux服务器集群系统介绍，集群技术（原理篇），高俊峰所著《高性能Linux服务器构建实战》，魔软运维社所著《大规模Linux集群架构最佳实践》。 由于查阅资料的时候不懂得地方太多，所以多数只能从概念上简单理解，如想自己深入理解其中的奥妙，还需要完成本门课程，将基础打好，同时熟悉Linux系统的一些基本情况后">
+<meta name="twitter:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/20190321os1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'I0P7TBILS9',
+      apiKey: '1cbd304cdb7292372541bc8f3d868016',
+      indexName: 'EddyBlog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.edwardzcn98yx.com/post/2024a703.html"/>
+
+
+
+
+
+  <title>操作系统学习——集群技术初识 | Eddy的个人博客</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/Edwardzcn" class="github-corner" aria-label="View source on Github">
+    <svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true">
+    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+    <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+    <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path>
+    </svg>
+    </a>
+    <style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Eddy的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">相知相遇，即是幸运</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            我的首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于我
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            目录总览
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-reading">
+          <a href="/categories/阅读" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            阅读
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-travelling">
+          <a href="/categories/旅行" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            旅行
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-programming">
+          <a href="/categories/编程" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            编程
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-essay">
+          <a href="/categories/随笔" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            随笔
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            时间线
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-schedule">
+          <a href="/schedule/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />
+            
+            日程表
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/2024a703.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">操作系统学习——集群技术初识</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-21T20:44:27+08:00">
+                2019-03-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统-集群/" itemprop="url" rel="index">
+                    <span itemprop="name">操作系统,集群</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3,814
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  13
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>集群技术初识——以Linux负载均衡集群学习为例</p>
+<h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>本文主要参考：章文嵩博士所写的<a href="http://www.linuxvirtualserver.org/zh/lvs1.html#author1" target="_blank" rel="noopener">Linux服务器集群系统介绍</a>，<a href="https://blog.51cto.com/jiangzhi2013/1222666" target="_blank" rel="noopener">集群技术（原理篇）</a>，高俊峰所著《高性能Linux服务器构建实战》，魔软运维社所著《大规模Linux集群架构最佳实践》。</p>
+<p>由于查阅资料的时候不懂得地方太多，所以多数只能从概念上简单理解，如想自己深入理解其中的奥妙，还需要完成本门课程，将基础打好，同时熟悉Linux系统的一些基本情况后再做深入且仔细的学习。</p>
+<h2 id="第一部分-什么是集群"><a href="#第一部分-什么是集群" class="headerlink" title="第一部分 什么是集群"></a>第一部分 什么是集群</h2><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>我们在计算机网络中已经学习了<strong>吞吐量</strong>的概念，即单位时间内成功地传送数据的数量（以比特、字节、分组等测量），我们这里着重考量接收端的吞吐能力（以带宽衡量）。</p>
+<p>Internet的飞速发展给网络带宽和服务器带来巨大的挑战。从网络技术的发展来看，网络带宽的增长远高于处理器速度和内存访问速度的增长，这是什么意思。数据出了小区门（计算机）在<strong>路途中已经可以上高速公路</strong>了，但是在<strong>小区内的行驶速度却成了难题</strong>，越来越多的瓶颈会出现在服务器端。互联网的海洋中对性能的不断提高，高可伸缩性、高可用性、可管理性、价格有效性的网络服务技术将成为网络服务技术的主导。各种平台下的技术方案应运而生。</p>
+<a id="more"></a>
+<h3 id="对称多处理系统"><a href="#对称多处理系统" class="headerlink" title="对称多处理系统"></a>对称多处理系统</h3><blockquote>
+<p>对称多处理（Symmetric Multi-Processor，简称SMP）是由多个对称的处理器、和通过总线共享的内存和I/O部件所组成的计算机系统。SMP是一种低并行度的结构，是我们通常所说的”紧耦合多处理系统”，</p>
+</blockquote>
+<p>SMP的可扩展能力有限，但也有相应的优点：</p>
+<ul>
+<li>单一系统映像（Single System Image）</li>
+<li>有共享的内存和I/O，</li>
+<li>易编程。</li>
+</ul>
+<p>由于SMP的可扩展能力有限，SMP服务器显然不能满足高可伸缩、高可用网络服务中的负载处理能力不断增长需求。随着负载不断增长，会导致服务器不断地升 级。这种服务器升级有下列不足：</p>
+<ul>
+<li>升级过程繁琐，机器切换会使服务暂时中断，并造成原有计算资源的浪费</li>
+<li>越往高端的服务器，所花费的代价越大；</li>
+<li>三是 SMP服务器是单一故障点（Single Point of Failure），一旦该服务器或应用软件失效，会导致整个服务的中断。</li>
+</ul>
+<h3 id="集群的起源"><a href="#集群的起源" class="headerlink" title="集群的起源"></a>集群的起源</h3><p>集群并不是一个全新的概念，其实早在七十年代计算机厂商和研究机构就开始了对集群系统的研究和开发。由于主要用于科学工程计算，所以这些系统并不为大家所熟知。直到Linux集群的出现，集群的概念才得以广为传播。对集群的研究起源于集群系统的良好的性能可扩展性(scalability)。提高CPU主频和总线带宽是最初提供计算机性能的主要手段。但是这一手段对系统性能的提供是有限的。接着人们通过增加CPU个数和内存容量来提高性能，于是出现了向量机，对称多处理机(SMP)等。但是当CPU的个数超过某一阈值，象SMP这些多处理机系统的可扩展性就变的极差。主要瓶颈在于CPU访问内存的带宽并不能随着CPU个数的增加而有效增长。与SMP相反，集群系统的性能随着CPU个数的增加几乎是线性变化的</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/20190321os1.jpg" alt="1"></p>
+<p>集群恰恰是通过高性能网络或局域网互联的服务器集群正成为实现高可伸缩的、高可用网络服务的有效结构（而非基于单机CPU数量的增长）。这种松耦合结构的服务器集群系统有下列优点：</p>
+<ul>
+<li><p><strong>性能</strong></p>
+<p>网络服务的工作负载通常是大量相互独立的任务，通过一组服务器分而治之，可以获得很高的整体性能。</p>
+</li>
+<li><p><strong>性能/价格比</strong></p>
+<p>组成集群系统的PC服务器或RISC服务器和标准网络设备因为大规模生产降低成本，价格低，具有最高的性能/价格比。若整体性能随着结点数的增长而接近线性增加，该系统的性能/价格比接近于PC服务器。所以，这种松耦合结构比紧耦合的多处理器系统具有更好的性能/价格比。</p>
+</li>
+<li><p><strong>可伸缩性</strong></p>
+<p>集群系统中的结点数目可以增长到几千个，乃至上万个，其伸缩性远超过单台超级计算机。</p>
+</li>
+<li><p><strong>高可用性</strong><br>在硬件和软件上都有冗余，通过检测软硬件的故障，将故障屏蔽，由存活结点提供服务，可实现高可用性。</p>
+</li>
+</ul>
+<p>当然，用服务器集群系统实现可伸缩网络服务也存在很多挑战性的工作：</p>
+<ul>
+<li><p><strong>透明性</strong>（Transparency）<br>对用户透明，如何高效地使得由多个独立计算机组成的松藕合的集群系统构成一个虚拟服务器；客户端应用程序与集群系统交互时，就像与一台高性能、高可用的服务器交互一样，客户端无须作任何修改。部分服务器的切入和切出不会中断服务，这对用户也是透明的。</p>
+</li>
+<li><p><strong>性能</strong>（Performance）</p>
+<p>性能要接近线性加速，这需要设计很好的软硬件的体系结构，消除系统可能存在的瓶颈。将负载较均衡地调度到各台服务器上。</p>
+</li>
+<li><p><strong>高可用性</strong>（Availability）</p>
+<p>需要设计和实现很好的系统资源和故障的监测和处理系统。当发现一个模块失败时，要这模块上提供的服务迁移到其他模块上。在理想状况下，这种迁移是即时的、自动的。</p>
+</li>
+<li><p><strong>可管理性</strong>（Manageability）</p>
+<p>要使集群系统变得易管理，就像管理一个单一映像系统一样。在理想状况下，软硬件模块的插入能做到即插即用（Plug &amp; Play）。</p>
+</li>
+<li><p><strong>可编程性</strong>（Programmability）</p>
+<p>在集群系统上，容易开发应用程序。</p>
+</li>
+</ul>
+<h3 id="集群类型"><a href="#集群类型" class="headerlink" title="集群类型"></a>集群类型</h3><p>通常我们根据需求将集群分为三类：<code>负载均衡集群（Load Balancing LB）</code><br>,<code>高可用性集群（High Availability HA）</code>,<code>高性能也叫科学集群（High Performance HP</code>。</p>
+<p>下面做一下详细的介绍（来源自博客），笔者本人学习中只听闻过负载均衡集群。</p>
+<ul>
+<li><p>负载均衡集群（Load Balancing LB）</p>
+<p>负载均衡集群为企业需求提供了更实用的系统。如名称所暗示的，该系统使负载可以在计算机集群中尽可能平均地分摊处理。该负载可能是需要均衡的应用程序处理负载或网络流量负载。这样的系统非常适合于运行同一组应用程序的大量用户。每个节点都可以处理一部分负载，并且可以在节点之间动态分配负载，以实现平衡。对于网络流量也是如此。通常，网络服务器应用程序接受了太多入网流量，以致无法迅速处理，这就需要将流量发送给在其它节点上运行的网络服务器应用。还可以根据每个节点上不同的可用资源或网络的特殊环境来进行优化。</p>
+</li>
+<li><p>高可用性集群（High Availability HA）</p>
+<p>高可用性集群的出现是为了使集群的整体服务尽可能可用，以便考虑计算硬件和软件的易错性。如果高可用性集群中的主节点发生了故障，那么这段时间内将由次节点代替它。次节点通常是主节点的镜像，所以当它代替主节点时，它可以完全接管其身份，并且因此使系统环境对于用户是一致的。</p>
+</li>
+<li><p>高性能也叫科学集群（High Performance HP）</p>
+<p>为集群开发并行编程应用程序，以解决复杂的科学问题。这是并行计算的基础，尽管它不使用专门的并行超级计算机，这种超级计算机内部由十至上万个独立处理器组成。但它却使用商业系统，如通过高速连接来链接的一组单处理器或双处理器 PC，并且在公共消息传递层上进行通信以运行并行应用程序。因此，您会常常听说又有一种便宜的 Linux 超级计算机问世了。但它实际是一个计算机集群，其处理能力与真的超级计算机相等，通常一套象样的集群配置开销要超过 $100,000。这对一般人来说似乎是太贵了，但与价值上百万美元的专用超级计算机相比还算是便宜的。</p>
+</li>
+</ul>
+<h3 id="集群的实现"><a href="#集群的实现" class="headerlink" title="集群的实现"></a>集群的实现</h3><p>根据网络资料，已知的负载均衡集群可以通过硬件和软件两种方式实现，其他两种集群的实现方式不太清楚。</p>
+<p>硬件方式：即通过专用的硬件（处理机）进行内容的分发调度，一般而言，硬件负载均衡在功能、性能上优于软件方式，不过成本昂贵。而且最重要的是该专用硬件是单点配置，即具有发生单点故障导致整个集群瘫痪的风险。</p>
+<p>软件方式：软件负载均衡解决方案是指在一台或多台服务器相应的操作系统上安装一个或多个附加软件来实现负载均衡，它的优点是基于特定环境，配置简单，使用灵活，成本低廉，可以满足一般的负载均衡需求。</p>
+<p>后面着重以LVS（著名的开源项目）为例来说明LVS集群系统的实现。</p>
+<h2 id="第二部分-LVS集群系统"><a href="#第二部分-LVS集群系统" class="headerlink" title="第二部分 LVS集群系统"></a>第二部分 LVS集群系统</h2><h3 id="项目诞生"><a href="#项目诞生" class="headerlink" title="项目诞生"></a>项目诞生</h3><blockquote>
+<p>针对高可伸缩、高可用网络服务的需求，我们给出了基于IP层和基于内容请求分发的负载平衡调度解决方法，并在Linux内核中实现了这些方法，将一组服务器构成一个实现可伸缩的、高可用网络服务的虚拟服务器。</p>
+<p>虚拟服务器的体系结构如图2所示，一组服务器通过高速的局域网或者地理分布的广域网相互连接，在它们的前端有一个负载调度器（Load Balancer）。负载调度器能无缝地将网络请求调度到真实服务器上，从而使得服务器集群的结构对客户是透明的，客户访问集群系统提供的网络服务就像访 问一台高性能、高可用的服务器一样。客户程序不受服务器集群的影响不需作任何修改。系统的伸缩性通过在服务机群中透明地加入和删除一个节点来达到，通过检 测节点或服务进程故障和正确地重置系统达到高可用性。由于我们的负载调度技术是在Linux内核中实现的，我们称之为Linux虚拟服务器（Linux Virtual Server）。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/20190321os2.jpg" alt="2"></p>
+</blockquote>
+<h3 id="LVS集群的组成与特点"><a href="#LVS集群的组成与特点" class="headerlink" title="LVS集群的组成与特点"></a>LVS集群的组成与特点</h3><p>Linux虚拟服务器（Linux Virtual Server，LVS）是一个由章文嵩开发的一款自由软件，利用LVS可以实现高可用的、可伸缩的Web、Mail、Cache和Media等网络服务。并在此基础上开发支持庞大用户数的、可伸缩的、高可用的电子商务应用。LVS自1998年发展到现在，已经变得比较成熟，目前广泛应用在各种网络服务和电子商务应用中。</p>
+<p>LVS具有很好的可伸缩性、可靠性和可管理性，通过LVS要实现的最终目标是：利用Linux操作系统和LVS集群软件实现一个高可用、高性能、低成本的服务器应用集群。</p>
+<h4 id="LVS-集群的组成"><a href="#LVS-集群的组成" class="headerlink" title="LVS 集群的组成"></a>LVS 集群的组成</h4><p>利用LVS架设的服务器集群由3个部分组成：最前端的是负载均衡层（用Load Balancer表示），中间是服务器群组层（用Server Array表示），底端是数据共享存储层（用Shared Storage表示，这里应该还涉及一些分布式存储？的知识）。在用户看来，整个LVS集群系统的所有内部应用结构都是透明的，最终用户只是在使用一个虚拟服务器提供的高性能服务。</p>
+<p>下面对LVS三个组成部分进行详细的介绍：</p>
+<ul>
+<li>负载均衡层：位于整个集群系统的最前端，由一台或多台负载均衡调度器（Director Server），只有一台调度器的时候我们也将其成为Load Balancer，LVS核心模块IPVS就安装在Director Server上，而Director的主要作用类似于一个路由器，它含有为完成LVS功能所设定的路由表，通过这些路由表把用户的请求分发给服务器群组层的应用服务器（Real Server），整个过程对访问集群的用户是透明的。同时，在Director Server上还要安装对Real Server的监控模块Ldirectord，此模块用于监测各个Real Server服务的健康状况。在Real Server不可用时将其从LVS路由表中剔除，在恢复时重新加入（伸缩性的体现）。</li>
+<li>服务器群组层：由一组实际运行应用服务的机器组成，Real Server可以是Web服务器、Mail服务器、FTP服务器、DNS服务器、视频服务器中的一个或多个，每个Real Server之间通过高速的LAN或分布在各地的WAN相连接。在实际的应用中，Director Server也可以同时兼任Real Server的角色。</li>
+<li>共享存储层：是为所有Real Server提供共享存储空间和内容一致性的存储区域，一般由磁盘阵列设备组成。为了提供内容的一致性，一般可以通过NFS网络文件系统共享数据，但是NFS在繁忙的业务系统中，性能并不是很好，此时可以采用集群文件系统，例如Red Hat的GFS文件系统，Oracle提供的OCFS2文件系统等。</li>
+</ul>
+<p>从整个LVS结构可以看出，Dirctor Server是整个LVS的核心。目前，用于Director Server的操作系统只有Linux和FreeBSD，Linux 2.6内核完全内置了LVS的各个模块，不用任何设置就可以支持LVS功能。</p>
+<h4 id="LVS集群的特点"><a href="#LVS集群的特点" class="headerlink" title="LVS集群的特点"></a>LVS集群的特点</h4><ol>
+<li><p>IP负载均衡与负载调度算法</p>
+<p> （）</p>
+</li>
+</ol>
+<h2 id="第三部分-当下集群系统的应用"><a href="#第三部分-当下集群系统的应用" class="headerlink" title="第三部分 当下集群系统的应用"></a>第三部分 当下集群系统的应用</h2>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tag/编程/" rel="tag"> <i class="fa fa-tag"></i> 编程</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/post/d7435d20.html" rel="next" title="PHP学习——Laravel框架入门">
+                <i class="fa fa-chevron-left"></i> PHP学习——Laravel框架入门
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Edwardzcn" />
+            
+              <p class="site-author-name" itemprop="name">Edwardzcn</p>
+              <p class="site-description motion-element" itemprop="description">这是一个利用（可爱的）Hexo搭建的博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">197</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+            
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">129</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Edwardzcn" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:edwardzcn98@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.google.com" target="_blank" title="Google">
+                      
+                        <i class="fa fa-fw fa-google"></i>Google</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.zhihu.com/people/decades-42/activities" target="_blank" title="Zhihu">
+                      
+                        <i class="fa fa-fw fa-globe"></i>Zhihu</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.instagram.com/edwardz98" target="_blank" title="Instagram">
+                      
+                        <i class="fa fa-fw fa-instagram"></i>Instagram</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.github.com" title="Github" target="_blank">Github</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://yangyangyang.cc" title="yyy的博客" target="_blank">yyy的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://blog.mrcactus.cn" title="syx的博客" target="_blank">syx的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/wawcac-blog" title="SHer_zfc的博客" target="_blank">SHer_zfc的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://csuwangj.github.io/" title="DJ的博客" target="_blank">DJ的博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#写在前面"><span class="nav-number">1.</span> <span class="nav-text">写在前面</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#第一部分-什么是集群"><span class="nav-number">1.1.</span> <span class="nav-text">第一部分 什么是集群</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景"><span class="nav-number">1.1.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对称多处理系统"><span class="nav-number">1.1.2.</span> <span class="nav-text">对称多处理系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#集群的起源"><span class="nav-number">1.1.3.</span> <span class="nav-text">集群的起源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#集群类型"><span class="nav-number">1.1.4.</span> <span class="nav-text">集群类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#集群的实现"><span class="nav-number">1.1.5.</span> <span class="nav-text">集群的实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第二部分-LVS集群系统"><span class="nav-number">1.2.</span> <span class="nav-text">第二部分 LVS集群系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#项目诞生"><span class="nav-number">1.2.1.</span> <span class="nav-text">项目诞生</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LVS集群的组成与特点"><span class="nav-number">1.2.2.</span> <span class="nav-text">LVS集群的组成与特点</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#LVS-集群的组成"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">LVS 集群的组成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LVS集群的特点"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">LVS集群的特点</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第三部分-当下集群系统的应用"><span class="nav-number">1.3.</span> <span class="nav-text">第三部分 当下集群系统的应用</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Edwardzcn</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">187.3k</span>
+  
+</div>
+
+<div class="copyright">
+<span id="busuanzi_container_site_uv"><a class="theme-link" href="http://www.miitbeian.gov.cn">冀ICP备18024730号</a></span>
+<span id="bei_an"> <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641" ><img src="https://www.edwardzcn98yx.com/batb.png" />湘公网安备 43010402000641号</a></span>
+</div>
+
+<div class="powered-by">
+<i class ="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+    本站访客数：<span id="busuanzi_value_site_uv"></span></spam></div>
+
+<!--
+
+   <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+-->
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
