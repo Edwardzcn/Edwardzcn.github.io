@@ -85,7 +85,7 @@
 
 
 
-  <meta name="keywords" content="编程," />
+  <meta name="keywords" content="编程,小论文," />
 
 
 
@@ -97,7 +97,7 @@
 
 
 <meta name="description" content="（可以关注一下 Future Generation Computer Systems） 集群技术初识——以Linux负载均衡集群学习为例 写在前面本文主要参考：章文嵩博士所写的Linux服务器集群系统介绍，集群技术（原理篇），高俊峰所著《高性能Linux服务器构建实战》，魔软运维社所著《大规模Linux集群架构最佳实践》。 由于查阅资料的时候不懂得地方太多，所以多数只能从概念上简单理解，如想自己深">
-<meta name="keywords" content="编程">
+<meta name="keywords" content="编程,小论文">
 <meta property="og:type" content="article">
 <meta property="og:title" content="操作系统学习——集群技术初识">
 <meta property="og:url" content="http://www.edwardzcn98yx.com/post/2024a703.html">
@@ -106,7 +106,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/20190321os1.jpg">
 <meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/20190321os2.jpg">
-<meta property="og:updated_time" content="2019-03-22T05:34:58.876Z">
+<meta property="og:updated_time" content="2019-03-23T05:17:26.514Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="操作系统学习——集群技术初识">
 <meta name="twitter:description" content="（可以关注一下 Future Generation Computer Systems） 集群技术初识——以Linux负载均衡集群学习为例 写在前面本文主要参考：章文嵩博士所写的Linux服务器集群系统介绍，集群技术（原理篇），高俊峰所著《高性能Linux服务器构建实战》，魔软运维社所著《大规模Linux集群架构最佳实践》。 由于查阅资料的时候不懂得地方太多，所以多数只能从概念上简单理解，如想自己深">
@@ -463,7 +463,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  4,721
+                  6,625
                 </span>
               
 
@@ -479,7 +479,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  16
+                  23
                 </span>
               
             </div>
@@ -615,7 +615,47 @@
 <p> LVS集群软件是按GPL（GNU Public License许可证发行的自由软件，因此，使用者可以得到软件的源代码，并且可以根据自己的需要进行各种修改，但是修改必须以GPL方式发行。</p>
 </li>
 </ol>
-<h1 id="第三部分-当下集群系统的应用"><a href="#第三部分-当下集群系统的应用" class="headerlink" title="第三部分 当下集群系统的应用"></a>第三部分 当下集群系统的应用</h1>
+<h1 id="第三部分-集群系统的配套应用"><a href="#第三部分-集群系统的配套应用" class="headerlink" title="第三部分 集群系统的配套应用"></a>第三部分 集群系统的配套应用</h1><h2 id="Heartbeat"><a href="#Heartbeat" class="headerlink" title="Heartbeat"></a>Heartbeat</h2><p>如果负载均衡层（Load Balancer）仅由一台Director Server来实现VIP与集群资源的调度，就会面临单点故障后整个集群系统瘫痪的危险。为了实现LVS负载均衡系统下的高可用性，我们可以使用一些常用的HA软件，实现“双机互备”。</p>
+<p>heartbeat使Linux-HA项目中的一个组件，也是目前开源HA项目中最成功的一个例子，它提供了所有HA软件需要的基本功能，检测集群中的系统服务，在集群的节点间转移共享IP地址的所有者等。自1999年开始到现在，heartbeat在行业内得到了广泛应用，也发行了很多版本，最核心的包括两个部分，其最核心包括心跳监测部分和资源接管部分，心跳监测可以通过网络链路和串口进行，而且支持冗余链路，它们之间相互发送报文来告诉对方自己当前的状态，如果在指定的时间内未受到对方发送的报文，那么就认为对方失效，这时需启动资源接管模块来接管运 行在对方主机上的资源或者服务。</p>
+<h2 id="IP网络存储iSCSI"><a href="#IP网络存储iSCSI" class="headerlink" title="IP网络存储iSCSI"></a>IP网络存储iSCSI</h2><p>主要介绍基于IP SAN的网络存储iSCSI。iSCSI技术以其低廉的构建成本和优秀的存储性能，博得了很多CIO和存储管理员的喜爱，目前陆续进入企业应用领域，推动了企业的存储环境向集中式转变。虽然，目前对于iSCSI应该在什么样的环境中使用还存在着诸多争议，但是iSCSI的前途使光明的，在未来的存储世界中，iSCSI一定会占据重要的席位。</p>
+<h3 id="存储概念的术语"><a href="#存储概念的术语" class="headerlink" title="存储概念的术语"></a>存储概念的术语</h3><p>在存储的世界里，有各种各样的名词和术语，常见的有SCSI、FC、DAS、NAS、SAN等。本节重点介绍与存储相关的术语和知识。</p>
+<ol>
+<li><p>SCSI介绍</p>
+<p> SCSI是小型计算机系统接口（Small Computer System Interface）的简称，SCSI作为输入/输出接口，主要用于硬盘、光盘、磁带机、扫描仪、打印机等设备。</p>
+</li>
+<li><p>FC介绍</p>
+<p> FC是光纤通道（Fiber Channel）的简称，是一种适合于千兆数据传输的、成熟而安全的解决方案，与传统的SCSI技术相比，FC提供更高的数据传输速率，更远的传输距离，更多的设备连接支持，更稳定的性能，更简易的安装。</p>
+</li>
+<li><p>DAS介绍</p>
+<p> DAS是直联式存储（Directed-Attached Storage）的简称，是指将存储设备通过SCSI接口或光纤通道直接连接到一台计算机上，当服务器在地理上比较分散，很暗通过远程进行互连时，DAS是比较好的解决方案。但是这种存储方式只能通过与之连接的主机进行访问，不能实现数据与其他主机的共享，同时，DAS会占用服务器操作系统资源，例如CPU资源、IO资源等，并且数据量越大，占用操作系统资源就越严重。</p>
+</li>
+<li><p>NAS介绍</p>
+<p> 网络接入存储（Network-Attached Storage）简称NAS，它通过网络交换机连接存储系统和服务器，建立专门用于数据存储的私有网络，用户通过TCP/IP协议访问数据，采用业界标准文件共享协议如NFS、HTTP、CIFS来实现基于文件级的数据共享。NAS存储使文件共享访问变得更方便和快捷，并且能很容易地增加存储容量。通过企业化的文件服务器和存储技术相结合，NAS为那些需要共享大量文件数据的企业提供了一个高效的、可靠的、高性价比的解决方案。但是NAS也有一定的局限性，它会受到网络带宽和网络拥堵的影响，在一定程度上限制了NAS的网络传输能力。</p>
+</li>
+<li><p>SAN介绍</p>
+<p> 存储区域网络（Storage Area Network）简称SAN，它是一种通过光纤交换机、光线路由器、光纤集线器等设备将磁盘阵列、磁带等存储设备与相关服务器连接起来的高速专用子网。</p>
+<p> SAN由三个部分组成，分别是连接设备（如路由器、光纤交换机和Hub）、接口（如SCSI、FC）、通信协议（如IP和SCSI）。这三部分再加上存储设备和服务器就构成了一个SAN系统。SAN提供了一个灵活的、高性能的和高扩展性的存储网络环境，它可以更加有效地传输海量地数据块。由于采用了光纤接口，因此SAN还具有更高的带宽，同时，SAN也使统一管理和集中控制实现简化。现在SAN已经广泛应用于ISP和银行等，随着用户业务量增大，SAN的应用前景将越来越光明。</p>
+</li>
+</ol>
+<h3 id="iSCSI的概念"><a href="#iSCSI的概念" class="headerlink" title="iSCSI的概念"></a>iSCSI的概念</h3><p>iSCSI，即internet SCSI，是IETF制定的一项标准，用于将SCSI数据块映射为以太网数据包。从根本上说，它是一种基于IP Storage理论的新型存储技术，该技术将存储行业广泛应用的SCSI接口技术IP网络技术相结合，可以在IP网络上构建SAN。简单地说，iSCSI就是在IP网络上运行SCSI协议的一种网络存储技术。iSCSI最初由Cisco和IBM两家开发，并且得到了广大IP存储技术爱好者的大力支持，这几年迅速的发展壮大。</p>
+<h3 id="FC-SAN与IP-SAN"><a href="#FC-SAN与IP-SAN" class="headerlink" title="FC SAN与IP SAN"></a>FC SAN与IP SAN</h3><p>在iSCSI技术出现后，通过IP技术搭建的存储网络也应运而生，SAN技术也就出现了两种不同的实现方式，即FC SAN与IP SAN。简单来说，以光纤搭建的存储网络就是FC SAN，以SCSI技术搭建的存储网络叫做IP SAN。</p>
+<p>作为SAN的两种实现方式，他们各有优劣，下面从几个方面分别阐述。</p>
+<ol>
+<li>在数据传输方式上，FC SAN与IP SAN都采用块协议方式来完成，这是他们的相同点。</li>
+<li>在传输速度上，就目前传输速率而言，FC SAN（2Gbit/s）最快，iSCSI（1Gbit/s）次之。</li>
+<li>在传输距离上，FC SAN理论上可以达到100公里，而事实上，传输50公里过后，会出现瓶颈。而通过IP网络的iSCSI技术在理论上没有距离的限制，即iSCSI可以进行没有距离限制的数据传输。</li>
+<li>在管理及维护成本上，架设FC SAN网络需要投入很多硬件成本吗，并且需要特定的工具软件进行操作管理，而IP SAN构建成本低廉，由于iSCSI是通过IP网络来传输数据和分配存储资源的，因此只要在现有的网络上进行管理和使用即可，这样就可以省下大笔的管理费用及培训成本。</li>
+</ol>
+<p>当然，iSCSI的推广还存在着安全性、软硬件适配问题等，但是相信在未来的网络存储世界里，IP SAN绝对会拥有一席之地。</p>
+<h3 id="iSCSI的组成"><a href="#iSCSI的组成" class="headerlink" title="iSCSI的组成"></a>iSCSI的组成</h3><p>一个简单的iSCSI系统大致有以下部分组成：</p>
+<ol>
+<li>iSCSI Initiator或者iSCSI HBA</li>
+<li>iSCSI Target</li>
+<li>以太网交换机</li>
+<li>一台或者多台服务器</li>
+</ol>
+<p>详细的软硬件设备介绍（Initiator和Target）以及iSCSI工作原理有兴趣再做进一步研究，在此不再叙述。</p>
+
       
     </div>
     
@@ -632,7 +672,7 @@
       
         <div class="post-tags">
           
-            <a href="/tag/编程/" rel="tag"> <i class="fa fa-tag"></i> 编程</a>
+            <a href="/tag/编程-小论文/" rel="tag"> <i class="fa fa-tag"></i> 编程,小论文</a>
           
         </div>
       
@@ -654,6 +694,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/post/d632e628.html" rel="prev" title="算法与数据结构学习——分块莫队">
+                算法与数据结构学习——分块莫队 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -734,7 +778,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">197</span>
+                  <span class="site-state-item-count">198</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -745,7 +789,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">20</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -756,7 +800,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">129</span>
+                  <span class="site-state-item-count">130</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -853,7 +897,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#写在前面"><span class="nav-number">1.</span> <span class="nav-text">写在前面</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第一部分-什么是集群"><span class="nav-number">2.</span> <span class="nav-text">第一部分 什么是集群</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">2.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对称多处理系统"><span class="nav-number">2.2.</span> <span class="nav-text">对称多处理系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集群的起源"><span class="nav-number">2.3.</span> <span class="nav-text">集群的起源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集群类型"><span class="nav-number">2.4.</span> <span class="nav-text">集群类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集群的实现"><span class="nav-number">2.5.</span> <span class="nav-text">集群的实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第二部分-LVS集群系统"><span class="nav-number">3.</span> <span class="nav-text">第二部分 LVS集群系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#项目诞生"><span class="nav-number">3.1.</span> <span class="nav-text">项目诞生</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LVS集群的组成与特点"><span class="nav-number">3.2.</span> <span class="nav-text">LVS集群的组成与特点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#LVS-集群的组成"><span class="nav-number">3.2.1.</span> <span class="nav-text">LVS 集群的组成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LVS集群的特点"><span class="nav-number">3.2.2.</span> <span class="nav-text">LVS集群的特点</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第三部分-当下集群系统的应用"><span class="nav-number">4.</span> <span class="nav-text">第三部分 当下集群系统的应用</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#写在前面"><span class="nav-number">1.</span> <span class="nav-text">写在前面</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第一部分-什么是集群"><span class="nav-number">2.</span> <span class="nav-text">第一部分 什么是集群</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">2.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对称多处理系统"><span class="nav-number">2.2.</span> <span class="nav-text">对称多处理系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集群的起源"><span class="nav-number">2.3.</span> <span class="nav-text">集群的起源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集群类型"><span class="nav-number">2.4.</span> <span class="nav-text">集群类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集群的实现"><span class="nav-number">2.5.</span> <span class="nav-text">集群的实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第二部分-LVS集群系统"><span class="nav-number">3.</span> <span class="nav-text">第二部分 LVS集群系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#项目诞生"><span class="nav-number">3.1.</span> <span class="nav-text">项目诞生</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LVS集群的组成与特点"><span class="nav-number">3.2.</span> <span class="nav-text">LVS集群的组成与特点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#LVS-集群的组成"><span class="nav-number">3.2.1.</span> <span class="nav-text">LVS 集群的组成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LVS集群的特点"><span class="nav-number">3.2.2.</span> <span class="nav-text">LVS集群的特点</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第三部分-集群系统的配套应用"><span class="nav-number">4.</span> <span class="nav-text">第三部分 集群系统的配套应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Heartbeat"><span class="nav-number">4.1.</span> <span class="nav-text">Heartbeat</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IP网络存储iSCSI"><span class="nav-number">4.2.</span> <span class="nav-text">IP网络存储iSCSI</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#存储概念的术语"><span class="nav-number">4.2.1.</span> <span class="nav-text">存储概念的术语</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#iSCSI的概念"><span class="nav-number">4.2.2.</span> <span class="nav-text">iSCSI的概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FC-SAN与IP-SAN"><span class="nav-number">4.2.3.</span> <span class="nav-text">FC SAN与IP SAN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#iSCSI的组成"><span class="nav-number">4.2.4.</span> <span class="nav-text">iSCSI的组成</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -888,7 +932,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">188.2k</span>
+    <span title="Site words total count">190.2k</span>
   
 </div>
 
@@ -1134,7 +1178,7 @@
         }
       });
     </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -1142,4 +1186,4 @@
 
   
 
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
