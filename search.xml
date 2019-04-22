@@ -1,6 +1,273 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[【洛谷-P2756】解题报告（二分图最大匹配）]]></title>
+    <url>%2Fpost%2Fd6212e2f.html</url>
+    <content type="text"><![CDATA[原始题目P2756 飞行员配对方案问题 题目大意给定两个集合，存在一些连接两个集合的边表示配合，来自不同集合的一对元素构成一个配对，求最大的配对数量。 解题思路集合内无边，所以构成二分图，求二分图的最大匹配。 解题代码12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;typedef pair&lt;int, int&gt; pii;typedef pair&lt;string, string&gt; pss;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se second#define mp make_pair#define np next_permutation#define pb push_back#define INF 0x3f3f3f3fconst int maxn = 1e3 + 5;vi e[maxn];int n, m;bitset&lt;maxn&gt; v;int fa[maxn], ans;int dfs(int x)&#123; rep(i, 0, e[x].size()) &#123; int y = e[x][i]; if (v[y]) continue; v[y] = 1; if (!fa[y] || dfs(fa[y])) &#123; fa[y] = x; return 1; &#125; &#125; return 0;&#125;void init()&#123; rep(i, 0, maxn) e[i].clear(); memset(fa, 0, sizeof(fa)); v.reset(); ans = 0;&#125;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; m &gt;&gt; n) &#123; init(); int a, b; while (cin &gt;&gt; a &gt;&gt; b &amp;&amp; a != -1) &#123; e[a].pb(n + b); e[n + b].pb(a); &#125; rep(i, 1, m + 1) &#123; v.reset(); ans += dfs(i); &#125; if (ans == 0) &#123; cout &lt;&lt; "No Solution!" &lt;&lt; endl; continue; &#125; cout &lt;&lt; ans &lt;&lt; endl; rep(i, n + 1, n + n + 1) &#123; if (fa[i] != 0) cout &lt;&lt; fa[i] &lt;&lt; " " &lt;&lt; i - n &lt;&lt; endl; &#125; &#125;&#125; 收获与反思搬运定义 图的匹配相关图的匹配：任意两条边都没有公共端点的边的集合被称为图的一组匹配。 二分图最大匹配：在二分图中，包含边数最多的一组匹配被称为二分图的最大匹配。 对于任意一组匹配 $S$ （边集），属于 $S$ 的边被称为匹配边，不属于 $S$ 的边被称为非匹配边。匹配边的端点被称为匹配点，其他节点被称为非匹配点。 如果二分图中存在一条连接两个非匹配点的路径 ，使得非匹配边与匹配边在路径上交替出现，那么称该路径是匹配 $S$ 的增广路（也称交错路）。 增广路的性质 长度为奇数 奇数边是非匹配边，偶数边是匹配边。 如果把路径上所有边的状态（是否为匹配边）取反，那么得到的新的边集 $S’$ 仍然是一组匹配，并且匹配的边数增加了 $1$ 。 匈牙利算法（增光路算法）主要过程： 设 $S$为空集，即所有边都是非匹配边。 寻找增广路 path ，把 path 上所有边的匹配状态取反，得到一个更大的匹配 $S’$。（利用增光路性质3） 重复第 2 步，直至图中不存在增广路。 寻找增广路依次尝试给每一个左部节点 xx 寻找一个匹配的右部节点 yy 。 dfs方法。 常有两种写法 单标记，邻接表写法 123456789101112131415int dfs(int x)&#123; rep(i, 0, e[x].size()) &#123; int y = e[x][i]; if (v[y]) continue; v[y] = 1; if (!fa[y] || dfs(fa[y])) &#123; fa[y] = x; return 1; &#125; &#125; return 0;&#125; 双标记，数组写法 123456789101112int dfs(int x)&#123; rep(i,0,n)&#123; if(!mmp[x][i] || v[i]) continue; v[i] =1; if(!fa[i] || dfs(fa[i]))&#123; fa[i] = x; fa[x] = i; //双标记 return 1; &#125; &#125; return 0;&#125; 双标记对于访问二分图里所有点得到的匹配是实际值，单标记访问所有点得到的匹配是2倍，如果访问一个集合点则是实际值，单标记更多用于两集和已被分隔开的情况。]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>2019春季训练</tag>
+        <tag>二分图</tag>
+        <tag>最大匹配</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P2104】解题报告（模拟）]]></title>
+    <url>%2Fpost%2F61642081.html</url>
+    <content type="text"><![CDATA[原始题目P2104 二进制 题目大意模拟二进制运算，保证最高位不改变，输入初始与运算，输出结果。 解题思路vector模拟栈操作： ‘*’入栈0 ‘\’出栈 ‘+’则末尾++，然后更新 ‘-‘则末尾—，然后更新 解题代码12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667// 这个题用vector ++v.back() 比 ++v[v.size()-1] 跑的要慢 有些奇怪 值得探索一下#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;typedef pair&lt;int, int&gt; pii;typedef pair&lt;string, string&gt; pss;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se second#define mp make_pair#define pb push_back#define all(x) x.begin(), x.end()#define endl '\n'vi v;int n, m;string op;int main()&#123; ios::sync_with_stdio(false); int temp; while (cin &gt;&gt; n &gt;&gt; m) &#123; cin &gt;&gt; op; rep(i, 0, n) v.pb(op[i] - '0'); cin &gt;&gt; op; rep(i, 0, m) &#123; if (op[i] == '*') &#123; v.pb(0); &#125; else if (op[i] == '/') &#123; v.pop_back(); &#125; else if (op[i] == '+') &#123; ++v.back(); per(i, 0, v.size()) &#123; if (v[i] == 2) &#123; v[i] = 0; ++v[i - 1]; &#125; else break; &#125; &#125; else if (op[i] == '-') &#123; --v.back(); per(i, 0, v.size()) &#123; if (v[i] &lt; 0) &#123; v[i] = 1; --v[i - 1]; &#125; else break; &#125; &#125; &#125; // cout &lt;&lt; v[0]; rep(i, 0, v.size()) &#123; cout &lt;&lt; v[i]; &#125; cout &lt;&lt; endl; &#125;&#125; 收获与反思vector的一些操作pop_back(),push_back().back()等熟悉一下，有时候很方便。]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>2019春季训练</tag>
+        <tag>洛谷</tag>
+        <tag>imitation</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1914】解题报告（字符串）]]></title>
+    <url>%2Fpost%2F4c842940.html</url>
+    <content type="text"><![CDATA[原始题目P1414 小书童——密码 题目大意移位密码还原 解题思路水题 解题代码12345678910111213141516171819202122232425262728#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;const int maxn = 1e5 + 5;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se second#define pb push_back#define np next_permutation#define mp make_pair#define endl '\n'string s;int n;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; n &gt;&gt; s) &#123; rep(i, 0, s.length()) &#123; cout &lt;&lt; char('a' + ((s[i] - 'a') + n) % 26); &#125; cout &lt;&lt; endl; &#125;&#125; 收获与反思无]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>2019春季训练</tag>
+        <tag>字符串</tag>
+        <tag>洛谷</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1909】解题报告（水题）]]></title>
+    <url>%2Fpost%2F7a1fb89c.html</url>
+    <content type="text"><![CDATA[原始题目P1909 买铅笔 题目大意三种笔个数，单价不同，求买超过n支铅笔最少花费。 解题思路水题 解题代码123456789101112131415161718192021222324252627282930313233343536373839404142#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;typedef pair&lt;int, int&gt; pii;typedef pair&lt;string, string&gt; pss;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se second#define all(x) x.begin(), x.end()#define mp make_pair#define pb push_back#define np next_permutation#define INF 0x3f3f3f3f#define EPS 1e-8#define endl '\n'int a[10], b[10], n, ans[3], cnt;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; n) &#123; rep(i, 0, 3) &#123; cin &gt;&gt; a[i] &gt;&gt; b[i]; ans[i] = ceil(1.0 * n / a[i]) * b[i]; &#125; int minp = ans[0]; rep(i, 1, 3) &#123; if (ans[i] &lt; minp) &#123; minp = ans[i]; &#125; &#125; cout &lt;&lt; minp &lt;&lt; endl; &#125;&#125; 收获与反思无]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>2019春季训练</tag>
+        <tag>洛谷</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1781】解题报告（排序）]]></title>
+    <url>%2Fpost%2Fbeeeff10.html</url>
+    <content type="text"><![CDATA[原始题目P1781 宇宙总统 题目大意输出出现次数最多的编号 解题思路排序 解题代码123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;const int maxn = 1e5 + 5;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se second#define pb push_back#define np next_permutation#define mp make_pair#define endl '\n'struct node &#123; string s; int id;&#125;;node a[maxn];bool cmp(node a, node b)&#123; if (a.s.length() != b.s.length()) &#123; return a.s.length() &gt; b.s.length(); &#125; else &#123; int len = a.s.length(); rep(i, 0, len) &#123; if (a.s[i] != b.s[i]) return a.s[i] &gt; b.s[i]; &#125; &#125;&#125;int n;string ss;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; n) &#123; rep(i, 1, n + 1) &#123; cin &gt;&gt; ss; a[i].s = ss; a[i].id = i; &#125; sort(a + 1, a + 1 + n, cmp); cout &lt;&lt; a[1].id &lt;&lt; endl &lt;&lt; a[1].s &lt;&lt; endl; &#125;&#125;]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>2019春季训练</tag>
+        <tag>洛谷</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1716】解题报告（排序）]]></title>
+    <url>%2Fpost%2F773c10c5.html</url>
+    <content type="text"><![CDATA[原始题目P1716 双调序列 题目大意双调序列的第一个数是n个整数中的最大数，第二个数是n个整数中的最小数，第三个数是n个数中的第二大数，第四个数是n个数中的第二小数……取过的数不能再取，依次类推，直到结束。 给定序列，输出双调序列。 解题思路排序以后正反输出。 解题代码123456789101112131415161718192021222324252627282930313233343536#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;typedef pair&lt;int, int&gt; pii;typedef pair&lt;string, string&gt; pss;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define pb push_back#define np next_permutation#define mp make_pairconst int maxn = 1e5 + 5;ll a[maxn];int n;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; n) &#123; rep(i, 0, n) cin &gt;&gt; a[i]; sort(a, a + n); for (int i = n - 1, j = 0;; i--, j++) &#123; if (i == j) &#123; cout &lt;&lt; a[i] &lt;&lt; endl; break; &#125; if (i &lt; j) break; cout &lt;&lt; a[i] &lt;&lt; endl &lt;&lt; a[j] &lt;&lt; endl; &#125; // cout &lt;&lt; endl; &#125;&#125; 收获与反思无]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1603】解题报告（排序）]]></title>
+    <url>%2Fpost%2F2f392380.html</url>
+    <content type="text"><![CDATA[原始题目P1603 斯诺登的密码 题目大意找出英文字母表示的数字平方后%100排成一排，输出排列中最小的（开头去0）。 解题思路排序后输出，头部的0。 解题代码123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;typedef pair&lt;int, int&gt; pii;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define pb push_back#define mp make_pair#define INF 0x3f3f3f3f#define EPS 1e-8#define all(x) x.begin(), x.end()const int maxn = 1e3 + 5;map&lt;string, int&gt; dic;void init()&#123; dic.clear(); dic.insert(mp("one", (1 * 1 % 100))); dic.insert(mp("two", (2 * 2 % 100))); dic.insert(mp("three", (3 * 3 % 100))); dic.insert(mp("four", (4 * 4 % 100))); dic.insert(mp("five", (5 * 5 % 100))); dic.insert(mp("six", (6 * 6 % 100))); dic.insert(mp("seven", (7 * 7 % 100))); dic.insert(mp("eight", (8 * 8 % 100))); dic.insert(mp("nine", (9 * 9 % 100))); dic.insert(mp("ten", (10 * 10 % 100))); dic.insert(mp("eleven", (11 * 11 % 100))); dic.insert(mp("twelve", (12 * 12 % 100))); dic.insert(mp("thirteen", (13 * 13 % 100))); dic.insert(mp("fourteen", (14 * 14 % 100))); dic.insert(mp("fifteen", (15 * 15 % 100))); dic.insert(mp("sixteen", (16 * 16 % 100))); dic.insert(mp("seventeen", (17 * 17 % 100))); dic.insert(mp("eighteen", (18 * 18 % 100))); dic.insert(mp("nineteen", (19 * 19 % 100))); dic.insert(mp("twenty", (20 * 20 % 100))); //a both another first second third dic.insert(mp("a", 1)); dic.insert(mp("both", 4)); dic.insert(mp("another", 1)); dic.insert(mp("first", 1)); dic.insert(mp("second", 4)); dic.insert(mp("third", 9));&#125;string ss;int a[maxn], cnt;int main()&#123; ios::sync_with_stdio(false); init(); while (getline(cin, ss)) &#123; cnt = 0; stringstream st(ss.substr(0, ss.length() - 1)); string temp; while (st &gt;&gt; temp) &#123; transform(all(temp), temp.begin(), ::tolower); if (dic.count(temp) != 0) &#123; a[cnt++] = dic[temp]; &#125; &#125; // cout &lt;&lt; "# cnt=" &lt;&lt; cnt &lt;&lt; endl; // rep(i, 0, cnt) cout &lt;&lt; a[i] &lt;&lt; " "; // cout &lt;&lt; endl; sort(a, a + cnt); int flag = 0; int i = 0; for (; i &lt; cnt; i++) &#123; if (a[i] == 0) continue; flag = 1; cout &lt;&lt; a[i]; i++; break; &#125; if (flag == 0) &#123; cout &lt;&lt; 0 &lt;&lt; endl; continue; &#125; for (i; i &lt; cnt; i++) &#123; cout &lt;&lt; setw(2) &lt;&lt; setfill('0') &lt;&lt; a[i]; &#125; cout &lt;&lt; endl; &#125;&#125; 收获与反思无]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>2019春季训练</tag>
+        <tag>洛谷</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1598】解题报告（字符串）]]></title>
+    <url>%2Fpost%2F541f3acd.html</url>
+    <content type="text"><![CDATA[原始题目P1598 垂直柱状图 题目大意写一个程序从输入文件中去读取四行大写字母（全都是大写的，每行不超过100个字符），然后用柱状图输出每个字符在输入文件中出现的次数 解题思路统计各字母出现频次以及频次最大值（作为高），然后按层从高低扫描，层≤该字母出现频次的时候输出。 解题代码1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;const int maxn = 1e5 + 5;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se second#define pb push_back#define np next_permutation#define mp make_pair#define endl '\n'int a[maxn];string s;int mmax;int main()&#123; ios::sync_with_stdio(false); mmax = -1; rep(i, 0, 4) &#123; getline(cin, s); rep(i, 0, s.length()) &#123; if (s[i] &gt;= 'A' &amp;&amp; s[i] &lt;= 'Z') &#123; a[s[i] - 'A']++; if (a[s[i] - 'A'] &gt; mmax) mmax = a[s[i] - 'A']; &#125; &#125; &#125; // rep(i, 0, 26) cout &lt;&lt; "#" &lt;&lt; a[i] &lt;&lt; endl; per(i, 1, mmax + 1) &#123; int target = 25; per(j, 0, 26) &#123; if (a[j] &gt;= i) &#123; target = j; break; &#125; &#125; if (a[0] &gt;= i) cout &lt;&lt; "*"; else cout &lt;&lt; " "; rep(j, 1, target + 1) &#123; if (a[j] &gt;= i) cout &lt;&lt; " *"; else cout &lt;&lt; " "; &#125; cout &lt;&lt; endl; &#125; cout &lt;&lt; 'A'; rep(i, 1, 26) cout &lt;&lt; " " &lt;&lt; char('A' + i); cout &lt;&lt; endl; cin &gt;&gt; mmax;&#125; 收获与反思主要输出格式]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>2019春季训练</tag>
+        <tag>字符串</tag>
+        <tag>洛谷</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1583】解题报告（排序）]]></title>
+    <url>%2Fpost%2Fc544c33a.html</url>
+    <content type="text"><![CDATA[原始题目P1603 斯诺登的密码 题目大意第一次根据初始权值分为10类（模10），第i类的人将会额外得到$E[i]$的权值，输出最终权值最大的k个人。 解题思路两次排序。 解题代码12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;const int maxn = 1e5 + 5;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se second#define pb push_back#define np next_permutation#define mp make_pair#define endl '\n'int n, k;struct node &#123; int w, id;&#125;;node a[maxn];bool cmp(node a, node b)&#123; if (a.w != b.w) return a.w &gt; b.w; else return a.id &lt; b.id;&#125;int add[20];int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; n &gt;&gt; k) &#123; rep(i, 1, 10 + 1) cin &gt;&gt; add[i]; rep(i, 1, n + 1) &#123; cin &gt;&gt; a[i].w; a[i].id = i; &#125; sort(a + 1, a + n + 1, cmp); rep(i, 1, n + 1) &#123; a[i].w += add[(i - 1) % 10 + 1]; &#125; sort(a + 1, a + n + 1, cmp); cout &lt;&lt; a[1].id; rep(i, 2, k + 1) &#123; cout &lt;&lt; " " &lt;&lt; a[i].id; &#125; cout &lt;&lt; endl; &#125;&#125; 收获与反思无]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1553】解题报告（字符串）]]></title>
+    <url>%2Fpost%2Fa2966b48.html</url>
+    <content type="text"><![CDATA[原始题目P1553 数字反转（升级版） 题目大意小数，分数，百分数，整数按照对应的规则反转后输出。 解题思路按要求模拟操作就行 解题代码1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;typedef pair&lt;int, int&gt; pii;typedef pair&lt;string, string&gt; pss;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se second#define mp make_pair#define pb push_back#define all(x) x.begin(), x.end()const int maxn = 1e5 + 5;string s, s1, s2;//写成函数形式void checkprint(string sss)&#123; reverse(all(sss)); int flag = 1; rep(i, 0, sss.length()) &#123; if (sss[i] == '0' &amp;&amp; flag) continue; cout &lt;&lt; sss[i]; flag = 0; &#125; if (flag) cout &lt;&lt; 0;&#125;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; s) &#123; int temp1 = s.find('/'); int temp2 = s.find('.'); int temp3 = s.find('%'); if (temp1 != -1) &#123; s1 = s.substr(0, temp1); s2 = s.substr(temp1 + 1, s.length() - s1.length() - 1); checkprint(s1); cout &lt;&lt; "/"; checkprint(s2); cout &lt;&lt; endl; &#125; else if (temp2 != -1) &#123; s1 = s.substr(0, temp2); checkprint(s1); cout &lt;&lt; "."; s2 = s.substr(temp2 + 1, s.length() - s1.length() - 1); int tempi = 0; while (tempi &lt; s2.length() &amp;&amp; s2[tempi] == '0') tempi++; if (tempi == s2.length()) cout &lt;&lt; 0 &lt;&lt; endl; else &#123; string s3 = s2.substr(tempi, s2.length() - tempi); reverse(all(s3)); cout &lt;&lt; s3 &lt;&lt; endl; &#125; &#125; else if (temp3 != -1) &#123; s1 = s.substr(0, temp3); checkprint(s1); cout &lt;&lt; "%" &lt;&lt; endl; &#125; else &#123; checkprint(s); cout &lt;&lt; endl; &#125; &#125;&#125; 收获与反思注意细节，印象中去0还有百分数开始写崩了。]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1540】解题报告（模拟）]]></title>
+    <url>%2Fpost%2Fd2760377.html</url>
+    <content type="text"><![CDATA[原始题目P1540 机器翻译 题目大意给出内存容量和查找数列，求访问外存数量 解题思路队列模拟（事后想想不需要，记录当前容量就行），vis数组记录状态。 解题代码12345678910111213141516171819202122232425262728293031323334353637383940414243#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;const int maxn = 1e5 + 5;#define rep(i, a, b) for (int i = a; i &lt; b; ++i)#define per(i, a, b) for (int i = b - 1; i &gt;= a; --i)int vis[maxn];queue&lt;int&gt; q;int n, m;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; n &gt;&gt; m) &#123; // s.clear(); memset(vis, 0, sizeof(vis)); int ans = 0; rep(i, 0, m) &#123; int a; cin &gt;&gt; a; if (vis[a]) continue; else &#123; if (q.size() == n) &#123; int temp = q.front(); q.pop(); vis[temp] = 0; vis[a] = 1; q.push(a); ans++; &#125; else &#123; q.push(a); vis[a] = 1; ans++; &#125; &#125; &#125; cout &lt;&lt; ans &lt;&lt; endl; &#125; return 0;&#125; 收获与反思无]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1525】解题报告（二分图，二分）]]></title>
+    <url>%2Fpost%2F749ff2bc.html</url>
+    <content type="text"><![CDATA[原始题目P1525 关押罪犯 题目大意N个罪犯，M对矛盾关系，分成两个集合，同一集合的里有矛盾关系的会产生矛盾，冲突事件影响力为当前两个集合中矛盾关系值得最大值，求怎么分配使得冲突最小 解题思路 二分图+二分答案 博客中作为二分图的练习题，二分冲突影响（答案），判断在该条件下能否构成二分图（矛盾值小于判断答案的就忽略该条边）。 并查集+贪心 按值从大大小排序所有的冲突值，然后按序判断当前边连接两点是否已在一个集合中，若在则跳出判断输出当前冲突变得值，若在则秉持敌人的敌人当朋友进行Merge，可以证明，Merge到的集合内就算产生了昕的冲突，由于我们是按冲突值从大到小访问的，矛盾（该变会在更靠前位置拆分，不会出现这种情况）。而且满足最优子结构，全局解必然包括当前的最优解。 解题代码二分图+二分答案 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980818283848586878889909192#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;typedef pair&lt;int, int&gt; pii;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define pb push_back#define mp make_pair#define EPS 1e-8#define INF 0x3f3f3f3f3f#define endl '\n'#define all(x) x.bgein(), x.end()const int maxn = 2e4 + 5;const int maxm = 2e5 + 5;struct Edge &#123; int u, v, w; Edge(int _u, int _v, int _w) : u(_u) , v(_v) , w(_w) &#123; &#125; Edge() &#123;&#125; bool operator&lt;(const Edge b) &#123; return w &gt; b.w; &#125;&#125; p[maxm];vector&lt;pii&gt; e[maxn];int n, m, k, t, vis[maxn];inline void init()&#123; rep(i, 0, n + 1) e[i].clear();&#125;bool dfs(int x, int co)&#123; vis[x] = co; rep(i, 0, e[x].size()) &#123; int y = e[x][i].first; if (vis[y] == co) return 0; else if (!vis[y] &amp;&amp; !dfs(y, 3 - co)) return 0; &#125; return 1;&#125;inline bool pd(int mid)&#123; init(); memset(vis, 0, sizeof(vis)); rep(i, 0, m) &#123; if (p[i].w &lt;= mid) break; e[p[i].u].pb(mp(p[i].v, p[i].w)); e[p[i].v].pb(mp(p[i].u, p[i].w)); &#125; rep(i, 1, n + 1) &#123; if (!vis[i] &amp;&amp; !dfs(i, 1)) return 0; &#125; return 1;&#125;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; n &gt;&gt; m) &#123; rep(i, 0, m) &#123; cin &gt;&gt; p[i].u &gt;&gt; p[i].v &gt;&gt; p[i].w; &#125; sort(p, p + m); int l = 0, r = p[0].w, mid; while (l &lt; r) &#123; mid = (l + r) &gt;&gt; 1; if (pd(mid)) r = mid; else l = mid + 1; &#125; cout &lt;&lt; l &lt;&lt; endl; &#125;&#125; 并查集（待补充） 收获与反思二分图判定染色法（待补充）]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>2019春季训练</tag>
+        <tag>二分</tag>
+        <tag>并查集</tag>
+        <tag>待补充</tag>
+        <tag>洛谷</tag>
+        <tag>二分图</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1243】解题报告（排序）]]></title>
+    <url>%2Fpost%2F89d4cd71.html</url>
+    <content type="text"><![CDATA[原始题目P1243 排序集合 题目大意对于集合 $N={1,2,⋯,n} $的子集，输出第k小的集合。小于关系为字典序。 解题思路这个题不是二进制位序，回溯根据第n+1-k大输出对应位置，可以提前预处理出后面元素数的前缀和（1,3,7,15…），然后用lower_bound确定位置。 解题代码1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;typedef pair&lt;int, int&gt; pii;typedef pair&lt;string, string&gt; pss;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se second#define pb push_back#define np next_permutation#define mp make_pair#define endl '\n'#define INF 0x3f3f3f3fconst int maxn = 1e5 + 5;ll a[maxn], presum[maxn];void init()&#123; a[0] = presum[0] = 1; rep(i, 1, 33) &#123; a[i] = a[i - 1] * 2; presum[i] = presum[i - 1] + a[i]; &#125;&#125;ll n, t;vi ans;void solve(ll start, ll len, ll cnt)&#123; // cout &lt;&lt; "(" &lt;&lt; start &lt;&lt; " " &lt;&lt; len &lt;&lt; " " &lt;&lt; cnt &lt;&lt; ")" &lt;&lt; endl; int index = lower_bound(presum, presum + len, cnt) - presum; // cout &lt;&lt; "len-index=" &lt;&lt; len - index &lt;&lt; endl; if (cnt == presum[index - 1]) &#123; ans.pb(start + len - index + 1); return; &#125; if (index == len) &#123; return; &#125; ans.pb(start + len - index); solve(start + len - index, index, cnt - presum[index - 1]);&#125;int main()&#123; // ios::sync_with_stdio(false); init(); while (cin &gt;&gt; n &gt;&gt; t) &#123; ans.clear(); ll temp = 2; rep(i, 1, n) temp *= 2; solve(0, n, temp + 1 - t); if (!ans.size()) &#123; cout &lt;&lt; "0" &lt;&lt; endl; continue; &#125; cout &lt;&lt; ans[0]; rep(i, 1, ans.size()) &#123; cout &lt;&lt; " " &lt;&lt; ans[i]; &#125; cout &lt;&lt; endl; &#125;&#125; 收获与反思这个题感觉应该有更好的做法]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>2019春季训练</tag>
+        <tag>待补充</tag>
+        <tag>洛谷</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1200】解题报告（字符串）]]></title>
+    <url>%2Fpost%2Fb133bf62.html</url>
+    <content type="text"><![CDATA[原始题目P1200 [USACO1.1]你的飞碟在这儿 题目大意字母’A’~’Z’对应1到26，字符串hash为对应值相乘mod47，若两字符串相等则输出”GO”,否则”STAY”. 解题思路字符串hash 解题代码123456789101112131415161718192021222324252627282930313233343536373839404142#include &lt;bits/stdc++.h&gt;#include &lt;sstream&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;typedef pair&lt;int, int&gt; pii;typedef pair&lt;string, string&gt; pss;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se second#define pb push_back#define mp make_pair#define np next_permutation#define INF 0x3f3f3f3f#define EPS 1e-8#define endl '\n'string a, b;const int mod = 47;const int maxn = 1e5 + 5;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; a &gt;&gt; b) &#123; int ans = 1, ans2 = 1; rep(i, 0, a.length()) &#123; ans = (ans * (a[i] - 'A' + 1)) % mod; &#125; rep(i, 0, b.length()) &#123; ans2 = (ans2 * (b[i] - 'A' + 1)) % mod; &#125; if (ans == ans2) cout &lt;&lt; "GO" &lt;&lt; endl; else cout &lt;&lt; "STAY" &lt;&lt; endl; &#125;&#125; 收获与反思字符串hash入门]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>2019春季训练</tag>
+        <tag>洛谷</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1177】解题报告（排序）]]></title>
+    <url>%2Fpost%2F6eaa7771.html</url>
+    <content type="text"><![CDATA[原始题目P1177 【模板】快速排序 题目大意快排模板不解释 解题思路快排模板不解释 解题代码1234567891011121314151617181920212223242526272829303132333435363738394041#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;const int maxn = 1e5 + 5;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se second#define pb push_back#define np next_permutation#define mp make_pairint a[maxn], n, vis[maxn];int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; n) &#123; memset(vis, 0, sizeof(vis)); int cnt = 0; rep(i, 0, n) &#123; int temp; cin &gt;&gt; temp; if (!vis[temp]) &#123; a[cnt++] = temp; vis[temp] = 1; &#125; &#125; sort(a, a + cnt); cout &lt;&lt; cnt &lt;&lt; "\n"; cout &lt;&lt; a[0]; rep(i, 1, cnt) &#123; cout &lt;&lt; " " &lt;&lt; a[i]; &#125; cout &lt;&lt; "\n"; &#125;&#125; 收获与反思无]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>2019春季训练</tag>
+        <tag>洛谷</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【Aizu-ITP2_11_C】解题报告（二进制枚举）]]></title>
+    <url>%2Fpost%2F88a7282d.html</url>
+    <content type="text"><![CDATA[原始题目Aizu-ITP2_11_C Aizu原始题面 Aizu-ITP2_11_C Vj题面 题目大意给定集合大小，同时给定一个子集k，要求输出子集是该子集k的子集。同时输出其在原集合所有子集中的二进制序编号，根据二进制编号从小到大依次输出符合的子集。 解题思路本题$n≤28$还可以枚举全部子集计数求其编号，一一枚举原集合子集计数然后判断会超时。 直接枚举给定子集k的子集，但是要根据其中元素计算在原集合所有子集中的二进制序编号。 实际上，编号就是该元素放在原集合子集中的二进制表示，由于题目本身就是原数字，所以直接二进制位运算可计算出其序号sum += (1 &lt;&lt; a[j])。 解题代码1234567891011121314151617181920212223242526272829303132333435363738394041424344#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;ll a[100], n, m;#define rep(i, a, n) for (ll i = a; i &lt; n; ++i)#define per(i, a, n) for (ll i = n - 1; i &gt;= a; --i)void print_subset(ll n, ll m)&#123; rep(i, 0, (1 &lt;&lt; m)) &#123; ll sum = 0; ll temp[100]; int ccnt = 0; rep(j, 0, m) &#123; //注意位运算的顺序 if (((1 &lt;&lt; j) &amp; i)) &#123; temp[ccnt++] = a[j]; sum += (1 &lt;&lt; a[j]); &#125; &#125; cout &lt;&lt; sum &lt;&lt; ":"; rep(j, 0, ccnt) &#123; cout &lt;&lt; " " &lt;&lt; temp[j]; &#125; cout &lt;&lt; endl; &#125;&#125;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; n) &#123; cin &gt;&gt; m; rep(i, 0, m) cin &gt;&gt; a[i]; sort(a, a + m); print_subset(n, m); &#125;&#125; 收获与反思直接根据元素构成计算其在全部子集中的序号。]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>Aizu</tag>
+        <tag>2019春季训练</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【Aizu-ITP2_11_B】解题报告（二进制枚举）]]></title>
+    <url>%2Fpost%2F8573f32.html</url>
+    <content type="text"><![CDATA[原始题目Aizu-ITP2_11_B Aizu原始题面 Aizu-ITP2_11_B Vj题面 题目大意给定集合大小，同时给定一个子集k，要求输出子集包含该子集k。同时输出其在原集合所有子集中的二进制序编号，根据二进制编号从小到大依次输出符合的子集。 解题思路本题$n≤18$还可以枚举全部子集计数求其编号，对于每个子集判断是否包含所有要求包含元素（该位与运算），满足的话最后输出。 解题代码1234567891011121314151617181920212223242526272829303132333435363738394041424344454647#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;ll checknum[100], n, m;#define rep(i, a, n) for (ll i = a; i &lt; n; ++i)#define per(i, a, n) for (ll i = n - 1; i &gt;= a; --i)void print_subset(ll n, ll m)&#123; ll ans = 0; rep(i, 0, (1 &lt;&lt; n)) &#123; ans++; int flag = 1; rep(j, 0, m) &#123; //注意位运算的顺序 if (((1 &lt;&lt; checknum[j]) &amp; i) == 0) &#123; flag = 0; break; &#125; &#125; if (!flag) continue; cout &lt;&lt; ans - 1 &lt;&lt; ":"; rep(j, 0, n) &#123; if ((1 &lt;&lt; j) &amp; i) cout &lt;&lt; " " &lt;&lt; j; &#125; cout &lt;&lt; endl; &#125;&#125;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; n) &#123; memset(checknum, 0, sizeof(checknum)); cin &gt;&gt; m; rep(i, 0, m) cin &gt;&gt; checknum[i]; print_subset(n, m); &#125;&#125; 收获与反思枚举子集常见的思路，参见。]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>Aizu</tag>
+        <tag>2019春季训练</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【Aizu-ITP2_11_A】解题报告（二进制枚举）]]></title>
+    <url>%2Fpost%2F52360052.html</url>
+    <content type="text"><![CDATA[原始题目Aizu-ITP2_11_A Aizu原始题面 Aizu-ITP2_11_A Vj题面 题目大意根据二进制序编号，从0开始输出子集。 解题思路枚举所有二进制可能，然后根据各位情况输出元素。 解题代码123456789101112131415161718192021222324252627282930313233343536#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;#define rep(i, a, n) for (ll i = a; i &lt; n; ++i)#define per(i, a, n) for (ll i = n - 1; i &gt;= a; --i)#define fi first#define se second#define mp mkae_pair#define pb push_back#define endl '\n'll n;void print_subset(ll n)&#123; ll cnt = 0; rep(i, 0, (1 &lt;&lt; n)) &#123; cout &lt;&lt; cnt++ &lt;&lt; ":"; rep(j, 0, n) &#123; if ((1 &lt;&lt; j) &amp; i) &#123; cout &lt;&lt; " " &lt;&lt; j; &#125; &#125; cout &lt;&lt; endl; &#125;&#125;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; n) &#123; print_subset(n); &#125;&#125; 收获与反思枚举子集常见的思路 回溯法(根据排列好的子集字典序输出) 123456789101112131415void print_subset1(int N, int* A, int cnt)&#123; cout &lt;&lt; "&#123;"; rep(i, 0, cnt) &#123; cout &lt;&lt; A[i] &lt;&lt; " "; &#125; cout &lt;&lt; "&#125;" &lt;&lt; endl; int nxt = cnt ? A[cnt - 1] + 1 : 0; rep(i, nxt, N) &#123; A[cnt] = i; print_subset1(N, A, cnt + 1); &#125;&#125; 枚举二进制位 12345678910111213void print_subset2(int N, int* A)&#123; rep(i, 0, (1 &lt;&lt; N)) &#123; cout &lt;&lt; "&#123;"; rep(j, 0, N) &#123; if ((1 &lt;&lt; j) &amp; i) cout &lt;&lt; A[j] &lt;&lt; " "; &#125; cout &lt;&lt; "&#125;" &lt;&lt; endl; &#125;&#125;]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>Aizu</tag>
+        <tag>2019春季训练</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[【洛谷-P1009】解题报告（高精度）]]></title>
     <url>%2Fpost%2Fea5d5d2f.html</url>
     <content type="text"><![CDATA[原始题目P1009 阶乘之和 题目大意阶乘之和 解题思路爆ll，需要高精度，上ACM大数模板或者 人生苦短，我用PY 解题代码123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113114115116117118119120121122123124125126127128129130131132133134135136137138139140141142143144145146147148149150151152153154155156157158159160161162163164165166167168169170171172173174175176177178179180181182183184185186187188189190191192193194195196197198199200201202203204205206207208209210211212213214215216217218219220221222223224225226227228229230231232233234235236237238239240241242243244245246247248249250251252253254255256257258259260261262263264265266267268269270271272273274275276277278279280281282283284285286287288289290291292293294295296297298299#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;typedef pair&lt;int, int&gt; pii;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define pb push_back#define MAXN 9999#define MAXSIZE 10#define DLEN 4class BigNum &#123;private: int a[500]; //可以控制大数的位数 int len; //大数长度public: BigNum() &#123; len = 1; memset(a, 0, sizeof(a)); &#125; //构造函数 BigNum(const int); //将一个int类型的变量转化为大数 BigNum(const char*); //将一个字符串类型的变量转化为大数 BigNum(const BigNum&amp;); //拷贝构造函数 BigNum&amp; operator=(const BigNum&amp;); //重载赋值运算符，大数之间进行赋值运算 friend istream&amp; operator&gt;&gt;(istream&amp;, BigNum&amp;); //重载输入运算符 friend ostream&amp; operator&lt;&lt;(ostream&amp;, BigNum&amp;); //重载输出运算符 BigNum operator+(const BigNum&amp;) const; //重载加法运算符，两个大数之间的相加运算 BigNum operator-(const BigNum&amp;) const; //重载减法运算符，两个大数之间的相减运算 BigNum operator*(const BigNum&amp;)const; //重载乘法运算符，两个大数之间的相乘运算 BigNum operator/(const int&amp;) const; //重载除法运算符，大数对一个整数进行相除运算 BigNum operator^(const int&amp;) const; //大数的n次方运算 int operator%(const int&amp;) const; //大数对一个int类型的变量进行取模运算 bool operator&gt;(const BigNum&amp; T) const; //大数和另一个大数的大小比较 bool operator&gt;(const int&amp; t) const; //大数和一个int类型的变量的大小比较 void print(); //输出大数&#125;;BigNum::BigNum(const int b) //将一个int类型的变量转化为大数&#123; int c, d = b; len = 0; memset(a, 0, sizeof(a)); while (d &gt; MAXN) &#123; c = d - (d / (MAXN + 1)) * (MAXN + 1); d = d / (MAXN + 1); a[len++] = c; &#125; a[len++] = d;&#125;BigNum::BigNum(const char* s) //将一个字符串类型的变量转化为大数&#123; int t, k, index, l, i; memset(a, 0, sizeof(a)); l = strlen(s); len = l / DLEN; if (l % DLEN) len++; index = 0; for (i = l - 1; i &gt;= 0; i -= DLEN) &#123; t = 0; k = i - DLEN + 1; if (k &lt; 0) k = 0; for (int j = k; j &lt;= i; j++) t = t * 10 + s[j] - '0'; a[index++] = t; &#125;&#125;BigNum::BigNum(const BigNum&amp; T) : len(T.len) //拷贝构造函数&#123; int i; memset(a, 0, sizeof(a)); for (i = 0; i &lt; len; i++) a[i] = T.a[i];&#125;BigNum&amp; BigNum::operator=(const BigNum&amp; n) //重载赋值运算符，大数之间进行赋值运算&#123; int i; len = n.len; memset(a, 0, sizeof(a)); for (i = 0; i &lt; len; i++) a[i] = n.a[i]; return *this;&#125;istream&amp; operator&gt;&gt;(istream&amp; in, BigNum&amp; b) //重载输入运算符&#123; char ch[MAXSIZE * 4]; int i = -1; in &gt;&gt; ch; int l = strlen(ch); int count = 0, sum = 0; for (i = l - 1; i &gt;= 0;) &#123; sum = 0; int t = 1; for (int j = 0; j &lt; 4 &amp;&amp; i &gt;= 0; j++, i--, t *= 10) &#123; sum += (ch[i] - '0') * t; &#125; b.a[count] = sum; count++; &#125; b.len = count++; return in;&#125;ostream&amp; operator&lt;&lt;(ostream&amp; out, BigNum&amp; b) //重载输出运算符&#123; int i; cout &lt;&lt; b.a[b.len - 1]; for (i = b.len - 2; i &gt;= 0; i--) &#123; cout.width(DLEN); cout.fill('0'); cout &lt;&lt; b.a[i]; &#125; return out;&#125;BigNum BigNum::operator+(const BigNum&amp; T) const //两个大数之间的相加运算&#123; BigNum t(*this); int i, big; //位数 big = T.len &gt; len ? T.len : len; for (i = 0; i &lt; big; i++) &#123; t.a[i] += T.a[i]; if (t.a[i] &gt; MAXN) &#123; t.a[i + 1]++; t.a[i] -= MAXN + 1; &#125; &#125; if (t.a[big] != 0) t.len = big + 1; else t.len = big; return t;&#125;BigNum BigNum::operator-(const BigNum&amp; T) const //两个大数之间的相减运算&#123; int i, j, big; bool flag; BigNum t1, t2; if (*this &gt; T) &#123; t1 = *this; t2 = T; flag = 0; &#125; else &#123; t1 = T; t2 = *this; flag = 1; &#125; big = t1.len; for (i = 0; i &lt; big; i++) &#123; if (t1.a[i] &lt; t2.a[i]) &#123; j = i + 1; while (t1.a[j] == 0) j++; t1.a[j--]--; while (j &gt; i) t1.a[j--] += MAXN; t1.a[i] += MAXN + 1 - t2.a[i]; &#125; else t1.a[i] -= t2.a[i]; &#125; t1.len = big; while (t1.a[t1.len - 1] == 0 &amp;&amp; t1.len &gt; 1) &#123; t1.len--; big--; &#125; if (flag) t1.a[big - 1] = 0 - t1.a[big - 1]; return t1;&#125;BigNum BigNum::operator*(const BigNum&amp; T) const //两个大数之间的相乘运算&#123; BigNum ret; int i, j, up; int temp, temp1; for (i = 0; i &lt; len; i++) &#123; up = 0; for (j = 0; j &lt; T.len; j++) &#123; temp = a[i] * T.a[j] + ret.a[i + j] + up; if (temp &gt; MAXN) &#123; temp1 = temp - temp / (MAXN + 1) * (MAXN + 1); up = temp / (MAXN + 1); ret.a[i + j] = temp1; &#125; else &#123; up = 0; ret.a[i + j] = temp; &#125; &#125; if (up != 0) ret.a[i + j] = up; &#125; ret.len = i + j; while (ret.a[ret.len - 1] == 0 &amp;&amp; ret.len &gt; 1) ret.len--; return ret;&#125;BigNum BigNum::operator/(const int&amp; b) const //大数对一个整数进行相除运算&#123; BigNum ret; int i, down = 0; for (i = len - 1; i &gt;= 0; i--) &#123; ret.a[i] = (a[i] + down * (MAXN + 1)) / b; down = a[i] + down * (MAXN + 1) - ret.a[i] * b; &#125; ret.len = len; while (ret.a[ret.len - 1] == 0 &amp;&amp; ret.len &gt; 1) ret.len--; return ret;&#125;int BigNum::operator%(const int&amp; b) const //大数对一个int类型的变量进行取模运算&#123; int i, d = 0; for (i = len - 1; i &gt;= 0; i--) &#123; d = ((d * (MAXN + 1)) % b + a[i]) % b; &#125; return d;&#125;BigNum BigNum::operator^(const int&amp; n) const //大数的n次方运算&#123; BigNum t, ret(1); int i; if (n &lt; 0) exit(-1); if (n == 0) return 1; if (n == 1) return *this; int m = n; while (m &gt; 1) &#123; t = *this; for (i = 1; i &lt;&lt; 1 &lt;= m; i &lt;&lt;= 1) &#123; t = t * t; &#125; m -= i; ret = ret * t; if (m == 1) ret = ret * (*this); &#125; return ret;&#125;bool BigNum::operator&gt;(const BigNum&amp; T) const //大数和另一个大数的大小比较&#123; int ln; if (len &gt; T.len) return true; else if (len == T.len) &#123; ln = len - 1; while (a[ln] == T.a[ln] &amp;&amp; ln &gt;= 0) ln--; if (ln &gt;= 0 &amp;&amp; a[ln] &gt; T.a[ln]) return true; else return false; &#125; else return false;&#125;bool BigNum::operator&gt;(const int&amp; t) const //大数和一个int类型的变量的大小比较&#123; BigNum b(t); return *this &gt; b;&#125;void BigNum::print() //输出大数&#123; int i; cout &lt;&lt; a[len - 1]; for (i = len - 2; i &gt;= 0; i--) &#123; cout.width(DLEN); cout.fill('0'); cout &lt;&lt; a[i]; &#125; cout &lt;&lt; endl;&#125;int n;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; n) &#123; BigNum ans = 0; for (int i = 1; i &lt;= n; ++i) &#123; BigNum temp = 1; rep(j, 1, i + 1) &#123; temp = temp * j; &#125; ans = ans + temp; &#125; ans.print(); &#125;&#125; 12345678num = int(input())sum = 0for i in range(1,num+1): cnt = 1 for j in range(1,i+1): cnt*=j sum+=cntprint(sum) 收获与总结无]]></content>
@@ -11,15 +278,15 @@
       <tags>
         <tag>编程</tag>
         <tag>ACM</tag>
-        <tag>洛谷</tag>
         <tag>2019春季训练</tag>
+        <tag>洛谷</tag>
         <tag>高精度</tag>
       </tags>
   </entry>
   <entry>
     <title><![CDATA[【洛谷-P1089】解题报告（水题）]]></title>
     <url>%2Fpost%2Fd0d58037.html</url>
-    <content type="text"><![CDATA[原始题目P1089 津津的储蓄计划 题目大意月初估算，多余的存，如果某月得到零花钱不足预算，则输出-X，X位月份，否则输出最后金钱（存储的变1.2倍）。 解题思路水题 解题代码```C++]]></content>
+    <content type="text"><![CDATA[原始题目P1089 津津的储蓄计划 题目大意月初估算，多余的存，如果某月得到零花钱不足预算，则输出-X，X位月份，否则输出最后金钱（存储的变1.2倍）。 解题思路水题 解题代码12345678910111213141516171819202122232425262728293031323334353637383940414243#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;typedef pair&lt;int, int&gt; pii;typedef pair&lt;string, string&gt; pss;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se second#define all(x) x.begin(), x.end()#define mp make_pair#define pb push_back#define np next_permutation#define INF 0x3f3f3f3f#define EPS 1e-8#define endl '\n'const int maxn = 1e5 + 5;int ans, cnt, num, save;int a[maxn];int main()&#123; ios::sync_with_stdio(false); rep(i, 1, 12 + 1) cin &gt;&gt; a[i]; rep(i, 1, 12 + 1) &#123; cnt += 300; cnt -= a[i]; if (cnt &lt; 0) &#123; cout &lt;&lt; '-' &lt;&lt; i &lt;&lt; endl; break; &#125; save += (cnt / 100); cnt %= 100; &#125; if (cnt &gt;= 0) &#123; cnt += save * 120; cout &lt;&lt; cnt &lt;&lt; endl; &#125;&#125; 收获与反思无]]></content>
       <categories>
         <category>编程</category>
         <category>ACM</category>
@@ -27,8 +294,8 @@
       <tags>
         <tag>编程</tag>
         <tag>ACM</tag>
-        <tag>洛谷</tag>
         <tag>2019春季训练</tag>
+        <tag>洛谷</tag>
       </tags>
   </entry>
   <entry>
@@ -57,9 +324,9 @@
       <tags>
         <tag>编程</tag>
         <tag>ACM</tag>
+        <tag>2019春季训练</tag>
         <tag>字符串</tag>
         <tag>洛谷</tag>
-        <tag>2019春季训练</tag>
       </tags>
   </entry>
   <entry>
@@ -73,8 +340,8 @@
       <tags>
         <tag>编程</tag>
         <tag>ACM</tag>
-        <tag>洛谷</tag>
         <tag>2019春季训练</tag>
+        <tag>洛谷</tag>
       </tags>
   </entry>
   <entry>
@@ -88,9 +355,9 @@
       <tags>
         <tag>编程</tag>
         <tag>ACM</tag>
+        <tag>2019春季训练</tag>
         <tag>字符串</tag>
         <tag>洛谷</tag>
-        <tag>2019春季训练</tag>
       </tags>
   </entry>
   <entry>
@@ -104,8 +371,9 @@
       <tags>
         <tag>编程</tag>
         <tag>ACM</tag>
-        <tag>洛谷</tag>
         <tag>2019春季训练</tag>
+        <tag>待补充</tag>
+        <tag>洛谷</tag>
         <tag>imitation</tag>
       </tags>
   </entry>
@@ -120,8 +388,8 @@
       <tags>
         <tag>编程</tag>
         <tag>ACM</tag>
-        <tag>洛谷</tag>
         <tag>2019春季训练</tag>
+        <tag>洛谷</tag>
       </tags>
   </entry>
   <entry>
@@ -135,8 +403,8 @@
       <tags>
         <tag>编程</tag>
         <tag>ACM</tag>
-        <tag>洛谷</tag>
         <tag>2019春季训练</tag>
+        <tag>洛谷</tag>
         <tag>imitation</tag>
       </tags>
   </entry>
@@ -151,12 +419,12 @@
       <tags>
         <tag>编程</tag>
         <tag>ACM</tag>
-        <tag>洛谷</tag>
         <tag>2019春季训练</tag>
+        <tag>洛谷</tag>
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[【洛谷-P1940】解题报告（数学）]]></title>
+    <title><![CDATA[【洛谷-P1940】解题报告（数学，大数）]]></title>
     <url>%2Fpost%2F81d45fa1.html</url>
     <content type="text"><![CDATA[原始题目P1940 Reversible Number 题目大意有些正整数n可能满足n + 回文(n)（回文(n)是把n倒过来写所得的数）得到的结果的各位都是奇数。那么，小于等于10^x的Reversible数有多少个？方便起见，x是大于等于3小于等于400的正整数。 解题思路很明显不可能是暴力的，题目范围给400位，所以暗示我们跟位数有关系。 暴力求前几位能得到下面数据 1-9 0 10-99 20 100-999 100 1000-9999 600 10000-99999 0 100000-999999 18000 1000000-9999999 50000 发现奇偶位是有规律的。 数学如下 偶数位数； 若要保证回文性质，要求全部位不能进位 可用反证法证明，推矛盾,所以有: even[2] = 20 , even[2n] = even[2(n-1)] * 30 奇数位数： 必然是 进位|不进位|进位 进位|不进位|进位|不进位|进位|不进位|进位 即模4余3位数时可以找到满足的reversible数。 odd[3] = [100], odd[4n+3] = odd[4(n-1)+3] * 500 暴力对拍代码 12345678910111213141516171819202122232425262728293031323334353637383940#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;#define rep(i, a, n) for (ll i = a; i &lt; n; ++i)#define per(i, a, n) for (ll i = n - 1; i &gt;= a; --i)ll n, m, N;int main()&#123; while (cin &gt;&gt; n &gt;&gt; m &gt;&gt; N) &#123; ll cnt = 0; rep(i, n, m + 1) &#123; ll flag = 1; if (i % 10 == 0) continue; ll temp = i; ll sum = temp; for (ll j = 0; j &lt; N; j++) &#123; ll addsum = temp % 10; for (ll k = 0; k &lt; N - j - 1; k++) sum += addsum; temp /= 10; &#125; temp = sum; while (temp) &#123; if ((temp &amp; 1) == 0) flag = 0; temp /= 10; &#125; // cout &lt;&lt; sum &lt;&lt; endl; if (flag) &#123; // cout &lt;&lt; "i=" &lt;&lt; i &lt;&lt; " sum=" &lt;&lt; sum &lt;&lt; endl; cnt++; &#125; &#125; cout &lt;&lt; cnt &lt;&lt; endl; &#125;&#125; 解题代码123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113114115116117118119120121122123124125126127128129130131132133134135136137138139140141142143144145146147148149150151152153154155156157158159160161162163164165166167168169170171172173174175176177178179180181182183184185186187188189190191192193194195196197198199200201202203204205206207208209210211212213214215216217218219220221222223224225226227228229230231232233234235236237238239240241242243244245246247248249250251252253254255256257258259260261262263264265266267268269270271272273274275276277278279280281282283284285286287288289290291292293294295296297298299300301302303304305306307308309310311312313314315316317318319320321322323324325326327328329330331332333334335336337// 1-9 0// 10-99 20// 100-999 100// 1000-9999 600// 10000-99999 0// 100000-999999 18000// 1000000-9999999 50000 ???//#include &lt;bits/stdc++.h&gt;using namespace std;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se second#define pb push_back#define np next_permutation#define INF 0x3f3f3f3f#define EPS 1e-8#define eps '\n'typedef long long ll;typedef unsigned long long ull;typedef pair&lt;int, int&gt; pii;typedef pair&lt;string, string&gt; pss;typedef vector&lt;int&gt; vi;#include &lt;algorithm&gt;#include &lt;iomanip&gt;#include &lt;iostream&gt;#include &lt;string&gt;using namespace std;#define MAXN 9999#define MAXSIZE 10#define DLEN 4class BigNum &#123;private: int a[500]; //可以控制大数的位数 int len; //大数长度public: BigNum() &#123; len = 1; memset(a, 0, sizeof(a)); &#125; //构造函数 BigNum(const int); //将一个int类型的变量转化为大数 BigNum(const char*); //将一个字符串类型的变量转化为大数 BigNum(const BigNum&amp;); //拷贝构造函数 BigNum&amp; operator=(const BigNum&amp;); //重载赋值运算符，大数之间进行赋值运算 friend istream&amp; operator&gt;&gt;(istream&amp;, BigNum&amp;); //重载输入运算符 friend ostream&amp; operator&lt;&lt;(ostream&amp;, BigNum&amp;); //重载输出运算符 BigNum operator+(const BigNum&amp;) const; //重载加法运算符，两个大数之间的相加运算 BigNum operator-(const BigNum&amp;) const; //重载减法运算符，两个大数之间的相减运算 BigNum operator*(const BigNum&amp;)const; //重载乘法运算符，两个大数之间的相乘运算 BigNum operator/(const int&amp;) const; //重载除法运算符，大数对一个整数进行相除运算 BigNum operator^(const int&amp;) const; //大数的n次方运算 int operator%(const int&amp;) const; //大数对一个int类型的变量进行取模运算 bool operator&gt;(const BigNum&amp; T) const; //大数和另一个大数的大小比较 bool operator&gt;(const int&amp; t) const; //大数和一个int类型的变量的大小比较 void print(); //输出大数&#125;;BigNum::BigNum(const int b) //将一个int类型的变量转化为大数&#123; int c, d = b; len = 0; memset(a, 0, sizeof(a)); while (d &gt; MAXN) &#123; c = d - (d / (MAXN + 1)) * (MAXN + 1); d = d / (MAXN + 1); a[len++] = c; &#125; a[len++] = d;&#125;BigNum::BigNum(const char* s) //将一个字符串类型的变量转化为大数&#123; int t, k, index, l, i; memset(a, 0, sizeof(a)); l = strlen(s); len = l / DLEN; if (l % DLEN) len++; index = 0; for (i = l - 1; i &gt;= 0; i -= DLEN) &#123; t = 0; k = i - DLEN + 1; if (k &lt; 0) k = 0; for (int j = k; j &lt;= i; j++) t = t * 10 + s[j] - '0'; a[index++] = t; &#125;&#125;BigNum::BigNum(const BigNum&amp; T) : len(T.len) //拷贝构造函数&#123; int i; memset(a, 0, sizeof(a)); for (i = 0; i &lt; len; i++) a[i] = T.a[i];&#125;BigNum&amp; BigNum::operator=(const BigNum&amp; n) //重载赋值运算符，大数之间进行赋值运算&#123; int i; len = n.len; memset(a, 0, sizeof(a)); for (i = 0; i &lt; len; i++) a[i] = n.a[i]; return *this;&#125;istream&amp; operator&gt;&gt;(istream&amp; in, BigNum&amp; b) //重载输入运算符&#123; char ch[MAXSIZE * 4]; int i = -1; in &gt;&gt; ch; int l = strlen(ch); int count = 0, sum = 0; for (i = l - 1; i &gt;= 0;) &#123; sum = 0; int t = 1; for (int j = 0; j &lt; 4 &amp;&amp; i &gt;= 0; j++, i--, t *= 10) &#123; sum += (ch[i] - '0') * t; &#125; b.a[count] = sum; count++; &#125; b.len = count++; return in;&#125;ostream&amp; operator&lt;&lt;(ostream&amp; out, BigNum&amp; b) //重载输出运算符&#123; int i; cout &lt;&lt; b.a[b.len - 1]; for (i = b.len - 2; i &gt;= 0; i--) &#123; cout.width(DLEN); cout.fill('0'); cout &lt;&lt; b.a[i]; &#125; return out;&#125;BigNum BigNum::operator+(const BigNum&amp; T) const //两个大数之间的相加运算&#123; BigNum t(*this); int i, big; //位数 big = T.len &gt; len ? T.len : len; for (i = 0; i &lt; big; i++) &#123; t.a[i] += T.a[i]; if (t.a[i] &gt; MAXN) &#123; t.a[i + 1]++; t.a[i] -= MAXN + 1; &#125; &#125; if (t.a[big] != 0) t.len = big + 1; else t.len = big; return t;&#125;BigNum BigNum::operator-(const BigNum&amp; T) const //两个大数之间的相减运算&#123; int i, j, big; bool flag; BigNum t1, t2; if (*this &gt; T) &#123; t1 = *this; t2 = T; flag = 0; &#125; else &#123; t1 = T; t2 = *this; flag = 1; &#125; big = t1.len; for (i = 0; i &lt; big; i++) &#123; if (t1.a[i] &lt; t2.a[i]) &#123; j = i + 1; while (t1.a[j] == 0) j++; t1.a[j--]--; while (j &gt; i) t1.a[j--] += MAXN; t1.a[i] += MAXN + 1 - t2.a[i]; &#125; else t1.a[i] -= t2.a[i]; &#125; t1.len = big; while (t1.a[t1.len - 1] == 0 &amp;&amp; t1.len &gt; 1) &#123; t1.len--; big--; &#125; if (flag) t1.a[big - 1] = 0 - t1.a[big - 1]; return t1;&#125;BigNum BigNum::operator*(const BigNum&amp; T) const //两个大数之间的相乘运算&#123; BigNum ret; int i, j, up; int temp, temp1; for (i = 0; i &lt; len; i++) &#123; up = 0; for (j = 0; j &lt; T.len; j++) &#123; temp = a[i] * T.a[j] + ret.a[i + j] + up; if (temp &gt; MAXN) &#123; temp1 = temp - temp / (MAXN + 1) * (MAXN + 1); up = temp / (MAXN + 1); ret.a[i + j] = temp1; &#125; else &#123; up = 0; ret.a[i + j] = temp; &#125; &#125; if (up != 0) ret.a[i + j] = up; &#125; ret.len = i + j; while (ret.a[ret.len - 1] == 0 &amp;&amp; ret.len &gt; 1) ret.len--; return ret;&#125;BigNum BigNum::operator/(const int&amp; b) const //大数对一个整数进行相除运算&#123; BigNum ret; int i, down = 0; for (i = len - 1; i &gt;= 0; i--) &#123; ret.a[i] = (a[i] + down * (MAXN + 1)) / b; down = a[i] + down * (MAXN + 1) - ret.a[i] * b; &#125; ret.len = len; while (ret.a[ret.len - 1] == 0 &amp;&amp; ret.len &gt; 1) ret.len--; return ret;&#125;int BigNum::operator%(const int&amp; b) const //大数对一个int类型的变量进行取模运算&#123; int i, d = 0; for (i = len - 1; i &gt;= 0; i--) &#123; d = ((d * (MAXN + 1)) % b + a[i]) % b; &#125; return d;&#125;BigNum BigNum::operator^(const int&amp; n) const //大数的n次方运算&#123; BigNum t, ret(1); int i; if (n &lt; 0) exit(-1); if (n == 0) return 1; if (n == 1) return *this; int m = n; while (m &gt; 1) &#123; t = *this; for (i = 1; i &lt;&lt; 1 &lt;= m; i &lt;&lt;= 1) &#123; t = t * t; &#125; m -= i; ret = ret * t; if (m == 1) ret = ret * (*this); &#125; return ret;&#125;bool BigNum::operator&gt;(const BigNum&amp; T) const //大数和另一个大数的大小比较&#123; int ln; if (len &gt; T.len) return true; else if (len == T.len) &#123; ln = len - 1; while (a[ln] == T.a[ln] &amp;&amp; ln &gt;= 0) ln--; if (ln &gt;= 0 &amp;&amp; a[ln] &gt; T.a[ln]) return true; else return false; &#125; else return false;&#125;bool BigNum::operator&gt;(const int&amp; t) const //大数和一个int类型的变量的大小比较&#123; BigNum b(t); return *this &gt; b;&#125;void BigNum::print() //输出大数&#123; int i; cout &lt;&lt; a[len - 1]; for (i = len - 2; i &gt;= 0; i--) &#123; cout.width(DLEN); cout.fill('0'); cout &lt;&lt; a[i]; &#125; cout &lt;&lt; endl;&#125;int n, m;int main()&#123; while (~scanf("%d", &amp;n)) &#123; BigNum ans; if (n == 1) printf("0\n"); else if (n == 2) printf("20\n"); else if (n == 3) &#123; printf("120\n"); &#125; // continue; else &#123; ans = 120; BigNum tempeven = 20; BigNum tempodd = 100; for (int i = 4; i &lt;= n; i++) &#123; if (i % 4 == 3) &#123; ans = ans + (tempodd = tempodd * 500); &#125; if ((i &amp; 1) == 0) &#123; ans = ans + (tempeven = tempeven * 30); &#125; &#125; ans.print(); &#125; &#125;&#125; 收获与反思奇偶位发现规律并且找出可能数情况的本质，而不是单纯对数据找规律。]]></content>
       <categories>
@@ -166,8 +434,8 @@
       <tags>
         <tag>编程</tag>
         <tag>ACM</tag>
-        <tag>洛谷</tag>
         <tag>2019春季训练</tag>
+        <tag>洛谷</tag>
       </tags>
   </entry>
   <entry>
@@ -196,8 +464,8 @@
       <tags>
         <tag>编程</tag>
         <tag>ACM</tag>
-        <tag>洛谷</tag>
         <tag>2019春季训练</tag>
+        <tag>洛谷</tag>
         <tag>imitation</tag>
       </tags>
   </entry>
@@ -212,8 +480,8 @@
       <tags>
         <tag>编程</tag>
         <tag>ACM</tag>
-        <tag>洛谷</tag>
         <tag>2019春季训练</tag>
+        <tag>洛谷</tag>
         <tag>imitation</tag>
       </tags>
   </entry>
@@ -228,8 +496,8 @@
       <tags>
         <tag>编程</tag>
         <tag>ACM</tag>
-        <tag>洛谷</tag>
         <tag>2019春季训练</tag>
+        <tag>洛谷</tag>
         <tag>imitation</tag>
       </tags>
   </entry>
@@ -244,8 +512,8 @@
       <tags>
         <tag>编程</tag>
         <tag>ACM</tag>
-        <tag>洛谷</tag>
         <tag>2019春季训练</tag>
+        <tag>洛谷</tag>
       </tags>
   </entry>
   <entry>
@@ -337,10 +605,12 @@
     <url>%2Fpost%2Fd7435d20.html</url>
     <content type="text"><![CDATA[环境搭建此处省略，后面补充 Laravel教程微博实例构建页面样式美化12yarn install --no-bin-linksyarn add cross-env 使用Boostrap组件进行前端样式美化 Bootstrap再入门上面代码将引入public/css/app.css样式文件。 header, nav 是 HTML5 提供的一种语义化标签，其实际作用与 div 一致，语义化的标签能帮助机器更方便理解代码，使代码更简洁，有助于网站的 SEO 优化。我们在上面代码使用到一些如 navbar, container 等类名在 Bootstrap 中都拥有特殊含义。 Laravel 前端工作流介绍Sass,NPM,Yarn,Laravel Mix来构成一套完整的前端工作流。 SASS语法基础 样式文件导入 Sass使用@import 来导入其它的样式文件从而实现样式嵌套。 变量 Sass允许加入自己的变量，所有的变量以$开头 1234$navbar-color: #3c3e42;.navbar-inverse &#123; background-color: $navbar-color;&#125; 在编译成功后，变量会被替代为对应的值 嵌套 Sass允许选择器中相互嵌套以减少代码量 引用父选择器 在Sass嵌套中使用&amp;对父选择器进行引用： 123456a &#123; color: white; &amp;:hover &#123; color: blue; &#125;&#125; NPMNPM 是Node.js 的包管理和任务管理工具，其强大的功能也是Node.js能够如此成功的因素之一。在使用NPM安装第三方模块（也可理解为扩展包）时，你需要在 package.json 中队需要安装的模块指定好名称和版本号。然后运行下面的命令进行安装： 1$ npm install 在学习教程中，出于安装速度考虑，我们使用更加现代化的 Yarn 来替代 NPM 的包管理功能。然而我们仍然会使用到 NPM 的任务管理功能，如命令 npm run watch-poll。 YarnYarn 是 Facebook 在 2016 年 10 月开源的一个新的包管理器，用于替代现有的 NPM 客户端或者其他兼容 NPM 仓库的包管理工具。Yarn 在保留 NPM 原有工作流特性的基础上，使之变得更快、更安全、更可靠。在后面的项目开发中，我们统一使用 Yarn 来代替 NPM 进行安装包的管理。 我们可通过下面命令来安装当前项目的所有包： 1$ yarn install Laravel MixLaravel Mix 一款前端任务自动化管理工具，使用了工作流的模式对制定好的任务依次执行。Mix 提供了简洁流畅的 API，让你能够为你的 Laravel 应用定义 Webpack 编译任务。Mix 支持许多常见的 CSS 与 JavaScript 预处理器，通过简单的调用，你可以轻松地管理前端资源。我们可以在 webpack.mix.js 文件中制定一些如资源文件的编译、压缩等任务。Laravel 已默认为我们生成了 webpack.mix.js 文件，并集成了 laravel-mix 模块。 浏览器缓存问题问题描述 现代化的浏览器，会对静态文件进行缓存，静态文件在本课程的范畴内，指的是 .css 、.js 后缀的文件。这是一个浏览器的优化功能，极大地加快了网页的加载速度，但是在我们日常开发和维护中，有时候会造成混淆。 开发时，你明明修改了样式，但是刷新浏览器却看不见变化，然后你就来回不断地修改你的样式文件，做各种测试，浏览器页面仍然一成不变。直到你重新刷新好多次，或者修改样式文件名称时，才恍然大悟，原来是浏览器缓存了。 解决方法Laravel Mix，增加哈希值，只要修改，哈希值改变，则客户端浏览器就需要重新加载文件。 对 webpack.mix.js 稍作修改 1234const mix = require('laravel-mix');mix.js('resources/js/app.js', 'public/js') .sass('resources/sass/app.scss', 'public/css').version(); 局部视图随着代码量增加，都存在默认视图中会变得太过臃肿，难以维护，所以最好将部分视图分离出来，成为单独得局部视图。 头部和底部视图首先，我们需要新建一个头部视图文件。 resources/views/layouts/_header.blade.php 123456789&lt;nav class="navbar navbar-expand-lg navbar-dark bg-dark"&gt; &lt;div class="container "&gt; &lt;a class="navbar-brand" href="/"&gt;Weibo App&lt;/a&gt; &lt;ul class="navbar-nav justify-content-end"&gt; &lt;li class="nav-item"&gt;&lt;a class="nav-link" href="/help"&gt;帮助&lt;/a&gt;&lt;/li&gt; &lt;li class="nav-item" &gt;&lt;a class="nav-link" href="#"&gt;登录&lt;/a&gt;&lt;/li&gt; &lt;/ul&gt; &lt;/div&gt;&lt;/nav&gt; 可以看到，我们在头部视图的文件名前面加了下划线 _，这样做是为了指定该视图文件为局部视图，为局部视图增加前缀下划线是『约定俗成』的做法，方便了其它人快速地理解该文件的实际作用。从这里开始，我们都会为局部文件添加下划线前缀。 现在让我们再来为应用创建一个底部视图，用于置放网站的一些基础信息。 resources/views/layouts/_footer.blade.php 12345678910&lt;footer class="footer"&gt; &lt;img class="brand-icon" src="https://iocaffcdn.phphub.org/uploads/sites/KDiyAbV0hj1ytHpRTOlVpucbLebonxeX.png"&gt; &lt;a href="https://learnku.com/laravel/courses" target=_blank&gt; 刻意练习，每日精进 &lt;/a&gt; &lt;div class="float-right"&gt; &lt;a href="/about" &gt;关于&lt;/a&gt; &lt;/div&gt;&lt;/footer&gt; 布局中的链接Laravel中链接地址的写法较为常见的链接地址的写法 1&lt;li&gt;&lt;a href="/help"&gt;帮助&lt;/a&gt;&lt;/li&gt; 在Laravel中，我们可以这么写 1&lt;li&gt;&lt;a href=" route('help') "&gt;帮助&lt;/a&gt;&lt;/li&gt; 大括号括起来的部分是在HTML中内嵌PHP的Blade语法标识符，表示包含在该区块内的代码都将用PHP来编译运行。route()方法由Laravel提供，传递一个具体的路由名称来生成完整的URL。 在 Laravel 中，我们可以通过在路由后面链式调用 name 方法来为路由指定名称： 1Route::get('/help', 'StaticPagesController@help')-&gt;name('help'); 可以看到 route(&#39;help&#39;)为我们生成了完整的 URL 地址，这样当我们需要对生成的 URL 进行更改时，我们只需要改动路由文件即可，由此可见在实际开发中养成对路由的命名是一个好习惯，可以帮助我们节省很多工作量，另外也是 Laravel 项目开发的最佳实践。 均改为href=&quot;route()&quot;的形式 静态页面在我们后面的教程中，将会为应用添加注册登录的功能，本节让我们先来完成用户注册功能的第一步：为用户注册功能创建基本的静态页面。 注册路由当用户访问注册url时，进入我们的注册页面 修改（添加）路由 12345Route::get('/', 'StaticPagesController@home')-&gt;name('home');Route::get('/help', 'StaticPagesController@help')-&gt;name('help');Route::get('/about', 'StaticPagesController@about')-&gt;name('about');Route::get('signup', 'UsersController@create')-&gt;name('signup'); 注册路由时，URI signup 和 /signup 从使用上来看，并无区别，Laravel 框架兼容这两种写法。 注意这里不在注册到StaticPagesController控制器上，因为不单是静态页面，会涉及和数据库的交互，所以围绕用户使用用户控制器来处理此逻辑。 用户模型MVC框架的MM-Model（模型），构建一个基本的用户模型来实现用户数据的存储，并了解Laravel如何对模型对象进行增删查改等操作。后面我们还会在此用户模型上添加用户注册和登录的功能，并对用户进行权限认证，管理员具备用户的删除操作。再构建一套用户账号激活和密码找回系统。 用户认证系统Laravel集成了一整套用户登录注册功能，并提供了一些方便的API，但是出于学习目的，我们会借助一些简单的API来独自开发一个完整的用户认证系统。 如果定制性不高，还是建议使用Laravel的默认提供的用户认证系统。 Eloquent ORM在接下来几章要实现的用户注册功能需要用到数据库来进行数据存储，用于放置用户的基本信息。在这期间，还需要用到数据模型- Model，利用 Laravel 提供的 Eloquent ORM 跟数据库进行交互，实现用户数据的增删改查操作。Eloquent 提供了简洁优雅的 ActiveRecord 实现来跟数据库进行交互。Active Record 是一种领域模型模式，该模式由 Martin Fowler 在 2003 年出版的《企业应用架构模式》一书中进行了详细叙述并命名。其特点是一个模型类对应关系型数据库中的一个表，模型类的一个实例对应表中的一行记录。Active Record 最大优点是允许我们简单, 直观地操作数据层。 数据库迁移Laravel中通过数据库迁移来管理数据库表结构，迁移就像数据库中的版本控制。 好处 多人并行开发 代码版本管理 数据库版本控制：如：回滚重置更新 兼容多种数据库系统 部署方便 默认迁移文件所有迁移文件统一放置在 database/migrations 文件夹里 我们看到Laravel已经默认创建好了两个迁移文件。 database/migrations/2014_10_12_000000_create_users_table.php database/migrations/2014_10_12_100000_create_password_resets_table.php 加入时间戳避免多人开发时候的命名冲突。 创建数据库表up方法里，通过调用 Schema 类的create方法来创建users表： 123Schema::create('users', function (Blueprint $table) &#123; ...&#125;); 两个参数 参数1：表名称 参数2：Blueprint实例的必报（函数依赖关系必报） 定义数据表字段CreateUsersTable 类中通过 Blueprint 的实例 $table 为 users 表创建所需的数据库字段。接下来让我们来详细讲解 Blueprint 实例 $table 的基本用法： 1$table-&gt;increments('id'); 由 increments 方法创建了一个 integer 类型的自增长 id。 1$table-&gt;string('name'); 由 string 方法创建了一个 name 字段，用于保存用户名称。 1$table-&gt;string('email')-&gt;unique(); 由 string 方法创建了一个 email 字段，且在最后指定该字段的值为唯一值，用于保存用户邮箱。 1$table-&gt;timestamp('email_verified_at')-&gt;nullable(); Email 验证时间，空的话意味着用户还未验证邮箱。nullable()方法表示字段可空。 1$table-&gt;string('password', 60); 由 string 方法创建了一个 password 字段，且在 string 方法中指定保存的值最大长度为 60，用于保存用户密码。 1$table-&gt;rememberToken(); 由 rememberToken 方法为用户创建一个 remember_token 字段，用于保存『记住我』的相关信息。 1$table-&gt;timestamps(); 由 timestamps 方法创建了一个 created_at 和一个 updated_at 字段，分别用于保存用户的创建时间和更新时间。注意和前面email的timestap字段区分开。 回滚迁移down 方法会在回滚命令发起时被调用，是 up 方法的逆向操作。在上面的代码中，up 创建了 users 表，那么这里将会通过调用 Schema 的 drop 方法来删除 users 表。 1Schema::dropIfExists('users'); 用户注册本章节为注册页添加一个注册表单 隐式绑定由于我们使用了 view(&#39;users.show&#39;, compact(&#39;user&#39;)) 将用户数据与视图进行绑定，因此在视图中可以直接使用 $user 来访问用户实例。 会话管理由于 HTTP 协议是无状态的，所以 Laravel 提供了一种用于临时保存用户数据的方法 - 会话（Session），并附带支持多种会话后端驱动，可通过统一的 API 进行使用。 我们可以使用 session() 方法来访问会话实例。而当我们想存入一条缓存的数据，让它只在下一次的请求内有效时，则可以使用 flash 方法。flash 方法接收两个参数，第一个为会话的键，第二个为会话的值，我们可以通过下面这行代码的为会话赋值。 接下来的消息提示我们会用会话进行闪存，并分别为其设定好指定的键。danger, warning, success, info 这四个键名在 Bootstrap 分别具有不同样式展现效果，因此后面我们将使用这几个键名作为消息提示的专有设定。 用户CRUD新增的 edit 动作主要做了以下几个操作： 利用了 Laravel 的『隐性路由模型绑定』功能，直接读取对应 ID 的用户实例 $user，未找到则报错；将查找到的用户实例 $user 与编辑视图进行绑定；在将用户数据与视图进行绑定之后，便可以在视图上通过 $user 来访问用户对象。接下来让我们接着完成用户编辑页面的构建。 编辑成功现在的用户编辑功能还有两个地方需要优化： 在每次更改个人资料的时候都输入完整的密码，才能更新其它信息，对于不想对密码进行更新的用户，这个过程会比较繁琐； 更新成功之后在页面上没有进行任何提示，而是直接跳转到用户的个人页面，用户体验非常不好；]]></content>
       <categories>
-        <category>编程,PHP</category>
+        <category>编程</category>
+        <category>PHP</category>
       </categories>
       <tags>
-        <tag>编程,PHP</tag>
+        <tag>编程</tag>
+        <tag>PHP</tag>
       </tags>
   </entry>
   <entry>
@@ -578,8 +848,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>HDU</tag>
         <tag>并查集</tag>
@@ -594,8 +864,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>并查集</tag>
         <tag>待补充</tag>
@@ -611,8 +881,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>HDU</tag>
         <tag>并查集</tag>
@@ -627,8 +897,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>HDU</tag>
         <tag>并查集</tag>
         <tag>待补充</tag>
@@ -644,8 +914,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>并查集</tag>
         <tag>待补充</tag>
@@ -670,8 +940,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -685,8 +955,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -700,8 +970,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -715,8 +985,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -730,8 +1000,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -745,8 +1015,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -760,8 +1030,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -964,8 +1234,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>数据结构</tag>
         <tag>2018秋季训练</tag>
         <tag>UVA</tag>
@@ -980,8 +1250,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>Imitation</tag>
         <tag>2018秋季训练</tag>
         <tag>UVA</tag>
@@ -996,8 +1266,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>Imitation</tag>
         <tag>2018秋季训练</tag>
         <tag>UVA</tag>
@@ -1012,8 +1282,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -1028,8 +1298,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -1072,8 +1342,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>HDU</tag>
         <tag>大数</tag>
@@ -1116,8 +1386,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>UVALive</tag>
       </tags>
@@ -1131,8 +1401,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>UVALive</tag>
         <tag>概率</tag>
@@ -1147,8 +1417,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>Imitation</tag>
         <tag>2018秋季训练</tag>
@@ -1163,8 +1433,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>博弈</tag>
         <tag>2018秋季培训</tag>
@@ -1193,8 +1463,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
       </tags>
@@ -1208,8 +1478,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>字典树</tag>
@@ -1224,11 +1494,11 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
-        <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
+        <tag>Imitation</tag>
       </tags>
   </entry>
   <entry>
@@ -1240,8 +1510,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
       </tags>
@@ -1255,8 +1525,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>Dijkstra</tag>
@@ -1272,8 +1542,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>字典树</tag>
@@ -1288,8 +1558,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
       </tags>
@@ -1303,8 +1573,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
       </tags>
@@ -1318,8 +1588,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
       </tags>
@@ -1333,8 +1603,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -1349,8 +1619,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -1365,8 +1635,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -1381,8 +1651,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -1397,8 +1667,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>Imitation</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -1413,8 +1683,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>补图</tag>
         <tag>UVA</tag>
@@ -1430,8 +1700,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>补图</tag>
         <tag>UVA</tag>
@@ -1447,8 +1717,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>数论</tag>
         <tag>HDU</tag>
@@ -1463,10 +1733,10 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
-        <tag>Imitation</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
+        <tag>Imitation</tag>
         <tag>补图</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -1481,8 +1751,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>补图</tag>
         <tag>STL</tag>
@@ -1498,8 +1768,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>补图</tag>
         <tag>STL</tag>
@@ -1515,8 +1785,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>补图</tag>
         <tag>STL</tag>
@@ -1531,8 +1801,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>DP</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
@@ -1548,8 +1818,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>数论</tag>
@@ -1564,8 +1834,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>二分</tag>
         <tag>Greedy</tag>
         <tag>UVA</tag>
@@ -1580,10 +1850,10 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
-        <tag>Imitation</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
+        <tag>Imitation</tag>
         <tag>UVA</tag>
       </tags>
   </entry>
@@ -1596,8 +1866,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -1626,8 +1896,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>POJ</tag>
         <tag>Floyd</tag>
@@ -1642,8 +1912,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>BFS</tag>
         <tag>HDU</tag>
@@ -1658,8 +1928,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>CodeForces</tag>
       </tags>
@@ -1673,8 +1943,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>BFS</tag>
         <tag>数论</tag>
@@ -1690,8 +1960,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>AtCoder</tag>
       </tags>
   </entry>
@@ -1704,8 +1974,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>AtCoder</tag>
       </tags>
   </entry>
@@ -1718,8 +1988,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>AtCoder</tag>
         <tag>DP</tag>
       </tags>
@@ -1733,8 +2003,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>AtCoder</tag>
       </tags>
   </entry>
@@ -1784,8 +2054,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
@@ -1800,8 +2070,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
         <tag>HDU</tag>
@@ -1816,8 +2086,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
         <tag>HDU</tag>
@@ -1841,8 +2111,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
         <tag>HDU</tag>
@@ -1857,8 +2127,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
@@ -1873,8 +2143,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
@@ -1889,8 +2159,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
         <tag>2018杭电多校</tag>
@@ -1905,8 +2175,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
         <tag>2018杭电多校</tag>
@@ -1921,8 +2191,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>DP</tag>
         <tag>2018暑假集训</tag>
         <tag>字典树</tag>
@@ -1938,8 +2208,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>字典树</tag>
@@ -1954,8 +2224,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>字典树</tag>
         <tag>HDU</tag>
@@ -1970,8 +2240,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>字典树</tag>
         <tag>HDU</tag>
@@ -1986,8 +2256,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>字符串hash</tag>
         <tag>POJ</tag>
@@ -2002,8 +2272,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
         <tag>HDU</tag>
@@ -2019,8 +2289,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>Dijkstra</tag>
         <tag>HDU</tag>
         <tag>最长路</tag>
@@ -2035,8 +2305,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>Dijkstra</tag>
         <tag>最短路</tag>
@@ -2053,8 +2323,8 @@
       <tags>
         <tag>阅读</tag>
         <tag>小说</tag>
-        <tag>刺杀骑士团长</tag>
         <tag>村上春树</tag>
+        <tag>刺杀骑士团长</tag>
       </tags>
   </entry>
   <entry>
@@ -2066,8 +2336,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>区间DP</tag>
@@ -2082,8 +2352,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>区间DP</tag>
         <tag>POJ</tag>
@@ -2098,8 +2368,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>区间DP</tag>
@@ -2114,8 +2384,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>Greedy</tag>
         <tag>HDU</tag>
@@ -2130,8 +2400,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>Greedy</tag>
@@ -2146,8 +2416,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
         <tag>计算几何</tag>
@@ -2163,8 +2433,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>计算几何</tag>
         <tag>POJ</tag>
@@ -2179,8 +2449,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>计算几何</tag>
         <tag>UVA</tag>
@@ -2195,8 +2465,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>计算几何</tag>
         <tag>POJ</tag>
@@ -2211,8 +2481,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>计算几何</tag>
         <tag>POJ</tag>
@@ -2227,8 +2497,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>数论</tag>
         <tag>HDU</tag>
@@ -2260,8 +2530,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>ZOJ</tag>
@@ -2276,8 +2546,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
@@ -2293,8 +2563,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>UVA</tag>
@@ -2309,8 +2579,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>URAL</tag>
@@ -2325,8 +2595,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>水题</tag>
@@ -2342,8 +2612,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>dp</tag>
@@ -2359,8 +2629,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>几何</tag>
@@ -2377,8 +2647,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>水题</tag>
@@ -2394,8 +2664,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>二分</tag>
         <tag>2018暑假集训</tag>
         <tag>POJ</tag>
@@ -2410,8 +2680,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>二分</tag>
         <tag>水题</tag>
         <tag>POJ</tag>
@@ -2426,8 +2696,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>二分</tag>
         <tag>2018暑假集训</tag>
         <tag>水题</tag>
@@ -2443,8 +2713,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>二分</tag>
         <tag>2018暑假集训</tag>
         <tag>CodeForces</tag>
@@ -2459,11 +2729,11 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
-        <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
+        <tag>Imitation</tag>
       </tags>
   </entry>
   <entry>
@@ -2475,8 +2745,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>Greedy</tag>
         <tag>HDU</tag>
@@ -2492,8 +2762,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>Greedy</tag>
         <tag>HDU</tag>
@@ -2509,8 +2779,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>数论</tag>
         <tag>HDU</tag>
@@ -2526,8 +2796,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>BFS</tag>
         <tag>HDU</tag>
@@ -2543,8 +2813,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
         <tag>规律</tag>
@@ -2560,8 +2830,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
         <tag>2017HDU多校</tag>
@@ -2578,8 +2848,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>数据结构</tag>
         <tag>2018暑期选拔</tag>
@@ -2594,8 +2864,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑期选拔</tag>
         <tag>BFS</tag>
@@ -2651,8 +2921,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>CSU</tag>
         <tag>矩阵快速幂</tag>
@@ -2667,8 +2937,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>CSU</tag>
         <tag>矩阵快速幂</tag>
@@ -2683,8 +2953,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>AtCoder</tag>
         <tag>math</tag>
         <tag>2018春季训练</tag>
@@ -2699,8 +2969,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>二分</tag>
         <tag>CodeForces</tag>
@@ -2715,8 +2985,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>math</tag>
         <tag>2018春季训练</tag>
         <tag>CodeForces</tag>
@@ -2732,8 +3002,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>math</tag>
         <tag>2018春季训练</tag>
         <tag>CodeForces</tag>
@@ -2749,8 +3019,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>水题</tag>
         <tag>CodeForces</tag>
@@ -2766,8 +3036,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>Greedy</tag>
         <tag>CodeForces</tag>
@@ -2783,8 +3053,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>水题</tag>
         <tag>CodeForces</tag>
@@ -2799,8 +3069,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>CSU</tag>
         <tag>二分</tag>
@@ -2815,8 +3085,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>HDU</tag>
         <tag>线段树</tag>
@@ -2831,8 +3101,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>HDU</tag>
         <tag>线段树</tag>
@@ -2847,8 +3117,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>HDU</tag>
         <tag>线段树</tag>
@@ -2863,8 +3133,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>CSU</tag>
         <tag>位运算</tag>
@@ -3010,8 +3280,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>DP</tag>
         <tag>2018寒假集训</tag>
         <tag>POJ</tag>
@@ -3026,8 +3296,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>补图</tag>
         <tag>HDU</tag>
@@ -3043,8 +3313,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>DP</tag>
         <tag>2018寒假集训</tag>
         <tag>CodeForces</tag>
@@ -3059,8 +3329,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>AtCoder</tag>
         <tag>DP</tag>
         <tag>2018寒假集训</tag>
@@ -3075,8 +3345,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>DP</tag>
         <tag>2018寒假集训</tag>
         <tag>DFS</tag>
@@ -3092,8 +3362,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>BFS</tag>
         <tag>HDU</tag>
@@ -3108,8 +3378,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>BFS</tag>
         <tag>补图</tag>
@@ -3125,8 +3395,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>BFS</tag>
         <tag>CodeForces</tag>
@@ -3141,8 +3411,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>BFS</tag>
         <tag>ZOJ</tag>
@@ -3157,8 +3427,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>Greedy</tag>
         <tag>CodeForces</tag>
@@ -3174,8 +3444,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>HDU</tag>
         <tag>STL</tag>
@@ -3190,8 +3460,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>Imitation</tag>
         <tag>Graph</tag>
@@ -3207,8 +3477,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>Greedy</tag>
         <tag>POJ</tag>
@@ -3223,8 +3493,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>Imitation</tag>
         <tag>CodeForces</tag>
@@ -3240,8 +3510,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>补图</tag>
         <tag>HDU</tag>
