@@ -1,6 +1,265 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[【洛谷-P1009】解题报告（高精度）]]></title>
+    <url>%2Fpost%2Fea5d5d2f.html</url>
+    <content type="text"><![CDATA[原始题目P1009 阶乘之和 题目大意阶乘之和 解题思路爆ll，需要高精度，上ACM大数模板或者 人生苦短，我用PY 解题代码123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113114115116117118119120121122123124125126127128129130131132133134135136137138139140141142143144145146147148149150151152153154155156157158159160161162163164165166167168169170171172173174175176177178179180181182183184185186187188189190191192193194195196197198199200201202203204205206207208209210211212213214215216217218219220221222223224225226227228229230231232233234235236237238239240241242243244245246247248249250251252253254255256257258259260261262263264265266267268269270271272273274275276277278279280281282283284285286287288289290291292293294295296297298299#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;typedef pair&lt;int, int&gt; pii;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define pb push_back#define MAXN 9999#define MAXSIZE 10#define DLEN 4class BigNum &#123;private: int a[500]; //可以控制大数的位数 int len; //大数长度public: BigNum() &#123; len = 1; memset(a, 0, sizeof(a)); &#125; //构造函数 BigNum(const int); //将一个int类型的变量转化为大数 BigNum(const char*); //将一个字符串类型的变量转化为大数 BigNum(const BigNum&amp;); //拷贝构造函数 BigNum&amp; operator=(const BigNum&amp;); //重载赋值运算符，大数之间进行赋值运算 friend istream&amp; operator&gt;&gt;(istream&amp;, BigNum&amp;); //重载输入运算符 friend ostream&amp; operator&lt;&lt;(ostream&amp;, BigNum&amp;); //重载输出运算符 BigNum operator+(const BigNum&amp;) const; //重载加法运算符，两个大数之间的相加运算 BigNum operator-(const BigNum&amp;) const; //重载减法运算符，两个大数之间的相减运算 BigNum operator*(const BigNum&amp;)const; //重载乘法运算符，两个大数之间的相乘运算 BigNum operator/(const int&amp;) const; //重载除法运算符，大数对一个整数进行相除运算 BigNum operator^(const int&amp;) const; //大数的n次方运算 int operator%(const int&amp;) const; //大数对一个int类型的变量进行取模运算 bool operator&gt;(const BigNum&amp; T) const; //大数和另一个大数的大小比较 bool operator&gt;(const int&amp; t) const; //大数和一个int类型的变量的大小比较 void print(); //输出大数&#125;;BigNum::BigNum(const int b) //将一个int类型的变量转化为大数&#123; int c, d = b; len = 0; memset(a, 0, sizeof(a)); while (d &gt; MAXN) &#123; c = d - (d / (MAXN + 1)) * (MAXN + 1); d = d / (MAXN + 1); a[len++] = c; &#125; a[len++] = d;&#125;BigNum::BigNum(const char* s) //将一个字符串类型的变量转化为大数&#123; int t, k, index, l, i; memset(a, 0, sizeof(a)); l = strlen(s); len = l / DLEN; if (l % DLEN) len++; index = 0; for (i = l - 1; i &gt;= 0; i -= DLEN) &#123; t = 0; k = i - DLEN + 1; if (k &lt; 0) k = 0; for (int j = k; j &lt;= i; j++) t = t * 10 + s[j] - '0'; a[index++] = t; &#125;&#125;BigNum::BigNum(const BigNum&amp; T) : len(T.len) //拷贝构造函数&#123; int i; memset(a, 0, sizeof(a)); for (i = 0; i &lt; len; i++) a[i] = T.a[i];&#125;BigNum&amp; BigNum::operator=(const BigNum&amp; n) //重载赋值运算符，大数之间进行赋值运算&#123; int i; len = n.len; memset(a, 0, sizeof(a)); for (i = 0; i &lt; len; i++) a[i] = n.a[i]; return *this;&#125;istream&amp; operator&gt;&gt;(istream&amp; in, BigNum&amp; b) //重载输入运算符&#123; char ch[MAXSIZE * 4]; int i = -1; in &gt;&gt; ch; int l = strlen(ch); int count = 0, sum = 0; for (i = l - 1; i &gt;= 0;) &#123; sum = 0; int t = 1; for (int j = 0; j &lt; 4 &amp;&amp; i &gt;= 0; j++, i--, t *= 10) &#123; sum += (ch[i] - '0') * t; &#125; b.a[count] = sum; count++; &#125; b.len = count++; return in;&#125;ostream&amp; operator&lt;&lt;(ostream&amp; out, BigNum&amp; b) //重载输出运算符&#123; int i; cout &lt;&lt; b.a[b.len - 1]; for (i = b.len - 2; i &gt;= 0; i--) &#123; cout.width(DLEN); cout.fill('0'); cout &lt;&lt; b.a[i]; &#125; return out;&#125;BigNum BigNum::operator+(const BigNum&amp; T) const //两个大数之间的相加运算&#123; BigNum t(*this); int i, big; //位数 big = T.len &gt; len ? T.len : len; for (i = 0; i &lt; big; i++) &#123; t.a[i] += T.a[i]; if (t.a[i] &gt; MAXN) &#123; t.a[i + 1]++; t.a[i] -= MAXN + 1; &#125; &#125; if (t.a[big] != 0) t.len = big + 1; else t.len = big; return t;&#125;BigNum BigNum::operator-(const BigNum&amp; T) const //两个大数之间的相减运算&#123; int i, j, big; bool flag; BigNum t1, t2; if (*this &gt; T) &#123; t1 = *this; t2 = T; flag = 0; &#125; else &#123; t1 = T; t2 = *this; flag = 1; &#125; big = t1.len; for (i = 0; i &lt; big; i++) &#123; if (t1.a[i] &lt; t2.a[i]) &#123; j = i + 1; while (t1.a[j] == 0) j++; t1.a[j--]--; while (j &gt; i) t1.a[j--] += MAXN; t1.a[i] += MAXN + 1 - t2.a[i]; &#125; else t1.a[i] -= t2.a[i]; &#125; t1.len = big; while (t1.a[t1.len - 1] == 0 &amp;&amp; t1.len &gt; 1) &#123; t1.len--; big--; &#125; if (flag) t1.a[big - 1] = 0 - t1.a[big - 1]; return t1;&#125;BigNum BigNum::operator*(const BigNum&amp; T) const //两个大数之间的相乘运算&#123; BigNum ret; int i, j, up; int temp, temp1; for (i = 0; i &lt; len; i++) &#123; up = 0; for (j = 0; j &lt; T.len; j++) &#123; temp = a[i] * T.a[j] + ret.a[i + j] + up; if (temp &gt; MAXN) &#123; temp1 = temp - temp / (MAXN + 1) * (MAXN + 1); up = temp / (MAXN + 1); ret.a[i + j] = temp1; &#125; else &#123; up = 0; ret.a[i + j] = temp; &#125; &#125; if (up != 0) ret.a[i + j] = up; &#125; ret.len = i + j; while (ret.a[ret.len - 1] == 0 &amp;&amp; ret.len &gt; 1) ret.len--; return ret;&#125;BigNum BigNum::operator/(const int&amp; b) const //大数对一个整数进行相除运算&#123; BigNum ret; int i, down = 0; for (i = len - 1; i &gt;= 0; i--) &#123; ret.a[i] = (a[i] + down * (MAXN + 1)) / b; down = a[i] + down * (MAXN + 1) - ret.a[i] * b; &#125; ret.len = len; while (ret.a[ret.len - 1] == 0 &amp;&amp; ret.len &gt; 1) ret.len--; return ret;&#125;int BigNum::operator%(const int&amp; b) const //大数对一个int类型的变量进行取模运算&#123; int i, d = 0; for (i = len - 1; i &gt;= 0; i--) &#123; d = ((d * (MAXN + 1)) % b + a[i]) % b; &#125; return d;&#125;BigNum BigNum::operator^(const int&amp; n) const //大数的n次方运算&#123; BigNum t, ret(1); int i; if (n &lt; 0) exit(-1); if (n == 0) return 1; if (n == 1) return *this; int m = n; while (m &gt; 1) &#123; t = *this; for (i = 1; i &lt;&lt; 1 &lt;= m; i &lt;&lt;= 1) &#123; t = t * t; &#125; m -= i; ret = ret * t; if (m == 1) ret = ret * (*this); &#125; return ret;&#125;bool BigNum::operator&gt;(const BigNum&amp; T) const //大数和另一个大数的大小比较&#123; int ln; if (len &gt; T.len) return true; else if (len == T.len) &#123; ln = len - 1; while (a[ln] == T.a[ln] &amp;&amp; ln &gt;= 0) ln--; if (ln &gt;= 0 &amp;&amp; a[ln] &gt; T.a[ln]) return true; else return false; &#125; else return false;&#125;bool BigNum::operator&gt;(const int&amp; t) const //大数和一个int类型的变量的大小比较&#123; BigNum b(t); return *this &gt; b;&#125;void BigNum::print() //输出大数&#123; int i; cout &lt;&lt; a[len - 1]; for (i = len - 2; i &gt;= 0; i--) &#123; cout.width(DLEN); cout.fill('0'); cout &lt;&lt; a[i]; &#125; cout &lt;&lt; endl;&#125;int n;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; n) &#123; BigNum ans = 0; for (int i = 1; i &lt;= n; ++i) &#123; BigNum temp = 1; rep(j, 1, i + 1) &#123; temp = temp * j; &#125; ans = ans + temp; &#125; ans.print(); &#125;&#125; 12345678num = int(input())sum = 0for i in range(1,num+1): cnt = 1 for j in range(1,i+1): cnt*=j sum+=cntprint(sum) 收获与总结无]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>洛谷</tag>
+        <tag>2019春季训练</tag>
+        <tag>高精度</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1089】解题报告（水题）]]></title>
+    <url>%2Fpost%2Fd0d58037.html</url>
+    <content type="text"><![CDATA[原始题目P1089 津津的储蓄计划 题目大意月初估算，多余的存，如果某月得到零花钱不足预算，则输出-X，X位月份，否则输出最后金钱（存储的变1.2倍）。 解题思路水题 解题代码```C++]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>洛谷</tag>
+        <tag>2019春季训练</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1085】解题报告（水题）]]></title>
+    <url>%2Fpost%2Fdbad9cab.html</url>
+    <content type="text"><![CDATA[原始题目P1085 不高兴的津津 题目大意阈值排序，没有则0，有输出相同最大值最小的坐标。 解题思路水题 解题代码1234567891011121314151617181920212223242526272829303132333435363738394041424344454647#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;typedef pair&lt;int, int&gt; pii;typedef pair&lt;string, string&gt; pss;typedef vector&lt;int&gt; vi;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se second#define mp make_pair#define np next_permutation#define pb push_back#define all(x) x.begin(), x.end()#define INF 0x3f3f3f3fvector&lt;pii&gt; ans;int mmax = -INF;bool cmp(pii a, pii b)&#123; if (a.second != b.second) &#123; return a.second &gt; b.second; &#125; else return a.fi &lt; b.fi;&#125;int main()&#123; ios::sync_with_stdio(false); rep(i, 1, 7 + 1) &#123; int a, b; cin &gt;&gt; a &gt;&gt; b; if (a + b &gt; 8) &#123; ans.pb(mp(i, a + b)); &#125; &#125; if (ans.size() == 0) cout &lt;&lt; 0 &lt;&lt; endl; else &#123; sort(all(ans), cmp); cout &lt;&lt; ans[0].first &lt;&lt; endl; &#125;&#125; 收获与反思无]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>洛谷</tag>
+        <tag>2019春季集训</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1071】解题报告（字符串）]]></title>
+    <url>%2Fpost%2F6aa464c0.html</url>
+    <content type="text"><![CDATA[原始题目P1071 潜伏者 题目大意仅大写字母的放射密码。 所有信息扫描完毕，‘AA’-‘ZZ’ 所有 26 26个字母在原信息中均出现过并获得了相应的“密字”。 所有信息扫描完毕，但发现存在某个（或某些）字母在原信息中没有出现。 扫描中发现掌握的信息里有明显的自相矛盾或错误（违反 SS 国密码的编码规则）。 解题思路map映射储存然后判断是否满足1条件即可。 解题代码123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263// 数组类型和 映射都尝试一下#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;typedef pair&lt;int, int&gt; pii;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se second#define mp make_pair#define np next_permutation#define pb puss_back#define endl '\n'#define all(x) x.begin(), x.end()string a, b, c;map&lt;char, char&gt; dic, dic2;bool check()&#123; dic.clear(); dic2.clear(); if (a.length() != b.length()) return false; rep(i, 0, a.length()) &#123; if (dic.count(a[i])) &#123; if (dic[a[i]] != b[i]) return false; &#125; else &#123; if (dic2.count(b[i]) &amp;&amp; dic2[b[i]] != a[i]) return false; dic[a[i]] = b[i]; dic2[b[i]] = a[i]; &#125; &#125; // cout &lt;&lt; dic.size() &lt;&lt; endl; if (dic2.size() == 26) return true; else return false;&#125;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; a &gt;&gt; b &gt;&gt; c) &#123; if (!check()) cout &lt;&lt; "Failed" &lt;&lt; endl; else &#123; rep(i, 0, c.length()) &#123; cout &lt;&lt; dic[c[i]]; &#125; cout &lt;&lt; endl; &#125; &#125;&#125; 收获与反思无]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>字符串</tag>
+        <tag>洛谷</tag>
+        <tag>2019春季训练</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1068】解题报告（排序）]]></title>
+    <url>%2Fpost%2F386b56e6.html</url>
+    <content type="text"><![CDATA[原始题目P1068 分数线划定 题目大意取前150%分数，然后按照分数从高到低（不低于录取分数）输出。 解题思路排序后直接判断分数即可。 解题代码1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;const int maxn = 1e5 + 5;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se second#define pb push_back#define np next_permutation#define mp make_pair#define endl '\n'struct node &#123; int id, score;&#125;;node a[maxn], ans[maxn];bool cmp(node a, node b)&#123; if (a.score != b.score) return a.score &gt; b.score; else return a.id &lt; b.id;&#125;int n, m;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; n &gt;&gt; m) &#123; m = (int)(m * 1.5); if (m &gt; n) m = n; rep(i, 1, n + 1) cin &gt;&gt; a[i].id &gt;&gt; a[i].score; sort(a + 1, a + n + 1, cmp); int cnt = 1; while (cnt &lt;= n &amp;&amp; a[cnt].score &gt;= a[m].score) &#123; ans[cnt].id = a[cnt].id; ans[cnt].score = a[cnt].score; cnt++; &#125; cnt--; cout &lt;&lt; a[m].score &lt;&lt; " " &lt;&lt; cnt &lt;&lt; endl; rep(i, 1, cnt + 1) &#123; cout &lt;&lt; ans[i].id &lt;&lt; " " &lt;&lt; ans[i].score &lt;&lt; endl; &#125; &#125;&#125; 收获与反思无]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>洛谷</tag>
+        <tag>2019春季训练</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1055】解题报告（字符串）]]></title>
+    <url>%2Fpost%2F69feca91.html</url>
+    <content type="text"><![CDATA[原始题目P1055 ISBN号码 题目大意对于每一个ISBN编号，最后末位是各位乘对应数组模11的结果，对于每一个ISBN检测是否符合要求。 解题思路按字符串输入做判断即可 解题代码1234567891011121314151617181920212223242526272829303132333435363738394041424344454647#include &lt;bits/stdc++.h&gt;#include &lt;sstream&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;typedef pair&lt;int, int&gt; pii;typedef pair&lt;string, string&gt; pss;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se second#define pb push_back#define mp make_pair#define np next_permutation#define INF 0x3f3f3f3f#define EPS 1e-8#define endl '\n'int main()&#123; ios::sync_with_stdio(false); string s; while (cin &gt;&gt; s) &#123; stringstream ss(s); char checkstring[20], temp; int cnt = 1; while (ss &gt;&gt; temp) &#123; if (temp != '-') checkstring[cnt++] = temp; &#125; int ans = 0; rep(i, 1, 10) ans += (checkstring[i] - '0') * i; ans %= 11; if (ans == 10) ans = 'X'; else ans += '0'; if (ans != checkstring[10]) &#123; rep(i, 0, s.length() - 1) cout &lt;&lt; s[i]; cout &lt;&lt; (char)ans &lt;&lt; endl; &#125; else cout &lt;&lt; "Right" &lt;&lt; endl; &#125;&#125; 收获与反思无]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>字符串</tag>
+        <tag>洛谷</tag>
+        <tag>2019春季训练</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1051】解题报告（模拟）]]></title>
+    <url>%2Fpost%2F7d274866.html</url>
+    <content type="text"><![CDATA[原始题目text 题目大意解题思路解题代码]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>洛谷</tag>
+        <tag>2019春季训练</tag>
+        <tag>imitation</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1035】解题报告（水题）]]></title>
+    <url>%2Fpost%2Fd0793265.html</url>
+    <content type="text"><![CDATA[原始题目P1035 题目大意对于调和级数，求最小的n使得调和级数求和大于给定的k。 解题思路水题 解题代码1234567891011121314151617181920212223242526272829303132333435363738#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;typedef pair&lt;int, int&gt; pii;typedef pair&lt;string, string&gt; pss;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se second#define mp make_pair#define np next_permutation#define pb push_back#define tol(x, y) std::transform(x.begin(), x.end(), y.begin(), ::tolower)#define tou(x, y) std::transform(x.begin(), x.end(), y.begin(), ::toupper)#define all(x) x.begin(), x.end()#define INF 0x3f3f3f3f#define EPS 1e-8int m, t;ll n;double ans;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; n) &#123; ans = 0; ll i; for (i = 1; ans + 1.0 / i &lt;= n + EPS; i++) &#123; ans += 1.0 / i; &#125; cout &lt;&lt; i &lt;&lt; endl; &#125;&#125; 收获与反思无]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>洛谷</tag>
+        <tag>2019春季训练</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1010】解题报告（模拟）]]></title>
+    <url>%2Fpost%2F2bfcd7aa.html</url>
+    <content type="text"><![CDATA[原始题目P1010 幂次方 题目大意2表示2的1次方，2(0)表示2的0次方，所有的底数和指数都变为二进制表示形式，且仅有2和2(0)构成。 解题思路递归得到n的表示方法，输出字符串并记忆化存储到映射中。 注意: 开头部分处理+号 0,1作为边界不再继续递归 递归返回结果加入上一次调用构造的字符串。 解题代码123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se second#define mp make_pair#define np next_permutationint n;map&lt;int, string&gt; tostring;void init()&#123; tostring.clear(); tostring.insert(mp(0, "0")); tostring.insert(mp(1, "2(0)")); tostring.insert(mp(2, "2"));&#125;string solve(int n)&#123; if (tostring.count(n)) &#123; return tostring[n]; &#125; string temp = ""; int num = 1; while ((1 &lt;&lt; num) &lt;= n) num++; int flag = 1; per(i, 0, num) &#123; if ((1 &lt;&lt; i) &amp; n) &#123; if (flag) &#123; flag = 0; if (i == 1 || i == 0) &#123; temp += tostring[i + 1]; continue; &#125; temp += "2("; temp += solve(i); temp += ")"; &#125; else &#123; temp += "+"; if (i == 1 || i == 0) &#123; temp += tostring[i + 1]; continue; &#125; temp += "2("; temp += solve(i); temp += ")"; &#125; &#125; &#125; tostring.insert(mp(n, temp)); return temp;&#125;int main()&#123; ios::sync_with_stdio(false); init(); while (cin &gt;&gt; n) &#123; cout &lt;&lt; solve(n) &lt;&lt; endl; &#125;&#125; 收获与反思模拟+递归，注意处理的情况，记忆化。]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>洛谷</tag>
+        <tag>2019春季训练</tag>
+        <tag>imitation</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1008】解题报告（水题）]]></title>
+    <url>%2Fpost%2F7fbcb888.html</url>
+    <content type="text"><![CDATA[原始题目P1008 三连击 题目大意将$1,2, \cdots ,9$共$9$个数分成$3$组，分别组成$3$个三位数，且使这$3$个三位数构成$1:2:3$的比例，试求出所有满足条件的$3$个三位数。 解题思路注意无0的问题，暴力解。 解题代码123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384// 192 384 576// 219 438 657// 267 534 801 这个包含0去掉// 273 546 819// 327 654 981#include &lt;bits/stdc++.h&gt;using namespace std;const int maxn = 1e5 + 5;typedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se second#define endl '\n'#define all(x) x.begin(), x.end()#define pb push_back#define np next_permutation#define mp make_pairint vis[maxn];bool check(int num)&#123; int a[6]; int num1 = 2 * num; int num2 = 3 * num; if (num2 &gt;= 999) return false; // if (num / 100 == 1) // cout &lt;&lt; num1 &lt;&lt; " " &lt;&lt; num2 &lt;&lt; endl; rep(i, 0, 3) &#123; a[i] = num1 % 10; num1 /= 10; &#125; rep(i, 3, 6) &#123; a[i] = num2 % 10; num2 /= 10; &#125; rep(i, 0, 6) &#123; if (vis[a[i]]) return false; vis[a[i]] = 1; &#125; return true;&#125;int main()&#123; ios::sync_with_stdio(false); rep(i, 1, 3 + 1) &#123; vis[i] = 1; rep(j, 1, 9 + 1) &#123; if (vis[j]) continue; vis[j] = 1; rep(k, 1, 9 + 1) &#123; vis[i] = vis[j] = 1; if (vis[k]) continue; vis[k] = 1; int temp = 100 * i + 10 * j + k; if (check(temp)) &#123; cout &lt;&lt; temp &lt;&lt; " " &lt;&lt; 2 * temp &lt;&lt; " " &lt;&lt; 3 * temp &lt;&lt; endl; &#125; memset(vis, 0, sizeof(vis)); &#125; vis[j] = 0; &#125; vis[i] = 0; &#125; int n; cin &gt;&gt; n;&#125; 收获与反思无]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>洛谷</tag>
+        <tag>2019春季训练</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1940】解题报告（数学）]]></title>
+    <url>%2Fpost%2F81d45fa1.html</url>
+    <content type="text"><![CDATA[原始题目P1940 Reversible Number 题目大意有些正整数n可能满足n + 回文(n)（回文(n)是把n倒过来写所得的数）得到的结果的各位都是奇数。那么，小于等于10^x的Reversible数有多少个？方便起见，x是大于等于3小于等于400的正整数。 解题思路很明显不可能是暴力的，题目范围给400位，所以暗示我们跟位数有关系。 暴力求前几位能得到下面数据 1-9 0 10-99 20 100-999 100 1000-9999 600 10000-99999 0 100000-999999 18000 1000000-9999999 50000 发现奇偶位是有规律的。 数学如下 偶数位数； 若要保证回文性质，要求全部位不能进位 可用反证法证明，推矛盾,所以有: even[2] = 20 , even[2n] = even[2(n-1)] * 30 奇数位数： 必然是 进位|不进位|进位 进位|不进位|进位|不进位|进位|不进位|进位 即模4余3位数时可以找到满足的reversible数。 odd[3] = [100], odd[4n+3] = odd[4(n-1)+3] * 500 暴力对拍代码 12345678910111213141516171819202122232425262728293031323334353637383940#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;#define rep(i, a, n) for (ll i = a; i &lt; n; ++i)#define per(i, a, n) for (ll i = n - 1; i &gt;= a; --i)ll n, m, N;int main()&#123; while (cin &gt;&gt; n &gt;&gt; m &gt;&gt; N) &#123; ll cnt = 0; rep(i, n, m + 1) &#123; ll flag = 1; if (i % 10 == 0) continue; ll temp = i; ll sum = temp; for (ll j = 0; j &lt; N; j++) &#123; ll addsum = temp % 10; for (ll k = 0; k &lt; N - j - 1; k++) sum += addsum; temp /= 10; &#125; temp = sum; while (temp) &#123; if ((temp &amp; 1) == 0) flag = 0; temp /= 10; &#125; // cout &lt;&lt; sum &lt;&lt; endl; if (flag) &#123; // cout &lt;&lt; "i=" &lt;&lt; i &lt;&lt; " sum=" &lt;&lt; sum &lt;&lt; endl; cnt++; &#125; &#125; cout &lt;&lt; cnt &lt;&lt; endl; &#125;&#125; 解题代码123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113114115116117118119120121122123124125126127128129130131132133134135136137138139140141142143144145146147148149150151152153154155156157158159160161162163164165166167168169170171172173174175176177178179180181182183184185186187188189190191192193194195196197198199200201202203204205206207208209210211212213214215216217218219220221222223224225226227228229230231232233234235236237238239240241242243244245246247248249250251252253254255256257258259260261262263264265266267268269270271272273274275276277278279280281282283284285286287288289290291292293294295296297298299300301302303304305306307308309310311312313314315316317318319320321322323324325326327328329330331332333334335336337// 1-9 0// 10-99 20// 100-999 100// 1000-9999 600// 10000-99999 0// 100000-999999 18000// 1000000-9999999 50000 ???//#include &lt;bits/stdc++.h&gt;using namespace std;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se second#define pb push_back#define np next_permutation#define INF 0x3f3f3f3f#define EPS 1e-8#define eps '\n'typedef long long ll;typedef unsigned long long ull;typedef pair&lt;int, int&gt; pii;typedef pair&lt;string, string&gt; pss;typedef vector&lt;int&gt; vi;#include &lt;algorithm&gt;#include &lt;iomanip&gt;#include &lt;iostream&gt;#include &lt;string&gt;using namespace std;#define MAXN 9999#define MAXSIZE 10#define DLEN 4class BigNum &#123;private: int a[500]; //可以控制大数的位数 int len; //大数长度public: BigNum() &#123; len = 1; memset(a, 0, sizeof(a)); &#125; //构造函数 BigNum(const int); //将一个int类型的变量转化为大数 BigNum(const char*); //将一个字符串类型的变量转化为大数 BigNum(const BigNum&amp;); //拷贝构造函数 BigNum&amp; operator=(const BigNum&amp;); //重载赋值运算符，大数之间进行赋值运算 friend istream&amp; operator&gt;&gt;(istream&amp;, BigNum&amp;); //重载输入运算符 friend ostream&amp; operator&lt;&lt;(ostream&amp;, BigNum&amp;); //重载输出运算符 BigNum operator+(const BigNum&amp;) const; //重载加法运算符，两个大数之间的相加运算 BigNum operator-(const BigNum&amp;) const; //重载减法运算符，两个大数之间的相减运算 BigNum operator*(const BigNum&amp;)const; //重载乘法运算符，两个大数之间的相乘运算 BigNum operator/(const int&amp;) const; //重载除法运算符，大数对一个整数进行相除运算 BigNum operator^(const int&amp;) const; //大数的n次方运算 int operator%(const int&amp;) const; //大数对一个int类型的变量进行取模运算 bool operator&gt;(const BigNum&amp; T) const; //大数和另一个大数的大小比较 bool operator&gt;(const int&amp; t) const; //大数和一个int类型的变量的大小比较 void print(); //输出大数&#125;;BigNum::BigNum(const int b) //将一个int类型的变量转化为大数&#123; int c, d = b; len = 0; memset(a, 0, sizeof(a)); while (d &gt; MAXN) &#123; c = d - (d / (MAXN + 1)) * (MAXN + 1); d = d / (MAXN + 1); a[len++] = c; &#125; a[len++] = d;&#125;BigNum::BigNum(const char* s) //将一个字符串类型的变量转化为大数&#123; int t, k, index, l, i; memset(a, 0, sizeof(a)); l = strlen(s); len = l / DLEN; if (l % DLEN) len++; index = 0; for (i = l - 1; i &gt;= 0; i -= DLEN) &#123; t = 0; k = i - DLEN + 1; if (k &lt; 0) k = 0; for (int j = k; j &lt;= i; j++) t = t * 10 + s[j] - '0'; a[index++] = t; &#125;&#125;BigNum::BigNum(const BigNum&amp; T) : len(T.len) //拷贝构造函数&#123; int i; memset(a, 0, sizeof(a)); for (i = 0; i &lt; len; i++) a[i] = T.a[i];&#125;BigNum&amp; BigNum::operator=(const BigNum&amp; n) //重载赋值运算符，大数之间进行赋值运算&#123; int i; len = n.len; memset(a, 0, sizeof(a)); for (i = 0; i &lt; len; i++) a[i] = n.a[i]; return *this;&#125;istream&amp; operator&gt;&gt;(istream&amp; in, BigNum&amp; b) //重载输入运算符&#123; char ch[MAXSIZE * 4]; int i = -1; in &gt;&gt; ch; int l = strlen(ch); int count = 0, sum = 0; for (i = l - 1; i &gt;= 0;) &#123; sum = 0; int t = 1; for (int j = 0; j &lt; 4 &amp;&amp; i &gt;= 0; j++, i--, t *= 10) &#123; sum += (ch[i] - '0') * t; &#125; b.a[count] = sum; count++; &#125; b.len = count++; return in;&#125;ostream&amp; operator&lt;&lt;(ostream&amp; out, BigNum&amp; b) //重载输出运算符&#123; int i; cout &lt;&lt; b.a[b.len - 1]; for (i = b.len - 2; i &gt;= 0; i--) &#123; cout.width(DLEN); cout.fill('0'); cout &lt;&lt; b.a[i]; &#125; return out;&#125;BigNum BigNum::operator+(const BigNum&amp; T) const //两个大数之间的相加运算&#123; BigNum t(*this); int i, big; //位数 big = T.len &gt; len ? T.len : len; for (i = 0; i &lt; big; i++) &#123; t.a[i] += T.a[i]; if (t.a[i] &gt; MAXN) &#123; t.a[i + 1]++; t.a[i] -= MAXN + 1; &#125; &#125; if (t.a[big] != 0) t.len = big + 1; else t.len = big; return t;&#125;BigNum BigNum::operator-(const BigNum&amp; T) const //两个大数之间的相减运算&#123; int i, j, big; bool flag; BigNum t1, t2; if (*this &gt; T) &#123; t1 = *this; t2 = T; flag = 0; &#125; else &#123; t1 = T; t2 = *this; flag = 1; &#125; big = t1.len; for (i = 0; i &lt; big; i++) &#123; if (t1.a[i] &lt; t2.a[i]) &#123; j = i + 1; while (t1.a[j] == 0) j++; t1.a[j--]--; while (j &gt; i) t1.a[j--] += MAXN; t1.a[i] += MAXN + 1 - t2.a[i]; &#125; else t1.a[i] -= t2.a[i]; &#125; t1.len = big; while (t1.a[t1.len - 1] == 0 &amp;&amp; t1.len &gt; 1) &#123; t1.len--; big--; &#125; if (flag) t1.a[big - 1] = 0 - t1.a[big - 1]; return t1;&#125;BigNum BigNum::operator*(const BigNum&amp; T) const //两个大数之间的相乘运算&#123; BigNum ret; int i, j, up; int temp, temp1; for (i = 0; i &lt; len; i++) &#123; up = 0; for (j = 0; j &lt; T.len; j++) &#123; temp = a[i] * T.a[j] + ret.a[i + j] + up; if (temp &gt; MAXN) &#123; temp1 = temp - temp / (MAXN + 1) * (MAXN + 1); up = temp / (MAXN + 1); ret.a[i + j] = temp1; &#125; else &#123; up = 0; ret.a[i + j] = temp; &#125; &#125; if (up != 0) ret.a[i + j] = up; &#125; ret.len = i + j; while (ret.a[ret.len - 1] == 0 &amp;&amp; ret.len &gt; 1) ret.len--; return ret;&#125;BigNum BigNum::operator/(const int&amp; b) const //大数对一个整数进行相除运算&#123; BigNum ret; int i, down = 0; for (i = len - 1; i &gt;= 0; i--) &#123; ret.a[i] = (a[i] + down * (MAXN + 1)) / b; down = a[i] + down * (MAXN + 1) - ret.a[i] * b; &#125; ret.len = len; while (ret.a[ret.len - 1] == 0 &amp;&amp; ret.len &gt; 1) ret.len--; return ret;&#125;int BigNum::operator%(const int&amp; b) const //大数对一个int类型的变量进行取模运算&#123; int i, d = 0; for (i = len - 1; i &gt;= 0; i--) &#123; d = ((d * (MAXN + 1)) % b + a[i]) % b; &#125; return d;&#125;BigNum BigNum::operator^(const int&amp; n) const //大数的n次方运算&#123; BigNum t, ret(1); int i; if (n &lt; 0) exit(-1); if (n == 0) return 1; if (n == 1) return *this; int m = n; while (m &gt; 1) &#123; t = *this; for (i = 1; i &lt;&lt; 1 &lt;= m; i &lt;&lt;= 1) &#123; t = t * t; &#125; m -= i; ret = ret * t; if (m == 1) ret = ret * (*this); &#125; return ret;&#125;bool BigNum::operator&gt;(const BigNum&amp; T) const //大数和另一个大数的大小比较&#123; int ln; if (len &gt; T.len) return true; else if (len == T.len) &#123; ln = len - 1; while (a[ln] == T.a[ln] &amp;&amp; ln &gt;= 0) ln--; if (ln &gt;= 0 &amp;&amp; a[ln] &gt; T.a[ln]) return true; else return false; &#125; else return false;&#125;bool BigNum::operator&gt;(const int&amp; t) const //大数和一个int类型的变量的大小比较&#123; BigNum b(t); return *this &gt; b;&#125;void BigNum::print() //输出大数&#123; int i; cout &lt;&lt; a[len - 1]; for (i = len - 2; i &gt;= 0; i--) &#123; cout.width(DLEN); cout.fill('0'); cout &lt;&lt; a[i]; &#125; cout &lt;&lt; endl;&#125;int n, m;int main()&#123; while (~scanf("%d", &amp;n)) &#123; BigNum ans; if (n == 1) printf("0\n"); else if (n == 2) printf("20\n"); else if (n == 3) &#123; printf("120\n"); &#125; // continue; else &#123; ans = 120; BigNum tempeven = 20; BigNum tempodd = 100; for (int i = 4; i &lt;= n; i++) &#123; if (i % 4 == 3) &#123; ans = ans + (tempodd = tempodd * 500); &#125; if ((i &amp; 1) == 0) &#123; ans = ans + (tempeven = tempeven * 30); &#125; &#125; ans.print(); &#125; &#125;&#125; 收获与反思奇偶位发现规律并且找出可能数情况的本质，而不是单纯对数据找规律。]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>洛谷</tag>
+        <tag>2019春季训练</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1396】解题报告（二分，BFS）]]></title>
+    <url>%2Fpost%2F3156b4f3.html</url>
+    <content type="text"><![CDATA[原始题目P1396 营救 题目大意给定一张图，求s到t的路径使得路径上的边权值最大值最小 解题思路最大值最小问题 二分答案，左界为0有界，有界为所有边权的Max。 解题代码1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980818283848586878889909192939495//bfs+二分#include &lt;bits/stdc++.h&gt;using namespace std;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se second#define pb push_back#define np next_permutation#define INF 0x3f3f3f3f#define EPS 1e-8#define eps '\n'typedef long long ll;typedef unsigned long long ull;typedef pair&lt;int, int&gt; pii;typedef pair&lt;string, string&gt; pss;typedef vector&lt;int&gt; vi;const int maxn = 1e5 + 5;struct edge &#123; int u, v, w; edge(int _u, int _v, int _w) : u(_u) , v(_v) , w(_w) &#123; &#125; edge() &#123;&#125;&#125;;vector&lt;edge&gt; e[maxn];int vis[maxn];int n, m, ans, ss, tt;inline void addEdge(int u, int v, int w)&#123; e[u].push_back(edge(u, v, w));&#125;bool check(int mid)&#123; queue&lt;int&gt; q; memset(vis, 0, sizeof(int) * (n + 1)); q.push(ss); vis[ss] = 1; int now, nxt; while (!q.empty()) &#123; now = q.front(); q.pop(); rep(i, 0, e[now].size()) &#123; int tempv = e[now][i].v; int tempw = e[now][i].w; if (vis[tempv] || tempw &gt; mid) continue; else &#123; vis[tempv] = 1; if (tempv == tt) return true; q.push(tempv); &#125; &#125; &#125; return false;&#125;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; n &gt;&gt; m &gt;&gt; ss &gt;&gt; tt) &#123; ans = 1e4 + 5; int tu, tv, tw; rep(i, 0, n + 1) e[i].clear(); rep(i, 1, m + 1) &#123; cin &gt;&gt; tu &gt;&gt; tv &gt;&gt; tw; addEdge(tu, tv, tw); addEdge(tv, tu, tw); &#125; int l = 0; int r = 1e4 + 5; int mid; while (l &lt; r) &#123; mid = (l + r) &gt;&gt; 1; if (check(mid)) r = mid; else l = mid + 1; &#125; cout &lt;&lt; l &lt;&lt; endl; &#125;&#125; 收获与反思最大值最小问题，最小值最大问题，可尝试二分答案。]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>洛谷</tag>
+        <tag>二分，BFS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1056】解题报告（模拟）]]></title>
+    <url>%2Fpost%2F792ebb35.html</url>
+    <content type="text"><![CDATA[原始题目P1056 排座椅 题目大意给出一个$M$行$N$列的矩形，某些相邻的同学交头接耳，设置$K$条横向通道，$L$条纵向通道给出最好的划分方案，能避免最多组同学交头接耳。 解题思路对每一行/列交头接耳的同学对数计数，分别对行列排序后排序输出前k或l个。（注意输出的时候按照字典序，所以要将前k或l个做二次排序，这里有些小坑）。 解题代码```C++ include using namespace std;typedef long long ll;const int maxn = 1e5 + 5; define rep(i, a, b) for (int i = a; i &lt; b; ++i)define per(i, a, b) for (int i = b - 1; i &gt;= a; —i)define fi firstdefine se secondint m, n, a, b, d;int xx1, yy1, xx2, yy2; struct node { int id; int cnt;};node xx[maxn], yy[maxn]; bool cmp(node a, node b){ return a.cnt &gt; b.cnt;} bool cmp1(node a, node b){ return a.id &lt; b.id;} int main(){ ios::sync_with_stdio(false); while (cin &gt;&gt; m &gt;&gt; n &gt;&gt; a &gt;&gt; b &gt;&gt; d) { rep(i, 1, m + 1) xx[i].id = i, xx[i].cnt = 0; rep(i, 1, n + 1) yy[i].id = i, yy[i].cnt = 0; rep(i, 0, d) { cin &gt;&gt; xx1 &gt;&gt; yy1 &gt;&gt; xx2 &gt;&gt; yy2; if (xx1 == xx2) { yy[min(yy1, yy2)].cnt++; } else { xx[min(xx1, xx2)].cnt++; } } sort(xx + 1, xx + m + 1, cmp); sort(yy + 1, yy + n + 1, cmp); sort(xx + 1, xx + a + 1, cmp1); sort(yy + 1, yy + b + 1, cmp1); cout &lt;&lt; xx[1].id; rep(i, 2, a + 1) cout &lt;&lt; “ “ &lt;&lt; xx[i].id; cout &lt;&lt; endl; cout &lt;&lt; yy[1].id; rep(i, 2, b + 1) cout &lt;&lt; “ “ &lt;&lt; yy[i].id; cout &lt;&lt; endl; }}··· 收获与反思因为需要二次排序那里一直Wa，注意审题啊，题目输出格式里明确指出了。]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>洛谷</tag>
+        <tag>2019春季训练</tag>
+        <tag>imitation</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1067】解题报告（模拟）]]></title>
+    <url>%2Fpost%2Fdd932d44.html</url>
+    <content type="text"><![CDATA[原始题目P1067 多项式输出 题目大意给出n次多项式的各项系数，输出符合规范的多项式表达形式。 解题思路模拟注意点： 最大项为正不需要加正号，其余各项需要 x^1改为x 为0的时候跳过 解题代码123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354//没考虑常数项，过了#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;const int maxn = 1e5 + 5;#define rep(i, a, b) for (int i = a; i &lt; b; ++i)#define per(i, a, b) for (int i = b - 1; i &gt;= a; --i)// int x[maxn], y[maxn];int a[maxn], b[maxn];int n;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; n) &#123; per(i, 0, n + 1) &#123; cin &gt;&gt; a[i]; if (i == 0) &#123; if (a[i] == 0) cout &lt;&lt; endl; else &#123; if (a[i] &gt; 0) cout &lt;&lt; "+"; cout &lt;&lt; a[i] &lt;&lt; endl; &#125; break; &#125; else &#123; if (a[i] == 0) continue; if (i != n &amp;&amp; a[i] &gt; 0) cout &lt;&lt; "+"; if (abs(a[i]) == 1) &#123; if (a[i] &lt; 0) cout &lt;&lt; "-"; if (i != 1) cout &lt;&lt; "x^" &lt;&lt; i; else cout &lt;&lt; "x"; &#125; else &#123; cout &lt;&lt; a[i]; if (i != 1) cout &lt;&lt; "x^" &lt;&lt; i; else cout &lt;&lt; "x"; &#125; &#125; &#125; cout &lt;&lt; endl; &#125; return 0;&#125; 收获与反思模拟注意细节。]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>洛谷</tag>
+        <tag>2019春季训练</tag>
+        <tag>imitation</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1003】解题报告（模拟）]]></title>
+    <url>%2Fpost%2F4a2509a9.html</url>
+    <content type="text"><![CDATA[原始题目P1003 铺地毯 题目描述为了准备一个独特的颁奖典礼，组织者在会场的一片矩形区域（可看做是平面直角坐标系的第一象限）铺上一些矩形地毯。一共有 $n$ 张地毯，编号从 $1$ 到 $n$。现在将这些地毯按照编号从小到大的顺序平行于坐标轴先后铺设，后铺的地毯覆盖在前面已经铺好的地毯之上。 地毯铺设完成后，组织者想知道覆盖地面某个点的最上面的那张地毯的编号。注意：在矩形地毯边界和四个顶点上的点也算被地毯覆盖。 输入输出格式输入格式：输入共$n+2$行 第一行，一个整数$n$，表示总共有$n$张地毯 接下来的$n$行中，第 $i+1$ 行表示编号$i$的地毯的信息，包含四个正整数$a ,b ,g ,k$，每两个整数之间用一个空格隔开，分别表示铺设地毯的左下角的坐标$(a,b)$以及地毯在$x$轴和$y$轴方向的长度 第$n+2$行包含两个正整数$x$和$y$，表示所求的地面的点的坐标$(x,y)$ 输出格式：输出共$1$行，一个整数，表示所求的地毯的编号；若此处没有被地毯覆盖则输出$-1$ 输入输出样例输入样例#1：31 0 2 30 2 3 32 1 3 32 2 输出样例#1：3 输入样例#2：31 0 2 30 2 3 32 1 3 34 5 输出样例#2：-1 说明【样例解释1】 如下图，1 号地毯用实线表示，2 号地毯用虚线表示，3 号用双实线表示，覆盖点$(2,2)$的最上面一张地毯是 $3$ 号地毯。 【数据范围】 对于30% 的数据，有 $n ≤2$ ；对于50% 的数据，$0 ≤a, b, g, k≤100$；对于100%的数据，有 $0 ≤n ≤10,000$ ，$0≤a, b, g, k ≤100,000$ 。 noip2011提高组day1第1题 题目大意如题 解题思路根据查询点的多少选择，查询点少的时候考虑保存操作根据然后对每个查询看最终点的覆盖值。 解题代码123456789101112131415161718192021222324252627282930313233#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;const int maxn = 1e5 + 5;#define rep(i, a, b) for (int i = a; i &lt; b; ++i)#define per(i, a, b) for (int i = b - 1; i &gt;= a; --i)int x[maxn], y[maxn];int a[maxn], b[maxn];int n;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; n) &#123; int ans = -1; rep(i, 1, n + 1) &#123; cin &gt;&gt; x[i] &gt;&gt; y[i] &gt;&gt; a[i] &gt;&gt; b[i]; &#125; int xx, yy; cin &gt;&gt; xx &gt;&gt; yy; rep(i, 1, n + 1) &#123; if (xx &gt;= x[i] &amp;&amp; xx &lt;= x[i] + a[i] &amp;&amp; yy &gt;= y[i] &amp;&amp; yy &lt;= y[i] + b[i]) &#123; ans = i; &#125; &#125; cout &lt;&lt; ans &lt;&lt; endl; &#125; return 0;&#125; 收获与反思简单模拟即可。]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>洛谷</tag>
+        <tag>2019春季训练</tag>
+        <tag>imitation</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P1001】结题报告（水题）]]></title>
+    <url>%2Fpost%2Fb04c1acf.html</url>
+    <content type="text"><![CDATA[原始题目P1001 A+B Problem 题目描述输入两个整数a,b，输出它们的和(|a|,|b|&lt;=10^9)。 注意 pascal使用integer会爆掉哦！ 有负数哦！ c/c++的main函数必须是int类型，而且最后要return 0。这不仅对洛谷其他题目有效，而且也是noip/noi比赛的要求！ 好吧，同志们，我们就从这一题开始，向着大牛的路进发。 任何一个伟大的思想，都有一个微不足道的开始。 输入输出格式输入格式：两个整数以空格分开 输出格式：一个数 输入输出样例输入样例#1：20 30 输出样例#1：50 题目大意如题 解题思路水题 解题代码1234567891011121314#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;ll a, b, c, d;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; a &gt;&gt; b &gt;&gt; c &gt;&gt; d) &#123; ll sum = (c - a) * 60 + d - b; cout &lt;&lt; sum / 60ll &lt;&lt; " " &lt;&lt; sum % 60 &lt;&lt; endl; &#125; return 0;&#125; 收获与反思无]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>洛谷</tag>
+        <tag>2019春季训练</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Javascript学习——《精通Javascript》读书笔记]]></title>
+    <url>%2Fpost%2F859584ac.html</url>
+    <content type="text"><![CDATA[第2章 特性、函数和对象语言特性引用与值，js中采用值，引用两种方式来保存数据。原始值复制到变量中，而其余部分都依赖引用，从而表征上看的是多个不同名的对象维护相同的数据。 作用域不同于块作用域的语言，js中只有两种作用域：函数作用域与全局作用域。 举个栗子 123456789101112131415161718var foo = 'test';if(true)&#123; //其实修改的是全局作用域 var foo = 'new test';&#125;// 我们会发现这个是true，js中if块语句修改的是全局作用域console.log(foo === 'new test');function test() &#123; var foo = 'old test'; // 函数作用域中我们这里看到的是ture console.log(foo === 'old test');&#125;//退出函数作用域我们看到的依旧是new testconsole.log(foo === 'new test'); 另外还需要注意隐式的全局变量声明，专业的js程序猿都应该使用var来初始化变量。这样变量才会拥有你所期望的作用域，避免出乎意料的产生全局变量（比如在函数中不加var）。 上下文你的代码总是拥有某种形式的上下文（代码执行的环境）。上下文是一件强有力的工具，也是面向对象代码必不可少的组成部分。 太秀了，直接给函数然后就可以调用函数的方法了。 123456789101112131415function setFoo(fooInput)&#123; this.foo = fooInput;&#125;var foo = 10; //这里定义全局变量foovar obj = &#123;foo:10&#125;; //定义一个对象，一个成员foo//此时foo的值为10setFoo(30);//全局调用，this实际上是window，所以全局变量foo值为30//骚操作来了obj.setFoo = setFoo;obj.setFoo(30);//这样一来将setFoo()与obj绑定在一起，通过this访问obj的上下文，修改了对应的值。 Javascript中有两种方法可以在指定的上下文中运行函数。]]></content>
+      <categories>
+        <category>编程</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[《日本电子产业兴衰史》读书笔记]]></title>
     <url>%2Fpost%2Fa3770b00.html</url>
     <content type="text"><![CDATA[第1章 一个大产业正在从日本消失日本ICT产业得贸易赤字额与天然气增加得进口额持平 2000年之前作为令战后新兴经济体日本骄傲得两大出口商品是电子产品和汽车，然而当来到21世纪，两个产业的发展却是南辕北辙。 1991年，处于泡沫经济下的日本，当时媒体还给出如下的评述： P002 “继汽车之后，电子产品成为了日本赚取外汇的又一大得力干将。” 关注两产业的贸易收支也可以明显观察到，2000年之前二者可谓势均力敌，但在之后汽车的贸易顺差虽然出现了大幅波动（受一定经济危机的影响），但总体趋势还是上升的，在2013年仍然保证了12万亿元的顺差，而电子产业确实逐渐走低，2013年彻底转变为贸易赤字。 这里需要区分书中几个常见缩写 ICT：（Information and Communication Technology，信息技术与通信技术）。 电子产业：在日本国民经济计算中主要用来衡量电子产品制造业的发展情况。 信息通信产业：在总务省以及其他机构的统计中，主要用来表现整个信息通信产业的附加值（主要以邮政、报纸、出版、广告等），与电子产业关系密切。 虽然根据总务省的相关调查统计结果，信息通信产业和电子产业对名义GDP的贡献以及产值、进出口等都是下跌趋势，但明显信息通信产业没有电子产业下滑的那么明显。 日本电子产业发展的三个时期 日本电子产业发展的黄金时期——1970~1985年 1970年前，整体经济形式良好，但经济的主角是钢铁和造船业等。 P010 “1970~1985年，日本的产业结构发生了很大的变化。从1973年开始，钢铁的生产量和原原油的进口量开始减少。与之相对，日本国内对硅（半导体集成电路的材料）的需求与日俱增。以钢铁产业为代表的‘厚重长大’产业陷入成长低迷，半导体等‘轻薄短小’产业则高速成长”。 20世纪70年代之后，日本电子产业在世界范围内开始具有举足轻重的作用。实际上，这一时期日本电子产业的发展主要靠出口。内需上升三倍，而出口则增加了11倍之多（数据来源经济产业省资源能源统计）。 1985年之后贸易顺差开始减少 贸易顺差一路看涨的情景在85年发生了转折，出口不再强劲。 P012 进入1985年之后，出口的增长速度变慢，反之进口则开始稳步增加，直接导致了贸易顺差的减少。 同时，硅需求增长也同步放缓，变相反映出日本国内电子产业增幅速度变缓。 2000年之前，内需增长拉动电子产业的发展 内需拉动（主导）阶段，当时经济形势，1985-2000年，日本经济在泡沫经济的狂潮中崩溃，陷入了人们说的“异常事态”。日本整体经济增速放缓。失去的二十年 不过或许，内需主导是健全的结构转变？否则电子产业的低迷期会来的更加早一些? 2000年以后电子产业总体衰退 国内产值在2000年之后急剧下降。 P014 “GDP几乎没有增长，而电子产业产值却是‘10年减半’，从生产的角度来看，日本电子产业是急速衰退的”。 然而电子零部件出口的持续增长（整体表现强劲），勉强维持了电子产业整体的贸易顺差，但是2008年之后（也是受经济危机的受害者）零部件出口减少，电子产业整体最终转为了贸易赤字。 后续章节着重关注在各个领域，电视、通信、计算机、半导体等究竟发生了什么，以及为什么会发生这些问题。]]></content>
@@ -8,7 +267,9 @@
         <category>阅读</category>
       </categories>
       <tags>
-        <tag>阅读,社科,西村吉雄</tag>
+        <tag>阅读</tag>
+        <tag>社科</tag>
+        <tag>西村吉雄</tag>
       </tags>
   </entry>
   <entry>
@@ -1792,8 +2053,8 @@
       <tags>
         <tag>阅读</tag>
         <tag>小说</tag>
-        <tag>村上春树</tag>
         <tag>刺杀骑士团长</tag>
+        <tag>村上春树</tag>
       </tags>
   </entry>
   <entry>
@@ -1889,8 +2150,8 @@
         <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
-        <tag>2018杭电多校</tag>
         <tag>计算几何</tag>
+        <tag>2018杭电多校</tag>
       </tags>
   </entry>
   <entry>
