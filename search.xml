@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[密码技术学习——基于RSA的不可否认签名方案]]></title>
+    <url>%2Fpost%2F6028c50e.html</url>
+    <content type="text"><![CDATA[本文主要译自Journal of Cryptology期刊上2000年发表的《RSA-Based Undeniable Signatures》一文，用于学习RSA不可否认签名方案 介绍我们提出基于RSA的第一个不可否认的签名方案。 自1989年引入以来，大量工作一直致力于研究不可否认的签名。 到目前为止，这项工作一直基于离散对数系统。 相反，我们的方案使用常规RSA签名来生成不可否认的签名。 在这个新设置中，RSA的签名和验证指数都由签名者保密，而公钥由单个公共消息上的复合模数和样本RSA签名组成。 我们的方案具有一些吸引人的特性：首先是可证明的安全性，伪造不可否认的签名与伪造常规RSA签名一样困难。其次，确认和拒绝协议都是零知识（特别是，确认协议仅涉及两轮通信和少量取幂）。此外，我们的方案的基于RSA的结构提供了简单而优雅的解决方案，以提供最初引入不可否认签名的文献中发现的不可否认签名的几个更高级的属性，包括不可否认签名的可转换性（转换为可公开验证的签名），委托确认能力的可能性，拒绝签名给第三方而不放弃签署的权力，以及签名和确认操作的分布式（阈值）版本的存在。 由于上述属性以及我们的不可否认的签名与标准RSA签名相同的事实，我们提出的方案对于实际实现来说，它变得非常有吸引力。 预备知识 定理 1： 令 $n=pq$，且$p&lt;q$，$p=2p’+1$，$q=2q’+1$，$p$，$q$，$p’$，$q’$均为质数，则： $Z_n^{*}$中的任意元素的阶均在集合${1,2,p’,q’,2p’,2q’,p’q’,2p’q’}$中。 对于给定的$w$满足$w \in Z_n^{*} \setminus { -1 , 1 }$，且$ord(w)&lt;p’q’$，则$gcd(w-1,n)$或$gcd(w+1,n)$是n的一个素因子。 定理 2： 令$n$同定理1中规定，对于给定的$w$满足$ord(w) \in { p’q’, 2p’q’ }$，则对于任意$m \in Z_n^{*}$ , 为了实现对$i$的穷尽搜索，一个人需要选择一个尽可能小的范围，如果上界设置为某个值$k$，则证明着需要对$\frac{ \overset{\rm -}{m} }{S_m^e}$进行$k$次乘法操作来找到$i$。因而该协议具有$\frac{1}{k}$的出错概率。因为注意到选择$k$的时间复杂度为$O( \log n )$，那么穷举搜索的成本大概相当于单个的长幂运算。另一方面，这种情况下欺骗的概率为$\frac{1}{k}$。我们以$k = 1024$为例，我们可以重复该协议诗词，则可以实现$\frac{1}{2^{100}}$的安全性。正如在引言中所述，相对于运行欺骗概率为$\frac{1}{2}$的子协议，效率要高十倍。 下图展示了协议流程（忽略了零知识的步骤），这与确认协议的情况类似。然而，在这个协议中，需要在第2步中特殊对待。如果一个（诚实）的证明者并没有找到一个满足等式的$i$值，那么就意味着$V$是在欺骗，$P$中止协议的执行。虽然终止协议中没有泄露很多信息，但它确实揭示了一部分，在零知识版主中我们甚至连这些信息都不想泄露。因而，$P$应当继续协议的执行并在“假承诺”中提交0值。这样会掩盖$i$值被发现与否的信息。需要指明在$i$值没有被找到的情况下，验证者会被曝光为欺骗者从而0的承诺将不会被揭示。 定理 1（拒绝定理）证明对于任意符合定义要求的$(n,w,S_w) \in PK$，确认协议均具备完整性，健壮性和零知识。 完整性：即对于$S_m \notin SIG(m)$，若两人均遵守协议的执行，那么$V$总会接受$S_m$不是消息$m$的一个合法签名。 健壮性：即对于$S_m \in SIG(m)$，那么一个骗子证明者$P^{*}$即便计算能力无上界，无法以大于$\frac{1}{k}+ \frac{O(1)}{p’}的概率$说服$V$拒绝该签名（不认为该签名合法）。 零知识：该协议是零知识的，对于输入的消息和不合法签名，任何（很可能是骗子）验证者$V^{*}$与证明者$P$的交互中都不会获取除了$S_m$是个非法签名外的任何信息。 验证过程需要再学习。 安全性分析文章这里不对不可否认签名的安全性要求做正式分析，关于这种正确且完整的处理，我们建议读者参考Damgard和Pedersen的论文[DP]；这些概念的概述可以在我们的介绍中找到（特别是在1.1节）。这里我们基于该大纲以及前一节中零知识证明结果来讨论我们解决方案的安全性。 签名的不可伪造性我们证明如下定理 定理3：假定基础RSA签名是不可伪造的（对已知明文或者选择明文攻击），则我们的不可否认签名方案对相同攻击也是不可伪造的。 如前所述，RSA不能直接抵抗选择明文攻击，但我们通过其他方法来解决这个问题，例如，在取幂之前对消息进行适当的编码（参见3.1节）。 假设存在一个伪造者$F$，在接收到不可否认的公钥对，并与签名者进行确认和拒绝协议交互后，它可以在我们的方案中伪造不可否认的签名。即可以输出$(m,S_m)$且$S_m \in SIG(m)$。我们构建了一个攻击者$A$，他将使用此伪造和伪造的常规RSA签名。给定RSA公钥$(n,e)$，若$A$想要伪造一个签名他需要按照如下步骤操作，首先选择一个随机值，并将不可否认签名的模式的公钥对设置为$(n,w=r^e \mod n, S_w = r)$并且将这些值交给$F$,]]></content>
+      <categories>
+        <category>编程</category>
+        <category>密码技术</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>密码技术</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[【洛谷-P2756】解题报告（二分图最大匹配）]]></title>
     <url>%2Fpost%2Fd6212e2f.html</url>
     <content type="text"><![CDATA[原始题目P2756 飞行员配对方案问题 题目大意给定两个集合，存在一些连接两个集合的边表示配合，来自不同集合的一对元素构成一个配对，求最大的配对数量。 解题思路集合内无边，所以构成二分图，求二分图的最大匹配。 解题代码12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;typedef pair&lt;int, int&gt; pii;typedef pair&lt;string, string&gt; pss;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se second#define mp make_pair#define np next_permutation#define pb push_back#define INF 0x3f3f3f3fconst int maxn = 1e3 + 5;vi e[maxn];int n, m;bitset&lt;maxn&gt; v;int fa[maxn], ans;int dfs(int x)&#123; rep(i, 0, e[x].size()) &#123; int y = e[x][i]; if (v[y]) continue; v[y] = 1; if (!fa[y] || dfs(fa[y])) &#123; fa[y] = x; return 1; &#125; &#125; return 0;&#125;void init()&#123; rep(i, 0, maxn) e[i].clear(); memset(fa, 0, sizeof(fa)); v.reset(); ans = 0;&#125;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; m &gt;&gt; n) &#123; init(); int a, b; while (cin &gt;&gt; a &gt;&gt; b &amp;&amp; a != -1) &#123; e[a].pb(n + b); e[n + b].pb(a); &#125; rep(i, 1, m + 1) &#123; v.reset(); ans += dfs(i); &#125; if (ans == 0) &#123; cout &lt;&lt; "No Solution!" &lt;&lt; endl; continue; &#125; cout &lt;&lt; ans &lt;&lt; endl; rep(i, n + 1, n + n + 1) &#123; if (fa[i] != 0) cout &lt;&lt; fa[i] &lt;&lt; " " &lt;&lt; i - n &lt;&lt; endl; &#125; &#125;&#125; 收获与反思搬运定义 图的匹配相关图的匹配：任意两条边都没有公共端点的边的集合被称为图的一组匹配。 二分图最大匹配：在二分图中，包含边数最多的一组匹配被称为二分图的最大匹配。 对于任意一组匹配 $S$ （边集），属于 $S$ 的边被称为匹配边，不属于 $S$ 的边被称为非匹配边。匹配边的端点被称为匹配点，其他节点被称为非匹配点。 如果二分图中存在一条连接两个非匹配点的路径 ，使得非匹配边与匹配边在路径上交替出现，那么称该路径是匹配 $S$ 的增广路（也称交错路）。 增广路的性质 长度为奇数 奇数边是非匹配边，偶数边是匹配边。 如果把路径上所有边的状态（是否为匹配边）取反，那么得到的新的边集 $S’$ 仍然是一组匹配，并且匹配的边数增加了 $1$ 。 匈牙利算法（增光路算法）主要过程： 设 $S$为空集，即所有边都是非匹配边。 寻找增广路 path ，把 path 上所有边的匹配状态取反，得到一个更大的匹配 $S’$。（利用增光路性质3） 重复第 2 步，直至图中不存在增广路。 寻找增广路依次尝试给每一个左部节点 xx 寻找一个匹配的右部节点 yy 。 dfs方法。 常有两种写法 单标记，邻接表写法 123456789101112131415int dfs(int x)&#123; rep(i, 0, e[x].size()) &#123; int y = e[x][i]; if (v[y]) continue; v[y] = 1; if (!fa[y] || dfs(fa[y])) &#123; fa[y] = x; return 1; &#125; &#125; return 0;&#125; 双标记，数组写法 123456789101112int dfs(int x)&#123; rep(i,0,n)&#123; if(!mmp[x][i] || v[i]) continue; v[i] =1; if(!fa[i] || dfs(fa[i]))&#123; fa[i] = x; fa[x] = i; //双标记 return 1; &#125; &#125; return 0;&#125; 双标记对于访问二分图里所有点得到的匹配是实际值，单标记访问所有点得到的匹配是2倍，如果访问一个集合点则是实际值，单标记更多用于两集和已被分隔开的情况。]]></content>
@@ -160,7 +173,7 @@
   <entry>
     <title><![CDATA[【洛谷-P1525】解题报告（二分图，二分）]]></title>
     <url>%2Fpost%2F749ff2bc.html</url>
-    <content type="text"><![CDATA[原始题目P1525 关押罪犯 题目大意N个罪犯，M对矛盾关系，分成两个集合，同一集合的里有矛盾关系的会产生矛盾，冲突事件影响力为当前两个集合中矛盾关系值得最大值，求怎么分配使得冲突最小 解题思路 二分图+二分答案 博客中作为二分图的练习题，二分冲突影响（答案），判断在该条件下能否构成二分图（矛盾值小于判断答案的就忽略该条边）。 并查集+贪心 按值从大大小排序所有的冲突值，然后按序判断当前边连接两点是否已在一个集合中，若在则跳出判断输出当前冲突变得值，若在则秉持敌人的敌人当朋友进行Merge，可以证明，Merge到的集合内就算产生了昕的冲突，由于我们是按冲突值从大到小访问的，矛盾（该变会在更靠前位置拆分，不会出现这种情况）。而且满足最优子结构，全局解必然包括当前的最优解。 解题代码二分图+二分答案 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980818283848586878889909192#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;typedef pair&lt;int, int&gt; pii;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define pb push_back#define mp make_pair#define EPS 1e-8#define INF 0x3f3f3f3f3f#define endl '\n'#define all(x) x.bgein(), x.end()const int maxn = 2e4 + 5;const int maxm = 2e5 + 5;struct Edge &#123; int u, v, w; Edge(int _u, int _v, int _w) : u(_u) , v(_v) , w(_w) &#123; &#125; Edge() &#123;&#125; bool operator&lt;(const Edge b) &#123; return w &gt; b.w; &#125;&#125; p[maxm];vector&lt;pii&gt; e[maxn];int n, m, k, t, vis[maxn];inline void init()&#123; rep(i, 0, n + 1) e[i].clear();&#125;bool dfs(int x, int co)&#123; vis[x] = co; rep(i, 0, e[x].size()) &#123; int y = e[x][i].first; if (vis[y] == co) return 0; else if (!vis[y] &amp;&amp; !dfs(y, 3 - co)) return 0; &#125; return 1;&#125;inline bool pd(int mid)&#123; init(); memset(vis, 0, sizeof(vis)); rep(i, 0, m) &#123; if (p[i].w &lt;= mid) break; e[p[i].u].pb(mp(p[i].v, p[i].w)); e[p[i].v].pb(mp(p[i].u, p[i].w)); &#125; rep(i, 1, n + 1) &#123; if (!vis[i] &amp;&amp; !dfs(i, 1)) return 0; &#125; return 1;&#125;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; n &gt;&gt; m) &#123; rep(i, 0, m) &#123; cin &gt;&gt; p[i].u &gt;&gt; p[i].v &gt;&gt; p[i].w; &#125; sort(p, p + m); int l = 0, r = p[0].w, mid; while (l &lt; r) &#123; mid = (l + r) &gt;&gt; 1; if (pd(mid)) r = mid; else l = mid + 1; &#125; cout &lt;&lt; l &lt;&lt; endl; &#125;&#125; 并查集（待补充） 收获与反思二分图判定染色法（待补充）]]></content>
+    <content type="text"><![CDATA[原始题目P1525 关押罪犯 题目大意N个罪犯，M对矛盾关系，分成两个集合，同一集合的里有矛盾关系的会产生矛盾，冲突事件影响力为当前两个集合中矛盾关系值得最大值，求怎么分配使得冲突最小 解题思路 二分图+二分答案 博客中作为二分图的练习题，二分冲突影响（答案），判断在该条件下能否构成二分图（矛盾值小于判断答案的就忽略该条边）。 并查集+贪心 按值从大大小排序所有的冲突值，然后按序判断当前边连接两点是否已在一个集合中，若在则跳出判断输出当前冲突变得值，若在则秉持敌人的敌人当朋友进行Merge，可以证明，Merge到的集合内就算产生了新的冲突，由于我们是按冲突值从大到小访问的，矛盾（该变会在更靠前位置拆分，不会出现这种情况）。而且满足最优子结构，全局解必然包括当前的最优解。 解题代码二分图+二分答案 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980818283848586878889909192#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;typedef vector&lt;int&gt; vi;typedef pair&lt;int, int&gt; pii;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define pb push_back#define mp make_pair#define EPS 1e-8#define INF 0x3f3f3f3f3f#define endl '\n'#define all(x) x.bgein(), x.end()const int maxn = 2e4 + 5;const int maxm = 2e5 + 5;struct Edge &#123; int u, v, w; Edge(int _u, int _v, int _w) : u(_u) , v(_v) , w(_w) &#123; &#125; Edge() &#123;&#125; bool operator&lt;(const Edge b) &#123; return w &gt; b.w; &#125;&#125; p[maxm];vector&lt;pii&gt; e[maxn];int n, m, k, t, vis[maxn];inline void init()&#123; rep(i, 0, n + 1) e[i].clear();&#125;bool dfs(int x, int co)&#123; vis[x] = co; rep(i, 0, e[x].size()) &#123; int y = e[x][i].first; if (vis[y] == co) return 0; else if (!vis[y] &amp;&amp; !dfs(y, 3 - co)) return 0; &#125; return 1;&#125;inline bool pd(int mid)&#123; init(); memset(vis, 0, sizeof(vis)); rep(i, 0, m) &#123; if (p[i].w &lt;= mid) break; e[p[i].u].pb(mp(p[i].v, p[i].w)); e[p[i].v].pb(mp(p[i].u, p[i].w)); &#125; rep(i, 1, n + 1) &#123; if (!vis[i] &amp;&amp; !dfs(i, 1)) return 0; &#125; return 1;&#125;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; n &gt;&gt; m) &#123; rep(i, 0, m) &#123; cin &gt;&gt; p[i].u &gt;&gt; p[i].v &gt;&gt; p[i].w; &#125; sort(p, p + m); int l = 0, r = p[0].w, mid; while (l &lt; r) &#123; mid = (l + r) &gt;&gt; 1; if (pd(mid)) r = mid; else l = mid + 1; &#125; cout &lt;&lt; l &lt;&lt; endl; &#125;&#125; 并查集（待补充） 收获与反思二分图判定染色法（待补充）]]></content>
       <categories>
         <category>编程</category>
         <category>ACM</category>
@@ -1497,8 +1510,8 @@
         <tag>ACM</tag>
         <tag>算法</tag>
         <tag>CSU</tag>
-        <tag>2018暑假集训</tag>
         <tag>Imitation</tag>
+        <tag>2018暑假集训</tag>
       </tags>
   </entry>
   <entry>
@@ -1735,8 +1748,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>2018暑假集训</tag>
         <tag>Imitation</tag>
+        <tag>2018暑假集训</tag>
         <tag>补图</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -1852,8 +1865,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>2018暑假集训</tag>
         <tag>Imitation</tag>
+        <tag>2018暑假集训</tag>
         <tag>UVA</tag>
       </tags>
   </entry>
@@ -2420,8 +2433,8 @@
         <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
-        <tag>计算几何</tag>
         <tag>2018杭电多校</tag>
+        <tag>计算几何</tag>
       </tags>
   </entry>
   <entry>
@@ -2666,8 +2679,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>二分</tag>
         <tag>2018暑假集训</tag>
+        <tag>二分</tag>
         <tag>POJ</tag>
       </tags>
   </entry>
@@ -2698,8 +2711,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>二分</tag>
         <tag>2018暑假集训</tag>
+        <tag>二分</tag>
         <tag>水题</tag>
         <tag>CodeForces</tag>
       </tags>
@@ -2715,8 +2728,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>二分</tag>
         <tag>2018暑假集训</tag>
+        <tag>二分</tag>
         <tag>CodeForces</tag>
       </tags>
   </entry>
@@ -2732,8 +2745,8 @@
         <tag>ACM</tag>
         <tag>算法</tag>
         <tag>CSU</tag>
-        <tag>2018暑假集训</tag>
         <tag>Imitation</tag>
+        <tag>2018暑假集训</tag>
       </tags>
   </entry>
   <entry>
@@ -2817,8 +2830,8 @@
         <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
-        <tag>规律</tag>
         <tag>2017HDU多校</tag>
+        <tag>规律</tag>
       </tags>
   </entry>
   <entry>

@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+<meta name="baidu-site-verification" content="ZzhwBFUe1V" />
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/0f81ff2f.js","daovoice")
+  daovoice('init', {
+      app_id: "61c4e5db"
+    });
+  daovoice('update');
+  </script>
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="编程,密码技术," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本文主要译自Journal of Cryptology期刊上2000年发表的《RSA-Based Undeniable Signatures》一文，用于学习RSA不可否认签名方案 介绍我们提出基于RSA的第一个不可否认的签名方案。 自1989年引入以来，大量工作一直致力于研究不可否认的签名。 到目前为止，这项工作一直基于离散对数系统。 相反，我们的方案使用常规RSA签名来生成不可否认的签名。 在这">
+<meta name="keywords" content="编程,密码技术">
+<meta property="og:type" content="article">
+<meta property="og:title" content="密码技术学习——基于RSA的不可否认签名方案">
+<meta property="og:url" content="http://www.edwardzcn98yx.com/post/6028c50e.html">
+<meta property="og:site_name" content="Eddy的个人博客">
+<meta property="og:description" content="本文主要译自Journal of Cryptology期刊上2000年发表的《RSA-Based Undeniable Signatures》一文，用于学习RSA不可否认签名方案 介绍我们提出基于RSA的第一个不可否认的签名方案。 自1989年引入以来，大量工作一直致力于研究不可否认的签名。 到目前为止，这项工作一直基于离散对数系统。 相反，我们的方案使用常规RSA签名来生成不可否认的签名。 在这">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E5%AF%86%E7%A0%81%E5%AD%A6/rsa_udc1.png">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E5%AF%86%E7%A0%81%E5%AD%A6/rsa_udc2.png">
+<meta property="og:updated_time" content="2019-05-18T08:01:54.913Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="密码技术学习——基于RSA的不可否认签名方案">
+<meta name="twitter:description" content="本文主要译自Journal of Cryptology期刊上2000年发表的《RSA-Based Undeniable Signatures》一文，用于学习RSA不可否认签名方案 介绍我们提出基于RSA的第一个不可否认的签名方案。 自1989年引入以来，大量工作一直致力于研究不可否认的签名。 到目前为止，这项工作一直基于离散对数系统。 相反，我们的方案使用常规RSA签名来生成不可否认的签名。 在这">
+<meta name="twitter:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E5%AF%86%E7%A0%81%E5%AD%A6/rsa_udc1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'I0P7TBILS9',
+      apiKey: '1cbd304cdb7292372541bc8f3d868016',
+      indexName: 'EddyBlog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.edwardzcn98yx.com/post/6028c50e.html"/>
+
+
+
+
+
+  <title>密码技术学习——基于RSA的不可否认签名方案 | Eddy的个人博客</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/Edwardzcn" class="github-corner" aria-label="View source on Github">
+    <svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true">
+    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+    <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+    <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path>
+    </svg>
+    </a>
+    <style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Eddy的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">相知相遇，即是幸运</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            我的首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于我
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            目录总览
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-reading">
+          <a href="/categories/阅读" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            阅读
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-travelling">
+          <a href="/categories/旅行" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            旅行
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-programming">
+          <a href="/categories/编程" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            编程
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-essay">
+          <a href="/categories/随笔" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            随笔
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            时间线
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-schedule">
+          <a href="/schedule/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />
+            
+            日程表
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/6028c50e.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">密码技术学习——基于RSA的不可否认签名方案</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-17T12:36:55+08:00">
+                2019-05-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/编程/" itemprop="url" rel="index">
+                    <span itemprop="name">编程</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/编程/密码技术/" itemprop="url" rel="index">
+                    <span itemprop="name">密码技术</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,597
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  6
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文主要译自Journal of Cryptology期刊上2000年发表的《RSA-Based Undeniable Signatures》一文，用于学习RSA不可否认签名方案</p>
+<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>我们提出基于RSA的第一个不可否认的签名方案。 自1989年引入以来，大量工作一直致力于研究不可否认的签名。 到目前为止，这项工作一直基于离散对数系统。 相反，我们的方案使用常规RSA签名来生成不可否认的签名。 在这个新设置中，RSA的签名和验证指数都由签名者保密，而公钥由单个公共消息上的复合模数和样本RSA签名组成。</p>
+<p>我们的方案具有一些吸引人的特性：首先是可证明的安全性，伪造不可否认的签名与伪造常规RSA签名一样困难。其次，确认和拒绝协议都是零知识（特别是，确认协议仅涉及两轮通信和少量取幂）。此外，我们的方案的基于RSA的结构提供了<strong>简单而优雅</strong>的解决方案，以提供最初引入不可否认签名的文献中发现的不可否认签名的几个<strong>更高级的属性</strong>，包括不可否认签名的可转换性（转换为可公开验证的签名），委托确认能力的可能性，拒绝签名给第三方而不放弃签署的权力，以及签名和确认操作的分布式（阈值）版本的存在。</p>
+<p>由于上述属性以及我们的不可否认的签名与标准RSA签名相同的事实，我们提出的方案对于实际实现来说，它变得非常有吸引力。</p>
+<h1 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h1><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E5%AF%86%E7%A0%81%E5%AD%A6/rsa_udc1.png" alt="1"></p>
+<p>定理 1：</p>
+<p>令 $n=pq$，且$p&lt;q$，$p=2p’+1$，$q=2q’+1$，$p$，$q$，$p’$，$q’$均为质数，则：</p>
+<ol>
+<li>$Z_n^{*}$中的任意元素的阶均在集合${1,2,p’,q’,2p’,2q’,p’q’,2p’q’}$中。</li>
+<li>对于给定的$w$满足$w \in Z_n^{*} \setminus { -1 , 1 }$，且$ord(w)&lt;p’q’$，则$gcd(w-1,n)$或$gcd(w+1,n)$是n的一个素因子。</li>
+</ol>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E5%AF%86%E7%A0%81%E5%AD%A6/rsa_udc2.png" alt="2"></p>
+<p>定理 2：</p>
+<p>令$n$同定理1中规定，对于给定的$w$满足$ord(w) \in { p’q’, 2p’q’ }$，则对于任意$m \in Z_n^{*}$ ,</p>
+<!--# 新的不可否认签名方案
+
+在这一节，我们给出我们方案的细节，首先我们定义如下集合。
+$$N= \{ n | n = pq, p<q , p = 2 p'+1, q= 2q'+1\}$$
+
+其中$p$，$q$，$p'$，$q'$均为质数。该系统由签名者根据通过以下方式设置。从该集合里随机选取一个元素$n$，选择$e,d \in [\varphi(n)]$, 满足$ed \equiv 1 \mod { \varphi (n) }$；选择一对$(w,S_w)$满足$w \in Z_n^{*}, w \not ={1} , S_w = w^{d} \mod {n}$，公钥参数为$(n,w,S_w)$，私钥参数为$(e,d)$,
+
+我们用$PK$表示所有按照上述方法生成的$(n,w,S_w)$远足。关于公钥形式的选择以及如何验证其正确性，请参见4.3节。特别地，这里体现出，$w$可以被设置为一个固定的值。比如总是设置为$w = 2$，这种简化提高了公钥系统计算以$w$为基数的幂的效率。
+
+## 生成一个签名
+
+为了在消息上生成签名，签名者执行常规RSA签名操作，即，他计算$S_m = m^{d} \mod {n}$，得到输出$(m, S_m)$，更准确地说，在应用求幂之前首先通过合适的编码（比如通过单向哈希函数）处理消息，使得生成的签名方案面对选择明文攻击依旧可以假定是不可伪造的（需要说明，普通RSA没有这个属性）。给定一个消息$m$，我们认为$\overset{\rm -}{m}$为编码输出后的消息，因此，$S_{\overset{\rm -}{m}} \overset{\rm def}{=} {\overset{\rm -}{m}}^{d}$，我们稍稍泛用了$S_w$来表示$w^{d} \mod {n}$，且用$w$而非$\overset{\rm -}{w}$。
+
+## 确认协议
+
+我们提出了一个确认签名的协议。 它由两个玩家，证明者和验证者执行。 协议的公共输入是公钥参数，即$(n,w,S_w) \in PK$，以及$(m,S_m)$。如果$S_m$是有效签名，则$P$将可以说服$V$这个事实，反之如果不是有效的，则除了一个微不足道的概率，没有任何证明者（即使是一个计算上无界的证明者）能够让$V$相信这个签名是有效的。
+
+![3](https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E5%AF%86%E7%A0%81%E5%AD%A6/rsa_udc3.png)
+
+协议的想法是产生一个相关的元素，该元素对签名者来说是随机的，并且验证者签名（假设消息$m$上的签名是正确的）。 这个“盲”元素是通过消息$m$取$i$次幂来创建的，以及他的（正确的签名是公知的）。 直观地说，作弊证明者需要找到作为骗子的价值。 然而，有许多指数给出了相同的结果，并且我们证明了证明者（即使计算上无界）也无法区分它们。
+
+该协议的一个有趣的方面是证明者可以成功说服验证者接受签名，多一个参数的签名多个签名，在设计拒绝协议时，我们确保签名者不能拒绝此扩展形式的签名，$SIG(m) \overset{\rm def}{=} \alpha \overset{\rm -}{m}^{d}, ord(\alpha) ≤ 2$.
+
+为了便于说明，确认协议出现了零知识协议版本，有一些众所周知的技术[GMW]，[BCC]，[Go]使用概念函数的概念将零知识属性添加到上述协议：
+
+在第2步中，$P$，不再发送$A$而是发送一个承诺$commit(A)$，当$V$向$P$揭示$i,j$的值时，在检查$Q \overset{\rm def}{ = } {S_m^{2i}}{S_w^{j}} \mod n$，$P$再将$A$告诉$V$，则验证者检查$A$是否符合之前的承诺，然后进行上述协议的第三步。
+
+通过承诺函数的性质实现零知识条件，即
+
+1. $commit(x)$不反应关于$x$的任何信息（对破译有用处的任何信息）
+2. $P$不能找到$x'$使得$commit(x) = commit(x')$
+
+承诺函数可以通过多种方式实现，比如简单的用语义安全的RSA加密$A$，而验证者不知道私钥，如果想打开这个承诺，应用概率加密，这是一个有效的方法，因为不存在长幂运算。
+
+定理 1（确认定理）
+证明对于任意符合定义要求的$(n,w,S_w) \in PK$，确认协议均具备完整性，健壮性和零知识。
+
+完整性：偶次幂消除了二阶的因子$\alpha$的影响，我们允许这样的签名。
+
+健壮性：我们试图说明，当签名无效时$P$说服$V$接受签名的概率由选择$A$通过$V$的测试的最大概率决定。我们可以证明（证明过程见原文章）概率为${\pi}_1+{\pi}_2 < \frac{\varphi(n)}{ord(\alpha) ord(w)} + \frac{2(n - \varphi (n))}{n}$，结合引理1我们又易得到$ord(w) ≥ p'q'$，欺骗者不知道关于$n$的因式分解信息，以及$ord(\alpha) ≥ p'$，所以我们能得到${\pi}_2 < \frac{4}{p'}$，以及${\pi}_1  + {\pi}_2 < \frac{6}{p'}$由于$p'$也是一个相当大的质数，所以实际概率很小。
+
+零知识：见前述协议详情。
+
+## 拒绝协议
+
+图2展示了拒绝协议。 协议的公共输入是公钥参数，即$(n,w,S_w) \in PK$，以及$(m,S_m)$。如果$S_m$不是有效签名，那么$P$能够说服$V$这个事实，若签名效，$P$能够说服$V$该签名无效的概率可以忽略不计。
+
+我们的解决方案是基于 由Chaum [Ch1]引入的协议，旨在用零知识的一个素数域上两个元素的离散对数的不等式。 上述论文中提到的协议和证明对于对$n$为合数的简化剩余系不具备有效性，特别地，是因为它们依赖一个简化剩余系地生成器（而我们已经证明符合我们要求地简化剩余系的最大阶并不等于群的阶）。 不过，一个针对上述协议的细致改良版本以及一个相关的证明方法会被用来证明解决在$n$为合数的简化剩余系问题。
+
+![4](https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E5%AF%86%E7%A0%81%E5%AD%A6/rsa_udc4.png)
+
+该协议以下面的方式工作，验证者在第一步中给出两个证明者可以使用验证指数$e$验证的两个值（通过商值${( \frac{ \overset{\rm -}{m} }{S_m^e}  })^{i}$来验证 ）。仅当正民者可以找到选定$i$值时，验证者才接受协议的运行。如果$S_m$不是消息$m$的有效签名，则$P$，需要彻底搜索$i$应取值的范围，然而，如果$S_m$时有效签名，无论$i$的取值为多少，上述商式的结果恒等于$1$，那么证明者不能获取到关于$i$的任何信息从而只能猜测$i$的值（来达到欺骗的目的）。
+
+-->
+<p>为了实现对$i$的穷尽搜索，一个人需要选择一个尽可能小的范围，如果上界设置为某个值$k$，则证明着需要对$\frac{ \overset{\rm -}{m} }{S_m^e}$进行$k$次乘法操作来找到$i$。因而该协议具有$\frac{1}{k}$的出错概率。因为注意到选择$k$的时间复杂度为$O( \log n )$，那么穷举搜索的成本大概相当于单个的长幂运算。另一方面，这种情况下欺骗的概率为$\frac{1}{k}$。我们以$k = 1024$为例，我们可以重复该协议诗词，则可以实现$\frac{1}{2^{100}}$的安全性。正如在引言中所述，相对于运行欺骗概率为$\frac{1}{2}$的子协议，效率要高十倍。</p>
+<p>下图展示了协议流程（忽略了零知识的步骤），这与确认协议的情况类似。然而，在这个协议中，需要在第2步中特殊对待。如果一个（诚实）的证明者并没有找到一个满足等式的$i$值，那么就意味着$V$是在欺骗，$P$中止协议的执行。虽然终止协议中没有泄露很多信息，但它确实揭示了一部分，在零知识版主中我们甚至连这些信息都不想泄露。因而，$P$应当继续协议的执行并在“假承诺”中提交0值。这样会掩盖$i$值被发现与否的信息。需要指明在$i$值没有被找到的情况下，验证者会被曝光为欺骗者从而0的承诺将不会被揭示。</p>
+<p>定理 1（拒绝定理）<br>证明对于任意符合定义要求的$(n,w,S_w) \in PK$，确认协议均具备完整性，健壮性和零知识。</p>
+<p>完整性：即对于$S_m \notin SIG(m)$，若两人均遵守协议的执行，那么$V$总会接受$S_m$不是消息$m$的一个合法签名。</p>
+<p>健壮性：即对于$S_m \in SIG(m)$，那么一个骗子证明者$P^{*}$即便计算能力无上界，无法以大于$\frac{1}{k}+ \frac{O(1)}{p’}的概率$说服$V$拒绝该签名（不认为该签名合法）。</p>
+<p>零知识：该协议是零知识的，对于输入的消息和不合法签名，任何（很可能是骗子）验证者$V^{*}$与证明者$P$的交互中都不会获取除了$S_m$是个非法签名外的任何信息。</p>
+<p>验证过程需要再学习。</p>
+<h1 id="安全性分析"><a href="#安全性分析" class="headerlink" title="安全性分析"></a>安全性分析</h1><p>文章这里不对不可否认签名的安全性要求做正式分析，关于这种正确且完整的处理，我们建议读者参考Damgard和Pedersen的论文[DP]；这些概念的概述可以在我们的介绍中找到（特别是在1.1节）。这里我们基于该大纲以及前一节中零知识证明结果来讨论我们解决方案的安全性。</p>
+<h2 id="签名的不可伪造性"><a href="#签名的不可伪造性" class="headerlink" title="签名的不可伪造性"></a>签名的不可伪造性</h2><p>我们证明如下定理</p>
+<p>定理3：<br>假定基础RSA签名是不可伪造的（对已知明文或者选择明文攻击），则我们的不可否认签名方案对相同攻击也是不可伪造的。</p>
+<p>如前所述，RSA不能直接抵抗选择明文攻击，但我们通过其他方法来解决这个问题，例如，在取幂之前对消息进行适当的编码（参见3.1节）。</p>
+<p>假设存在一个伪造者$F$，在接收到不可否认的公钥对，并与签名者进行确认和拒绝协议交互后，它可以在我们的方案中伪造不可否认的签名。即可以输出$(m,S_m)$且$S_m \in SIG(m)$。我们构建了一个攻击者$A$，他将使用此伪造和伪造的常规RSA签名。给定RSA公钥$(n,e)$，若$A$想要伪造一个签名他需要按照如下步骤操作，首先选择一个随机值，并将不可否认签名的模式的公钥对设置为$(n,w=r^e \mod n, S_w = r)$并且将这些值交给$F$,</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tag/编程/" rel="tag"> <i class="fa fa-tag"></i> 编程</a>
+          
+            <a href="/tag/密码技术/" rel="tag"> <i class="fa fa-tag"></i> 密码技术</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/post/d6212e2f.html" rel="next" title="【洛谷-P2756】解题报告（二分图最大匹配）">
+                <i class="fa fa-chevron-left"></i> 【洛谷-P2756】解题报告（二分图最大匹配）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Edwardzcn" />
+            
+              <p class="site-author-name" itemprop="name">Edwardzcn</p>
+              <p class="site-description motion-element" itemprop="description">这是一个利用（可爱的）Hexo搭建的博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">237</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+            
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">140</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Edwardzcn" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:edwardzcn98@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.google.com" target="_blank" title="Google">
+                      
+                        <i class="fa fa-fw fa-google"></i>Google</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.zhihu.com/people/decades-42/activities" target="_blank" title="Zhihu">
+                      
+                        <i class="fa fa-fw fa-globe"></i>Zhihu</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.instagram.com/edwardz98" target="_blank" title="Instagram">
+                      
+                        <i class="fa fa-fw fa-instagram"></i>Instagram</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.github.com" title="Github" target="_blank">Github</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://yangyangyang.cc" title="yyy的博客" target="_blank">yyy的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://blog.mrcactus.cn" title="syx的博客" target="_blank">syx的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/wawcac-blog" title="SHer_zfc的博客" target="_blank">SHer_zfc的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://csuwangj.github.io/" title="DJ的博客" target="_blank">DJ的博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#介绍"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#预备知识"><span class="nav-number">2.</span> <span class="nav-text">预备知识</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安全性分析"><span class="nav-number">3.</span> <span class="nav-text">安全性分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#签名的不可伪造性"><span class="nav-number">3.1.</span> <span class="nav-text">签名的不可伪造性</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Edwardzcn</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">217.1k</span>
+  
+</div>
+
+<div class="copyright">
+<span id="busuanzi_container_site_uv"><a class="theme-link" href="http://www.miitbeian.gov.cn">冀ICP备18024730号</a></span>
+<span id="bei_an"> <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641" ><img src="https://www.edwardzcn98yx.com/batb.png" />湘公网安备 43010402000641号</a></span>
+</div>
+
+<div class="powered-by">
+<i class ="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+    本站访客数：<span id="busuanzi_value_site_uv"></span></spam></div>
+
+<!--
+
+   <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+-->
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
