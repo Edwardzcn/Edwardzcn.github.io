@@ -105,7 +105,7 @@
 <meta property="og:description" content="第0章 Linux的文件权限和目录配置用户与用户组用户：由于Linux被设计为一个多用户、多任务的系统，用户概念在Linux中极为重要。 文件所有者：为了应对多人工作环境，分离不同用户的工作环境，设置了文件的归属权（文件所有者的角色）。 用户组：团队开发协作的需要，在用户概念之上设置了用户组的权限管理级别。每组成员相对而言更易互相修改对方的数据，但是其他组的组员则不能看到本组的文件内容。 Linu">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0Linux%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E7%AF%87/6.1.png">
-<meta property="og:updated_time" content="2019-06-27T12:02:10.068Z">
+<meta property="og:updated_time" content="2019-06-27T12:45:58.584Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="操作系统学习——Linux基础学习篇（第6章）">
 <meta name="twitter:description" content="第0章 Linux的文件权限和目录配置用户与用户组用户：由于Linux被设计为一个多用户、多任务的系统，用户概念在Linux中极为重要。 文件所有者：为了应对多人工作环境，分离不同用户的工作环境，设置了文件的归属权（文件所有者的角色）。 用户组：团队开发协作的需要，在用户概念之上设置了用户组的权限管理级别。每组成员相对而言更易互相修改对方的数据，但是其他组的组员则不能看到本组的文件内容。 Linu">
@@ -473,7 +473,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  547
+                  1,343
                 </span>
               
 
@@ -489,7 +489,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  2
+                  5
                 </span>
               
             </div>
@@ -559,17 +559,63 @@
 <li><p>数字修改</p>
    <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod xxx 文件目录</span><br></pre></td></tr></table></figure>
 <p>   将三端权限二进制化（比如777就表示权限全开）</p>
-<ul>
+</li>
 <li><p>符号修改</p>
-<p> |:——-:|:——-:|:——-:|:——-:|:———-:|<br> |chmod|u g o a|+ - =|r w x|文件或目录|</p>
-</li>
-<li><p>还好吧</p>
-</li>
-</ul>
+<p>   | 命令 | 组对象 | 操作符 | 权限 | 文件名 |<br>   | :——-: | :——-: | :——-: | :——-: | :———-: |<br>   | chmod | u g o a | + - = | r w x | 文件或目录 |</p>
+<p>   eg</p>
+   <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod u+r,o=rwx  xxx</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 </li>
 </ol>
+<a id="more"></a>
+<h2 id="目录与文件的权限意义"><a href="#目录与文件的权限意义" class="headerlink" title="目录与文件的权限意义"></a>目录与文件的权限意义</h2><ol>
+<li><p>对文件的意义</p>
+<ul>
+<li>r(read)表示可以读此文件的具体内容</li>
+<li>w(write)表示可以编辑、新增或是修改文件的内容（但不含删除）</li>
+<li>x(execute)表示可以被系统执行的权限</li>
+</ul>
+</li>
+<li><p>对目录的意义</p>
+<ul>
+<li>r表示可以读取目录结构权限，可以查询到文件名数据，也可以利用<code>ls</code>命令来获取列表内容的显示</li>
+<li>w表示可以<strong>新建文件/目录，删除已经存在的文件和目录（无视此文件/目录的），重命名，转移文件/目录的位置</strong>。（也即，删除一个文件的权限是跟是否具备此文件所在目录的写权限有关，而跟文件本身权限无关）</li>
+<li>x表示是否可以进入该目录成为工作目录（working directory）的权限。</li>
+</ul>
+</li>
+</ol>
+<h2 id="Linux文件种类与扩展名"><a href="#Linux文件种类与扩展名" class="headerlink" title="Linux文件种类与扩展名"></a>Linux文件种类与扩展名</h2><h3 id="文件种类"><a href="#文件种类" class="headerlink" title="文件种类"></a>文件种类</h3><p>普通文件、纯文本文件（cat的文件）、二进制文件、数据格式文件</p>
+<p>目录（d）</p>
+<p>连接文件（l）类似Windows下面的快捷方式</p>
+<p>设备与设备文件（device）：通常在/dev这个目录，通常分为两种：</p>
+<ol>
+<li><p>块（block）设备文件</p>
+<p> 一些存储数据供系统随机访问的接口设备，例如硬盘等。</p>
+</li>
+<li><p>字符（character）设备文件</p>
+<p> 一些串行端口接口设备，特征是一次性读取，不能够截断输出。</p>
+</li>
+</ol>
+<p>套接字（socket）：网络进程通信，通常在/var/run中</p>
+<p>管道（FIFO，pipe）：解决多个程序同时访问一个文件造成的错误问题</p>
+<h3 id="文件扩展名"><a href="#文件扩展名" class="headerlink" title="文件扩展名"></a>文件扩展名</h3><p>只是以适当的扩展名来表示是什么种类，而实际能否运行依赖数据+execute执行权限（这一点和Windows判断可执行程序有很大的不同）。</p>
+<p><code>*.sh</code>：脚本或批处理文件，主要用shell写。</p>
+<p><code>*Z</code>、<code>*.tar</code>、<code>*.tar.gz</code>、<code>*.zip</code>等：压缩文件，由不同压缩软件使用决定。</p>
+<p><code>*.html</code>等：网页相关文件</p>
+<p>长度限制：默认使用Ext2/Ext3文件系统，单一文件名/目录名限制长度为255字符、包含完整路径名称及目录的完整文件名为4096个字符。</p>
+<h2 id="Linux目录配置"><a href="#Linux目录配置" class="headerlink" title="Linux目录配置"></a>Linux目录配置</h2><h3 id="Linux目录配置标准：FHS"><a href="#Linux目录配置标准：FHS" class="headerlink" title="Linux目录配置标准：FHS"></a>Linux目录配置标准：FHS</h3><ul>
+<li>/ (root，根目录)，与开机系统有关</li>
+<li>/usr （UNIX software resource）：与软件安装/执行有关</li>
+<li>/var （variable）：与系统运作过程有关</li>
+</ul>
+<p>其他详情可以自行百度，或者查看目录树（单独再找机会整理一下）</p>
+<h3 id="绝对路径与相对路径"><a href="#绝对路径与相对路径" class="headerlink" title="绝对路径与相对路径"></a>绝对路径与相对路径</h3><p>区别<code>/var/log</code>（绝对路径）和<code>../var/log</code>（相对路径）</p>
+<blockquote>
+<p>网络文件常常提到类似“。/run.sh”的数据，这个命令的意义是什？</p>
+<p>答：由于命令执行需要变量（bash章节会提及）的支持，若执行文件放置在本目录并且本目录并非正规的执行文件目录（/bin、/usr/bin等为正规），此时要执行命令就要严格指定该执行文件。“./”代表“本目录”的意思，所以“./run.sh”代表执行本目录名下的run.sh文件</p>
+</blockquote>
+<p>END</p>
 
       
     </div>
@@ -812,7 +858,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#第0章-Linux的文件权限和目录配置"><span class="nav-number">1.</span> <span class="nav-text">第0章 Linux的文件权限和目录配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#用户与用户组"><span class="nav-number">2.</span> <span class="nav-text">用户与用户组</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux文件权限概念"><span class="nav-number">3.</span> <span class="nav-text">Linux文件权限概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux文件属性"><span class="nav-number">3.1.</span> <span class="nav-text">Linux文件属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#改变文件属性和权限"><span class="nav-number">3.2.</span> <span class="nav-text">改变文件属性和权限</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#第0章-Linux的文件权限和目录配置"><span class="nav-number">1.</span> <span class="nav-text">第0章 Linux的文件权限和目录配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#用户与用户组"><span class="nav-number">2.</span> <span class="nav-text">用户与用户组</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux文件权限概念"><span class="nav-number">3.</span> <span class="nav-text">Linux文件权限概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux文件属性"><span class="nav-number">3.1.</span> <span class="nav-text">Linux文件属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#改变文件属性和权限"><span class="nav-number">3.2.</span> <span class="nav-text">改变文件属性和权限</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#目录与文件的权限意义"><span class="nav-number">3.3.</span> <span class="nav-text">目录与文件的权限意义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux文件种类与扩展名"><span class="nav-number">3.4.</span> <span class="nav-text">Linux文件种类与扩展名</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#文件种类"><span class="nav-number">3.4.1.</span> <span class="nav-text">文件种类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件扩展名"><span class="nav-number">3.4.2.</span> <span class="nav-text">文件扩展名</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux目录配置"><span class="nav-number">3.5.</span> <span class="nav-text">Linux目录配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux目录配置标准：FHS"><span class="nav-number">3.5.1.</span> <span class="nav-text">Linux目录配置标准：FHS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#绝对路径与相对路径"><span class="nav-number">3.5.2.</span> <span class="nav-text">绝对路径与相对路径</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -847,7 +893,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">226.1k</span>
+    <span title="Site words total count">226.9k</span>
   
 </div>
 
