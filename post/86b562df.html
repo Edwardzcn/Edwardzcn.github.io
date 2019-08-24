@@ -104,7 +104,7 @@
 <meta property="og:site_name" content="Eddy的个人博客">
 <meta property="og:description" content="读书笔记——Implementing Fault-Tolerant Services Using the State Machine Approach: A Tutorial利用状态机实现容错服务的一个教程 摘要部分状态机方法是在分布式系统中实现容错服务的一般方法。 本文回顾了该方法并描述了两种不同故障模型的协议 - 拜占庭和故障停止。 还讨论了用于移除故障组件和集成修复组件的系统重新配置技术。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-08-16T01:35:25.799Z">
+<meta property="og:updated_time" content="2019-08-24T00:19:55.250Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="OS论文阅读笔记（二）">
 <meta name="twitter:description" content="读书笔记——Implementing Fault-Tolerant Services Using the State Machine Approach: A Tutorial利用状态机实现容错服务的一个教程 摘要部分状态机方法是在分布式系统中实现容错服务的一般方法。 本文回顾了该方法并描述了两种不同故障模型的协议 - 拜占庭和故障停止。 还讨论了用于移除故障组件和集成修复组件的系统重新配置技术。">
@@ -460,7 +460,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  821
+                  2,726
                 </span>
               
 
@@ -476,7 +476,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  3
+                  10
                 </span>
               
             </div>
@@ -508,6 +508,7 @@
 <p>状态机方法是同过复制服务器（设置代理/备份）并协调客户端与服务器代理交互的一种实现容错服务的通用方法。</p>
 <p>该方法还为理解和设计（服务器replica）管理协议提供了一个框架。许多涉及数据或软件复制的协议——无论是为了掩盖故障，还是为了在没有集中控制的情况下促进交互——都可以使用状态机方法派生出来。尽管实际上很少有协议是以这种方式获得的，但是从状态机的角度观察它们有助于理解它们是如何以及为什么工作的。</p>
 <p>本文是状态机方法的一个教程，描述了两种典型环境下的方法和实现。</p>
+<a id="more"></a>
 <h2 id="State-Machine"><a href="#State-Machine" class="headerlink" title="State Machine"></a>State Machine</h2><p>状态机由状态变量（编码描述状态），状态转移指令（描述状态变化）。每一条指令由确定性程序构成。命令的执行是原子的。一段客户端的请求可以看作是指定对应的状态机实施指定的command（同时包含该command要求的全部信息）</p>
 <p>请求的输出可以看作是一个actuator（在程序控制系统中），或是其他的外围设备，或是等待先前请求响应的客户机（可以看作是编译原理中自动机理论的语义分析）。</p>
 <p>请求由状态机每次执行一条，并且与潜在的因果关系一直。因此，状态机的客户端可以对要处理的请求的顺序做以下假设。</p>
@@ -516,6 +517,78 @@
 <p>O2. 如果客户机c向状态机sm发出请求r可能导致客户机c’向sm发出请求r’，那么sm在r’之前处理r。</p>
 </blockquote>
 <p>考虑到通信网络的延迟，尤其是在分布式网络中（可以联系上一篇论文），O1和O2并不意味着状态机会根据制定/接收到的请求指令执行。</p>
+<p>状态机的语义表征：<strong>状态机的输出完全由它处理的请求序列决定</strong></p>
+<blockquote>
+<p>Anything that can be structured in terms of proce- dures and procedure calls can also be structured using state machines and clients.</p>
+<p><strong>a state machine implements the procedure</strong></p>
+<p><strong>requests implement the procedure calls.</strong></p>
+</blockquote>
+<p>事实上，状态机在系统结构上比过程调用通常提供的灵活性更大。使用状态机，在处理请求之前不会延迟发出请求的客户机，并且可以将请求的输出发送到发出请求的客户机之外的其他地方。我们没有理由怀疑根据状态机客户端构建的应用会更加简洁。</p>
+<h2 id="Fault-Tolerance"><a href="#Fault-Tolerance" class="headerlink" title="Fault Tolerance"></a>Fault Tolerance</h2><p>两种典型的错误行为</p>
+<blockquote>
+<p>Byzantine Failures（拜占庭故障）：</p>
+<p>该组件可能表现出任意和恶意的行为，可能涉及与其他故障组件的勾结</p>
+<p>Fail-stop Failures. （异常终止错误）</p>
+<p>允许其他组件检测到错误并停止。</p>
+</blockquote>
+<p>t fault tollerant：指系统在一定范围的活动中最多不超过t个组件发生故障，传统的MTBF（平均故障间隔时间）和其他的统计的故障评定方法固然有其可取之处，但是，去测定系统的最大容载故障组建个数潜意识中要求了系统具备一定的修正能力（当出现故障组件个数超出/即将超出限额时的补救措施）。</p>
+<h2 id="Fault-tolerance-state-machine"><a href="#Fault-tolerance-state-machine" class="headerlink" title="Fault-tolerance state machine"></a>Fault-tolerance state machine</h2><p>步入正题，容错状态机。</p>
+<p>由于备份（副本）运行在分布式系统的不同处理器上，在假定每个错误最多影响一个处理器，而在不出错的情况下，相同初始状态的状态机经相同的输入（request序列）应该抵达相同状态并输出相同内容，那么结合该系统状态机副本的输出，得到容错状态机的输出。</p>
+<p>若考虑满足最坏情况下，出现拜占庭故障，正常运行的组件仍占据大多数，要求一个t fault-tollerant状态机应之少包含2t+1个组件。</p>
+<p>而如果考虑故障停止情况下，那么只要满足还有一个non-fautlty组件具备正常输出能力即可，所以应至少包含t+1个组件。</p>
+<p>实现上述容错状态机的关键在于<strong>备份（副本）的协调</strong>：所有备份（副本）都可以接收到且接收到顺序相同的请求序列。</p>
+<p>拆分成两个子要求：</p>
+<ol>
+<li>Agreement：每个非故障状态机都会接收到每个请求。</li>
+<li>Order：每个非故障状态机都会以相同的顺序处理这些请求。</li>
+</ol>
+<p>在某些情况下条件可以放宽，比如考虑可能出现故障停止故障的状态机中，对于只读的请求，可以放宽至2个即可，因为只读不影响状态机的状态变化。</p>
+<p>另外对于通信请求，若处理不同的请求r和r’时，r-&gt;r’和r’-&gt;r的终状态和输出序列相同的话。文章举了一个投票的自动机例子，如果候选者每个人投票数最大为1，且阈值（MAJ）的两倍要大于总值（Cno），换句话说，至多只有一人会被投出，那么无论怎样交换请求（投票顺序），自动机的输出和最终输出必然是相同的。但若允许每个人投票多次，或是阈值不满足上述要求，则交换请求会影响到自动机的输出和终状态。</p>
+<h3 id="Agreement"><a href="#Agreement" class="headerlink" title="Agreement"></a>Agreement</h3><p>通过任何协议满足一个处理器向其他处理器传播值实现。</p>
+<blockquote>
+<p>IC1: All nonfaulty processors agree on the same value.</p>
+<p>IC2: If the transmitter is nonfaulty, then all nonfaulty processors use its value as the one on which they agree.</p>
+</blockquote>
+<p>难点是应对在执行过程中出错地处理器。</p>
+<h3 id="Order-and-Stability"><a href="#Order-and-Stability" class="headerlink" title="Order and Stability"></a>Order and Stability</h3><p>顺序要求可以通过为请求赋唯一标识符值来实现，且对于<strong>稳定</strong>的请求，将最小值传递给后面的状态机副本。</p>
+<p>要点：identifiers的指定方法和“稳定”测试。</p>
+<p>另外需要注意的是，identifiers的分配还需要符合Sec.1里O1和O2，这就要求祖先请求的identifiers值要更小，即若$r_j$是由于$r_i$而产生的，则$uid(r_i)&lt; uid(r_j)$。</p>
+<p>文章介绍了三种方法</p>
+<h4 id="Using-Logical-Clocks"><a href="#Using-Logical-Clocks" class="headerlink" title="Using Logical Clocks"></a>Using Logical Clocks</h4><p>利用上一篇文章所介绍的逻辑时钟，即给偏序请求集根据两条规则。</p>
+<blockquote>
+<p><strong>C1.</strong> 如果a和b是同一进程的两个事件且a发生在b之前，则$C_i \langle a \rangle &lt; C_i \langle b \rangle$。</p>
+<p><strong>C2.</strong> 如果a是i进程消息发送方，而b是j进程中该消息的接收方，则$C_i \langle a \rangle &lt; C_j \langle b \rangle$。</p>
+</blockquote>
+<p>  Condition）。</p>
+<p>设计算法来为上述构建的时钟函数赋值，为满足C1和C2，分别设定两条规则：</p>
+<blockquote>
+<p><strong>IR1.</strong> 同一个process的相邻event，其时钟值是递增的。</p>
+<p><strong>IR2.</strong> i进程a活动发送的消息会携带一个时间戳$T_m = C_i \langle a \rangle$，则接收方b进程活动b设定其时钟值为$C_j \langle b \rangle = MAX(T_m,C_j \langle b \rangle)+1$。</p>
+</blockquote>
+<p>C值即我们希望得到的identifier值，接下来文章用来描述检查stable的方法，通过对处理器之间传递的消息附加序列号而已实现一些communication channels：</p>
+<blockquote>
+<p><strong>FIFO Channels.</strong> 一对处理器间的消息接收顺序即发送顺序。</p>
+</blockquote>
+<p>而对于出现故障停止的处理器，我们也可以假定下列情况的存在。</p>
+<blockquote>
+<p><strong>Failure Detection Assumption.</strong> 一个处理器p可以检测到另一个处理器q发生故障仅能够在其收到最后一条q发给p的消息后。</p>
+</blockquote>
+<p>两个假设是一致的，在该假设下，可以构建如下的检测方法：</p>
+<blockquote>
+<p><strong>Logical Clock Stability Test Toleranting Fail-stop Failures.</strong>  A request is stable at replica $sm_i$ if a request with larger timestamp has been received by $sm_i$ from every client running on a nonfaulty processor.当所有处理器（无论faulty还是nonfaulty）都以更晚的时间戳发送给该状态机副本一条请求时，先前的请求就是稳定的。</p>
+</blockquote>
+<p>接下来文章分类讨论解释了为什么上述成立，nonfaulty的处理机一旦发送了更大的，由于递增性，下次发送的时间戳值会更大，而根据FIFO原则，receive order 和deliver order相同，也符合递增性。而对于认定为出错的处理机，根据Failure Detection Assumption原则，我们可以确定是在收到了最后一条消息后，所以之后也不会再收到故障处理器的消息，综上，测试条件成立。</p>
+<h4 id="Synchronized-Real-Time-Clocks"><a href="#Synchronized-Real-Time-Clocks" class="headerlink" title="Synchronized Real-Time Clocks"></a>Synchronized Real-Time Clocks</h4><p>第二种构建满足O1和O2条件的identifiers值得方法是应用近似同步的实时时钟。</p>
+<p>定义$T_p(e)$为事件e发生时p处理器的实时时钟值。我们通过向$T_p(e)$尾部后缀一端定长二进制串来唯一标定“p处理器上的客户机进行了事件e”这一信息。</p>
+<p>那么为了满足O1和O2条件做以下规定。</p>
+<ol>
+<li>Satisfied O1. 在有效的时钟精度（clock ticks/resolution）中一个处理器不会进行多于一次的请求。</li>
+<li>Satisfied O2. 时钟同步应优于最小消息传递时间。</li>
+</ol>
+<p>满足规定后，可以有以下的检测方法。设定$\Delta$为消息发出后确保每一个正常处理器收到消息时间不晚于$uid(r) + \Delta$的阈值，这样的$\Delta$是一定存在的。</p>
+<blockquote>
+<p><strong>Real-Time Clock Stability Test Tolerating Byzantine Failures 1.</strong> A request $r$ is stable at a state machine replica $sm_i$ being executed by processor $p$ if the local clock at $p$ reads $\tau$ and $uid(r) &lt; \tau - \Delta$</p>
+</blockquote>
 
       
     </div>
@@ -559,6 +632,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/post/cbabc18d.html" rel="prev" title="OS论文阅读笔记（三）">
+                OS论文阅读笔记（三） <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -639,7 +716,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">247</span>
+                  <span class="site-state-item-count">248</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -758,7 +835,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#读书笔记——Implementing-Fault-Tolerant-Services-Using-the-State-Machine-Approach-A-Tutorial"><span class="nav-number">1.</span> <span class="nav-text">读书笔记——Implementing Fault-Tolerant Services Using the State Machine Approach: A Tutorial</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#摘要部分"><span class="nav-number">1.1.</span> <span class="nav-text">摘要部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction"><span class="nav-number">1.2.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#State-Machine"><span class="nav-number">1.3.</span> <span class="nav-text">State Machine</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#读书笔记——Implementing-Fault-Tolerant-Services-Using-the-State-Machine-Approach-A-Tutorial"><span class="nav-number">1.</span> <span class="nav-text">读书笔记——Implementing Fault-Tolerant Services Using the State Machine Approach: A Tutorial</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#摘要部分"><span class="nav-number">1.1.</span> <span class="nav-text">摘要部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction"><span class="nav-number">1.2.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#State-Machine"><span class="nav-number">1.3.</span> <span class="nav-text">State Machine</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fault-Tolerance"><span class="nav-number">1.4.</span> <span class="nav-text">Fault Tolerance</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fault-tolerance-state-machine"><span class="nav-number">1.5.</span> <span class="nav-text">Fault-tolerance state machine</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Agreement"><span class="nav-number">1.5.1.</span> <span class="nav-text">Agreement</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Order-and-Stability"><span class="nav-number">1.5.2.</span> <span class="nav-text">Order and Stability</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Using-Logical-Clocks"><span class="nav-number">1.5.2.1.</span> <span class="nav-text">Using Logical Clocks</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Synchronized-Real-Time-Clocks"><span class="nav-number">1.5.2.2.</span> <span class="nav-text">Synchronized Real-Time Clocks</span></a></li></ol></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -793,7 +870,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">234.7k</span>
+    <span title="Site words total count">240.0k</span>
   
 </div>
 
@@ -1039,7 +1116,7 @@
         }
       });
     </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -1047,4 +1124,4 @@
 
   
 
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>

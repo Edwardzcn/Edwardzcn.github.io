@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[OS论文阅读笔记（三）]]></title>
+    <url>%2Fpost%2Fcbabc18d.html</url>
+    <content type="text"><![CDATA[读书笔记——MapReduce: Simplified Data Processing on Large Clusters大型集群上的简化处理：MapReduce（键值缩减？） 原始翻译版本网址：《MapReduce: Simplified Data Processing on Large Cluster 》翻译 AbstractMapReduce是一种编程模型和一种用来处理和产生大数据集的相关实现。用户定义map函数（map function）来处理key/value键值对来产生一系列的中间的key/value键值对。还要定义一个reduce函数(reduce function)用来合并有着相同中间key值的中间value。许多现实世界中的任务都可以用这种模型来表达，就像下文所展示的那样。 用这个风格（函数式）编写的程序可以自动并行地在大规模集群上工作。运行时系统会自动处理例如切割输入数据，在机器之间调度程序的执行，处理机器故障以及管理必要的机器间通信等细节问题。这可以让那些对于并行分布式系统没有任何经验的程序员也能很简单地利用起一个大的分布式系统的资源。 我们的MapReduce的实现运行在一个由大的商业机构成的集群当中并且是高度可扩展的：一个典型的MapReduce计算要在上千台机器中处理TB数量级的数据。程序员会觉得这个系统非常好用：已经有成千上万的MapReduce程序被实现出来并且每天有上千个MapReduce任务运行在Google的集群上。 Introduction在过去五年中，作者和许多Google的其他人已经实现了成百上千个用于特殊目的的计算程序用于处理大量的raw data（如抓取文件，Web请求日志等），用于计算产生各种各样的derived data（如倒排索引、Web文件结构的图片展示、每个host抓取的文件数量总结、指定日期最频繁的访问请求等）。许多这种计算程序在概念上都是非常直接的。然而输入的数据量往往很大，并且计算需要分布在成百上千台机器中为了在一个可接受的时间内完成任务。但是除了简单的计算模型以外，我们需要大量复杂的代码用来处理例如如何并行化计算、分发数据、处理故障等等问题。 为了解决这样的复杂性，我们设计了一种新的抽象，它让我们只需要表示出我们想要执行的计算模型，而将背后复杂的并行化，容错，数据分发，负载平衡等等技术的实现细节隐藏在了库中。我们这种新的抽象是受Lisp以及其他一些函数式编程语言中的map和reduce原语影响而来的。我们意识到为了计算出一系列的中间键值对，许多的计算都需要对于输入中的每个逻辑“记录”进行map操作。然后还需要对所有共享同一个key的value进行reduce操作，从而能够对派生的数据进行适当的组合。我们这种让用户自定义map和reduce操作的编程模型能够让我们简单地对大量数据实现并行化，并且使用重新执行（re-execution）作为主要的容错机制。 我们这项工作的主要共享是提供了一个简单并且强大的接口能够让我们实现自动的并行化并且分布处理大规模的计算，同时该接口的实现能在大型的商用PC集群上获得非常高的性能。 Section 2描述了基本的编程模型以及一些简单的例子。Section 3描述了为我们的基于集群的计算环境量身定做的MapReduce接口。Section 4描述了一些我们认为有用的对于编程模型的改进。Section 5是对我们的实现在不同任务下的性能测试。Section 6 包含了MapReduce在Google内的使用情况，包括我们以它为基础重写我们的产品索引系统的经验。Section 7讨论了相关的工作以及未来的发展。 Programming Model计算模型以一系列的键值对作为输入并产生一系列的键值对作为输出。MapReduce库的用户以“Map”和”Reduce”两个函数来表达计算。 Map，是由用户编写的，取一个输入对，并且产生一系列中间的键值对。MapReduce库将那些具有相同的中间键$I$的中间值聚集在一起，然后将它们传递给Reduce函数。 Reduce，同样是由用户编写的，接收一个中间键$I$和该键对应的一系列的中间值。Reduce函数通过将这些值合并来组成一个可能更小的集合（值的集合）。通常每个Reduce函数只产生0个或1个输出值。Reduce函数一般通过一个迭代器（via an iterator）来获取中间值，从而在中间值的数目远远大于内存容量时，我们也能够处理。 Example下面来考虑这样一个问题：统计大量文档中每一个单词出现的次数。对此，用户需要编写类似于如下的伪代码： 12345678910111213 map(String key, String value): // key: document name // value: document contents for each word w in value: EmitIntermediate(w, &quot;1&quot;); reduce(String key, Iterator values): // key: a word // values: a list of counts int result = 0; for each v in values: result += ParseInt(v); Emit(AsString(result)); Map函数为在每一个单词出现的时候，为它加上一个计数（在这个简单的例子中就是加1）。Reduce函数对每个单词（作为中间键值对的键）的所有计数进行叠加。 另外，用户需要用输入输出文件的名字，以及一个可选的tuning paramete去fill in一个叫mapreduce specification的对象。之后，用户调用MapReduce函数，将上述定义的对象传递进去。用户的代码将和MapReduce库相连（由C++实现）。Appendix A中有这个例子所有的代码文档。 12map (k1,v1) -&gt; list(k2,v2)reduce (k2,list(v2)) -&gt; list(v2) 需要注意的是，输入的key和value与输出的key和value是不同的类型，而中间的key和value与输出的key和value是相同的类型（用 k1 和 k2 表示）。我们的C++实现都是以字符串的形式和用户代码进行交互的，至于将字符串类型转换成相应合适的类型的工作则由用户代码来完成了。 More Example接下来是一些能够简单地用MapReduce计算模型进行表达的例子 Distributed Grep（分布式查找）：Map函数获取匹配提供的模式的行，Reduce函数只是简单地将这些中间数据拷贝到输出。 Count of URL Access Frequency（计算URL访问频率）：Map函数处理web请求的日志，并且输出。Reduce函数将拥有相同URL的value相加，得到对 Reverse Web-Link Graph：Map函数输出对，其中source所在的page都有连向target这个URL的链接。Reduce函数将给定target的所有的source URL连接起来，输出对 Term-Vector per Host：一个term vector表示一系列的键值对，word表示一篇或者一系列文章中出现的比较重要的单词，frequency表示它们出现的次数。Map函数对于每篇输入的文章输出键值对（其中hostname是从文章所在的URL中抽取出来的）Reduce函数获取给定host的term vectors。它将这些term vectors累加起来，丢弃非频繁出现的term，并产生一个最终的对。 Inverted Index：Map函数对每篇文章进行处理，并输出一系列的对。Reduce函数接收给定word的所有键值对，对相应的document ID进行排序并且输出]]></content>
+      <tags>
+        <tag>编程</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[OS论文阅读笔记（二）]]></title>
     <url>%2Fpost%2F86b562df.html</url>
-    <content type="text"><![CDATA[读书笔记——Implementing Fault-Tolerant Services Using the State Machine Approach: A Tutorial利用状态机实现容错服务的一个教程 摘要部分状态机方法是在分布式系统中实现容错服务的一般方法。 本文回顾了该方法并描述了两种不同故障模型的协议 - 拜占庭和故障停止。 还讨论了用于移除故障组件和集成修复组件的系统重新配置技术。 Introduction分布式软件常由客户端（clients）和服务端（services）构成。 集中式的服务端虽然是最简单的架构方式，但也导致了其容错性只能与执行该服务的处理器相同，换言之，依旧是单机的容错性能。 如果这样级别的容错不可接受，那就应该在分布系统的独立容错的不同处理器上运行原始服务的副本，协议用于这些副本的交互。分布式系统的物理电气隔离确保了故障的独立性。 The state machine approcah is a general method for implementing a fault-tolerant service by replicating servers and coordinating client interactions with sever replicas. 状态机方法是同过复制服务器（设置代理/备份）并协调客户端与服务器代理交互的一种实现容错服务的通用方法。 该方法还为理解和设计（服务器replica）管理协议提供了一个框架。许多涉及数据或软件复制的协议——无论是为了掩盖故障，还是为了在没有集中控制的情况下促进交互——都可以使用状态机方法派生出来。尽管实际上很少有协议是以这种方式获得的，但是从状态机的角度观察它们有助于理解它们是如何以及为什么工作的。 本文是状态机方法的一个教程，描述了两种典型环境下的方法和实现。 State Machine状态机由状态变量（编码描述状态），状态转移指令（描述状态变化）。每一条指令由确定性程序构成。命令的执行是原子的。一段客户端的请求可以看作是指定对应的状态机实施指定的command（同时包含该command要求的全部信息） 请求的输出可以看作是一个actuator（在程序控制系统中），或是其他的外围设备，或是等待先前请求响应的客户机（可以看作是编译原理中自动机理论的语义分析）。 请求由状态机每次执行一条，并且与潜在的因果关系一直。因此，状态机的客户端可以对要处理的请求的顺序做以下假设。 O1. 单个客户对给定的状态机sm发送的请求将被按照发送的顺序执行。 O2. 如果客户机c向状态机sm发出请求r可能导致客户机c’向sm发出请求r’，那么sm在r’之前处理r。 考虑到通信网络的延迟，尤其是在分布式网络中（可以联系上一篇论文），O1和O2并不意味着状态机会根据制定/接收到的请求指令执行。]]></content>
+    <content type="text"><![CDATA[读书笔记——Implementing Fault-Tolerant Services Using the State Machine Approach: A Tutorial利用状态机实现容错服务的一个教程 摘要部分状态机方法是在分布式系统中实现容错服务的一般方法。 本文回顾了该方法并描述了两种不同故障模型的协议 - 拜占庭和故障停止。 还讨论了用于移除故障组件和集成修复组件的系统重新配置技术。 Introduction分布式软件常由客户端（clients）和服务端（services）构成。 集中式的服务端虽然是最简单的架构方式，但也导致了其容错性只能与执行该服务的处理器相同，换言之，依旧是单机的容错性能。 如果这样级别的容错不可接受，那就应该在分布系统的独立容错的不同处理器上运行原始服务的副本，协议用于这些副本的交互。分布式系统的物理电气隔离确保了故障的独立性。 The state machine approcah is a general method for implementing a fault-tolerant service by replicating servers and coordinating client interactions with sever replicas. 状态机方法是同过复制服务器（设置代理/备份）并协调客户端与服务器代理交互的一种实现容错服务的通用方法。 该方法还为理解和设计（服务器replica）管理协议提供了一个框架。许多涉及数据或软件复制的协议——无论是为了掩盖故障，还是为了在没有集中控制的情况下促进交互——都可以使用状态机方法派生出来。尽管实际上很少有协议是以这种方式获得的，但是从状态机的角度观察它们有助于理解它们是如何以及为什么工作的。 本文是状态机方法的一个教程，描述了两种典型环境下的方法和实现。 State Machine状态机由状态变量（编码描述状态），状态转移指令（描述状态变化）。每一条指令由确定性程序构成。命令的执行是原子的。一段客户端的请求可以看作是指定对应的状态机实施指定的command（同时包含该command要求的全部信息） 请求的输出可以看作是一个actuator（在程序控制系统中），或是其他的外围设备，或是等待先前请求响应的客户机（可以看作是编译原理中自动机理论的语义分析）。 请求由状态机每次执行一条，并且与潜在的因果关系一直。因此，状态机的客户端可以对要处理的请求的顺序做以下假设。 O1. 单个客户对给定的状态机sm发送的请求将被按照发送的顺序执行。 O2. 如果客户机c向状态机sm发出请求r可能导致客户机c’向sm发出请求r’，那么sm在r’之前处理r。 考虑到通信网络的延迟，尤其是在分布式网络中（可以联系上一篇论文），O1和O2并不意味着状态机会根据制定/接收到的请求指令执行。 状态机的语义表征：状态机的输出完全由它处理的请求序列决定 Anything that can be structured in terms of proce- dures and procedure calls can also be structured using state machines and clients. a state machine implements the procedure requests implement the procedure calls. 事实上，状态机在系统结构上比过程调用通常提供的灵活性更大。使用状态机，在处理请求之前不会延迟发出请求的客户机，并且可以将请求的输出发送到发出请求的客户机之外的其他地方。我们没有理由怀疑根据状态机客户端构建的应用会更加简洁。 Fault Tolerance两种典型的错误行为 Byzantine Failures（拜占庭故障）： 该组件可能表现出任意和恶意的行为，可能涉及与其他故障组件的勾结 Fail-stop Failures. （异常终止错误） 允许其他组件检测到错误并停止。 t fault tollerant：指系统在一定范围的活动中最多不超过t个组件发生故障，传统的MTBF（平均故障间隔时间）和其他的统计的故障评定方法固然有其可取之处，但是，去测定系统的最大容载故障组建个数潜意识中要求了系统具备一定的修正能力（当出现故障组件个数超出/即将超出限额时的补救措施）。 Fault-tolerance state machine步入正题，容错状态机。 由于备份（副本）运行在分布式系统的不同处理器上，在假定每个错误最多影响一个处理器，而在不出错的情况下，相同初始状态的状态机经相同的输入（request序列）应该抵达相同状态并输出相同内容，那么结合该系统状态机副本的输出，得到容错状态机的输出。 若考虑满足最坏情况下，出现拜占庭故障，正常运行的组件仍占据大多数，要求一个t fault-tollerant状态机应之少包含2t+1个组件。 而如果考虑故障停止情况下，那么只要满足还有一个non-fautlty组件具备正常输出能力即可，所以应至少包含t+1个组件。 实现上述容错状态机的关键在于备份（副本）的协调：所有备份（副本）都可以接收到且接收到顺序相同的请求序列。 拆分成两个子要求： Agreement：每个非故障状态机都会接收到每个请求。 Order：每个非故障状态机都会以相同的顺序处理这些请求。 在某些情况下条件可以放宽，比如考虑可能出现故障停止故障的状态机中，对于只读的请求，可以放宽至2个即可，因为只读不影响状态机的状态变化。 另外对于通信请求，若处理不同的请求r和r’时，r-&gt;r’和r’-&gt;r的终状态和输出序列相同的话。文章举了一个投票的自动机例子，如果候选者每个人投票数最大为1，且阈值（MAJ）的两倍要大于总值（Cno），换句话说，至多只有一人会被投出，那么无论怎样交换请求（投票顺序），自动机的输出和最终输出必然是相同的。但若允许每个人投票多次，或是阈值不满足上述要求，则交换请求会影响到自动机的输出和终状态。 Agreement通过任何协议满足一个处理器向其他处理器传播值实现。 IC1: All nonfaulty processors agree on the same value. IC2: If the transmitter is nonfaulty, then all nonfaulty processors use its value as the one on which they agree. 难点是应对在执行过程中出错地处理器。 Order and Stability顺序要求可以通过为请求赋唯一标识符值来实现，且对于稳定的请求，将最小值传递给后面的状态机副本。 要点：identifiers的指定方法和“稳定”测试。 另外需要注意的是，identifiers的分配还需要符合Sec.1里O1和O2，这就要求祖先请求的identifiers值要更小，即若$r_j$是由于$r_i$而产生的，则$uid(r_i)&lt; uid(r_j)$。 文章介绍了三种方法 Using Logical Clocks利用上一篇文章所介绍的逻辑时钟，即给偏序请求集根据两条规则。 C1. 如果a和b是同一进程的两个事件且a发生在b之前，则$C_i \langle a \rangle &lt; C_i \langle b \rangle$。 C2. 如果a是i进程消息发送方，而b是j进程中该消息的接收方，则$C_i \langle a \rangle &lt; C_j \langle b \rangle$。 Condition）。 设计算法来为上述构建的时钟函数赋值，为满足C1和C2，分别设定两条规则： IR1. 同一个process的相邻event，其时钟值是递增的。 IR2. i进程a活动发送的消息会携带一个时间戳$T_m = C_i \langle a \rangle$，则接收方b进程活动b设定其时钟值为$C_j \langle b \rangle = MAX(T_m,C_j \langle b \rangle)+1$。 C值即我们希望得到的identifier值，接下来文章用来描述检查stable的方法，通过对处理器之间传递的消息附加序列号而已实现一些communication channels： FIFO Channels. 一对处理器间的消息接收顺序即发送顺序。 而对于出现故障停止的处理器，我们也可以假定下列情况的存在。 Failure Detection Assumption. 一个处理器p可以检测到另一个处理器q发生故障仅能够在其收到最后一条q发给p的消息后。 两个假设是一致的，在该假设下，可以构建如下的检测方法： Logical Clock Stability Test Toleranting Fail-stop Failures. A request is stable at replica $sm_i$ if a request with larger timestamp has been received by $sm_i$ from every client running on a nonfaulty processor.当所有处理器（无论faulty还是nonfaulty）都以更晚的时间戳发送给该状态机副本一条请求时，先前的请求就是稳定的。 接下来文章分类讨论解释了为什么上述成立，nonfaulty的处理机一旦发送了更大的，由于递增性，下次发送的时间戳值会更大，而根据FIFO原则，receive order 和deliver order相同，也符合递增性。而对于认定为出错的处理机，根据Failure Detection Assumption原则，我们可以确定是在收到了最后一条消息后，所以之后也不会再收到故障处理器的消息，综上，测试条件成立。 Synchronized Real-Time Clocks第二种构建满足O1和O2条件的identifiers值得方法是应用近似同步的实时时钟。 定义$T_p(e)$为事件e发生时p处理器的实时时钟值。我们通过向$T_p(e)$尾部后缀一端定长二进制串来唯一标定“p处理器上的客户机进行了事件e”这一信息。 那么为了满足O1和O2条件做以下规定。 Satisfied O1. 在有效的时钟精度（clock ticks/resolution）中一个处理器不会进行多于一次的请求。 Satisfied O2. 时钟同步应优于最小消息传递时间。 满足规定后，可以有以下的检测方法。设定$\Delta$为消息发出后确保每一个正常处理器收到消息时间不晚于$uid(r) + \Delta$的阈值，这样的$\Delta$是一定存在的。 Real-Time Clock Stability Test Tolerating Byzantine Failures 1. A request $r$ is stable at a state machine replica $sm_i$ being executed by processor $p$ if the local clock at $p$ reads $\tau$ and $uid(r) &lt; \tau - \Delta$]]></content>
       <categories>
         <category>编程</category>
       </categories>
@@ -16,7 +24,7 @@
   <entry>
     <title><![CDATA[OS论文阅读笔记（一）]]></title>
     <url>%2Fpost%2Fb6a38e07.html</url>
-    <content type="text"><![CDATA[阅读笔记参考：小强zju的读书笔记 Lamport本人评述 读书笔记——Time, Clocks, and the Ordering of Events in a Distributed System摘要部分本文研究了分布式系统中一个事件先于另一个事件发生的概念，并展示了如何定义事件的偏序，同时给出了一种可以对时间完全排序的分布式时钟同步算法。通过一种解决同步问题的方法来描述对全体事件的同步。 然后介绍专门用于同步物理时钟的情况，并推导出时钟不同步的界限。 Introduction时间概念是我们思维方式的基础，更基本的源于事件发生顺序，其贯穿我们对系统（system）的思考。然而在分布式系统中我们应重新审视这一基本概念。 A system is distributed if the message transmission delay is not negligible compared to the time between events in a single process. 如果与单个进程中的事件之间的时间相比，消息传输延迟不可忽略，那么该系统就是分布式的。（无论是在单机系统还是多机系统上，上述情况都要考虑） 本文重点关注空间分离的系统，但是单机多处理器系统涉及一些相类似的问题，因为某些事件可能以不可预测的顺序发生。“之前发生”只是系统中事件的部分排序。（事实上整体事件呈现一个偏序集合 No happen before）。 The Partial Ordering We will therefore define the “happened before” relation without using physical clocks. 我们将不依赖物理时钟定义“happen before”规则。 因应用的不同，我们可以将一个子程序（或是一条机器指令的执行）当作某个process里的一个event。 我们假定某个process的所有events构成一个序列，这个序列是线序（或许应该说不包含相等的情况），用文中的话说是具有先验总排序。我们根据process中event的发生顺序定义“happen before” 定义“happen before”关系，用（→表示） 如果a，b是相同进程的两个事件，且a出现在b之前，那么$a \rightarrow b$。 如果a是某进程消息发送的一方，b是另一进程接收该消息的一方，则$a \rightarrow b$。 该关系具备传递性，即$a \rightarrow b$ ，$b \rightarrow c$，则$a \rightarrow c$。如果$a \nrightarrow b$，$b \nrightarrow a$，那我们称a，b是并发（concurrent）的。 另外补充，该关系是反自反的，即，对任意a，$a \nrightarrow a$，（系统中一个时间可以在它自身之前发生没有实际意义）。 在图中$a \rightarrow b$即表示可以从a通过波浪线（消息传播途径），或者纵向的进程轴线（事件发生途径）走到b。 另一种方式解读该图像，我们也可以说，并发的进程是不会不经意间相互影响的。 Happened Before的理论和狭义相对论中的物理世界中的观念十分的类似，即event的先后是相对的，在实际世界中的不同惯性坐标系下，2个event的先后关系可能发生变化。不过Paper中没有深入的对比，我会在感想部分中深入讨论下 Logical Clocks现在考虑引入时钟，先以数学的方式为每个事件分配一个数字来代表其事件发生的时间。以时钟函数$C_i$表示$P_i$进程，其中$C_i \langle a \rangle$表示该进程a事件的值。$C$ 函数表示整个系统的时钟，如果b是进程$P_i$的事件之一，则$C \langle b \rang = C_i \langle b \rangle$。 由于当前没有将函数值和物理事件关联起来，所以我们将其认为是逻辑时间。 考虑该逻辑时钟的合理性，我们无法根据物理时间验证（这会要求基于物理时间的时钟引入），考虑一个强合理性的条件，如果事件a发生在另一个事件b之前，则a应该在比b更早的时间发生。 我们更正式地陈述这种情况如下。 Clock Condition For any events a, b:if $a \rightarrow b$ then $C \langle a \rangle &lt; C \langle b \rangle$ 其逆命题不成立（否则会要求所有并发事件同时发生，易证否），即只具备充分性。 满足下面两条件时，时钟条件（Clock Condition）是满足的。 C1. 如果a和b是同一进程的两个事件且a发生在b之前，则$C_i \langle a \rangle &lt; C_i \langle b \rangle$。 C2. 如果a是i进程消息发送方，而b是j进程中该消息的接收方，则$C_i \langle a \rangle &lt; C_j \langle b \rangle$。 Condition）。 通过算法来为上述构建的时钟函数赋值，为满足C1和C2，分别设定两条规则： IR1. 同一个process的相邻event，其时钟值是递增的。 IR2. i进程a活动发送的消息会携带一个时间戳$T_m = C_i \langle a \rangle$，则接收方b进程活动b设定其时钟值为$C_j \langle b \rangle = MAX（T_m^{+},C_j \langle b \rangle$）。 两条分别对应两条规则，所以时钟条件也得到满足，保证了具备逻辑时钟的合理系统。 Ordering the Events Totally在规定进程间一个顺序后，通过以下规则，我们从事件的偏序构建全序，我们便可得到新的“全序关系”（用$\Rightarrow$）来表示： 若对于a，b两事件，有$C_i \langle a \rangle &lt; C_j \langle b \rangle$，则$a \Rightarrow b$ 若$C_i \langle a \rangle = C_j \langle b \rangle$ 且 $P_i &lt; P_j$，则$a \Rightarrow b$ 可以说“$\Rightarrow$”是将“happen before”偏序关系“$\rightarrow$”拓展成的全序关系。 该全序依赖与系统时钟的确定，是不唯一的，相反，唯一确定的是事件发生的偏序关系。 对事件进行全排序的有用性将通过解决下列情况下的互斥问题来说明，考虑一个共享单个资源的固定过程集合的系统： 已被授予资源的进程必须先释放它，然后才能将其授予另一个进程。 必须按照它们的顺序授予对资源的不同请求。 如果授予资源的每个进程最终都会释放该资源，那么每一个请求都后被授权。 通过一个中心化的进程通过请求抵达的时刻来安排资源是不可行的（后抵达该进程的消息可能先需求了资源）。 为了解决该问题，我们实行一个满足了IR1和IR2的系统，并且通过其定义出所有事件的全序，具备全局序后，问题就变得相当简单了，只需要确保每个进程清楚其他进程得操作即可。 分布式算法细节每个进程维护自己的请求队列，规定请求队列初始包含单一的消息$T_0$：$P_0$请求资源，其中$P_0$是初始占据资源的进程（根据假设，所有资源初始归同一进程占据），且$T_0$小于任何时钟的初始值。 该算法由以下五条规则定义。为了方便起见，假定每个规则定义的操作构成一个单一事件。 为了请求资源，请求方进程$P_i$将消息“$T_m$：$P_i$请求资源”递送至所有其他进程，并把该消息加入自己的请求队列。$T_m$表示该消息的时间戳。 当$P_j$收到消息“$T_m$：$P_i$请求资源”，将其加入自己的请求队列并向$P_i$发送一个带时间戳的确认消息。 为了释放资源，进程$P_i$将所有“$T_m$：$P_i$请求资源”消息移出队列，并把一个带时间戳的释放消息递送给所有其他进程。 当$P_j$收到消息“$P_i$释放资源”，将所有“$T_m$：$P_i$请求资源”消息移出队列。 当满足下列两条件时，进程$P_i$占据该资源： 存在一个“$T_m$：$P_i$请求资源”消息在其请求队列中并且序优先于其他的所有请求。 $P_i$收到了所有其他进程发来的时间戳晚于$T_m$的消息。 易于说明该算法满足该系统的三个要求。 这是一个分布式算法，每个进程独立遵循这些规则，没有集中的同步进程或是中央存储。 Anomalous Behavior异常情况，上面定义的Logical Clocks有一些反常的行为，例如我们定义的Total Ordering是$b&lt;a$，但事实上a事件的操作员执行之后通过电话告诉b事件的操作员开始执行，那么Logical Clocks给出的全序就明显违背了客观情况。 这种情况的出现是由于系统不知道“电联”这一要求，因为这种先后顺序是在系统外定义的。为避免这种反常，有2中解法： 将外部的happened before关系手动的引入到系统内（event b产生是强调依赖 event a） 引入实际物理时钟]]></content>
+    <content type="text"><![CDATA[阅读笔记参考：小强zju的读书笔记 Lamport本人评述 读书笔记——Time, Clocks, and the Ordering of Events in a Distributed System摘要部分本文研究了分布式系统中一个事件先于另一个事件发生的概念，并展示了如何定义事件的偏序，同时给出了一种可以对时间完全排序的分布式时钟同步算法。通过一种解决同步问题的方法来描述对全体事件的同步。 然后介绍专门用于同步物理时钟的情况，并推导出时钟不同步的界限。 Introduction时间概念是我们思维方式的基础，更基本的源于事件发生顺序，其贯穿我们对系统（system）的思考。然而在分布式系统中我们应重新审视这一基本概念。 A system is distributed if the message transmission delay is not negligible compared to the time between events in a single process. 如果与单个进程中的事件之间的时间相比，消息传输延迟不可忽略，那么该系统就是分布式的。（无论是在单机系统还是多机系统上，上述情况都要考虑） 本文重点关注空间分离的系统，但是单机多处理器系统涉及一些相类似的问题，因为某些事件可能以不可预测的顺序发生。“之前发生”只是系统中事件的部分排序。（事实上整体事件呈现一个偏序集合 No happen before）。 The Partial Ordering We will therefore define the “happened before” relation without using physical clocks. 我们将不依赖物理时钟定义“happen before”规则。 因应用的不同，我们可以将一个子程序（或是一条机器指令的执行）当作某个process里的一个event。 我们假定某个process的所有events构成一个序列，这个序列是线序（或许应该说不包含相等的情况），用文中的话说是具有先验总排序。我们根据process中event的发生顺序定义“happen before” 定义“happen before”关系，用（→表示） 如果a，b是相同进程的两个事件，且a出现在b之前，那么$a \rightarrow b$。 如果a是某进程消息发送的一方，b是另一进程接收该消息的一方，则$a \rightarrow b$。 该关系具备传递性，即$a \rightarrow b$ ，$b \rightarrow c$，则$a \rightarrow c$。如果$a \nrightarrow b$，$b \nrightarrow a$，那我们称a，b是并发（concurrent）的。 另外补充，该关系是反自反的，即，对任意a，$a \nrightarrow a$，（系统中一个时间可以在它自身之前发生没有实际意义）。 在图中$a \rightarrow b$即表示可以从a通过波浪线（消息传播途径），或者纵向的进程轴线（事件发生途径）走到b。 另一种方式解读该图像，我们也可以说，并发的进程是不会不经意间相互影响的。 Happened Before的理论和狭义相对论中的物理世界中的观念十分的类似，即event的先后是相对的，在实际世界中的不同惯性坐标系下，2个event的先后关系可能发生变化。不过Paper中没有深入的对比，我会在感想部分中深入讨论下 Logical Clocks现在考虑引入时钟，先以数学的方式为每个事件分配一个数字来代表其事件发生的时间。以时钟函数$C_i$表示$P_i$进程，其中$C_i \langle a \rangle$表示该进程a事件的值。$C$ 函数表示整个系统的时钟，如果b是进程$P_i$的事件之一，则$C \langle b \rang = C_i \langle b \rangle$。 由于当前没有将函数值和物理事件关联起来，所以我们将其认为是逻辑时间。 考虑该逻辑时钟的合理性，我们无法根据物理时间验证（这会要求基于物理时间的时钟引入），考虑一个强合理性的条件，如果事件a发生在另一个事件b之前，则a应该在比b更早的时间发生。 我们更正式地陈述这种情况如下。 Clock Condition For any events a, b:if $a \rightarrow b$ then $C \langle a \rangle &lt; C \langle b \rangle$ 其逆命题不成立（否则会要求所有并发事件同时发生，易证否），即只具备充分性。 满足下面两条件时，时钟条件（Clock Condition）是满足的。 C1. 如果a和b是同一进程的两个事件且a发生在b之前，则$C_i \langle a \rangle &lt; C_i \langle b \rangle$。 C2. 如果a是i进程消息发送方，而b是j进程中该消息的接收方，则$C_i \langle a \rangle &lt; C_j \langle b \rangle$。 Condition）。 通过算法来为上述构建的时钟函数赋值，为满足C1和C2，分别设定两条规则： IR1. 同一个process的相邻event，其时钟值是递增的。 IR2. i进程a活动发送的消息会携带一个时间戳$T_m = C_i \langle a \rangle$，则接收方b进程活动b设定其时钟值为$C_j \langle b \rangle = MAX(T_m,C_j \langle b \rangle)+1$。 两条分别对应两条规则，所以时钟条件也得到满足，保证了具备逻辑时钟的合理系统。 Ordering the Events Totally在规定进程间一个顺序后，通过以下规则，我们从事件的偏序构建全序，我们便可得到新的“全序关系”（用$\Rightarrow$）来表示： 若对于a，b两事件，有$C_i \langle a \rangle &lt; C_j \langle b \rangle$，则$a \Rightarrow b$ 若$C_i \langle a \rangle = C_j \langle b \rangle$ 且 $P_i &lt; P_j$，则$a \Rightarrow b$ 可以说“$\Rightarrow$”是将“happen before”偏序关系“$\rightarrow$”拓展成的全序关系。 该全序依赖与系统时钟的确定，是不唯一的，相反，唯一确定的是事件发生的偏序关系。 对事件进行全排序的有用性将通过解决下列情况下的互斥问题来说明，考虑一个共享单个资源的固定过程集合的系统： 已被授予资源的进程必须先释放它，然后才能将其授予另一个进程。 必须按照它们的顺序授予对资源的不同请求。 如果授予资源的每个进程最终都会释放该资源，那么每一个请求都后被授权。 通过一个中心化的进程通过请求抵达的时刻来安排资源是不可行的（后抵达该进程的消息可能先需求了资源）。 为了解决该问题，我们实行一个满足了IR1和IR2的系统，并且通过其定义出所有事件的全序，具备全局序后，问题就变得相当简单了，只需要确保每个进程清楚其他进程得操作即可。 分布式算法细节每个进程维护自己的请求队列，规定请求队列初始包含单一的消息$T_0$：$P_0$请求资源，其中$P_0$是初始占据资源的进程（根据假设，所有资源初始归同一进程占据），且$T_0$小于任何时钟的初始值。 该算法由以下五条规则定义。为了方便起见，假定每个规则定义的操作构成一个单一事件。 为了请求资源，请求方进程$P_i$将消息“$T_m$：$P_i$请求资源”递送至所有其他进程，并把该消息加入自己的请求队列。$T_m$表示该消息的时间戳。 当$P_j$收到消息“$T_m$：$P_i$请求资源”，将其加入自己的请求队列并向$P_i$发送一个带时间戳的确认消息。 为了释放资源，进程$P_i$将所有“$T_m$：$P_i$请求资源”消息移出队列，并把一个带时间戳的释放消息递送给所有其他进程。 当$P_j$收到消息“$P_i$释放资源”，将所有“$T_m$：$P_i$请求资源”消息移出队列。 当满足下列两条件时，进程$P_i$占据该资源： 存在一个“$T_m$：$P_i$请求资源”消息在其请求队列中并且序优先于其他的所有请求。 $P_i$收到了所有其他进程发来的时间戳晚于$T_m$的消息。 易于说明该算法满足该系统的三个要求。 这是一个分布式算法，每个进程独立遵循这些规则，没有集中的同步进程或是中央存储。 Anomalous Behavior异常情况，上面定义的Logical Clocks有一些反常的行为，例如我们定义的Total Ordering是$b&lt;a$，但事实上a事件的操作员执行之后通过电话告诉b事件的操作员开始执行，那么Logical Clocks给出的全序就明显违背了客观情况。 这种情况的出现是由于系统不知道“电联”这一要求，因为这种先后顺序是在系统外定义的。为避免这种反常，有2中解法： 将外部的happened before关系手动的引入到系统内（event b产生是强调依赖 event a） 引入实际物理时钟]]></content>
       <categories>
         <category>编程</category>
       </categories>
@@ -2466,8 +2474,8 @@
       <tags>
         <tag>阅读</tag>
         <tag>小说</tag>
-        <tag>村上春树</tag>
         <tag>刺杀骑士团长</tag>
+        <tag>村上春树</tag>
       </tags>
   </entry>
   <entry>
@@ -2579,8 +2587,8 @@
         <tag>ACM</tag>
         <tag>算法</tag>
         <tag>2018暑假集训</tag>
-        <tag>POJ</tag>
         <tag>计算几何</tag>
+        <tag>POJ</tag>
       </tags>
   </entry>
   <entry>
@@ -2611,8 +2619,8 @@
         <tag>ACM</tag>
         <tag>算法</tag>
         <tag>2018暑假集训</tag>
-        <tag>POJ</tag>
         <tag>计算几何</tag>
+        <tag>POJ</tag>
       </tags>
   </entry>
   <entry>
@@ -2627,8 +2635,8 @@
         <tag>ACM</tag>
         <tag>算法</tag>
         <tag>2018暑假集训</tag>
-        <tag>POJ</tag>
         <tag>计算几何</tag>
+        <tag>POJ</tag>
       </tags>
   </entry>
   <entry>
@@ -2759,8 +2767,8 @@
         <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
-        <tag>POJ</tag>
         <tag>dp</tag>
+        <tag>POJ</tag>
       </tags>
   </entry>
   <entry>
@@ -2809,8 +2817,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>二分</tag>
         <tag>2018暑假集训</tag>
+        <tag>二分</tag>
         <tag>POJ</tag>
       </tags>
   </entry>
@@ -2841,8 +2849,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>二分</tag>
         <tag>2018暑假集训</tag>
+        <tag>二分</tag>
         <tag>水题</tag>
         <tag>CodeForces</tag>
       </tags>
@@ -2858,8 +2866,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>二分</tag>
         <tag>2018暑假集训</tag>
+        <tag>二分</tag>
         <tag>CodeForces</tag>
       </tags>
   </entry>
@@ -2977,9 +2985,9 @@
         <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
-        <tag>2017HDU多校</tag>
         <tag>正则匹配</tag>
         <tag>dp</tag>
+        <tag>2017HDU多校</tag>
       </tags>
   </entry>
   <entry>
