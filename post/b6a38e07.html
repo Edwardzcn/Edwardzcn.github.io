@@ -96,18 +96,21 @@
 
 
 
-<meta name="description" content="阅读笔记参考：小强zju的读书笔记 Lamport本人评述 读书笔记——Time, Clocks, and the Ordering of Events in a Distributed System摘要部分本文研究了分布式系统中一个事件先于另一个事件发生的概念，并展示了如何定义事件的偏序，同时给出了一种可以对时间完全排序的分布式时钟同步算法。通过一种解决同步问题的方法来描述对全体事件的同步。 然">
+<meta name="description" content="阅读笔记参考：小强zju的读书笔记 分布式系统基础－Lamport Clock Lamport本人评述 读书笔记——Time, Clocks, and the Ordering of Events in a Distributed System摘要部分本文研究了分布式系统中一个事件先于另一个事件发生的概念，并展示了如何定义事件的偏序，同时给出了一种可以对时间完全排序的分布式时钟同步算法。通过一种解">
 <meta name="keywords" content="编程,论文阅读,OS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="OS论文阅读笔记（一）">
 <meta property="og:url" content="http://www.edwardzcn98yx.com/post/b6a38e07.html">
 <meta property="og:site_name" content="Eddy的个人博客">
-<meta property="og:description" content="阅读笔记参考：小强zju的读书笔记 Lamport本人评述 读书笔记——Time, Clocks, and the Ordering of Events in a Distributed System摘要部分本文研究了分布式系统中一个事件先于另一个事件发生的概念，并展示了如何定义事件的偏序，同时给出了一种可以对时间完全排序的分布式时钟同步算法。通过一种解决同步问题的方法来描述对全体事件的同步。 然">
+<meta property="og:description" content="阅读笔记参考：小强zju的读书笔记 分布式系统基础－Lamport Clock Lamport本人评述 读书笔记——Time, Clocks, and the Ordering of Events in a Distributed System摘要部分本文研究了分布式系统中一个事件先于另一个事件发生的概念，并展示了如何定义事件的偏序，同时给出了一种可以对时间完全排序的分布式时钟同步算法。通过一种解">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-08-24T00:17:01.881Z">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_1_1.png">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_1_2.png">
+<meta property="og:updated_time" content="2019-08-25T13:53:15.652Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="OS论文阅读笔记（一）">
-<meta name="twitter:description" content="阅读笔记参考：小强zju的读书笔记 Lamport本人评述 读书笔记——Time, Clocks, and the Ordering of Events in a Distributed System摘要部分本文研究了分布式系统中一个事件先于另一个事件发生的概念，并展示了如何定义事件的偏序，同时给出了一种可以对时间完全排序的分布式时钟同步算法。通过一种解决同步问题的方法来描述对全体事件的同步。 然">
+<meta name="twitter:description" content="阅读笔记参考：小强zju的读书笔记 分布式系统基础－Lamport Clock Lamport本人评述 读书笔记——Time, Clocks, and the Ordering of Events in a Distributed System摘要部分本文研究了分布式系统中一个事件先于另一个事件发生的概念，并展示了如何定义事件的偏序，同时给出了一种可以对时间完全排序的分布式时钟同步算法。通过一种解">
+<meta name="twitter:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_1_1.png">
 
 
 
@@ -460,7 +463,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2,303
+                  2,879
                 </span>
               
 
@@ -476,7 +479,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  9
+                  11
                 </span>
               
             </div>
@@ -498,6 +501,7 @@
 
       
         <p>阅读笔记参考：<a href="https://www.jianshu.com/p/0c79d650d13f" target="_blank" rel="noopener">小强zju的读书笔记</a></p>
+<p><a href="https://www.jianshu.com/p/0d49b1811203" target="_blank" rel="noopener">分布式系统基础－Lamport Clock</a></p>
 <p><a href="https://www.microsoft.com/en-us/research/publication/time-clocks-ordering-events-distributed-system/" target="_blank" rel="noopener">Lamport本人评述</a></p>
 <h1 id="读书笔记——Time-Clocks-and-the-Ordering-of-Events-in-a-Distributed-System"><a href="#读书笔记——Time-Clocks-and-the-Ordering-of-Events-in-a-Distributed-System" class="headerlink" title="读书笔记——Time, Clocks, and the Ordering of Events in a Distributed System"></a>读书笔记——Time, Clocks, and the Ordering of Events in a Distributed System</h1><h2 id="摘要部分"><a href="#摘要部分" class="headerlink" title="摘要部分"></a>摘要部分</h2><p>本文研究了分布式系统中一个事件先于另一个事件发生的概念，并展示了如何定义事件的偏序，同时给出了一种可以对时间完全排序的分布式时钟同步算法。通过一种解决同步问题的方法来描述对全体事件的同步。</p>
 <p>然后介绍专门用于同步物理时钟的情况，并推导出时钟不同步的界限。</p>
@@ -563,11 +567,7 @@
 <p>该全序依赖与系统时钟的确定，是不唯一的，相反，唯一确定的是事件发生的偏序关系。</p>
 <p>对事件进行全排序的有用性将通过解决下列情况下的互斥问题来说明，考虑一个共享单个资源的固定过程集合的系统：</p>
 <blockquote>
-<ol>
-<li>已被授予资源的进程必须先释放它，然后才能将其授予另一个进程。</li>
-<li>必须按照它们的顺序授予对资源的不同请求。</li>
-<li>如果授予资源的每个进程最终都会释放该资源，那么每一个请求都后被授权。</li>
-</ol>
+<p>Q1. 已被授予资源的进程必须先释放它，然后才能将其授予另一个进程。<br>Q2. 必须按照它们的顺序授予对资源的不同请求。<br>Q3. 如果授予资源的每个进程最终都会释放该资源，那么每一个请求都后被授权。</p>
 </blockquote>
 <p>通过一个中心化的进程通过请求抵达的时刻来安排资源是不可行的（后抵达该进程的消息可能先需求了资源）。</p>
 <p>为了解决该问题，我们实行一个满足了IR1和IR2的系统，并且通过其定义出所有事件的全序，具备全局序后，问题就变得相当简单了，只需要确保每个进程清楚其他进程得操作即可。</p>
@@ -586,12 +586,23 @@
 </ol>
 <p>易于说明该算法满足该系统的三个要求。</p>
 <p>这是一个分布式算法，每个进程独立遵循这些规则，没有集中的同步进程或是中央存储。</p>
+<p>根据算法1-&gt;5构建可以证明Q1，Q2，Q3是满足要求的。</p>
+<p>对于Q1，反证法：</p>
+<p>假设Q1不成立，则意味着在资源分配给某进程后，假设该进程为$P<em>j$，存在至少一个进程，假设为$P_i$，未释放该资源。但是根据3、4点，这意味着，$P_i$没有发出“释放”的消息，也就应导致着进程$P_j$维护的队列中，仍存在“$T</em>{m<em>1}$：$P_i$请求资源”这一消息并未移出（第四点），且$T</em>{m<em>1}$是最早的。现在我们审查第五点，上述未删除的消息存在队列，便不会使“$T</em>{m_2}$：$P_j$请求资源”这条满足最先（5.1点），那$P_j$维护队列中不满足其占有资源的条件，矛盾。</p>
+<p>对于Q2，时间戳是一个全序，由于5.2点要求收到所有其他进程法来的更晚的消息，所以可以保证先前消息是完全的，可以确定是最早的，根据全序顺序，可保证。</p>
+<p>对于Q3，反证法：</p>
+<p>假设在均释放的情况下，存在至少一个请求没有被授权（批准），不妨设最早的是$P<em>j$的请求，则在其自身队列以及所有其他进程队列中都应在某一时间后都存在着这样一条“$T</em>{m<em>2}$：$P_j$请求资源”，由于始终未被授权，假设5.1不被满足，则应存在“$T</em>{m<em>1}$：$P_i$请求资源”始终存在，且$T</em>{m<em>1}&lt;T</em>{m_2}$但是我们设定$P_j$是最早的不被授权的，所以前者必定在某个时间释放，$P_i$请求资源的记录会随释放消息的到达被撤，不可能始终存在，不成立。若5.2始终不能被满足，在5.1成立后，由于没有fail的机器，必然会收到确认消息，不成立。所以5.1，5.2总会在一定时间后被满足，矛盾。</p>
 <h2 id="Anomalous-Behavior"><a href="#Anomalous-Behavior" class="headerlink" title="Anomalous Behavior"></a>Anomalous Behavior</h2><p>异常情况，上面定义的Logical Clocks有一些反常的行为，例如我们定义的Total Ordering是$b&lt;a$，但事实上a事件的操作员执行之后通过电话告诉b事件的操作员开始执行，那么Logical Clocks给出的全序就明显违背了客观情况。</p>
 <p>这种情况的出现是由于系统不知道“电联”这一要求，因为这种先后顺序是在系统外定义的。<br>为避免这种反常，有2中解法：</p>
 <ol>
 <li>将外部的happened before关系手动的引入到系统内（event b产生是强调依赖 event a）</li>
 <li>引入实际物理时钟</li>
 </ol>
+<h2 id="Physical-Clocks"><a href="#Physical-Clocks" class="headerlink" title="Physical Clocks"></a>Physical Clocks</h2><p>对物理始终两条限制，</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_1_1.png" alt="OS_1_1"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_1_2.png" alt="OS_1_2"></p>
+<p>实际上时限制增速尽可能贴近1，以及各时钟的同步性。</p>
+<p>后面保证物理时钟一致性以及满足C1，C2的算法暂时没有看懂，所以后面再补吧，数学功底差一些。</p>
 
       
     </div>
@@ -838,7 +849,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#读书笔记——Time-Clocks-and-the-Ordering-of-Events-in-a-Distributed-System"><span class="nav-number">1.</span> <span class="nav-text">读书笔记——Time, Clocks, and the Ordering of Events in a Distributed System</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#摘要部分"><span class="nav-number">1.1.</span> <span class="nav-text">摘要部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction"><span class="nav-number">1.2.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-Partial-Ordering"><span class="nav-number">1.3.</span> <span class="nav-text">The Partial Ordering</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Logical-Clocks"><span class="nav-number">1.4.</span> <span class="nav-text">Logical Clocks</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ordering-the-Events-Totally"><span class="nav-number">1.5.</span> <span class="nav-text">Ordering the Events Totally</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#分布式算法细节"><span class="nav-number">1.5.1.</span> <span class="nav-text">分布式算法细节</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Anomalous-Behavior"><span class="nav-number">1.6.</span> <span class="nav-text">Anomalous Behavior</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#读书笔记——Time-Clocks-and-the-Ordering-of-Events-in-a-Distributed-System"><span class="nav-number">1.</span> <span class="nav-text">读书笔记——Time, Clocks, and the Ordering of Events in a Distributed System</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#摘要部分"><span class="nav-number">1.1.</span> <span class="nav-text">摘要部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction"><span class="nav-number">1.2.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-Partial-Ordering"><span class="nav-number">1.3.</span> <span class="nav-text">The Partial Ordering</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Logical-Clocks"><span class="nav-number">1.4.</span> <span class="nav-text">Logical Clocks</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ordering-the-Events-Totally"><span class="nav-number">1.5.</span> <span class="nav-text">Ordering the Events Totally</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#分布式算法细节"><span class="nav-number">1.5.1.</span> <span class="nav-text">分布式算法细节</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Anomalous-Behavior"><span class="nav-number">1.6.</span> <span class="nav-text">Anomalous Behavior</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Physical-Clocks"><span class="nav-number">1.7.</span> <span class="nav-text">Physical Clocks</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -873,7 +884,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">240.0k</span>
+    <span title="Site words total count">247.6k</span>
   
 </div>
 
@@ -1119,7 +1130,7 @@
         }
       });
     </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
   
 
 
@@ -1127,4 +1138,4 @@
 
   
 
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>

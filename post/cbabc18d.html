@@ -105,7 +105,8 @@
 <meta property="og:description" content="读书笔记——MapReduce: Simplified Data Processing on Large Clusters大型集群上的简化处理：MapReduce（键值缩减？） 原始翻译版本网址：《MapReduce: Simplified Data Processing on Large Cluster 》翻译 AbstractMapReduce是一种编程模型和一种用来处理和产生大数据集的相关实">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_3_1.png">
-<meta property="og:updated_time" content="2019-08-24T02:24:09.167Z">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_3_2.png">
+<meta property="og:updated_time" content="2019-08-24T09:35:00.208Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="OS论文阅读笔记（三）">
 <meta name="twitter:description" content="读书笔记——MapReduce: Simplified Data Processing on Large Clusters大型集群上的简化处理：MapReduce（键值缩减？） 原始翻译版本网址：《MapReduce: Simplified Data Processing on Large Cluster 》翻译 AbstractMapReduce是一种编程模型和一种用来处理和产生大数据集的相关实">
@@ -440,7 +441,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  3,342
+                  10,134
                 </span>
               
 
@@ -456,7 +457,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  12
+                  36
                 </span>
               
             </div>
@@ -539,6 +540,93 @@
 </ol>
 <p>当成功执行完之后，MapReduce的执行结果被存放在R个输出文件中（每个Reduce task对应一个，文件名由用户指定）。通常用户并不需要将R个输出文件归并成一个。因为它们通常将这些文件作为另一个MapReduce调用的输入，或者将它们用于另外一个能够以多个文件作为输入的分布式应用。</p>
 <p>（个人理解：module R将中间键值对分为R份一方面是为了执行Reduce work的处理器进行分布式并行计算，另一方面，产生的分布式数据也可以接着用于其他能以多文件为输入的分布式应用。）</p>
+<h3 id="Master-Data-Structures"><a href="#Master-Data-Structures" class="headerlink" title="Master Data Structures"></a>Master Data Structures</h3><p>在master中保存了许多的数据结构。对于每个Map task和Reduce task，master都保存了它们的状态（idle，in-progress或者是completed）以及worker所在机器的标识（对于非idle空转状态的tasks而言）。</p>
+<p>master相当于是一个管道，通过它Map task所产生的中间文件被传递给了Reduce task。因此，对于每一个已经完成的Map task，master会存储由它产生的R个中间文件的位置和大小（分配给R个Reduce task执行，需要远程读取这些数据，所以要记录位置和大小）。当Map task完成的时候，master就会收到位置和大小的更新信息。而这些信息接下来就会逐渐被推送到处于in-progress状态的Reduce task中。</p>
+<h3 id="Fault-Tolerance"><a href="#Fault-Tolerance" class="headerlink" title="Fault Tolerance"></a>Fault Tolerance</h3><p>容错处理</p>
+<p>因为MapReduce库的设计初衷是用成千上万的机器去处理大量的数据，所以它就必须能用优雅的方式对机器故障进行处理。</p>
+<h4 id="Worker-Failure"><a href="#Worker-Failure" class="headerlink" title="Worker Failure"></a>Worker Failure</h4><p>master会周期性地ping每一个worker。如果经过了一个特定的时间还未从某一个worker上获得响应，那么master会将worker标记为failed。所有由该worker完成的Map task都被回退为idle状态，因此能够被重新调度到其他的worker上。同样的，所有failed worker正在执行的Map task或者Reduce task也会被回退为idle状态，并且被重新调度。</p>
+<p><strong>发生故障的机器上已经完成的Map task需要重新执行的原因是，它们的输入是保存在本地磁盘的，因此发生故障之后就不能获取了。而已经完成的Reduce task并不需要被重新执行，因为它们的输出是存放在全局的文件系统中的。</strong></p>
+<p>当一个Map task开始由worker A执行，后来又由worker B执行（因为A故障了）。所有执行Reduce task的worker都会收到这个重新执行的通知。那些还未从worker A中读取数据的Reduce task将会从worker B中读取数据。</p>
+<p>MapReduce对于大面积的机器故障是非常具有弹性的。例如，在一次MapReduce操作中，网络维护造成了集群中八十台机器在几分钟的时间内处于不可达的状态。MapReduce的master只是简单地将不可达的worker机器上的工作重新执行了一遍，接着再继续往下执行，最终完成了MapReduce的操作。</p>
+<h4 id="Master-Failure"><a href="#Master-Failure" class="headerlink" title="Master Failure"></a>Master Failure</h4><p>对于master，我们可以简单地对上文所述的master数据结构做周期性的快照。如果一个master task死了，我们可以很快地根据最新的快照来重新启动一个master task。但是，因为我们只有一个master，因此故障的概率比较低。所以，在我们的实现中如果master出现了故障就只是简单地停止MapReduce操作。用户可以检测到这种情况，并且如果他们需要的话可以重新开始一次MapReduce操作。</p>
+<h4 id="Semantics-in-the-Presence-of-Failures"><a href="#Semantics-in-the-Presence-of-Failures" class="headerlink" title="Semantics in the Presence of Failures"></a>Semantics in the Presence of Failures</h4><p>如果用户提供的Map和Reduce操作是关于输入值的确定性函数，那么我们分布式的实现将会产生同样的输出，在整个程序经过没有出现故障的顺序执行之后。</p>
+<p>我们依赖Map task和Reduce task原子性地提交输出来实现上述特性。每一个正在执行的task都会将它的输出写到一个私有的临时文件中。一个Reduce task产生一个这样的文件，而一个Map task产生R个这样的文件（每个Reduce work一个）。当一个Map task完成的时候，worker就会给master发送一个信息，，其中包含了R个临时文件的名字。如果master收到了一个来自于已经完成了的Map task的完成信息，那么它就将它自动忽略。否则，将R个文件的名称记录到一个master数据结构中。</p>
+<p>当一个Reduce task完成的时候，Reduce worker会自动将临时输出文件命名为最终输出文件。如果同一个Reduce task在多台机器上运行，那么多个重命名操作产生的最终输出文件名将会产生冲突。对此，我们依赖底层文件系统提供的原子重命名操作来保证最终文件系统中的数据来自一个Reduce task。</p>
+<p>大多数的Map和Reduce操作都是确定性的，事实上，我们的语义等同于顺序执行。因此这让程序员非常容易地能够解释他们程序的行为。当Map和Reduce操作是非确定性的时候，我们提供较弱，但仍然合理的语义。在非确定性的操作中，对于一个特定的Reduce task R1的输出是对应非确定性程序顺序执行产生的一个结果。然而，对于另一个Reduce task R2，它的输出对应于非确定性程序另一个顺序执行的结果。</p>
+<p>下面考虑Map task $M$和Reduce task $R_1$和$R_2$。让$e(R_i)$表示$R_i$的执行结果。更弱的语义意味着，$e(R_1)$可能从M的一次执行结果中读取输入，而$e(R_2)$可能从M的另一次执行中读取输入。</p>
+<h3 id="Locality"><a href="#Locality" class="headerlink" title="Locality"></a>Locality</h3><p>网络带宽在我们的计算环境中是相对稀缺的资源。我们通过将输入数据（由GFS管理）存储在集群中每台机器的本地磁盘的方法来节省带宽。GFS将输入文件切分成64MB大小的块，并且将每个块的多份拷贝（通常为3份）存储在不同的机器上。MapReduce的master获取所有输入文件的位置信息，然后将Map task调度到有相应输入文件副本的机器上。当发生故障时，再将Map task调度到邻近的具有该task输入文件副本的机器（即在同一台交换机内具有相同数据的机器）。当在一个集群的大量机器上做MapReduce操作时，大多数的输入数据都是从本地读取的，而不用消耗带宽。</p>
+<h3 id="Task-Granularity"><a href="#Task-Granularity" class="headerlink" title="Task Granularity"></a>Task Granularity</h3><p>如上所述，我们将Map操作分成M份，Reduce操作分成R份。在理想的情况下，M和R的值应该要比集群中worker machine的数量多得多。让一个worker同时进行许多不同的task有利于提高动态的负载均衡，同时在一个worker故障的时候能尽快恢复。许多已经完成的Map task也能尽快地传播到其他所有的worker machine上。</p>
+<p>在我们的实现中，M和R的大小是有一个实用范围的。因为我们的master需要做$O(M+R)$个调度决定，并且还要在内存中保存$O(M<em>R)$个状态（源自前面所说：<strong>对于每一个已经完成的Map task，master会存储由它产生的R个中间文件的位置和大小。</strong>）。（但是内存使用的常数还是比较小的，$O(M</em>R)$个Map task/Reduce task 状态对，每个的大小大概在一个字节）</p>
+<p>另外，$R$通常受限于用户，因为每个Reduce task的输出都分散在不同的输出文件中。事实上，我们会选择$M$，使得每个输入文件大概16MB到64MB的输入文件（因此上文所述的局部性优化会达到最优，减少带宽负担，尽量利用本地存储数据进行Map task）。而我们会让R成为worker machine数量的一个较小的倍数。因此，我们通常在进行MapReduce操作时，$M=200000$，$R=5000$，使用2000个worker machine。</p>
+<h3 id="Backup-Tasks"><a href="#Backup-Tasks" class="headerlink" title="Backup Tasks"></a>Backup Tasks</h3><p>“straggler”（落伍的士兵）的存在是拖慢整个MapReduce操作的通常的原因之一。所谓的”straggler”是指一台机器用了过长的时间去完成整个计算任务中最后几个Map task或者Reduce task。Straggler出现的原因有很多。比如一台机器上硬盘坏了，它就会经历大量的可纠正错误，从而让它的性能从30MB/s下降到1MB/s。集群的调度系统可能将其他task调度到该机器上，导致它执行MapReduce代码的速度变慢很多，因为CPU，内存，本地磁盘，网络带宽的竞争加剧。我们最近遇到的一个问题是一台机器的初始化代码有点问题，它会导致处理器的缓存被禁用，在这些受影响的机器上进行的计算速度会下降到原来的百分之一。（ping得到不判定为故障机，但是自身速度过慢会拖累整体，出现短板效应）</p>
+<p>对此，我们有一个通用的机制用来缓解straggler的问题。当MapReduce操作接近结束的时候，master会将那些仍在执行的task的备份进行调度执行。无论是原来的还是备份执行完成，该task都将被标记为已完成。我们通过调整将该操作导致的计算资源消耗仅仅提高了几个百分点（只在即将结束的时候进行备份竞争执行）。但是在完成大型的MapReduce操作时，却让整个执行时间下降了好多。例如，Section 5.3中所描述的排序算法在备份机制关闭的情况下，需要多消耗44%的时间。</p>
+<h2 id="Refinements"><a href="#Refinements" class="headerlink" title="Refinements"></a>Refinements</h2><p>虽然对于大多数需求由Map和Reduce函数提供的功能已经足够了，但是我们还是发现了一些有用的扩展。对它们的描述如下。</p>
+<h3 id="Partitioning-Function"><a href="#Partitioning-Function" class="headerlink" title="Partitioning Function"></a>Partitioning Function</h3><p>MapReduce用户决定他们的Reduce task或者输出文件的数目R。通过一个划分函数，根据中间键值将各个task的数据进行划分。默认的划分函数是通过哈希（比如，hash(key) mod R）。这通常会产生非常好的较为均衡的划分。但是在其他一些情况下，通过键值的其他函数来划分要更好一些。例如，有的时候输出键值是一些URL，我们希望同一个host的内容能放在同一个输出文件中。为了支持这种情况，MapReduce库的用户可以提供一个特殊的划分函数。例如，使用“hash(Hostname(urlKey)) mod R”作为划分函数，从而让所有来自于同一个host的URL的内容都输出到同一个输出文件。</p>
+<p>（个人理解，hash之前可以根据需求（key的相似性、urlhost相同）对key提前进行一次分组）</p>
+<h3 id="Ordering-Guarantees"><a href="#Ordering-Guarantees" class="headerlink" title="Ordering Guarantees"></a>Ordering Guarantees</h3><p>我们确保在一个给定的划分中，中间键值对都按照键值的升序进行处理。这样的处理顺序确保了每一个划分产生一个排好序的输出文件。这样的话，如果输出文件格式需要支持根据key进行有效的随机查找会比较方便。同时，输出文件（应用）的用户也会觉得已经排好序的数据使用起来特别方便。</p>
+<h3 id="Combiner-Function"><a href="#Combiner-Function" class="headerlink" title="Combiner Function"></a>Combiner Function</h3><p>在有些情况下，每个Map task都会产生大量的中间键的重复而用户指定的Reduce函数是交互和关联的。Section 2.1中的单词统计就是一个很好的例子。因为单词的出现频率服从于Zipf分布，每个Map Task都会产生成百上千个<the, 1="">这样的记录。所有这些记录都会通过网络被送到一个Reduce task中，并且由Reduce函数加在一起去产生一个数。我们允许用户使用了可选的Cominer函数，用于在网络传输之前部分地进行归并操作。</the,></p>
+<p>Combiner函数在每个执行Map task的机器上执行。通常Combiner和Reduce函数使用的是相同的代码。Reduce函数和Combiner函数<strong>唯一的不同</strong>是MapReduce库<strong>如何处理函数的输出</strong>。Reduce函数的输出写到最终的输出文件中。而Combiner函数的输出会被写到一个最终将被送给Reduce task的中间文件中（合并后替代原有的中间键值对集合传递给Reduce Task机器，这样减少了带宽的占用）。</p>
+<p>部分的合并操作能极大地加速某类特定的MapReduce操作。Appendix A包含了一个使用Combiner的例子。</p>
+<h3 id="Input-and-Output-Types"><a href="#Input-and-Output-Types" class="headerlink" title="Input and Output Types"></a>Input and Output Types</h3><p>MapReduce库提供了对读入数据文件多种的格式支持。例如，”text”格式的输入将每一行作为键值对：key是文件内的偏移，value是该行的内容。另外一种比较常用的格式存储一系列按照键进行排序的键值对。每一个输出格式的实现都知道如何将自己进行合理的划分从而能让不同的Map task进行处理（例如，text模式就知道将区域划分到以行为边界）。用户可以通过简单地定义一个reader接口来提供一个新的输入类型的实现。事实上，大多数用户只使用了预定义输入类型的很小一部分。</p>
+<p>reader并不一定要从文件中读取数据。例如，我们可以很容易地定义一个从数据库，或者内存中映射的数据结构中读取记录的reader。</p>
+<p>同理，我们也支持产生不同格式的输出数据，用户也能编写新的输出数据格式。</p>
+<h3 id="Side-effects"><a href="#Side-effects" class="headerlink" title="Side-effects"></a>Side-effects</h3><p>在有些情况下，MapReduce的用户会很容易发现Map或者Reduce操作会产生一些辅助文件作为额外的输出文件。我们依赖应用的编写者去保证这些副作用是原子和幂等的。一般来说，应用会写到一个临时文件中，并且在它完全产生之后，通过一个原子操作将它重命名。</p>
+<p>对于一个单一的task产生的多个输出文件，我们不提供原子性的两相提交支持。因此，产生多个输出文件并且有跨文件一致性要求的task需要是确定性的。但是这样的限制在实践过程中并不是什么问题。</p>
+<h3 id="Skipping-Bad-Records"><a href="#Skipping-Bad-Records" class="headerlink" title="Skipping Bad Records"></a>Skipping Bad Records</h3><p>有时候，如果用户的代码中有bug的话，会导致Map或者Reduce操作在某些记录上崩溃。这些bug会导致MapReduce操作的正常完成。对于这种情况，通常就是去修bug。不过有时候这是不可行的，也许bug是第三方库造成的，而我们并不能得到它的源代码。而且，有时候我们允许忽略掉一些记录，例如在对一个大数据集做分析的时候。因此我们提供了一种可选的执行模式，当MapReduce库检测到一些记录会造成崩溃时，就会主动跳过它们，从而保证正常地运行。</p>
+<p>每一个worker进程都安装了一个signal handler用于捕捉段错误和bug。在调用用户的Map和Reduce操作之前，MapReduce库会将参数的序号保存在一个全局变量中。如果用户代码产生了一个信号，signal handler就会传输一个参数含有序号的”last gasp”UDP包给MapReduce的master。当master在一个特定的记录中发现了不知一次的错误，这表示在下一次执行相应的Map或者Reduce操作的时候一个将它跳过。</p>
+<h3 id="Local-Execution"><a href="#Local-Execution" class="headerlink" title="Local Execution"></a>Local Execution</h3><p>Map或者Reduce函数的调试问题是非常tricky的。因为实际的计算发生在分布式的系统中，通常由成百上千台机器组成，并且工作的分配由master动态执行。为了帮助调试，分析，以及小规模的测试，我们开发了另外一个MapReduce库的实现，它能够在本地机器上顺序执行一个MapReduce操作的所有工作。它的控制交给用户，因此计算可以被限定到制定的Map task中执行。用户利用指定的flag启动程序，然后就能非常简单地使用任何它们觉得有用的调试或者测试工具了。</p>
+<h3 id="Status-Information"><a href="#Status-Information" class="headerlink" title="Status Information"></a>Status Information</h3><p>master运行了一个内置的HTTP server并且输出了一系列供人们使用的状态页。状态页会显示程序的计算过程，例如已经完成了多少个task，还有多少个task正在执行，输入的字节数，中间数据的字节数，输出的字节数，以及处理速度等等。该页还包含了指向各个task的标准错误和标准输出链接。用户可以利用这些数据来判断计算会持续多长时间，以及计算是否需要添加更多的资源。这些页面还能用来发现什么时候处理速度比预期地下降好多。</p>
+<p>另外，顶层的状态页显示了那些worker出错了，以及在它们出错时正在执行哪些Map和Reduce task。这些信息在诊断用户代码出现的bug时是非常有用的。</p>
+<p>MapReduce库提供了一个叫counter的设施用于统计各种不同事件出现的次数。例如，用户可能想要统计已经处理过的单词的数目或者德国文件的索引数量。</p>
+<p>为了使用这一特性，用户代码创建一个命名的counter对象，并且在Map以及Reduce函数中对counter进行增加。例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Counter* uppercase;</span><br><span class="line">uppercase = GetCounter(&quot;uppercase&quot;);</span><br><span class="line"></span><br><span class="line">map(String name, String contents):</span><br><span class="line">　　for each word w in contents:</span><br><span class="line">　　　　if(IsCapitalized(w)):</span><br><span class="line">　　　　　　uppercase-&gt;Increment();</span><br><span class="line">　　　　EmitIntermediate(w, &quot;1&quot;);</span><br></pre></td></tr></table></figure>
+<p>每个worker机器上counter的值会定期传给master（捎带在给master的ping回复中）。master将来自成功执行的Map和Reduce task的counter值聚集起来。然后在MapReduce操作完成之后返回给用户代码。当前的counter值也会显示在master的状态页上（前述的state pages），所以用户能从实时观看计算的进行。在聚集counter的值的时候，master会消除Map或者Reduce task的重复执行造成的重复计算。（重复执行可能由backup tasks或者因为错误重新执行的task引起）。</p>
+<p>有些counter的值是由MapReduce库自动维护的，例如已经处理的输入键值对数目以及已经产生的输出键值对数目。</p>
+<p>用户发现counter特性对于检查MapReduce操作的执行是非常有用的。例如，在有些MapReduce操作中，用户代码想要确保产生的输出对的数目和已经处理的输入对的数目是恰好相等的（比如检查满射），或者处理的德语文件的数目占总处理文件数目的比重在一个可容忍的范围内。</p>
+<h2 id="Performance"><a href="#Performance" class="headerlink" title="Performance"></a>Performance</h2><p>在这个section中，我们通过运行在一个集群上的两个computation来测试MapReduce的性能。一个Computation搜索一个T的数据，从中获取一个特定的模式。另一个computation对一个T的数据进行排序。</p>
+<p>这两个程序代表了由用户实际编写的MapReduce程序的一个子集———一类程序用于将数据从一种表示方法切换到另一种表示方法。另一类程序则从大数据集中抽取出一小部分有趣的数据。</p>
+<h3 id="Cluster-Configuration"><a href="#Cluster-Configuration" class="headerlink" title="Cluster Configuration"></a>Cluster Configuration</h3><p>所有程序都运行在一个由1800台机器组成的机器上。每一台机器都有两个2GHz 的Intel Xeon处理器，并且允许Hper-Threading（超线程）， 4GB内存，两个160GB的IDE磁盘，以及一个G比特的以太网链路。这些机器被安排在一个两层树状的交换网络中，根节点的带宽大概在100-200Gbps。因为所有机器都在同一个托管设备中，因此任意两台机器间的RTT少于1ms。</p>
+<p>其中4GB中的1-1.5G是为集群中运行的其他任务预留的。程序在一个周末的下午运行，此时CPU，磁盘，网络基本都处于空闲状态。</p>
+<h3 id="Grep"><a href="#Grep" class="headerlink" title="Grep"></a>Grep</h3><p>grep程序需要扫描10的十次方条100-byte的记录，搜索一个相对罕见的三字符模式（出现了92337次）。输入被分成大概64MB份（M = 15000），所有的输出文件都存放在一个文件中（R = 1）。</p>
+<p>Figure 2显示了Computation随着时间的变化过程。Y轴代表了输入数据的扫描速度。随着机器逐渐加入MapReduce的计算当中，速度越来越快，当有1764个worker加入时，达到峰值30GB/s。随着Map task的结束，速度开始下降并且在80s的时候到达0,。整个Computation从开始到结束总共花费了大概150s。这其中还包括了1分钟的启动开销。开销主要来源于将程序分发到worker machine中，和GFS交互并打开1000个输入文件，以及获取局部性优化所需的信息的延时。</p>
+<h3 id="Sort"><a href="#Sort" class="headerlink" title="Sort"></a>Sort</h3><p>排序程序用于对10的十次方条记录（大概1T的数据）进行排序。程序以TeraSort benchmark为模型。</p>
+<p>排序程序由不超过50行用户代码组成，一个三行的Map function从text的一行中提取一个10-byte的排序key，与原始的text line组合成一个中间key/value pair。我们使用内置的Identity函数作为Reduce的运算符。这一函数将中间键值对传递出作为输出对。最终的排序输出是一个二路复制的GFS文件。</p>
+<p>输入被分成64MB份（M = 15000），而将输出分为4000份（R = 4000）。分割成许根据初始的key将其分割到R份中的一个。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_3_2.png" alt="OS_3_2"></p>
+<p>图3（a）展示了排序程序的正常执行，左上方的图表示读入的速率，在达到峰值13GB/s后迅速滑落因为所有的map tasks在200秒内就已经完成。值得注意的是，输入的速率慢于grep操作（对于相同的M划分），这是因为对于sort操作，花费了一半的事件以及I/O带宽用于将中间键值对结果写入本地磁盘，而grep操作对应的输出则可以小到忽略不计。</p>
+<p>中间左边的图表示经历map tasks后通过网络向reduce tasks传输数据的速率。这一混排在首个完成的map task后启动。第一个突起表示所有reduce tasks运行的第一个批次（R = 1700 nearly all），开始计算后300秒左右，第一批次的部分reduce tasks完成，我们开始向完成的机器进一步递送剩余reduce tasks的数据。</p>
+<p>左下的图表示排序好的数据向最终文件写出的速率。从第一批次reduce tasks完成到开始写数据有一段时间间隔，这是因为机器忙于对中间数据进行排序。</p>
+<p>关于速度的比较，输入数据高于shuffle速率和输出速率，这是因为输入是基于本地存储，而又因为网络带宽的限制，以及输出要求两份replica的要求，shuffle速率高于输出速率。我们写成两个副本，因为这是我们的底层文件系统提供的可靠性和可用性机制要求。 如果底层文件系统使用擦除编码（erasure coding）而不是复制（replication），则可以减少写入数据的网络带宽要求。</p>
+<p>（GFS介绍的论文里应该会解释为什么需要两份replica）。</p>
+<h3 id="Effect-of-Backup-Tasks"><a href="#Effect-of-Backup-Tasks" class="headerlink" title="Effect of Backup Tasks"></a>Effect of Backup Tasks</h3><p>在图3（b）中，我们展示了禁止backup tasks情况下执行排序操作的结果。流程与图3（a）很相似，但存在一个相当长的且看不出有明显活动的尾部。960秒后，除了剩余的5个，其余reduce tasks均已完成，然而剩余的stragglers直到300秒后才完成任务，着导致整体耗时1283秒，比具备backup tasks（最终备份处理任务）情况下多耗时44%。</p>
+<h3 id="Machine-Failures"><a href="#Machine-Failures" class="headerlink" title="Machine Failures"></a>Machine Failures</h3><p>在图3（c）中，我们展示了将1746台工作机器中的200台机器故意宕机几分钟以模拟机器故障情况下排序操作的执行结果，底层的集群立刻重启新的工作进程（因为仅仅是kill进程，实际上机器功能良好）。</p>
+<p>worker的deaths通过图表中负值输入速率来表示，因为先前一些已完成的map work丢失而需要被重新执行（根据先前分析，由于map task得到的中间结果存储在本地，宕机后无法正确访问，使得之前的任务需要被重新执行re-execute）。重执行开始得十分迅速，整体耗时仅仅比正常情况多耗时5%。</p>
+<h2 id="Experience"><a href="#Experience" class="headerlink" title="Experience"></a>Experience</h2><p>我们得MapReduce库首个版本于2003年2月写成，并在2003年8月进行了重要加强，包括引入局部优化，worker执行任务间动态负载均衡等等。从那时起，我们非常欣喜得看到MapReduce在解决各类问题上的广泛应用。现在，它已Google用于以下广泛领域的研究。</p>
+<ul>
+<li>大规模机器学习问题</li>
+<li>Google News和Froogle products（Google购物）的聚类问题</li>
+<li>提取用于生成热门查询报告的数据（如Google Zeitgeiest）</li>
+<li>提取网页上进行的试验或产品性能</li>
+<li>大规模图形计算</li>
+</ul>
+<h2 id="Large-Scale-Indexing"><a href="#Large-Scale-Indexing" class="headerlink" title="Large-Scale Indexing"></a>Large-Scale Indexing</h2><p>目前为止，我们最重要的MapReduce应用之一是重写一个产生谷歌搜索引擎需要的数据结构的复杂系统。索引系统以被抓取系统检索到的文件（GFS文件形式储存）为输入，raw content大小约20T，索引进程进行约10次MapReduce组成的序列操作。相较于先前ad-hoc分布式索引系统，现在应用MapReduce后，系统具备以下优点：</p>
+<ul>
+<li>因为与容错、分布式、并行化相关内容隐藏在库重，索引代码更加简单、精巧、易于理解。比如，计算的一个阶段从原有3800行C++代码削减至700行。</li>
+<li>概念上可与计算分开，从而使改动变得简单。</li>
+<li>内部对一些机器故障的解决使得整个过程更容易成功执行。进一步的，也更容易向系统中加入新的机器。</li>
+</ul>
+<h2 id="Related-Work"><a href="#Related-Work" class="headerlink" title="Related Work"></a>Related Work</h2><h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>现在MaoReduce已成功被Google应用于各种目的，我们将这种成功归功于以下原因。</p>
+<ul>
+<li>甚至对于并行和分布式系统缺乏相关经验的编程人员，由于相关细节隐藏在库中，模型仍具备易用性。</li>
+<li>大量问题易于以MapReduce地方式解决。</li>
+<li>我们将其实现在大规模集群上，因而适于很多大型问题。</li>
+</ul>
+<p>在这项工作中我们学习到很多，</p>
+<ul>
+<li>重新定义编程范式使得并行/分布式运算易于实现，也获得了相当的容错性能。</li>
+<li>网络带宽作为稀缺资源，使得我们的很多优化都意在减少通过网络传输的数据。</li>
+<li>冗余的任务执行（backup tasks）可以用于减少缓慢机器的影响，以及解决机器故障和数据丢失。</li>
+</ul>
 
       
     </div>
@@ -777,7 +865,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#读书笔记——MapReduce-Simplified-Data-Processing-on-Large-Clusters"><span class="nav-number">1.</span> <span class="nav-text">读书笔记——MapReduce: Simplified Data Processing on Large Clusters</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Abstract"><span class="nav-number">1.1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction"><span class="nav-number">1.2.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Programming-Model"><span class="nav-number">1.3.</span> <span class="nav-text">Programming Model</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Example"><span class="nav-number">1.3.1.</span> <span class="nav-text">Example</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#More-Example"><span class="nav-number">1.3.2.</span> <span class="nav-text">More Example</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Implementation"><span class="nav-number">1.4.</span> <span class="nav-text">Implementation</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Execution-Overview"><span class="nav-number">1.4.1.</span> <span class="nav-text">Execution Overview</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#读书笔记——MapReduce-Simplified-Data-Processing-on-Large-Clusters"><span class="nav-number">1.</span> <span class="nav-text">读书笔记——MapReduce: Simplified Data Processing on Large Clusters</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Abstract"><span class="nav-number">1.1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction"><span class="nav-number">1.2.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Programming-Model"><span class="nav-number">1.3.</span> <span class="nav-text">Programming Model</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Example"><span class="nav-number">1.3.1.</span> <span class="nav-text">Example</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#More-Example"><span class="nav-number">1.3.2.</span> <span class="nav-text">More Example</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Implementation"><span class="nav-number">1.4.</span> <span class="nav-text">Implementation</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Execution-Overview"><span class="nav-number">1.4.1.</span> <span class="nav-text">Execution Overview</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Master-Data-Structures"><span class="nav-number">1.4.2.</span> <span class="nav-text">Master Data Structures</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fault-Tolerance"><span class="nav-number">1.4.3.</span> <span class="nav-text">Fault Tolerance</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Worker-Failure"><span class="nav-number">1.4.3.1.</span> <span class="nav-text">Worker Failure</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Master-Failure"><span class="nav-number">1.4.3.2.</span> <span class="nav-text">Master Failure</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Semantics-in-the-Presence-of-Failures"><span class="nav-number">1.4.3.3.</span> <span class="nav-text">Semantics in the Presence of Failures</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Locality"><span class="nav-number">1.4.4.</span> <span class="nav-text">Locality</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Task-Granularity"><span class="nav-number">1.4.5.</span> <span class="nav-text">Task Granularity</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Backup-Tasks"><span class="nav-number">1.4.6.</span> <span class="nav-text">Backup Tasks</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Refinements"><span class="nav-number">1.5.</span> <span class="nav-text">Refinements</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Partitioning-Function"><span class="nav-number">1.5.1.</span> <span class="nav-text">Partitioning Function</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Ordering-Guarantees"><span class="nav-number">1.5.2.</span> <span class="nav-text">Ordering Guarantees</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Combiner-Function"><span class="nav-number">1.5.3.</span> <span class="nav-text">Combiner Function</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Input-and-Output-Types"><span class="nav-number">1.5.4.</span> <span class="nav-text">Input and Output Types</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Side-effects"><span class="nav-number">1.5.5.</span> <span class="nav-text">Side-effects</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Skipping-Bad-Records"><span class="nav-number">1.5.6.</span> <span class="nav-text">Skipping Bad Records</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Local-Execution"><span class="nav-number">1.5.7.</span> <span class="nav-text">Local Execution</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Status-Information"><span class="nav-number">1.5.8.</span> <span class="nav-text">Status Information</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Performance"><span class="nav-number">1.6.</span> <span class="nav-text">Performance</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Cluster-Configuration"><span class="nav-number">1.6.1.</span> <span class="nav-text">Cluster Configuration</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Grep"><span class="nav-number">1.6.2.</span> <span class="nav-text">Grep</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sort"><span class="nav-number">1.6.3.</span> <span class="nav-text">Sort</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Effect-of-Backup-Tasks"><span class="nav-number">1.6.4.</span> <span class="nav-text">Effect of Backup Tasks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Machine-Failures"><span class="nav-number">1.6.5.</span> <span class="nav-text">Machine Failures</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Experience"><span class="nav-number">1.7.</span> <span class="nav-text">Experience</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Large-Scale-Indexing"><span class="nav-number">1.8.</span> <span class="nav-text">Large-Scale Indexing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Related-Work"><span class="nav-number">1.9.</span> <span class="nav-text">Related Work</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Conclusion"><span class="nav-number">1.10.</span> <span class="nav-text">Conclusion</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -812,7 +900,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">240.0k</span>
+    <span title="Site words total count">247.6k</span>
   
 </div>
 
@@ -1058,7 +1146,7 @@
         }
       });
     </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
   
 
 
@@ -1066,4 +1154,4 @@
 
   
 
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
