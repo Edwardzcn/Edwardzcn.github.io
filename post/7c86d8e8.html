@@ -96,18 +96,20 @@
 
 
 
-<meta name="description" content="读书笔记——The Google File System原始翻译版本网址：GFS论文中文翻译 加粗和笔者注是重点关注的部分。 Abstract我们已经设计和实现了Google File System，一个适用于大规模分布式数据处理相关应用的，可扩展的分布式文件系统。它基于普通的不算昂贵的硬件设备，实现了容错的设计，并且为大量客户端提供极高的整体处理性能。 Introduction我们已经为Goog">
+<meta name="description" content="读书笔记——The Google File System参考翻译版本：Google File System翻译（转） 加粗和笔者注是重点关注的部分。 Abstract我们已经设计和实现了Google File System，一个适用于大规模分布式数据处理相关应用的，可扩展的分布式文件系统。它基于普通的不算昂贵的硬件设备，实现了容错的设计，并且为大量客户端提供极高的整体处理性能。 Introduct">
 <meta name="keywords" content="编程">
 <meta property="og:type" content="article">
 <meta property="og:title" content="OS论文阅读笔记（四）">
 <meta property="og:url" content="http://www.edwardzcn98yx.com/post/7c86d8e8.html">
 <meta property="og:site_name" content="Eddy的个人博客">
-<meta property="og:description" content="读书笔记——The Google File System原始翻译版本网址：GFS论文中文翻译 加粗和笔者注是重点关注的部分。 Abstract我们已经设计和实现了Google File System，一个适用于大规模分布式数据处理相关应用的，可扩展的分布式文件系统。它基于普通的不算昂贵的硬件设备，实现了容错的设计，并且为大量客户端提供极高的整体处理性能。 Introduction我们已经为Goog">
+<meta property="og:description" content="读书笔记——The Google File System参考翻译版本：Google File System翻译（转） 加粗和笔者注是重点关注的部分。 Abstract我们已经设计和实现了Google File System，一个适用于大规模分布式数据处理相关应用的，可扩展的分布式文件系统。它基于普通的不算昂贵的硬件设备，实现了容错的设计，并且为大量客户端提供极高的整体处理性能。 Introduct">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-08-26T07:07:27.653Z">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_4_1.png">
+<meta property="og:updated_time" content="2019-08-26T13:11:49.359Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="OS论文阅读笔记（四）">
-<meta name="twitter:description" content="读书笔记——The Google File System原始翻译版本网址：GFS论文中文翻译 加粗和笔者注是重点关注的部分。 Abstract我们已经设计和实现了Google File System，一个适用于大规模分布式数据处理相关应用的，可扩展的分布式文件系统。它基于普通的不算昂贵的硬件设备，实现了容错的设计，并且为大量客户端提供极高的整体处理性能。 Introduction我们已经为Goog">
+<meta name="twitter:description" content="读书笔记——The Google File System参考翻译版本：Google File System翻译（转） 加粗和笔者注是重点关注的部分。 Abstract我们已经设计和实现了Google File System，一个适用于大规模分布式数据处理相关应用的，可扩展的分布式文件系统。它基于普通的不算昂贵的硬件设备，实现了容错的设计，并且为大量客户端提供极高的整体处理性能。 Introduct">
+<meta name="twitter:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_4_1.png">
 
 
 
@@ -438,7 +440,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1,764
+                  2,395
                 </span>
               
 
@@ -454,7 +456,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  6
+                  8
                 </span>
               
             </div>
@@ -475,7 +477,7 @@
       
 
       
-        <h1 id="读书笔记——The-Google-File-System"><a href="#读书笔记——The-Google-File-System" class="headerlink" title="读书笔记——The Google File System"></a>读书笔记——The Google File System</h1><p><a href="https://blog.csdn.net/three_man/article/details/44408825" target="_blank" rel="noopener">原始翻译版本网址：GFS论文中文翻译</a></p>
+        <h1 id="读书笔记——The-Google-File-System"><a href="#读书笔记——The-Google-File-System" class="headerlink" title="读书笔记——The Google File System"></a>读书笔记——The Google File System</h1><p><a href="https://www.cnblogs.com/finalboss1987/p/5169559.html" target="_blank" rel="noopener">参考翻译版本：Google File System翻译（转）</a></p>
 <p>加粗和笔者注是重点关注的部分。</p>
 <h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>我们已经设计和实现了Google File System，一个适用于大规模分布式数据处理相关应用的，可扩展的分布式文件系统。它基于普通的不算昂贵的硬件设备，<strong>实现了容错的设计，并且为大量客户端提供极高的整体处理性能</strong>。</p>
 <h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>我们已经为Google迅速增长的数据处理需求而设计和实现了Google File System(GFS)。GFS和上一个分布式文件系统有着很多相同的设计目的，比如性能，扩展性，可靠性，以及可用性。不过，包括现在和未来预期下，它的设计是基于我们应用的工作量和技术环境驱动的，因而GFS都有一些和上一个版本明显不同的地方。这就要求我们重新审视传统的设计选择，并探索完全不同的设计要点。</p>
@@ -501,7 +503,14 @@
 </ul>
 <h2 id="Interface"><a href="#Interface" class="headerlink" title="Interface"></a>Interface</h2><p>虽然GFS没有实现像POSIX这样一些标准地API，但是它提供了一套常见的文件系统接口。文件在目录中按层次结构组织，并由路径名标识。我们提供了对文件的一些常规的操作：<em>create</em>，<em>delete</em>，<em>open</em>，<em>close</em>，<em>read</em>，<em>write</em>。</p>
 <p>此外GFS还提供了<em>snapshot</em>，<em>record append</em>操作。Snapshot以较低耗费建立一个文件或者是目录树的拷贝。Record append则允许多个客户端对相同一个文件并发进行追加（append）数据时保证每个追加操作的原子性。这个对于多路合并操作和多个客户端同时操作的生产者/消费者队列的实现非常有用，它不用额外的加锁处理。这种文件对于构造大型分布式应用来说，是不可或缺的。两者将在后面3.4和3.3节单独讲述。</p>
-<h2 id="Architecture"><a href="#Architecture" class="headerlink" title="Architecture"></a>Architecture</h2>
+<h2 id="Architecture"><a href="#Architecture" class="headerlink" title="Architecture"></a>Architecture</h2><p>一个GFS集群由一个master和多个chunkserver组成，可以被多个client访问，如图1所示。</p>
+<p>它们都是一个运行着用户级服务进程（user-level process）的商品化linux机器。只要机器资源允许以及由于运行可能的片状应用程序代码带来的低可靠性是可以接受的，那么可以很容易的在同一台机器上运行一个chunkserver和client。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_4_1.png" alt="OS_4_1"></p>
+<p>文件被划分成固定大小的chunk。每个chunk是由chunk创建时由master分配的一个不可变的全局唯一的64bit句柄来标识。Chunkserver将chunk作为linux文件存储在本地，对于chunk数据的读写通过chunk的handle和字节边界来表示。为了可靠性，每个chunk存储在多个chunkserver上。尽管用户可以为不同文件名字空间区域指定不同的备份级别，默认地我们存储三个备份（与后续的MapReduce对于GFS输入文件常为三份备份习惯上是一回事）。</p>
+<p>Master维护所有的文件系统元数据。包括名字空间（namespace），访问控制信息（access control information），文件与chunk的映射信息，chunk的当前位置（current locations 注意是chunck多个备份的位置）。它也控制系统范围内的一些活动，比如chunk租赁管理，僵死chunk的垃圾回收，chunkserver间的chunk迁移。Master与chunkserver通过心跳信息（<em>Heart Beat</em> messages）进行周期性的通信，以发送指令和收集chunkserver的状态。</p>
+<p>应用程序链接的GFS客户端代码，实现了文件系统API以及代表应用程序与master和chunkserver进行通信以读写数据。客户端如果需要操作元数据则需要与master通信，但是所有的纯数据通信直接与chunksever通信。我们没有提供POSIX API，因此也就不需要与linux vnode layer关联。</p>
+<p>客户端或者chunkserver都不会对文件数据进行缓存（cache）。客户端缓存只能得到很少的好处，因为大部分的应用需要直接读取整个大文件或者工作集合太大根本无法缓存。没有cache简化了客户端和整个系统，因为不需要考虑缓存一致性问题(实际上客户端会缓存元数据)。Chunkserver不需要进行文件数据缓存，是因为chunk是作为本地文件存储，这样Linux自身会将那些经常访问的数据进行缓存（间接利用了操作系统？）。</p>
+
       
     </div>
     
@@ -774,7 +783,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">249.3k</span>
+    <span title="Site words total count">250.0k</span>
   
 </div>
 
@@ -1020,7 +1029,7 @@
         }
       });
     </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -1028,4 +1037,4 @@
 
   
 
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
