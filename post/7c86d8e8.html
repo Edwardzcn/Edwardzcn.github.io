@@ -85,7 +85,7 @@
 
 
 
-  <meta name="keywords" content="编程," />
+  <meta name="keywords" content="编程,分布式,GFS," />
 
 
 
@@ -97,9 +97,9 @@
 
 
 <meta name="description" content="读书笔记——The Google File System参考翻译版本：Google File System 翻译（转） 加粗和笔者注是重点关注的部分。 Abstract我们已经设计和实现了 Google File System，一个适用于大规模分布式数据处理相关应用的，可扩展的分布式文件系统。它基于普通的不算昂贵的硬件设备，实现了容错的设计，并且为大量客户端提供极高的整体处理性能。 Introdu">
-<meta name="keywords" content="编程">
+<meta name="keywords" content="编程,分布式,GFS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="OS论文阅读笔记（四）">
+<meta property="og:title" content="分布式系统学习——GFS谷歌文件系统Paper翻译">
 <meta property="og:url" content="http://www.edwardzcn98yx.com/post/7c86d8e8.html">
 <meta property="og:site_name" content="Eddy的个人博客">
 <meta property="og:description" content="读书笔记——The Google File System参考翻译版本：Google File System 翻译（转） 加粗和笔者注是重点关注的部分。 Abstract我们已经设计和实现了 Google File System，一个适用于大规模分布式数据处理相关应用的，可扩展的分布式文件系统。它基于普通的不算昂贵的硬件设备，实现了容错的设计，并且为大量客户端提供极高的整体处理性能。 Introdu">
@@ -107,9 +107,9 @@
 <meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_4_1.png">
 <meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_4_2.png">
 <meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_4_3.png">
-<meta property="og:updated_time" content="2019-09-04T13:23:31.081Z">
+<meta property="og:updated_time" content="2019-09-06T08:21:20.935Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="OS论文阅读笔记（四）">
+<meta name="twitter:title" content="分布式系统学习——GFS谷歌文件系统Paper翻译">
 <meta name="twitter:description" content="读书笔记——The Google File System参考翻译版本：Google File System 翻译（转） 加粗和笔者注是重点关注的部分。 Abstract我们已经设计和实现了 Google File System，一个适用于大规模分布式数据处理相关应用的，可扩展的分布式文件系统。它基于普通的不算昂贵的硬件设备，实现了容错的设计，并且为大量客户端提供极高的整体处理性能。 Introdu">
 <meta name="twitter:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_4_1.png">
 
@@ -147,7 +147,7 @@
 
 
 
-  <title>OS论文阅读笔记（四） | Eddy的个人博客</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <title>分布式系统学习——GFS谷歌文件系统Paper翻译 | Eddy的个人博客</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -398,7 +398,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">OS论文阅读笔记（四）</h1>
+          <h1 class="post-title" itemprop="name headline">分布式系统学习——GFS谷歌文件系统Paper翻译</h1>
         
 
         <div class="post-meta">
@@ -421,6 +421,28 @@
           </span>
 
           
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/编程/" itemprop="url" rel="index">
+                    <span itemprop="name">编程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -442,7 +464,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  10,215
+                  11,684
                 </span>
               
 
@@ -458,7 +480,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  36
+                  41
                 </span>
               
             </div>
@@ -592,6 +614,53 @@
 <h1 id="Master-Operation"><a href="#Master-Operation" class="headerlink" title="Master Operation"></a>Master Operation</h1><p>Master 执行所有的名字空间操作。此外，它还管理整个系统的 chunk replicas：决定如何放置，创建新的 chunk 和相应的副本，协调整个系统范围内的活动保证 chunk 都是完整备份的，在 chunkserver 间进行负载平衡，回收没有使用的存储空间。我们现在讨论这些主题。</p>
 <h2 id="Namespace-Management-and-Locking"><a href="#Namespace-Management-and-Locking" class="headerlink" title="Namespace Management and Locking"></a>Namespace Management and Locking</h2><p>很多 master 操作都需要花费很长时间：比如，一个快照操作要撤销该快照所包含的 chunk 的所有租约。我们并不想耽误其他运行中的 master 操作，因此我们允许多个操作同时是活动的，通过在名字空间区域使用锁来保证正确的串行化。</p>
 <p>不像传统的文件系统，GFS 的目录并没有一种数据结构用来列出该目录下所有文件，而且也不支持文件或者目录别名（像 unix 的硬链接或者软连接那样）。GFS 在逻辑上将命名空间作为一个通过路径全称到元数据映射的查找表。通过采用前缀压缩，这个表可以有效地在内存中表示。名字空间树中的每个节点（要么是文件的绝对路径名称要么是目录的）具有一个相关联的读写锁。</p>
+<p>每个 master 操作在它运行前，需要获得一个锁的集合。比如如果它想操作/d1/d2…/dn/leaf，那么它需要获得/d1,/d1/d2……/d1/d2…/dn 这些目录的读锁，然后才能得到路径/d1/d2…/dn/leaf 的读锁或者写锁。Leaf 可能是个文件或者目录，这取决于具体的操作。</p>
+<p>我们现在解释一下，当为/home/user 创建快照/save/user 时，锁机制如何防止文件/home/user/foo 被创建。快照操作需要获得在/home /save 上的读锁，以及/home/user 和/save/user 上的写锁。文件创建需要获得在/home 和/home/user 上的读锁，以及在/home/user/foo 上的写锁。这两个操作将会被正确的串行化，因为它们试图获取在/home/user 上的相冲突的锁。文件创建并不需要父目录的写锁，因为实际上这里并没有”目录”或者说是类似于 inode 的数据结构，需要防止被修改。读锁已经足够用来防止父目录被删除。</p>
+<p>（这种加锁机制的好处是对于同一个目录下，可以并行的操作文件，例如，同一个目录下并行的创建文件。快照会对新旧本层进行写加锁因而防止了对原始文件目录增加文件的操作产生的冲突。）</p>
+<p>因为名字空间有很多节点，所以读写锁对象只有在需要时才会被分配，一旦不再使用用就删除。为了避免死锁，锁是按照一个一致的全序关系进行获取的：首先根据所处的名字空间树的级别，相同级别的则根据字典序。</p>
+<h2 id="Replica-Placement"><a href="#Replica-Placement" class="headerlink" title="Replica Placement"></a>Replica Placement</h2><p>如何安置 replicas 的目标是：</p>
+<ul>
+<li>最大化数据可靠性和可用性</li>
+<li>最大化网络带宽的利用</li>
+</ul>
+<p><strong>这里的最大化不仅仅是机器间的问题</strong>，还要考虑机架间的问题</p>
+<p>在以下 3 种情况下，Master 会进行创建 replicas 的操作：</p>
+<ul>
+<li>创建了新的 chunk</li>
+<li>需要重新备份</li>
+<li>负载均衡</li>
+</ul>
+<p>如何选择将 replicas 放置到哪台机器上呢？</p>
+<ul>
+<li>优先选择磁盘利用率低的 chunkserver，使得较长时间将会平均化 chunkserver 的利用。</li>
+<li>GFS 会限制每个 chunkserver『最近』创建的次数。换句话说，如果一个 chunkserver 近期创建 replicas 的操作比较频繁，就不会优先选择它（因为创建就意味着以后会进行读取，为了防止突然间大量的读取出现在同一台机器上）</li>
+<li>保证可用性，尽可能跨机架（racks）进行创建操作</li>
+</ul>
+<p>当可用的备份低于要求时（GFS 要求为 3 份），master 会对 chunk 进行重新备份，在以下情况有可能需要重新备份：</p>
+<ul>
+<li>chunkserver 不可用了</li>
+<li>备份损坏了</li>
+<li>硬盘挂掉了</li>
+<li>所要求的最低备份数量提高了</li>
+</ul>
+<p>当有多个 chunk 需要备份时，GFS 如何决定先备份哪个呢？策略如下：</p>
+<ul>
+<li>优先选择可用备份少的（仅有一份备份的更加迫切）</li>
+<li>优先备份最近没有 delete 文件的（for live files）</li>
+<li>优先备份阻塞了 client 操作的（这样可以最小化对运行中应用的影响）</li>
+</ul>
+<p>当 master 决定了备份哪个之后，会把当前可用的 chunk 直接克隆到目标位置（遵循 replicas 放置的类似规则：平均磁盘利用率、防止单一机器高 IO、跨机架）。</p>
+<p>周期性的检查副本分布以求重平衡，副本的移动过程中是新建一个新的，放置规则和前述讨论一致。放置了新的必须删除旧的（通常情况下倾向删除自身空白空间低于平均水平的）。</p>
+<h2 id="Garbage-Collection"><a href="#Garbage-Collection" class="headerlink" title="Garbage Collection"></a>Garbage Collection</h2><p>文件删除后，GFS 并不立即释放可用的物理存储（进行物理删除，而是等对应的垃圾清理进行到文件和 chunk 级别时再真正删除（Lazy）。</p>
+<h3 id="Mechanism"><a href="#Mechanism" class="headerlink" title="Mechanism"></a>Mechanism</h3><p>具体地，对于一个文件的删除操作，GFS 仅仅是写一条日志记录，然后把文件命名成一个对外部不可见的名称，这个名称会包含删除的时间戳。GFS master 会定期的扫描，当这些文件存在超过 3 天（可设定）后，这些文件会从 namespace 中删掉，并且内存的中 metadata 会被删除，切断了和 chunk 的联系。</p>
+<p>在对 chunk namespace 的定期扫描时，master 找到那些孤儿块(无法从任何文件到达)，擦除这些块的元数据。在与 chunkserver 的 heartbeat 的交互过程中，GFS master 会把不在 metadata 中的 chunk 告诉 chunkserver，然后 chunkserver 对照后就可以删除这些 chunk 了。</p>
+<h2 id="Discussion"><a href="#Discussion" class="headerlink" title="Discussion"></a>Discussion</h2><p>master 在内存中储存那个查找表（前缀压缩过的），保存了所有文件-chunck 映射，因而很容易找到 chunck 的引用。chunck 只不过是放在特定目录下的 linux 文件，master 不知道的副本就是 garbage。</p>
+<p>采用这种方式删除的好处：</p>
+<ol>
+<li>利用心跳方式交互，在一次删除失败后，还可以通过下次心跳继续重试操作</li>
+<li>删除操作和其他的全局扫描 metadata 的操作可以放到一起做<br>为删除这种不可逆转操作提供了一定弹性恢复的保护网。<br>坏处：</li>
+</ol>
+<p>有可能有的应用需要频繁的创建和删除文件，这种延期删除方式会导致磁盘使用率偏高，GFS 提供的解决方案是，对一个文件调用删除操作两次，GFS 会马上做物理删除操作，释放空间。同时允许用户在不同名字空间内使用不同的重备份和回收策略（不执行副本和直接物理删除）</p>
 
       
     </div>
@@ -611,6 +680,10 @@
           
             <a href="/tag/编程/" rel="tag"> <i class="fa fa-tag"></i> 编程</a>
           
+            <a href="/tag/分布式/" rel="tag"> <i class="fa fa-tag"></i> 分布式</a>
+          
+            <a href="/tag/GFS/" rel="tag"> <i class="fa fa-tag"></i> GFS</a>
+          
         </div>
       
 
@@ -622,8 +695,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/post/cbabc18d.html" rel="next" title="OS论文阅读笔记（三）">
-                <i class="fa fa-chevron-left"></i> OS论文阅读笔记（三）
+              <a href="/post/cbabc18d.html" rel="next" title="分布式系统学习——MapReduce方法Paper翻译">
+                <i class="fa fa-chevron-left"></i> 分布式系统学习——MapReduce方法Paper翻译
               </a>
             
           </div>
@@ -715,7 +788,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">253</span>
+                  <span class="site-state-item-count">264</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -726,7 +799,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-count">26</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -737,7 +810,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">154</span>
+                  <span class="site-state-item-count">160</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -834,7 +907,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#读书笔记——The-Google-File-System"><span class="nav-number">1.</span> <span class="nav-text">读书笔记——The Google File System</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Abstract"><span class="nav-number">2.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Introduction"><span class="nav-number">3.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Design-Overview"><span class="nav-number">4.</span> <span class="nav-text">Design Overview</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Assumptions"><span class="nav-number">4.1.</span> <span class="nav-text">Assumptions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Interface"><span class="nav-number">4.2.</span> <span class="nav-text">Interface</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Architecture"><span class="nav-number">4.3.</span> <span class="nav-text">Architecture</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Single-Master"><span class="nav-number">4.4.</span> <span class="nav-text">Single Master</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Chunk-Size"><span class="nav-number">4.5.</span> <span class="nav-text">Chunk Size</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Metadata"><span class="nav-number">4.6.</span> <span class="nav-text">Metadata</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#In-Memory-Data-Structures"><span class="nav-number">4.6.1.</span> <span class="nav-text">In-Memory Data Structures</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Chunk-Loactions"><span class="nav-number">4.6.2.</span> <span class="nav-text">Chunk Loactions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Operation-Log"><span class="nav-number">4.6.3.</span> <span class="nav-text">Operation Log</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Consistency-Model"><span class="nav-number">4.7.</span> <span class="nav-text">Consistency Model</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Guarantees-by-GFS"><span class="nav-number">4.7.1.</span> <span class="nav-text">Guarantees by GFS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Implications-for-Applications"><span class="nav-number">4.7.2.</span> <span class="nav-text">Implications for Applications</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#System-Interactions"><span class="nav-number">5.</span> <span class="nav-text">System Interactions</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Leases-and-Mutation-Order"><span class="nav-number">5.1.</span> <span class="nav-text">Leases and Mutation Order</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Data-Flow"><span class="nav-number">5.2.</span> <span class="nav-text">Data Flow</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Atomic-Record-Appends"><span class="nav-number">5.3.</span> <span class="nav-text">Atomic Record Appends</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Snapshot"><span class="nav-number">5.4.</span> <span class="nav-text">Snapshot</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Master-Operation"><span class="nav-number">6.</span> <span class="nav-text">Master Operation</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Namespace-Management-and-Locking"><span class="nav-number">6.1.</span> <span class="nav-text">Namespace Management and Locking</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#读书笔记——The-Google-File-System"><span class="nav-number">1.</span> <span class="nav-text">读书笔记——The Google File System</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Abstract"><span class="nav-number">2.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Introduction"><span class="nav-number">3.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Design-Overview"><span class="nav-number">4.</span> <span class="nav-text">Design Overview</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Assumptions"><span class="nav-number">4.1.</span> <span class="nav-text">Assumptions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Interface"><span class="nav-number">4.2.</span> <span class="nav-text">Interface</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Architecture"><span class="nav-number">4.3.</span> <span class="nav-text">Architecture</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Single-Master"><span class="nav-number">4.4.</span> <span class="nav-text">Single Master</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Chunk-Size"><span class="nav-number">4.5.</span> <span class="nav-text">Chunk Size</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Metadata"><span class="nav-number">4.6.</span> <span class="nav-text">Metadata</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#In-Memory-Data-Structures"><span class="nav-number">4.6.1.</span> <span class="nav-text">In-Memory Data Structures</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Chunk-Loactions"><span class="nav-number">4.6.2.</span> <span class="nav-text">Chunk Loactions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Operation-Log"><span class="nav-number">4.6.3.</span> <span class="nav-text">Operation Log</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Consistency-Model"><span class="nav-number">4.7.</span> <span class="nav-text">Consistency Model</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Guarantees-by-GFS"><span class="nav-number">4.7.1.</span> <span class="nav-text">Guarantees by GFS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Implications-for-Applications"><span class="nav-number">4.7.2.</span> <span class="nav-text">Implications for Applications</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#System-Interactions"><span class="nav-number">5.</span> <span class="nav-text">System Interactions</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Leases-and-Mutation-Order"><span class="nav-number">5.1.</span> <span class="nav-text">Leases and Mutation Order</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Data-Flow"><span class="nav-number">5.2.</span> <span class="nav-text">Data Flow</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Atomic-Record-Appends"><span class="nav-number">5.3.</span> <span class="nav-text">Atomic Record Appends</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Snapshot"><span class="nav-number">5.4.</span> <span class="nav-text">Snapshot</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Master-Operation"><span class="nav-number">6.</span> <span class="nav-text">Master Operation</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Namespace-Management-and-Locking"><span class="nav-number">6.1.</span> <span class="nav-text">Namespace Management and Locking</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Replica-Placement"><span class="nav-number">6.2.</span> <span class="nav-text">Replica Placement</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Garbage-Collection"><span class="nav-number">6.3.</span> <span class="nav-text">Garbage Collection</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Mechanism"><span class="nav-number">6.3.1.</span> <span class="nav-text">Mechanism</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Discussion"><span class="nav-number">6.4.</span> <span class="nav-text">Discussion</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -869,7 +942,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">262.3k</span>
+    <span title="Site words total count">272.6k</span>
   
 </div>
 

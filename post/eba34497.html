@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+<meta name="baidu-site-verification" content="ZzhwBFUe1V" />
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/0f81ff2f.js","daovoice")
+  daovoice('init', {
+      app_id: "61c4e5db"
+    });
+  daovoice('update');
+  </script>
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="编程,分布式,总结," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="感受主要回顾分布式学习前两篇 Paper 阅读感受。 Paper1——Time, Clocks, and the Ordering of Events in a Distributed System回忆梳理关键词：Happen Before 关系、偏序全序（局部序全局序）、逻辑时钟、物理时钟。 主体内容总结本文以分布式中系统中涉及时间概念的一个很困惑的问题作为引子——在分布式系统的架构中，当消息传">
+<meta name="keywords" content="编程,分布式,总结">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式系统学习——阶段性总结1">
+<meta property="og:url" content="http://www.edwardzcn98yx.com/post/eba34497.html">
+<meta property="og:site_name" content="Eddy的个人博客">
+<meta property="og:description" content="感受主要回顾分布式学习前两篇 Paper 阅读感受。 Paper1——Time, Clocks, and the Ordering of Events in a Distributed System回忆梳理关键词：Happen Before 关系、偏序全序（局部序全局序）、逻辑时钟、物理时钟。 主体内容总结本文以分布式中系统中涉及时间概念的一个很困惑的问题作为引子——在分布式系统的架构中，当消息传">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-09-08T06:09:19.605Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="分布式系统学习——阶段性总结1">
+<meta name="twitter:description" content="感受主要回顾分布式学习前两篇 Paper 阅读感受。 Paper1——Time, Clocks, and the Ordering of Events in a Distributed System回忆梳理关键词：Happen Before 关系、偏序全序（局部序全局序）、逻辑时钟、物理时钟。 主体内容总结本文以分布式中系统中涉及时间概念的一个很困惑的问题作为引子——在分布式系统的架构中，当消息传">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'I0P7TBILS9',
+      apiKey: '1cbd304cdb7292372541bc8f3d868016',
+      indexName: 'EddyBlog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.edwardzcn98yx.com/post/eba34497.html"/>
+
+
+
+
+
+  <title>分布式系统学习——阶段性总结1 | Eddy的个人博客</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/Edwardzcn" class="github-corner" aria-label="View source on Github">
+    <svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true">
+    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+    <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+    <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path>
+    </svg>
+    </a>
+    <style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Eddy的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">相知相遇，即是幸运</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            我的首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于我
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            目录总览
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-reading">
+          <a href="/categories/阅读" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            阅读
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-travelling">
+          <a href="/categories/旅行" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            旅行
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-programming">
+          <a href="/categories/编程" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            编程
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-essay">
+          <a href="/categories/随笔" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            随笔
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            时间线
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-schedule">
+          <a href="/schedule/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />
+            
+            日程表
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/eba34497.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">分布式系统学习——阶段性总结1</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-03T12:25:28+08:00">
+                2019-09-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/编程/" itemprop="url" rel="index">
+                    <span itemprop="name">编程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,005
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="感受"><a href="#感受" class="headerlink" title="感受"></a>感受</h1><p>主要回顾分布式学习前两篇 Paper 阅读感受。</p>
+<h1 id="Paper1——Time-Clocks-and-the-Ordering-of-Events-in-a-Distributed-System"><a href="#Paper1——Time-Clocks-and-the-Ordering-of-Events-in-a-Distributed-System" class="headerlink" title="Paper1——Time, Clocks, and the Ordering of Events in a Distributed System"></a>Paper1——Time, Clocks, and the Ordering of Events in a Distributed System</h1><p>回忆梳理关键词：<strong>Happen Before 关系</strong>、<strong>偏序全序（局部序全局序）</strong>、<strong>逻辑时钟</strong>、<strong>物理时钟</strong>。</p>
+<h2 id="主体内容总结"><a href="#主体内容总结" class="headerlink" title="主体内容总结"></a>主体内容总结</h2><p>本文以分布式中系统中涉及时间概念的一个很困惑的问题作为引子—<br>—在分布式系统的架构中，当消息传输的时间不可忽略（如同广义相对论中时间的相对性），我们该如何定义分布式系统中时间发生的<strong>顺序</strong>，Lamport 向读者介绍了以下内容。</p>
+<ul>
+<li>分布式系统中事件发生先后的概念（happen before）。</li>
+<li>基于 happen before 的逻辑时钟（偏序/局部）</li>
+<li>逻辑时钟在给定条件后的全局化（全局序），并给出了一个基于全局序的<strong>解决资源争夺问题</strong>方法。</li>
+<li>物理时钟及其他相关问题</li>
+</ul>
+<h3 id="Happen-Before"><a href="#Happen-Before" class="headerlink" title="Happen Before"></a>Happen Before</h3><p>这一段主要是用了离散数学里学到的关系，线序、偏序、全序的概念。</p>
+<p>Lamport 不依赖物理时钟定义了事件 happen before（后面简写为 HB）的关系，基于以下的设想：</p>
+<ul>
+<li>分布的各进程内的事件是线序，在先发生的对在后发生的具备 HB 关系</li>
+<li>跨进程（进程间消息通信作为收/发两个事件）的事件，发出对接收有 HB 关系。</li>
+</ul>
+<p>根据实际情况我们很容易总结出来，HB 关系应该是<strong>反自反、反对称、传递</strong>的。</p>
+<p>整个分布式系统由于消息的通信构成一个从系统 start 开始的偏序集合。</p>
+<h3 id="Logical-Clocks"><a href="#Logical-Clocks" class="headerlink" title="Logical Clocks"></a>Logical Clocks</h3><p>基于 HB 关系，Lamport 给出了一个给事件赋值的函数（逻辑时钟）及其计算方法，先后可通过函数值（逻辑时钟值）大小反映出来（<strong>但反过来不行</strong>）。</p>
+<p>分布式算法概括：</p>
+<ol>
+<li>每个 Process 对本进程的线序事件，计数值递增。</li>
+<li>每个 Process 的事件发送消息时，附带时间戳。</li>
+<li>每个 Process 接受到其他事件的消息时（HB 关系箭头的弧头），更新其计数器值为消息时间戳和本地计数器值 Max（+1）。</li>
+</ol>
+<h3 id="Order-Totally"><a href="#Order-Totally" class="headerlink" title="Order Totally"></a>Order Totally</h3><p>将偏序全局化，需要人工定义一个 Process 的优先值（Process 顺序）。</p>
+<p>人工定义的 Process 顺序不同会导致全序的不同，所以对于一个确定的（消息发送等确定）分布式系统，<strong>偏序集是确定的（唯一的），而全局序是不唯一的</strong>。</p>
+<p>托这个全局序（全局的时间戳值）的福，Lamport 给出了一个解决单资源互斥问题的分布式算法。</p>
+<p>算法细节及证明见翻译 doc，直观理解，没有这个全局序我们就不能依靠全局序的时间戳来比较从而进行对应操作。</p>
+<h3 id="Physical-Clocks"><a href="#Physical-Clocks" class="headerlink" title="Physical Clocks"></a>Physical Clocks</h3><p>对于异常情况：存在外部的限制要求。Lamport 给出的解决方法。</p>
+<ol>
+<li>外部要求内部化</li>
+<li>引入实际物理时钟</li>
+</ol>
+<p>对物理时钟的要求是：增速逼近单位 1，以及分布式物理时钟的一致性（数学证明还没有看懂）。</p>
+<h2 id="读完感受"><a href="#读完感受" class="headerlink" title="读完感受"></a>读完感受</h2><p>虽然是 1970+的文章了，但是分布式的核心问题（我以为的）已然提及，Lamport 对分布式中事件顺序的认识像极了相对论世界中事件/时间的观点，着实让我 get 了分布式不同于我现在所用所看所学的单机系统最大的不同。</p>
+<p>对于问题解决的思路也是极为清晰，从关系的定义，到不依赖实际时间的逻辑大小、到全局化、再到实际时钟，结合实际问题的分布式算法，可以从最初的构想到最终的实现有一个流水线似的认识。</p>
+<p>自己最喜欢的离散数学也在这里面发挥了很大的作用，见识到了数学——这种基础学科作为科学发展地基般的作用，我反复读了四到五遍文章，也看了 Lamport 本人对他自己这篇文章的评价和网络上其他人的评价，对于文章中可推的公式和可证明的地方都尝试自己推导了一下，着实让人着迷，作为自己尝试科研的启蒙文章，真的非常开心。</p>
+<h1 id="Paper2——Implementing-Fault-Tolerant-Services-Using-the-State-Machine-Approach-A-Tutorial"><a href="#Paper2——Implementing-Fault-Tolerant-Services-Using-the-State-Machine-Approach-A-Tutorial" class="headerlink" title="Paper2——Implementing Fault-Tolerant Services Using the State Machine Approach: A Tutorial"></a>Paper2——Implementing Fault-Tolerant Services Using the State Machine Approach: A Tutorial</h1><p>回忆梳理关键词：<strong>状态机</strong>，<strong>容错（Fault Tolerance）</strong>、<strong>两种故障</strong></p>
+<h2 id="主体内容总结-1"><a href="#主体内容总结-1" class="headerlink" title="主体内容总结"></a>主体内容总结</h2><p>看论文标题就知道，是一篇“Tutorial”，讲了用状态机模型来达到容错服务。</p>
+<p>包括后面所看到的 GFS，自己学习的 LVM，都存在这样的问题：<strong>出错、出错、出错</strong>，由多台分布式机器构成的系统中难免会碰到这样那样的错误，防止出错此时显得太过较真，采用合适的策略（状态机、备份、心跳线热启动等）将出错导致的系统整体性能下降掩盖过去，达到高可用、用户层透明才是更“分布式”的思考方式。</p>
+<h3 id="State-Machine"><a href="#State-Machine" class="headerlink" title="State Machine"></a>State Machine</h3><p>接触了算法中涉及的自动机（AC 自动机、后缀自动机）以及编译原理中的自动机（DFA，PDA），对于状态机的概念已经比较熟悉了，这里用文章中的定义再从另一个角度强调一下：<strong>状态机的输出完全由它处理的请求序列决定</strong>。</p>
+<h3 id="Fault-Tolerance"><a href="#Fault-Tolerance" class="headerlink" title="Fault Tolerance"></a>Fault Tolerance</h3><p>两种计算机系统中常见错误：</p>
+<ul>
+<li>Byzantine Failures（拜占庭故障）：该组件可能表现出任意和恶意的行为，可能涉及与其他故障组件的勾结（个人理解是会反馈假结果，无法有效监测且可能影响周围组件）</li>
+<li>Fail-stop Failures. （异常终止错误）：允许其他组件检测到错误并停止。</li>
+</ul>
+<p>考虑最坏情况下的 t tolerance</p>
+<p>拜占庭故障所需组件数：2t+1（保证多数）<br>异常终止所需组件数：t+1（保证存在一个返回正确结果即可）</p>
+<p>某些特殊条件下还可以弱化条件。</p>
+<p>实现的条件是保证备份（副本）的协调（Replica Coordination）：所有备份（副本）都可以接收到且接收到顺序相同的请求序列。</p>
+<p>拆分成两个子要求：</p>
+<ol>
+<li>Agreement：每个非故障状态机都会接收到每个请求。</li>
+<li>Order：每个非故障状态机都会以相同的顺序处理这些请求。</li>
+</ol>
+<p>文章后续解释了个子要求的实现方式。</p>
+<p>Agreement: 通过设置 transmitter 来使所有非故障状态机达到相同值。</p>
+<h3 id="Order"><a href="#Order" class="headerlink" title="Order"></a>Order</h3><p>Order 条件极其稳定性测试，稳定的请求可以传递给后面的状态机副本。个人对稳定的理解：具备相对优先顺序、不会改变、可被执行。</p>
+<p>文章介绍了几种实现方法：</p>
+<ul>
+<li>使用逻辑时钟（Lamport 的方法）赋值</li>
+<li>同步的物理时钟方法</li>
+</ul>
+<p>对应的稳定性检测在文章翻译部分分析过了，逻辑时钟是基于 FIFO 假设以及错误信息告知假设，使得当收到其他机器发来了更晚时间戳请求时，则先前的请求就是稳定的。而物理时钟是满足在$\tau - \delta$时间之前的即为稳定的。</p>
+<h2 id="读完感受-1"><a href="#读完感受-1" class="headerlink" title="读完感受"></a>读完感受</h2><p>应用了上一篇 Lamport 的时钟来解决 Order 的问题，感觉思路上是联通的。</p>
+<p>状态机模型的应用有点感觉是执行状态的重复（但是说实话没有找到确切的状态描述，可能是论文看的还不够仔细）。</p>
+<p>重新认识了两种类型，然后突然发现拜占庭问题还是 Lamport 等人最先提出来的，我想有机会去了解一下原论文，毕竟这个问题在网络/安全/系统中出现多次了。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tag/编程/" rel="tag"> <i class="fa fa-tag"></i> 编程</a>
+          
+            <a href="/tag/分布式/" rel="tag"> <i class="fa fa-tag"></i> 分布式</a>
+          
+            <a href="/tag/总结/" rel="tag"> <i class="fa fa-tag"></i> 总结</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/post/ce543259.html" rel="next" title="数论学习——同余式、幂与欧拉公式">
+                <i class="fa fa-chevron-left"></i> 数论学习——同余式、幂与欧拉公式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/post/86266eca.html" rel="prev" title="数论学习——欧拉函数与中国剩余定理">
+                数论学习——欧拉函数与中国剩余定理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Edwardzcn" />
+            
+              <p class="site-author-name" itemprop="name">Edwardzcn</p>
+              <p class="site-description motion-element" itemprop="description">这是一个利用（可爱的）Hexo搭建的博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">264</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+            
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">160</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Edwardzcn" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:edwardzcn98@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.google.com" target="_blank" title="Google">
+                      
+                        <i class="fa fa-fw fa-google"></i>Google</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.zhihu.com/people/decades-42/activities" target="_blank" title="Zhihu">
+                      
+                        <i class="fa fa-fw fa-globe"></i>Zhihu</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.instagram.com/edwardz98" target="_blank" title="Instagram">
+                      
+                        <i class="fa fa-fw fa-instagram"></i>Instagram</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.github.com" title="Github" target="_blank">Github</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://yangyangyang.cc" title="yyy的博客" target="_blank">yyy的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://blog.mrcactus.cn" title="syx的博客" target="_blank">syx的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/wawcac-blog" title="SHer_zfc的博客" target="_blank">SHer_zfc的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://csuwangj.github.io/" title="DJ的博客" target="_blank">DJ的博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#感受"><span class="nav-number">1.</span> <span class="nav-text">感受</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Paper1——Time-Clocks-and-the-Ordering-of-Events-in-a-Distributed-System"><span class="nav-number">2.</span> <span class="nav-text">Paper1——Time, Clocks, and the Ordering of Events in a Distributed System</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#主体内容总结"><span class="nav-number">2.1.</span> <span class="nav-text">主体内容总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Happen-Before"><span class="nav-number">2.1.1.</span> <span class="nav-text">Happen Before</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Logical-Clocks"><span class="nav-number">2.1.2.</span> <span class="nav-text">Logical Clocks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Order-Totally"><span class="nav-number">2.1.3.</span> <span class="nav-text">Order Totally</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Physical-Clocks"><span class="nav-number">2.1.4.</span> <span class="nav-text">Physical Clocks</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#读完感受"><span class="nav-number">2.2.</span> <span class="nav-text">读完感受</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Paper2——Implementing-Fault-Tolerant-Services-Using-the-State-Machine-Approach-A-Tutorial"><span class="nav-number">3.</span> <span class="nav-text">Paper2——Implementing Fault-Tolerant Services Using the State Machine Approach: A Tutorial</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#主体内容总结-1"><span class="nav-number">3.1.</span> <span class="nav-text">主体内容总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#State-Machine"><span class="nav-number">3.1.1.</span> <span class="nav-text">State Machine</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fault-Tolerance"><span class="nav-number">3.1.2.</span> <span class="nav-text">Fault Tolerance</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Order"><span class="nav-number">3.1.3.</span> <span class="nav-text">Order</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#读完感受-1"><span class="nav-number">3.2.</span> <span class="nav-text">读完感受</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Edwardzcn</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">272.6k</span>
+  
+</div>
+
+<div class="copyright">
+<span id="busuanzi_container_site_uv"><a class="theme-link" href="http://www.miitbeian.gov.cn">冀ICP备18024730号</a></span>
+<span id="bei_an"> <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641" ><img src="https://www.edwardzcn98yx.com/batb.png" />湘公网安备 43010402000641号</a></span>
+</div>
+
+<div class="powered-by">
+<i class ="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+    本站访客数：<span id="busuanzi_value_site_uv"></span></spam></div>
+
+<!--
+
+   <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+-->
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
