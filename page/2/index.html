@@ -1006,7 +1006,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1,265
+                  1,815
                 </span>
               
 
@@ -1022,7 +1022,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  5
+                  7
                 </span>
               
             </div>
@@ -1044,26 +1044,40 @@
 
       
         
-          
-            <h1 id="草稿笔记"><a href="#草稿笔记" class="headerlink" title="草稿笔记"></a>草稿笔记</h1><h2 id="观察-趋势"><a href="#观察-趋势" class="headerlink" title="观察/趋势"></a>观察/趋势</h2><ul>
-<li>计算范畴：统计-&gt;规则（专家会议沉淀）-&gt;图-&gt;AI-&gt;复杂决策</li>
-<li>计算复杂度：静态线性工作流-&gt;静态图工作流-&gt;</li>
+          <h1 id="大数据系统实践：从-MapReduce-到融合计算"><a href="#大数据系统实践：从-MapReduce-到融合计算" class="headerlink" title="大数据系统实践：从 MapReduce 到融合计算"></a>大数据系统实践：从 MapReduce 到融合计算</h1><p>主讲人：郭振宇（蚂蚁金服分布式计算总监）</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-001.jpg" alt="FirstPage"></p>
+<h1 id="融合计算模型"><a href="#融合计算模型" class="headerlink" title="融合计算模型"></a>融合计算模型</h1><h2 id="观察-趋势"><a href="#观察-趋势" class="headerlink" title="观察/趋势"></a>观察/趋势</h2><p>举一个蚂蚁金融一个常见的应用场景：扫码支付</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-002.jpg" alt="ScanPay"></p>
+<p>审视机器学习（或者大数据分析）产品三个层面的发展：</p>
+<ul>
+<li><strong>计算范畴</strong>：统计-&gt;规则（专家会议沉淀）-&gt;图-&gt;AI-&gt;复杂决策</li>
+<li><strong>计算复杂度</strong>：静态线性工作流-&gt;静态图工作流-&gt;动态工作流-&gt;多流-&gt;多流融合</li>
+<li><strong>质量</strong>：时效、安全/隐私、数据可靠性。</li>
 </ul>
-<p>论文，Hidden Technology Google</p>
-<p>真正的 Machine Learning Code 只是很小的一部分。</p>
-<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><ul>
+<p>实际上真正的 Machine Learning Code 只是很小的一部分，图源：《Hidden Technology Google》</p>
+<p>而应用要落地，关键的问题在：</p>
+<ul>
 <li><p>学习/开发/调试的成本</p>
 <ul>
 <li>对接很多独立的引擎/框架</li>
-<li>Ad-hoc/碎片化的集成/联调</li>
+<li>Ad-hoc/碎片化的集成/联调（多机联调）</li>
 </ul>
 </li>
 <li><p>运行时质量</p>
 <ul>
-<li>破碎的上下游衔接（上面跑数据不确定，下面就可能接受到不对的结果，接口/时效性/一致性/故障恢复/中间状态管理（HDFS 存放到后面消费，但是不知道什么时候可以删除，存储爆掉））。</li>
-<li>盲目调度，存在很多优化的空间</li>
+<li>破碎的上下游衔接<ul>
+<li>形象点说，就是：上面跑数据不确定，下面就可能接受到不对的结果，</li>
+<li>具体在：<strong>接口</strong>/<strong>时效性</strong>/<strong>一致性</strong>/<strong>故障恢复</strong>/<strong>中间状态管理</strong></li>
+<li>对于中间状态管理的解释：生产者（上游）通过 HDFS 存放中间状态（产品），消费者（下游）不知道什么时候可以删除而不产生危害，导致存储过载、溢出。</li>
+</ul>
+</li>
+<li>盲目调度，存在很多优化的空间<ul>
+<li><strong>资源</strong>/<strong>数据</strong>/<strong>计算</strong>/<strong>服务</strong></li>
+</ul>
+</li>
 <li>冗余/低效的数据传输/拷贝/计算等</li>
 <li>安全隐私</li>
+<li>…</li>
 </ul>
 </li>
 <li><p>运维效率</p>
@@ -1072,7 +1086,7 @@
 </ul>
 </li>
 </ul>
-<h2 id="胶水"><a href="#胶水" class="headerlink" title="胶水"></a>胶水</h2><p>已经有一些相关的工作，Workflow。<br>大家都希望在比较好的界面中通过 GUI 组合跑起来。</p>
+<h2 id="胶水"><a href="#胶水" class="headerlink" title="胶水"></a>胶水</h2><p>平台化，将不同工作胶合在一起，常通过 GUIWorkFlow 的形式展示出来，一些公司已经有一些相关的工作。</p>
 <p>e.g. Azure ML Workflow， Google Kubeflow</p>
 <ul>
 <li><p>优点</p>
@@ -1088,91 +1102,56 @@
 </ul>
 </li>
 </ul>
-<p>想法：从教水稻统一的分布式支撑。</p>
-<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><p><strong>融合计算</strong>：本地编程、自动云化、渐进融合</p>
-<p>核心挑战 1：统一的通用编程抽象/执行模型是什么</p>
-<p>抽象就意味着，面临不同分布式计算模式的共同需求，混合模式下的需求。</p>
-<p>核心挑战 2：如何解决通用和特定之间的固有矛盾</p>
-<p>一般情况下，<strong>越通用，解决特定场景</strong>能力越弱。</p>
-<h2 id="融合计算编程抽象"><a href="#融合计算编程抽象" class="headerlink" title="融合计算编程抽象"></a>融合计算编程抽象</h2><p>为什么需要分布式计算？</p>
-<p>以 MapReduce 为例，wordcount。</p>
-<p>对于单机：存储空间不够、计算能力不构、</p>
-<p>分布式计算目标：提供远超的单机的存储、计算能力，包装成单机的<strong>假象</strong>让上层没有意识到</p>
-<h3 id="状态-scale-out"><a href="#状态-scale-out" class="headerlink" title="状态 scale out"></a>状态 scale out</h3><p>状态切分成 slice，不需要代码改动的方案：remote memory，file system。</p>
-<p>需要代码改动的：KV，database</p>
-<p>Shared state + duplicate 共享</p>
-<h3 id="想法"><a href="#想法" class="headerlink" title="想法"></a>想法</h3><p>为了避免数据共享冲突，调整架构。</p>
+<p>想法：<strong>胶水</strong>-&gt;<strong>统一的分布式支撑</strong></p>
+<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-005.jpg" alt="Fusion Computing"></p>
+<p><strong>融合计算</strong>：本地编程、自动云化、渐进融合</p>
+<p><strong>核心挑战 1</strong>：统一的通用编程抽象/执行模型是什么</p>
+<p>前面的讲座中已经多次提到了抽象的重要性，抽象就意味着：</p>
 <ul>
-<li>冯诺依曼（控制流） -&gt; 数据流</li>
-<li>需要改写代码</li>
+<li>抽取面对不同分布式计算模式下的共同需求</li>
+<li>甚至混合模式下的需求。</li>
 </ul>
-<h3 id="回到-MapReduce"><a href="#回到-MapReduce" class="headerlink" title="回到 MapReduce"></a>回到 MapReduce</h3><p>拆分成两个任务，Map 任务，Reduce 任务。</p>
-<p>表达能力：数据流二部图（Task Object）</p>
-<p>但是，Master 是个 exception，Master 是有状态的，相对于 Master 和 Reduce。</p>
-<h3 id="无状态任务-vs-有状态任务"><a href="#无状态任务-vs-有状态任务" class="headerlink" title="无状态任务 vs 有状态任务"></a>无状态任务 vs 有状态任务</h3><ul>
-<li>无状态<ul>
-<li>大多数数据流计算（MapReduce，Dryad，Spark）</li>
-<li>大多数 SOA 里面的 Method Call</li>
-<li>随便哪里都能跑</li>
-</ul>
-</li>
-<li>有状态<ul>
-<li>某些有迭代的数据流计算（Tensorflow，Grap Computation2）</li>
-<li>存储操作</li>
-<li>带状态的服务操作（大多数 Job Master）</li>
-<li>执行逻辑必须和状态绑在一起</li>
-</ul>
-</li>
-</ul>
-<h3 id="编程抽象之-服务"><a href="#编程抽象之-服务" class="headerlink" title="编程抽象之 服务"></a>编程抽象之 <strong>服务</strong></h3><p>服务 vs Actor</p>
+<p><strong>核心挑战 2</strong>：如何解决通用和特定之间的固有矛盾</p>
+<p>通用性和领域专用性常看做是不可调和的矛盾。</p>
 <ul>
-<li>服务 = [同构 Actor]*（一组同构 Actor 的集合），Actor 是单进程的一个</li>
-<li>尽量隐藏分布式计算带来的复杂度<ul>
-<li>Scale out</li>
-<li>Elasticity 弹性，日夜差别</li>
-<li>Load balance</li>
-<li>Fail over</li>
+<li>一般情况下，<strong>越通用，解决特定场景</strong>能力越弱。</li>
+<li>抽象是一种通用性的体现，而不同计算模式的不同需求/特定优化则体现了领域专用性</li>
 </ul>
-</li>
-</ul>
-<p>团队认为这样多线的是有相似性，优化能力的，所以服务更适合作为抽象单元。</p>
-<p>数据流+服务，也可以 Map 映射到二部图中，这样在运行中有一个兜底的作用？？？</p>
-<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>///</p>
-<h3 id="静态数据流-vs-动态数据流"><a href="#静态数据流-vs-动态数据流" class="headerlink" title="静态数据流 vs 动态数据流"></a>静态数据流 vs 动态数据流</h3><p>///</p>
-<p>业务的需求，动态越来越多，NLP/Reinforcement learning，Nested Graph。没办法一下子把图给全，</p>
-<p>///</p>
-<p>数据流图是一边跑一边长出来的。</p>
-<h2 id="核心编程抽象"><a href="#核心编程抽象" class="headerlink" title="核心编程抽象"></a>核心编程抽象</h2><p>本地化编程-&gt;分布式编程</p>
-<p>三元一一对应</p>
-<p>分布式话的方法</p>
-<h2 id="本地编程（On-Premise-Programming）"><a href="#本地编程（On-Premise-Programming）" class="headerlink" title="本地编程（On-Premise Programming）"></a>本地编程（On-Premise Programming）</h2><h1 id="MapReduce"><a href="#MapReduce" class="headerlink" title="MapReduce"></a>MapReduce</h1><h2 id="Master-挂了怎么办"><a href="#Master-挂了怎么办" class="headerlink" title="Master 挂了怎么办"></a>Master 挂了怎么办</h2><p>服务的故障恢复</p>
-<p>Paxos，可靠存储，</p>
-<h2 id="微内核架构"><a href="#微内核架构" class="headerlink" title="微内核架构"></a>微内核架构</h2><ul>
-<li>不仅仅是性能问题</li>
-<li>多方面统一和特定之间的两难问题</li>
-</ul>
-<h2 id="插件分类和实现"><a href="#插件分类和实现" class="headerlink" title="插件分类和实现"></a>插件分类和实现</h2><p>插件抽象 插件实例</p>
+<h2 id="融合计算编程抽象"><a href="#融合计算编程抽象" class="headerlink" title="融合计算编程抽象"></a>融合计算编程抽象</h2><p>为何需要分布式计算？以 MapReduce 中使用的字符计数问题为例：</p>
 <ul>
-<li>可替换，方便排查问题。</li>
-<li>独立开发同时无缝集成。</li>
+<li>对于单机：存储空间不够、计算能力不构、</li>
+<li>分布式计算目标：提供远超的单机的存储、计算能力，包装成单机的<strong>假象</strong>使上层没有意识到改变</li>
 </ul>
-<p>缺点</p>
-<ul>
-<li>模块繁杂，系统配置复杂（状态管理插件存放的位置，HBase，Redis，放哪里都有区别）</li>
-<li>插件抽象要求高，还完全 stable</li>
-<li>某些插件相互依赖、不独立（理论上是笛卡尔乘积组合情况，但耦合性降低现在仍然是努力的目标）</li>
-</ul>
-<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><h3 id="在线学习"><a href="#在线学习" class="headerlink" title="在线学习"></a>在线学习</h3><h3 id="实时流图计算"><a href="#实时流图计算" class="headerlink" title="实时流图计算"></a>实时流图计算</h3><h1 id="融合优化"><a href="#融合优化" class="headerlink" title="融合优化"></a>融合优化</h1><h2 id="Level-of-indirection-solves-everything"><a href="#Level-of-indirection-solves-everything" class="headerlink" title="Level of indirection solves everything"></a>Level of indirection solves everything</h2><p>可以解决谁产生谁消费的问题，但是交互比较麻烦</p>
-<p>Problem： The indirection layer does enable flexibility but also brings cost</p>
-<p>从静态数据流（static data flow）思考，并不会出现这种问题，图确定，必然有。</p>
-<p>把动态往静态拉一把，需要获取一些信息</p>
-<p>基于为内核架构的 Runtime optimization hybrid run-time</p>
-<h2 id="Our-Work"><a href="#Our-Work" class="headerlink" title="Our Work"></a>Our Work</h2><h3 id="Distributed-Gabbage-Collection"><a href="#Distributed-Gabbage-Collection" class="headerlink" title="Distributed Gabbage Collection"></a>Distributed Gabbage Collection</h3><p>存在的问题，LRU，删 object，但是可能还会用，删了触发 Failue，业务上的需求要不就负担大，要不删了以后数据再也找不回来了，很惨的解决方案。</p>
-<p>Question：Node Rederence 的话</p>
-<p>为什么两层/三层？</p>
-<p>多个 Replica：一个 Worker</p>
-
-          
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-010.jpg" alt="ComputationChanging"></p>
+<h3 id="状态切分"><a href="#状态切分" class="headerlink" title="状态切分"></a>状态切分</h3><p>MapReduce 的启发，状态切分成 slice，两个子方案，一是不需要代码改动的方案：remote memory，file system。二是需要代码改动的：KV，database</p>
+<h3 id="避免数据共享冲突的方法？调整架构"><a href="#避免数据共享冲突的方法？调整架构" class="headerlink" title="避免数据共享冲突的方法？调整架构"></a>避免数据共享冲突的方法？调整架构</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>控制流架构（冯·诺依曼）</th>
+<th>数据流架构</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>执行由<strong>控制流</strong>驱动</td>
+<td>执行由<strong>数据流</strong>驱动</td>
+</tr>
+<tr>
+<td>控制流导致状态访问冲突</td>
+<td>数据是无消息/无冲突问题</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>改写代码是必要的。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/b1db88f.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1659,7 +1638,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">277.6k</span>
+    <span title="Site words total count">278.2k</span>
   
 </div>
 
@@ -1901,7 +1880,7 @@
         }
       });
     </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
   
 
 
@@ -1909,4 +1888,4 @@
 
   
 
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
