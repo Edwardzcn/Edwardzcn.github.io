@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title><![CDATA[数字图像处理学习——直方图均衡与匹配深入思考]]></title>
+    <title><![CDATA[数字图像处理学习——直方图匹配]]></title>
+    <url>%2Fpost%2F973eccf1.html</url>
+    <content type="text"><![CDATA[基本概念上一篇文章讲了直方图均衡相关内容，从实际应用中我们发现，只能对直方图做均衡操作并不能完全满足我们的需要，有时我们更希望调整概率分布（直方图）为指定形状，这就是直方图匹配。 比如下图图一猫咪的直方图较为集中在中间，我们希望它的分布贴近第二幅文字图的分布（集中在暗区域） 数学基础从上一篇文章的介绍中我们发现，对于任何图像（$r$的概率密度分布），我们都可以通过其累积分布函数将其函数变换到随机变量$s$，而$s$是均匀分布的。那我们反过来想，能否将均匀分布的随机变量逆变换到某个特定的分布呢？ 公式推导设$r$为随机变量值域为$[0,255]$，其概率密度函数为$p_r(r)$。一函数（变换为）： s = T(r) = (L-1) \int_{0}^{r} p_r(m) \mathrm{d}m由上一篇文章我们易知$s$服从均匀分布，我们寻找一个$z$随机变量符合另一特殊分布$p_z(z)$，易知存在一函数（变换）： s = G(z) = (L-1) \int_{0}^{z} p_z(m) \mathrm{d}m由于$G(z)$为累积分布函数，单调，故存在反函数$G^{-1}(z)$，则有新变换 $N = G^{-1} \cdot T$，使得$r$随机变量经$N$变换后符合$z$的分布特征。 z = G^{-1}(s) = G^{-1}(T(r)) = N(r)由此，我们找到了某值域内求从某一分布随机变量$r$变换到指定分布随机变量$z$的方法。 个人理解直方图均衡，均匀分布，实际上在中间做了桥接。 实验效果均衡化输出两幅图原图以及均衡化后的图片，直方图。 直观对比两图的累积分布函数与直方图 $T(r)$表示$r$的累积分布函数，本样例中为小猫图像的累积分布函数，图示为淡蓝色曲线。$G(z)$表示为$z$的累积分布函数，本样例中为文字图片的累积分布函数，图示为橙黄色曲线。 求反函数反函数的计算，并没有按照课本上所说，搜索找最近值，对于一张$m \times n$图像，对于每个搜索需要$O(log(L))$，总复杂度是相乘的关系$O(MNlog(L))$，而通过一个二重循环实现打表计算则可以优化到$O(MN)+O(L)$，对于实际图片$MN$远大于$L$，所以这种优化是值得的 123456cnt = 0for i in range(256): while cnt&lt;=raw_table[i]: new_table[cnt] = i cnt+=1return new_table 计算反函数表方便后面对图像进行变换。 123reverse_imtest1_table = GetReverseTable(imtest1_tabel)match_imtest0_table = reverse_imtest1_table[imtest0_tabel]match_imtest0 = match_imtest0_table[imtest0] 输出结果如下 直方图对比表示了 image0，image1，匹配后的 image0 三图，由图可以看出匹配后的 image0 直方图分布已经很贴近 image1 了。 图片效果（小猫被玩的有点可怜） 核心代码图像直方图展示12345678910111213141516# 展示直方图def DrawHist(input_img,pic_handle,histogram_handle): kwargs = dict(bins = 50, histtype='bar', edgecolor = "white",alpha=0.5, density = True) pic_handle.set_title("The image") pic_handle.imshow(input_img) histogram_handle.set_title("The histogram") histogram_handle.hist(input_img.flatten(),**kwargs)imtest0 = imageio.imread('imageio:chelsea.png')imtest1 = GetRGB('./3_3Photo/3.jpg')plt.figure(figsize=(20,10))DrawHist(imtest0,plt.subplot(221),plt.subplot(222))DrawHist(imtest1,plt.subplot(223),plt.subplot(224))plt.show() 直方图匹配12345678910# 获取目标图像累积分布函数的反函数lut表（离散）def GetReverseTable(raw_table): new_table = np.zeros(256,dtype = np.int64) cnt = 0 for i in range(256): while cnt&lt;=raw_table[i]: new_table[cnt] = i cnt+=1 return new_table 加入反函数输出12345678910111213141516171819202122# 加入反函数，再绘图plt.figure(figsize=(15,5))plotline = plt.subplot(121)plotline.set_title("The function")plotline.plot(np.arange(256),imtest0_tabel,label = "$T(r)$")plotline.plot(np.arange(256),np.arange(256),color = "black",label = "$r$")plotline.plot(np.arange(256),imtest1_tabel,label = "$G(z)$")plotline.plot(np.arange(256),reverse_imtest1_table, label = "$G^&#123;-1&#125;(z)$")plotline.plot(np.arange(256),match_imtest0_table, label= "$G^&#123;-1&#125;(T(r)), N(r)$")plotline.legend()# 设置直方图参数 分割块 叠加模式 边界颜色 透明度 正则化（映射到0~1）kwargs = dict(bins = 50, histtype='bar', edgecolor = "white",alpha=0.5, density = True)histogram1 = plt.subplot(122)histogram1.set_title("The histogram")histogram1.hist(imtest0.flatten(),color = "black",label = "imtest0 original",**kwargs )histogram1.hist(imtest1.flatten(),label = "imtest1 original",**kwargs)histogram1.hist(match_imtest0.flatten(),label = "imtest0 after match",**kwargs)histogram1.legend()plt.show() 完整代码123456import numpy as npimport imageioimport cv2import matplotlib.pyplot as pltim = imageio.imread('photo2.jpg') 12345# 获取RGB图像def GetRGB(path): im_BGR = cv2.imread(path,cv2.COLOR_GRAY2RGB) im = cv2.cvtColor(im_BGR,cv2.COLOR_BGR2RGB) return im 12345678910111213141516# 展示直方图def DrawHist(input_img,pic_handle,histogram_handle): kwargs = dict(bins = 50, histtype='bar', edgecolor = "white",alpha=0.5, density = True) pic_handle.set_title("The image") pic_handle.imshow(input_img) histogram_handle.set_title("The histogram") histogram_handle.hist(input_img.flatten(),**kwargs)imtest0 = imageio.imread('imageio:chelsea.png')imtest1 = GetRGB('./3_3Photo/3.jpg')plt.figure(figsize=(20,10))DrawHist(imtest0,plt.subplot(221),plt.subplot(222))DrawHist(imtest1,plt.subplot(223),plt.subplot(224))plt.show() 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172# 尝试直方图均衡化，def CaculateHistogram(input_image): # 参数1. 单通道8位灰度图像 # 输出1. 总像素值 # 输出2. 灰度值分布计数 # 输出3. 灰度值分布前缀和（用来做后续直方图平局奴化） # 区分通道 if len(np.shape(input_image)) == 3: height,width,level = np.shape(input_image) summ = height*width*level else : height,width = np.shape(input_image) summ = height*width# 第一种 通过访问指定位置像素 耗时executed in 7m 9s# 巨慢无比# for i in range(height):# for j in range(width):# caculate_num[input_image[i][j]] += 1# 第二种 直接拆分行，像素获取像素值 耗时executed in 14.4s# for line in input_image:# for px in line:# caculate_num[px] +=1# 第三种 调用np.histogram()方法 耗时executed in 644ms caculate_num,index_x = GetHistogramArray(input_image) caculate_num = np.append(caculate_num,1)# print(np.shape(caculate_num)) # 第四种 吕少推荐的方法(还没看懂)# caculate_num = cumsum(input_image,256)# print(np.shape(caculate_num)) sum_num = np.copy(caculate_num) for i in range(1,256):# print(sum_num[i-1],caculate_num[i]) sum_num[i] = sum_num[i-1] + sum_num[i] return summ,caculate_num,sum_numdef GetHistogramArray(image): return np.histogram(image,np.arange(0,256));def cumsum(img, bins): histogram = np.zeros(bins) for pixel in np.arange(0, bins, 1): histogram[pixel] += len(img[img==pixel]) return histogramdef HistogramEqualizationLUT(input_image): # 参数1, 单通道8位灰度图像 # 输出1. 单通道8位灰度图像（直方图均衡化后） size,data,data_sum = CaculateHistogram(input_image) fxy = lambda x: (255*data_sum[x])//size table = np.array([fxy(i) for i in range(256)])# print(table)# 不可以这样# image_new = table[input_image] lut = lambda x: table[x] return lut(input_image),tableimtest0_he,imtest0_tabel = HistogramEqualizationLUT(imtest0)imtest1_he,imtest1_tabel = HistogramEqualizationLUT(imtest1)plt.figure(figsize=(20,20))DrawHist(imtest0,plt.subplot(421),plt.subplot(422))DrawHist(imtest0_he,plt.subplot(423),plt.subplot(424))DrawHist(imtest1,plt.subplot(425),plt.subplot(426))DrawHist(imtest1_he,plt.subplot(427),plt.subplot(428)) 123456789101112131415plt.figure(figsize=(15,5))plotline = plt.subplot(121)plotline.set_title("The function")plotline.plot(np.arange(256),np.arange(256),color = 'black',label = "$r$")plotline.plot(np.arange(256),imtest0_tabel,label = "$T(r)$")plotline.plot(np.arange(256),imtest1_tabel,label = "$G(z)$")plotline.legend()kwargs = dict(bins = 50, histtype='bar', edgecolor = "white",alpha=0.6, density = True)histogram = plt.subplot(122)histogram.set_title("The histogram")histogram.hist(imtest0.flatten(),**kwargs, label = "imtest0 $p_r(r)$" )histogram.hist(imtest1.flatten(), **kwargs, label = "imtest1 $p_z(z)$")histogram.legend()plt.show() 1234567891011121314# 获取目标图像累积分布函数的反函数lut表（离散）def GetReverseTable(raw_table): new_table = np.zeros(256,dtype = np.int64) cnt = 0 for i in range(256): while cnt&lt;=raw_table[i]: new_table[cnt] = i cnt+=1 return new_tablereverse_imtest1_table = GetReverseTable(imtest1_tabel)match_imtest0_table = reverse_imtest1_table[imtest0_tabel]match_imtest0 = match_imtest0_table[imtest0] 12345678910111213141516171819202122# 加入反函数，再绘图plt.figure(figsize=(15,5))plotline = plt.subplot(121)plotline.set_title("The function")plotline.plot(np.arange(256),imtest0_tabel,label = "$T(r)$")plotline.plot(np.arange(256),np.arange(256),color = "black",label = "$r$")plotline.plot(np.arange(256),imtest1_tabel,label = "$G(z)$")plotline.plot(np.arange(256),reverse_imtest1_table, label = "$G^&#123;-1&#125;(z)$")plotline.plot(np.arange(256),match_imtest0_table, label= "$G^&#123;-1&#125;(T(r)), N(r)$")plotline.legend()# 设置直方图参数 分割块 叠加模式 边界颜色 透明度 正则化（映射到0~1）kwargs = dict(bins = 50, histtype='bar', edgecolor = "white",alpha=0.5, density = True)histogram1 = plt.subplot(122)histogram1.set_title("The histogram")histogram1.hist(imtest0.flatten(),color = "black",label = "imtest0 original",**kwargs )histogram1.hist(imtest1.flatten(),label = "imtest1 original",**kwargs)histogram1.hist(match_imtest0.flatten(),label = "imtest0 after match",**kwargs)histogram1.legend()plt.show() 123456# 输出三种图像plt.figure(figsize=(20,15))DrawHist(imtest0,plt.subplot(321),plt.subplot(322))DrawHist(imtest0_he,plt.subplot(323),plt.subplot(324))DrawHist(match_imtest0,plt.subplot(325),plt.subplot(326))plt.show()]]></content>
+      <categories>
+        <category>数字图像处理</category>
+      </categories>
+      <tags>
+        <tag>数字图像处理</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[数字图像处理学习——直方图均衡]]></title>
     <url>%2Fpost%2Fb44049c5.html</url>
-    <content type="text"><![CDATA[直方图均衡基本概念对于一张$8$位灰度图像，像素灰度值$r \in [0,256), r \in Z$，必然满足一特定的概率分布$p(x)$，直方图可理解为分块显示的概率密度函数。 以下面几图为例（彩色图取 R 通道） (代码见附录) 由图片可以看出来，图一小猫亮度高的地方更多，所以直方图上显示出在灰度级高端分布更密集，而图二的风景图相反，图三的阿童木则明显亮暗区分较为明显，所以在直方图上体现为两极化。 在某些情况下，我们希望通过某种函数变换$s = T(r)$，使变换后的函数概率分布均匀化（或贴近均匀），这就是直方图均衡 概率论基础根据课本 P74 页，$p_r(r)$和$p_s(s)$分别表示随机变量$r$和$s$的概率密度函数，概率论的一个基本结果是，如果$p_r(r)$和$T(r)$已知且$s = T(r)$具备单调性，在感兴趣的值域上是连续且可微的，则变换后的变量$s$的概率密度函数可由下面的简单公式得到： p_s(s) = p_r(r) \left| \frac{\mathrm{d}r}{\mathrm{d}s} \right|这个式子怎么推导的呢？实际上我们就是在求一个随机变量函数的概率分布，概率论是学过的，这里回忆一下给出推导。 设$r$为随机变量，其概率分布符合$p_r(r)$，另有一单调的函数（变换）$s = T(r)$，现在求$s$的概率分布，设$r$值域均为$[0,L-1]$。 由分布函数公式 F(x) = \int_{0}^{x} p(m) \mathrm{d}m得$r$得分布函数 F_r(r) = \int_{0}^{r} p_r(m) \mathrm{d}m又因为$s = T(r)$为单调函数，存在反函数$r = T^{-1}(s)$ F_s(s) = F_r(T^{-1}(s)) = \int_{0}^{ T^{-1}(s) } p_r(m) \mathrm{d}m概率密度函数为分布函数的导数 p_s(s) = \left| \frac{\mathrm{d} F_s(s)}{\mathrm{d}s} \right|应用链式求导法则 p_s(s) = \left| \frac{\mathrm{d}F_s(s)}{\mathrm{d}s} \right|p_s(s) = \frac{\mathrm{d}F_r(r)}{\mathrm{d}r} \left| \frac{ \mathrm{d} r}{ \mathrm{d}s} \right|p_s(s) = p_r(r) \left| \frac{ \mathrm{d} r}{ \mathrm{d}s} \right|则得到了书本上的公式。 均衡变换有了上述式子，我们会发现特殊的性质 若$T(r)$恰为$r$的分布函数，则 s = T(r) = \int_{0}^{r} p_r(m) \mathrm{d}m\frac{\mathrm{d}s}{\mathrm{d}r} = p_r(r)p_s(s) = p_r(r) \left| \frac{ \mathrm{d} r}{ \mathrm{d}s} \right| = p_r(r) \frac{1}{p_r(r)} = 1则$s$为均匀分布$s \in [0,1]$ 且$p_s(s)$值恒为$1$ 若$T(r)$为$r$分布函数映射到$[0,L-1]$，则 s = T(r) = (L-1) \int_{0}^{r} p_r(m) \mathrm{d}mp_s(s) = p_r(r) \frac{1}{(L-1) p_r(r)} = \frac{1}{L-1}则$s$为均匀分布，且$p_s(s)=\frac{1}{L-1}$ 这便是我们想要的函数变换，无论$p_r(r)$分布如何，经过这种类分布函数的函数变换，得到的$p_s(s)$就是一个均匀分布。 三通道混合均衡 vs. 分别均衡平台的讨论区里留下了一个有趣的问题：对于三通道 RGB 图像，对每个通道均衡后合并的图像有时会产生严重的色彩失真。 我的一点理解： 何为失真在我们的处理过程中，色彩失真（与实际偏差过大），我们可以简单理解为显色偏向与原图产生较大差异，产生新的偏色甚至反向偏色。 我的实验我将一张自己原来拍摄的风景图，R，G，B 三个通道分别进行了直方图均衡，但是没有一同合并，而是与当前未变换的剩下两通道叠加后的图片。 下图是原图，分离的红色通道均衡化图（灰度），均衡化红色通道与原剩余通道叠加图 结合原图与与直方图我们不难看出，由于是夜晚照的风景照，整体画面大部分偏暗，所以三个通道的直方图都集中在灰度较低的地方（分布略有偏差）。 当我只均衡一个通道时，该通道直方图中高灰度区域很明显会被提拉上来。 而相较于其他两通道的中高灰度，被均衡的通道明显概率分布更大。 所以整体画面会偏向均衡的通道的颜色，如最下面三张合并后的效果所示。 进一步思考这种均衡的变换同时也会牺牲掉原本通道高亮的部分，上图蓝色通道的变换最容易看出这种效果。 均衡化的蓝色通道和剩余两通道合并后的图像中，道路灯光周围较暗的区域更偏向红橙色，这是因为牺牲了原本蓝色在这一灰度范围分布密度的优势，均摊到其他灰度区域后，红绿通道便更加凸显。 进两步思考无论是从数学推导，还是上述直方图，函数曲线都可以看出来，不同通道颜色的概率密度函数还有累积分布函数都是不同的，则不同通道像素值的相对大小就可能发生改变。 举个例子，若红色通道$T{red}(2) = 8$，而蓝色通道${T{blue}(5) = 6}$，绿色通道假定不变，则原来像素点$a = (2,4,5)$ 变换后为$a’ = (8,4,6)$由偏向蓝色变为偏向红色。 不同通道值对变换后不保序（相同通道由于同一函数单调性确定，必然保序），导致了失真的可能性变大。 因而，若采用三通道合并计算灰度的概率分布然后计算累积分布函数的话，由于使用相同的函数变换，无论是相同通道还是不同通道的两个值$i$,$j$，经函数变换后保留其大小关系，如$i&lt;j \to T(i) &lt; T(j)$。 这样，虽然在一定程度上牺牲了逐个通道的均衡化效果，但整体上避免了颜色的失真。 进三步实验实验我使用了一些图片做验证，左中右分别对应原图、三通道分别均衡化、整体均衡化的函数曲线和图像。 结论基本符合预期，整体均衡可以最大程度保留颜色的保真度，三通道虽然在各颜色通道都可以达到均衡效果，但是会造成一定的颜色失真。 附录 1：直方图匹配代码获取 RGB 三通道图像需要注意的是，cv2 读取图像为 BGR，需要转换成 RGB。 1234def GetRGB(path): im_BGR = cv2.imread(path,cv2.COLOR_GRAY2RGB) im = cv2.cvtColor(im_BGR,cv2.COLOR_BGR2RGB) return im 获取不同灰度值计数值 通过访问指定位置像素 相同测试环境，耗时 7m9s（最慢） 123for i in range(height): for j in range(width): caculate_num[input_image[i][j]] += 1 遍历元素 相同测试环境，耗时 14.4s（较慢） 123for line in input_image: for px in line: caculate_num[px] +=1 向量化比较 相同测试环境，耗时小于 10s（较快） 解释加速原理，img==pixel 得到一个 bool 数组，而 img[]则取出数组为真值的 index 数组，然后就可以用 len()计数了。比较产生 bool 数组是向量操作，底层优化，所以加速效果明显。 12345678def cumsum(img, bins): histogram = np.zeros(bins) for pixel in np.arange(0, bins, 1): histogram[pixel] += len(img[img==pixel])return histogramcaculate_num = cumsum(input_image,256)print(np.shape(caculate_num)) 调用 np.histogram()的方法 相同测试环境，耗时 644ms（最快） 快的原因不了解，有时间看看源码 12caculate_num,index_x = np.histogram(input_image,np.arange(0,256)) caculate_num = np.append(caculate_num,1) 直方图均衡化输入三通/单通道图像，返回均衡化后的图像和查找表 123456789101112131415161718192021222324252627282930313233def CaculateHistogram(input_image): # 参数1. 图像 # 输出1. 总像素值 # 输出2. 灰度值分布计数 # 输出3. 灰度值分布前缀和（用来做后续直方图平局奴化） # 区分单通道还是三通道图像 if len(np.shape(input_image)) == 3: height,width,level = np.shape(input_image) summ = height*width*level else : height,width = np.shape(input_image) summ = height*width caculate_num,index_x = np.histogram(input_image,np.arange(0,256)) caculate_num = np.append(caculate_num,1) sum_num = np.copy(caculate_num) for i in range(1,256): sum_num[i] = sum_num[i-1] + sum_num[i] return summ,caculate_num,sum_numdef cumsum(img, bins): histogram = np.zeros(bins) for pixel in np.arange(0, bins, 1): histogram[pixel] += len(img[img==pixel]) return histogramdef HistogramEqualizationLUT(input_image): size,data,data_sum = CaculateHistogram(input_image) fxy = lambda x: (255*data_sum[x])//size table = np.array([fxy(i) for i in range(256)]) lut = lambda x: table[x] return lut(input_image),table 注意要用 lambda，不可以直接 input_new = table[input_image] 绘图函数12345678910111213141516171819202122232425262728293031323334353637383940# OK, Do something interesting!# 写一个整合函数，对每个输入图像的三通道都画出其三通道的函数变换图像和def DrawPerChannel(input_img,split_channel : int, channel_color ,plotline = None, histogram = None, pic = None):# 该通道的均衡曲线（分布函数曲线）# 获取分离的通道 input_channel = input_img[:,:,split_channel] temp_he,temp_table = HistogramEqualizationLUT(input_channel) if plotline != None: plotline.set_title("The function of "+channel_color+" channel") plotline.plot(np.arange(256),np.arange(256),color = "black",label = "$r_&#123;" + channel_color +"&#125;$") plotline.plot(np.arange(256),temp_table,color = channel_color ,label = "$T(r_&#123;"+ channel_color +"&#125;)$") plotline.legend()# 该通道的灰度分布直方图 if histogram != None: kwargs = dict(bins = 25, histtype='bar', edgecolor = "white",alpha=0.5, density = True) histogram.set_title("The histogram of "+channel_color+" channel") histogram.hist(input_channel.flatten(), color = "black",**kwargs, label = channel_color +" original") histogram.hist(temp_he.flatten(), color = channel_color , **kwargs, label = channel_color +" after he") histogram.legend()# 该通道均匀后叠加到原图像的效果 if pic != None: show_img = input_img.copy() show_img[:,:,split_channel] = temp_he pic.imshow(show_img)def DrawChannelsEqualization(img_with_3channels): plt.figure(figsize=(30,30))# 调用库函数# r,g,b = cv2.split(im)# 直接分离# r,g,b = img_with_3channels[:,:,0],img_with_3channels[:,:,1],img_with_3channels[:,:,2] DrawPerChannel(img_with_3channels,0,"red",plt.subplot(331),plt.subplot(334),plt.subplot(337)) DrawPerChannel(img_with_3channels,1,"green",plt.subplot(332),plt.subplot(335),plt.subplot(338)) DrawPerChannel(img_with_3channels,2,"blue",plt.subplot(333),plt.subplot(336),plt.subplot(339)) plt.show() 12345678910111213141516171819202122232425262728293031# 测试三通道分别做均衡化后效果和采取统一函数做均衡化的效果def DrawCompareEqualization(im_with_3_channel): together_img,together_table = HistogramEqualizationLUT(im_with_3_channel) seperate_img = im_with_3_channel.copy() seperate_table = np.array([together_table,together_table,together_table]) for i in range(3): seperate_img[:,:,i],seperate_table[i] = HistogramEqualizationLUT(im_with_3_channel[:,:,i]) plt.figure(figsize=(15,10)) plotline0 = plt.subplot(231) plotline0.set_title("No Change") plotline0.plot(np.arange(256),np.arange(256),color = "black",label = "$r$") plotline1 = plt.subplot(232) plotline1.set_title("Seperate Change") plotline1.plot(np.arange(256),np.arange(256),color = "black",label = "$r$") plotline1.plot(np.arange(256),seperate_table[0],color = "red" ,label = "$T(r_&#123;red&#125;)$") plotline1.plot(np.arange(256),seperate_table[1],color = "green" ,label = "$T(r_&#123;green&#125;)$") plotline1.plot(np.arange(256),seperate_table[2],color = "blue" ,label = "$T(r_&#123;blue&#125;)$") plotline1.legend() plotline2 = plt.subplot(233) plotline2.set_title("Together Change") plotline2.plot(np.arange(256),np.arange(256),color = "black",label = "$r$") plotline2.plot(np.arange(256),together_table,color = "orange" ,label = "$T(r_&#123;together&#125;)$") plotline2.legend() pic0 = plt.subplot(234) pic0.imshow(im_with_3_channel) pic1 = plt.subplot(235) pic1.imshow(seperate_img) pic2 = plt.subplot(236) pic2.imshow(together_img) plt.show()]]></content>
+    <content type="text"><![CDATA[基本概念对于一张$8$位灰度图像，像素灰度值$r \in [0,256), r \in Z$，必然满足一特定的概率分布$p(x)$，直方图可理解为分块显示的概率密度函数。 以下面几图为例（彩色图取 R 通道） (代码见附录) 由图片可以看出来，图一小猫亮度高的地方更多，所以直方图上显示出在灰度级高端分布更密集，而图二的风景图相反，图三的阿童木则明显亮暗区分较为明显，所以在直方图上体现为两极化。 在某些情况下，我们希望通过某种函数变换$s = T(r)$，使变换后的函数概率分布均匀化（或贴近均匀），这就是直方图均衡 概率论基础根据课本 P74 页，$p_r(r)$和$p_s(s)$分别表示随机变量$r$和$s$的概率密度函数，概率论的一个基本结果是，如果$p_r(r)$和$T(r)$已知且$s = T(r)$具备单调性，在感兴趣的值域上是连续且可微的，则变换后的变量$s$的概率密度函数可由下面的简单公式得到： p_s(s) = p_r(r) \left| \frac{\mathrm{d}r}{\mathrm{d}s} \right|这个式子怎么推导的呢？实际上我们就是在求一个随机变量函数的概率分布，概率论是学过的，这里回忆一下给出推导。 设$r$为随机变量，其概率分布符合$p_r(r)$，另有一单调的函数（变换）$s = T(r)$，现在求$s$的概率分布，设$r$值域均为$[0,L-1]$。 由分布函数公式 F(x) = \int_{0}^{x} p(m) \mathrm{d}m得$r$得分布函数 F_r(r) = \int_{0}^{r} p_r(m) \mathrm{d}m又因为$s = T(r)$为单调函数，存在反函数$r = T^{-1}(s)$ F_s(s) = F_r(T^{-1}(s)) = \int_{0}^{ T^{-1}(s) } p_r(m) \mathrm{d}m概率密度函数为分布函数的导数 p_s(s) = \left| \frac{\mathrm{d} F_s(s)}{\mathrm{d}s} \right|应用链式求导法则 p_s(s) = \left| \frac{\mathrm{d}F_s(s)}{\mathrm{d}s} \right|p_s(s) = \frac{\mathrm{d}F_r(r)}{\mathrm{d}r} \left| \frac{ \mathrm{d} r}{ \mathrm{d}s} \right|p_s(s) = p_r(r) \left| \frac{ \mathrm{d} r}{ \mathrm{d}s} \right|则得到了书本上的公式。 均衡变换有了上述式子，我们会发现特殊的性质 若$T(r)$恰为$r$的分布函数，则 s = T(r) = \int_{0}^{r} p_r(m) \mathrm{d}m\frac{\mathrm{d}s}{\mathrm{d}r} = p_r(r)p_s(s) = p_r(r) \left| \frac{ \mathrm{d} r}{ \mathrm{d}s} \right| = p_r(r) \frac{1}{p_r(r)} = 1则$s$为均匀分布$s \in [0,1]$ 且$p_s(s)$值恒为$1$ 若$T(r)$为$r$分布函数映射到$[0,L-1]$，则 s = T(r) = (L-1) \int_{0}^{r} p_r(m) \mathrm{d}mp_s(s) = p_r(r) \frac{1}{(L-1) p_r(r)} = \frac{1}{L-1}则$s$为均匀分布，且$p_s(s)=\frac{1}{L-1}$ 这便是我们想要的函数变换，无论$p_r(r)$分布如何，经过这种类分布函数的函数变换，得到的$p_s(s)$就是一个均匀分布。 三通道混合均衡 vs. 分别均衡平台的讨论区里留下了一个有趣的问题：对于三通道 RGB 图像，对每个通道均衡后合并的图像有时会产生严重的色彩失真。 我的一点理解： 何为失真在我们的处理过程中，色彩失真（与实际偏差过大），我们可以简单理解为显色偏向与原图产生较大差异，产生新的偏色甚至反向偏色。 我的实验我将一张自己原来拍摄的风景图，R，G，B 三个通道分别进行了直方图均衡，但是没有一同合并，而是与当前未变换的剩下两通道叠加后的图片。 下图是原图，分离的红色通道均衡化图（灰度），均衡化红色通道与原剩余通道叠加图 结合原图与与直方图我们不难看出，由于是夜晚照的风景照，整体画面大部分偏暗，所以三个通道的直方图都集中在灰度较低的地方（分布略有偏差）。 当我只均衡一个通道时，该通道直方图中高灰度区域很明显会被提拉上来。 而相较于其他两通道的中高灰度，被均衡的通道明显概率分布更大。 所以整体画面会偏向均衡的通道的颜色，如最下面三张合并后的效果所示。 进一步思考这种均衡的变换同时也会牺牲掉原本通道高亮的部分，上图蓝色通道的变换最容易看出这种效果。 均衡化的蓝色通道和剩余两通道合并后的图像中，道路灯光周围较暗的区域更偏向红橙色，这是因为牺牲了原本蓝色在这一灰度范围分布密度的优势，均摊到其他灰度区域后，红绿通道便更加凸显。 进两步思考无论是从数学推导，还是上述直方图，函数曲线都可以看出来，不同通道颜色的概率密度函数还有累积分布函数都是不同的，则不同通道像素值的相对大小就可能发生改变。 举个例子，若红色通道$T{red}(2) = 8$，而蓝色通道${T{blue}(5) = 6}$，绿色通道假定不变，则原来像素点$a = (2,4,5)$ 变换后为$a’ = (8,4,6)$由偏向蓝色变为偏向红色。 不同通道值对变换后不保序（相同通道由于同一函数单调性确定，必然保序），导致了失真的可能性变大。 因而，若采用三通道合并计算灰度的概率分布然后计算累积分布函数的话，由于使用相同的函数变换，无论是相同通道还是不同通道的两个值$i$,$j$，经函数变换后保留其大小关系，如$i&lt;j \to T(i) &lt; T(j)$。 这样，虽然在一定程度上牺牲了逐个通道的均衡化效果，但整体上避免了颜色的失真。 进三步思考实验我使用了一些图片做验证，左中右分别对应原图、三通道分别均衡化、整体均衡化的函数曲线和图像。 结论基本符合预期，整体均衡可以最大程度保留颜色的保真度，三通道虽然在各颜色通道都可以达到均衡效果，但是会造成一定的颜色失真。 核心代码获取 RGB 三通道图像需要注意的是，cv2 读取图像为 BGR，需要转换成 RGB。 1234def GetRGB(path): im_BGR = cv2.imread(path,cv2.COLOR_GRAY2RGB) im = cv2.cvtColor(im_BGR,cv2.COLOR_BGR2RGB) return im 获取不同灰度值计数值 通过访问指定位置像素 相同测试环境，耗时 7m9s（最慢） 123for i in range(height): for j in range(width): caculate_num[input_image[i][j]] += 1 遍历元素 相同测试环境，耗时 14.4s（较慢） 123for line in input_image: for px in line: caculate_num[px] +=1 向量化比较 相同测试环境，耗时小于 10s（较快） 解释加速原理，img==pixel 得到一个 bool 数组，而 img[]则取出数组为真值的 index 数组，然后就可以用 len()计数了。比较产生 bool 数组是向量操作，底层优化，所以加速效果明显。 12345678def cumsum(img, bins): histogram = np.zeros(bins) for pixel in np.arange(0, bins, 1): histogram[pixel] += len(img[img==pixel])return histogramcaculate_num = cumsum(input_image,256)print(np.shape(caculate_num)) 调用 np.histogram()的方法 相同测试环境，耗时 644ms（最快） 快的原因不了解，有时间看看源码 12caculate_num,index_x = np.histogram(input_image,np.arange(0,256)) caculate_num = np.append(caculate_num,1) 直方图均衡化输入三通/单通道图像，返回均衡化后的图像和查找表 123456789101112131415161718192021222324252627282930313233def CaculateHistogram(input_image): # 参数1. 图像 # 输出1. 总像素值 # 输出2. 灰度值分布计数 # 输出3. 灰度值分布前缀和（用来做后续直方图平局奴化） # 区分单通道还是三通道图像 if len(np.shape(input_image)) == 3: height,width,level = np.shape(input_image) summ = height*width*level else : height,width = np.shape(input_image) summ = height*width caculate_num,index_x = np.histogram(input_image,np.arange(0,256)) caculate_num = np.append(caculate_num,1) sum_num = np.copy(caculate_num) for i in range(1,256): sum_num[i] = sum_num[i-1] + sum_num[i] return summ,caculate_num,sum_numdef cumsum(img, bins): histogram = np.zeros(bins) for pixel in np.arange(0, bins, 1): histogram[pixel] += len(img[img==pixel]) return histogramdef HistogramEqualizationLUT(input_image): size,data,data_sum = CaculateHistogram(input_image) fxy = lambda x: (255*data_sum[x])//size table = np.array([fxy(i) for i in range(256)]) lut = lambda x: table[x] return lut(input_image),table 注意要用 lambda，不可以直接 input_new = table[input_image] 绘图函数12345678910111213141516171819202122232425262728293031323334353637383940# OK, Do something interesting!# 写一个整合函数，对每个输入图像的三通道都画出其三通道的函数变换图像和def DrawPerChannel(input_img,split_channel : int, channel_color ,plotline = None, histogram = None, pic = None):# 该通道的均衡曲线（分布函数曲线）# 获取分离的通道 input_channel = input_img[:,:,split_channel] temp_he,temp_table = HistogramEqualizationLUT(input_channel) if plotline != None: plotline.set_title("The function of "+channel_color+" channel") plotline.plot(np.arange(256),np.arange(256),color = "black",label = "$r_&#123;" + channel_color +"&#125;$") plotline.plot(np.arange(256),temp_table,color = channel_color ,label = "$T(r_&#123;"+ channel_color +"&#125;)$") plotline.legend()# 该通道的灰度分布直方图 if histogram != None: kwargs = dict(bins = 25, histtype='bar', edgecolor = "white",alpha=0.5, density = True) histogram.set_title("The histogram of "+channel_color+" channel") histogram.hist(input_channel.flatten(), color = "black",**kwargs, label = channel_color +" original") histogram.hist(temp_he.flatten(), color = channel_color , **kwargs, label = channel_color +" after he") histogram.legend()# 该通道均匀后叠加到原图像的效果 if pic != None: show_img = input_img.copy() show_img[:,:,split_channel] = temp_he pic.imshow(show_img)def DrawChannelsEqualization(img_with_3channels): plt.figure(figsize=(30,30))# 调用库函数# r,g,b = cv2.split(im)# 直接分离# r,g,b = img_with_3channels[:,:,0],img_with_3channels[:,:,1],img_with_3channels[:,:,2] DrawPerChannel(img_with_3channels,0,"red",plt.subplot(331),plt.subplot(334),plt.subplot(337)) DrawPerChannel(img_with_3channels,1,"green",plt.subplot(332),plt.subplot(335),plt.subplot(338)) DrawPerChannel(img_with_3channels,2,"blue",plt.subplot(333),plt.subplot(336),plt.subplot(339)) plt.show() 12345678910111213141516171819202122232425262728293031# 测试三通道分别做均衡化后效果和采取统一函数做均衡化的效果def DrawCompareEqualization(im_with_3_channel): together_img,together_table = HistogramEqualizationLUT(im_with_3_channel) seperate_img = im_with_3_channel.copy() seperate_table = np.array([together_table,together_table,together_table]) for i in range(3): seperate_img[:,:,i],seperate_table[i] = HistogramEqualizationLUT(im_with_3_channel[:,:,i]) plt.figure(figsize=(15,10)) plotline0 = plt.subplot(231) plotline0.set_title("No Change") plotline0.plot(np.arange(256),np.arange(256),color = "black",label = "$r$") plotline1 = plt.subplot(232) plotline1.set_title("Seperate Change") plotline1.plot(np.arange(256),np.arange(256),color = "black",label = "$r$") plotline1.plot(np.arange(256),seperate_table[0],color = "red" ,label = "$T(r_&#123;red&#125;)$") plotline1.plot(np.arange(256),seperate_table[1],color = "green" ,label = "$T(r_&#123;green&#125;)$") plotline1.plot(np.arange(256),seperate_table[2],color = "blue" ,label = "$T(r_&#123;blue&#125;)$") plotline1.legend() plotline2 = plt.subplot(233) plotline2.set_title("Together Change") plotline2.plot(np.arange(256),np.arange(256),color = "black",label = "$r$") plotline2.plot(np.arange(256),together_table,color = "orange" ,label = "$T(r_&#123;together&#125;)$") plotline2.legend() pic0 = plt.subplot(234) pic0.imshow(im_with_3_channel) pic1 = plt.subplot(235) pic1.imshow(seperate_img) pic2 = plt.subplot(236) pic2.imshow(together_img) plt.show() 完整代码1234import numpy as npimport cv2import imageioimport matplotlib.pyplot as plt 123456def GetRGB(path): im_BGR = cv2.imread(path,cv2.COLOR_GRAY2RGB) im = cv2.cvtColor(im_BGR,cv2.COLOR_BGR2RGB) return imim = GetRGB('./3_2Photo/1.jpg') 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980818283848586878889909192939495969798# 尝试直方图均衡化，def CaculateHistogram(input_image): # 参数1. 单通道8位灰度图像 # 输出1. 总像素值 # 输出2. 灰度值分布计数 # 输出3. 灰度值分布前缀和（用来做后续直方图平局奴化） # 区分通道 if len(np.shape(input_image)) == 3: height,width,level = np.shape(input_image) summ = height*width*level else : height,width = np.shape(input_image) summ = height*width# 第一种 通过访问指定位置像素 耗时executed in 7m 9s# 巨慢无比# for i in range(height):# for j in range(width):# caculate_num[input_image[i][j]] += 1# 第二种 直接拆分行，像素获取像素值 耗时executed in 14.4s# for line in input_image:# for px in line:# caculate_num[px] +=1# 第三种 调用np.histogram()方法 耗时executed in 644ms caculate_num,index_x = GetHistogramArray(input_image) caculate_num = np.append(caculate_num,1)# print(np.shape(caculate_num)) # 第四种 吕少推荐的方法(还没看懂)# caculate_num = cumsum(input_image,256)# print(np.shape(caculate_num)) sum_num = np.copy(caculate_num) for i in range(1,256):# print(sum_num[i-1],caculate_num[i]) sum_num[i] = sum_num[i-1] + sum_num[i] return summ,caculate_num,sum_numdef GetHistogramArray(image): return np.histogram(image,np.arange(0,256));def cumsum(img, bins): histogram = np.zeros(bins) for pixel in np.arange(0, bins, 1): histogram[pixel] += len(img[img==pixel]) return histogramdef HistogramEqualizationLUT(input_image): # 参数1, 单通道8位灰度图像 # 输出1. 单通道8位灰度图像（直方图均衡化后） size,data,data_sum = CaculateHistogram(input_image) fxy = lambda x: (255*data_sum[x])//size table = np.array([fxy(i) for i in range(256)])# print(table)# 不可以这样# image_new = table[input_image] lut = lambda x: table[x] return lut(input_image),tablered_channel_he,red_lut_table = HistogramEqualizationLUT(im[:,:,0])all_he,lut_table = HistogramEqualizationLUT(im)plt.figure(figsize=(20,10))ax1 = plt.subplot(231)ax1.set_title("Original")ax1.imshow(im)ax2 = plt.subplot(232)ax2.set_title("Red Channel HE")ax2.imshow(red_channel_he, cmap = 'gray')new_im = np.copy(im)new_im[:,:,0] = red_channel_heax3 = plt.subplot(233)ax3.set_title("Image With Red Channel HE")ax3.imshow(new_im)ax4 = plt.subplot(234)ax4.set_title("Original")ax4.imshow(im)ax5 = plt.subplot(235)ax5.set_title("All Channel Together HE")ax5.imshow(all_he,cmap = "gray")ax6 = plt.subplot(236)ax6.set_title("All Channel Together HE")ax6.imshow(all_he)plt.show() 123456789101112131415161718192021222324252627282930313233343536373839404142# OK, Do something interesting!# 写一个整合函数，对每个输入图像的三通道都画出其三通道的函数变换图像和def DrawPerChannel(input_img,split_channel : int, channel_color ,plotline = None, histogram = None, pic = None):# 该通道的均衡曲线（分布函数曲线）# 获取分离的通道 input_channel = input_img[:,:,split_channel] temp_he,temp_table = HistogramEqualizationLUT(input_channel) if plotline != None: plotline.set_title("The function of "+channel_color+" channel") plotline.plot(np.arange(256),np.arange(256),color = "black",label = "$r_&#123;" + channel_color +"&#125;$") plotline.plot(np.arange(256),temp_table,color = channel_color ,label = "$T(r_&#123;"+ channel_color +"&#125;)$") plotline.legend()# 该通道的灰度分布直方图 if histogram != None: kwargs = dict(bins = 25, histtype='bar', edgecolor = "white",alpha=0.5, density = True) histogram.set_title("The histogram of "+channel_color+" channel") histogram.hist(input_channel.flatten(), color = "black",**kwargs, label = channel_color +" original") histogram.hist(temp_he.flatten(), color = channel_color , **kwargs, label = channel_color +" after he") histogram.legend()# 该通道均匀后叠加到原图像的效果 if pic != None: show_img = input_img.copy() show_img[:,:,split_channel] = temp_he pic.imshow(show_img)def DrawChannelsEqualization(img_with_3channels): plt.figure(figsize=(30,30))# 调用库函数# r,g,b = cv2.split(im)# 直接分离# r,g,b = img_with_3channels[:,:,0],img_with_3channels[:,:,1],img_with_3channels[:,:,2] DrawPerChannel(img_with_3channels,0,"red",plt.subplot(331),plt.subplot(334),plt.subplot(337)) DrawPerChannel(img_with_3channels,1,"green",plt.subplot(332),plt.subplot(335),plt.subplot(338)) DrawPerChannel(img_with_3channels,2,"blue",plt.subplot(333),plt.subplot(336),plt.subplot(339)) plt.show()DrawChannelsEqualization(im) 123456789101112131415161718192021222324252627282930313233# 测试三通道分别做均衡化后效果和采取统一函数做均衡化的效果def DrawCompareEqualization(im_with_3_channel): together_img,together_table = HistogramEqualizationLUT(im_with_3_channel) seperate_img = im_with_3_channel.copy() seperate_table = np.array([together_table,together_table,together_table]) for i in range(3): seperate_img[:,:,i],seperate_table[i] = HistogramEqualizationLUT(im_with_3_channel[:,:,i]) plt.figure(figsize=(15,10)) plotline0 = plt.subplot(231) plotline0.set_title("No Change") plotline0.plot(np.arange(256),np.arange(256),color = "black",label = "$r$") plotline1 = plt.subplot(232) plotline1.set_title("Seperate Change") plotline1.plot(np.arange(256),np.arange(256),color = "black",label = "$r$") plotline1.plot(np.arange(256),seperate_table[0],color = "red" ,label = "$T(r_&#123;red&#125;)$") plotline1.plot(np.arange(256),seperate_table[1],color = "green" ,label = "$T(r_&#123;green&#125;)$") plotline1.plot(np.arange(256),seperate_table[2],color = "blue" ,label = "$T(r_&#123;blue&#125;)$") plotline1.legend() plotline2 = plt.subplot(233) plotline2.set_title("Together Change") plotline2.plot(np.arange(256),np.arange(256),color = "black",label = "$r$") plotline2.plot(np.arange(256),together_table,color = "orange" ,label = "$T(r_&#123;together&#125;)$") plotline2.legend() pic0 = plt.subplot(234) pic0.imshow(im_with_3_channel) pic1 = plt.subplot(235) pic1.imshow(seperate_img) pic2 = plt.subplot(236) pic2.imshow(together_img) plt.show()DrawCompareEqualization(im) 1234567891011# 多来几组样例imtest1 = imageio.imread('imageio:chelsea.png')imtest2 = GetRGB('./3_2Photo/2.jpg')imtest3 = GetRGB('./3_2Photo/3.jpg')imtest4 = GetRGB('./3_2Photo/4.tif')DrawCompareEqualization(imtest1)# DrawCompareEqualization(imtest2)DrawCompareEqualization(imtest3)DrawCompareEqualization(imtest4) 1234567891011121314# 展示直方图def DrawHist(input_img,pic_handle,histogram_handle): kwargs = dict(bins = 25, histtype='bar', edgecolor = "white",alpha=0.5, density = True) pic_handle.set_title("The Image") pic_handle.imshow(input_img,cmap = "gray") histogram_handle.set_title("The histogram_handle") histogram_handle.hist(input_img.flatten(),**kwargs)plt.figure(figsize=(20,15))DrawHist(imtest1[:,:,0],plt.subplot(321),plt.subplot(322))DrawHist(imtest2[:,:,0],plt.subplot(323),plt.subplot(324))DrawHist(imtest3[:,:,0],plt.subplot(325),plt.subplot(326))plt.show()]]></content>
       <categories>
         <category>数字图像处理</category>
       </categories>
@@ -554,8 +565,8 @@
         <tag>ACM</tag>
         <tag>2019春季训练</tag>
         <tag>二分</tag>
-        <tag>并查集</tag>
         <tag>待补充</tag>
+        <tag>并查集</tag>
         <tag>洛谷</tag>
         <tag>二分图</tag>
       </tags>
@@ -1126,8 +1137,8 @@
         <category>C++</category>
       </categories>
       <tags>
-        <tag>编程</tag>
         <tag>C++</tag>
+        <tag>编程</tag>
         <tag>课程设计</tag>
       </tags>
   </entry>
@@ -1246,8 +1257,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>HDU</tag>
         <tag>并查集</tag>
@@ -1262,11 +1273,11 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
-        <tag>并查集</tag>
         <tag>待补充</tag>
+        <tag>并查集</tag>
         <tag>POJ</tag>
       </tags>
   </entry>
@@ -1279,8 +1290,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>HDU</tag>
         <tag>并查集</tag>
@@ -1295,11 +1306,11 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>HDU</tag>
-        <tag>并查集</tag>
         <tag>待补充</tag>
+        <tag>并查集</tag>
         <tag>2018球季训练</tag>
       </tags>
   </entry>
@@ -1312,11 +1323,11 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
-        <tag>并查集</tag>
         <tag>待补充</tag>
+        <tag>并查集</tag>
         <tag>POJ</tag>
       </tags>
   </entry>
@@ -1338,8 +1349,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -1353,8 +1364,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -1368,8 +1379,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -1383,8 +1394,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -1398,8 +1409,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -1413,8 +1424,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -1428,8 +1439,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -1630,8 +1641,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>数据结构</tag>
         <tag>2018秋季训练</tag>
         <tag>UVA</tag>
@@ -1646,8 +1657,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>Imitation</tag>
         <tag>2018秋季训练</tag>
         <tag>UVA</tag>
@@ -1662,8 +1673,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>Imitation</tag>
         <tag>2018秋季训练</tag>
         <tag>UVA</tag>
@@ -1678,8 +1689,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -1694,8 +1705,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -1738,8 +1749,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>HDU</tag>
         <tag>大数</tag>
@@ -1782,8 +1793,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>UVALive</tag>
       </tags>
@@ -1797,8 +1808,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>UVALive</tag>
         <tag>概率</tag>
@@ -1813,8 +1824,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>Imitation</tag>
         <tag>2018秋季训练</tag>
@@ -1829,8 +1840,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>博弈</tag>
         <tag>2018秋季培训</tag>
@@ -1859,8 +1870,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
       </tags>
@@ -1874,8 +1885,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>字典树</tag>
@@ -1890,8 +1901,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
@@ -1906,8 +1917,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
       </tags>
@@ -1921,8 +1932,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>Dijkstra</tag>
@@ -1938,8 +1949,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>字典树</tag>
@@ -1954,8 +1965,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
       </tags>
@@ -1969,8 +1980,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
       </tags>
@@ -1984,8 +1995,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
       </tags>
@@ -1999,8 +2010,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -2015,8 +2026,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -2031,8 +2042,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -2047,8 +2058,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -2063,8 +2074,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>Imitation</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -2079,8 +2090,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>补图</tag>
         <tag>UVA</tag>
@@ -2096,8 +2107,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>补图</tag>
         <tag>UVA</tag>
@@ -2113,8 +2124,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>数论</tag>
         <tag>HDU</tag>
@@ -2129,8 +2140,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
         <tag>补图</tag>
@@ -2147,8 +2158,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>补图</tag>
         <tag>STL</tag>
@@ -2164,8 +2175,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>补图</tag>
         <tag>STL</tag>
@@ -2181,8 +2192,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>补图</tag>
         <tag>STL</tag>
@@ -2197,8 +2208,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>DP</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
@@ -2214,8 +2225,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>数论</tag>
@@ -2230,8 +2241,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>二分</tag>
         <tag>Greedy</tag>
         <tag>UVA</tag>
@@ -2246,8 +2257,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
         <tag>UVA</tag>
@@ -2262,8 +2273,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -2292,8 +2303,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>POJ</tag>
         <tag>Floyd</tag>
@@ -2308,8 +2319,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>BFS</tag>
         <tag>HDU</tag>
@@ -2324,8 +2335,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>CodeForces</tag>
       </tags>
@@ -2339,8 +2350,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>BFS</tag>
         <tag>数论</tag>
@@ -2356,8 +2367,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>AtCoder</tag>
       </tags>
   </entry>
@@ -2370,8 +2381,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>AtCoder</tag>
       </tags>
   </entry>
@@ -2384,8 +2395,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>AtCoder</tag>
         <tag>DP</tag>
       </tags>
@@ -2399,8 +2410,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>AtCoder</tag>
       </tags>
   </entry>
@@ -2447,8 +2458,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
@@ -2463,8 +2474,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
         <tag>HDU</tag>
@@ -2479,8 +2490,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
         <tag>HDU</tag>
@@ -2504,8 +2515,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
         <tag>HDU</tag>
@@ -2520,8 +2531,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
@@ -2536,8 +2547,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
@@ -2552,8 +2563,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
         <tag>2018杭电多校</tag>
@@ -2568,8 +2579,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
         <tag>2018杭电多校</tag>
@@ -2584,8 +2595,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>DP</tag>
         <tag>2018暑假集训</tag>
         <tag>字典树</tag>
@@ -2601,8 +2612,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>字典树</tag>
@@ -2617,8 +2628,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>字典树</tag>
         <tag>HDU</tag>
@@ -2633,8 +2644,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>字典树</tag>
         <tag>HDU</tag>
@@ -2649,8 +2660,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>字符串hash</tag>
         <tag>POJ</tag>
@@ -2665,8 +2676,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
         <tag>HDU</tag>
@@ -2682,8 +2693,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>Dijkstra</tag>
         <tag>HDU</tag>
         <tag>最长路</tag>
@@ -2698,8 +2709,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>Dijkstra</tag>
         <tag>最短路</tag>
@@ -2729,8 +2740,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>区间DP</tag>
@@ -2745,8 +2756,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>区间DP</tag>
         <tag>POJ</tag>
@@ -2761,8 +2772,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>区间DP</tag>
@@ -2777,8 +2788,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>Greedy</tag>
         <tag>HDU</tag>
@@ -2793,8 +2804,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>Greedy</tag>
@@ -2809,8 +2820,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
         <tag>2018杭电多校</tag>
@@ -2826,8 +2837,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>POJ</tag>
         <tag>计算几何</tag>
@@ -2842,8 +2853,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>计算几何</tag>
         <tag>UVA</tag>
@@ -2858,8 +2869,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>POJ</tag>
         <tag>计算几何</tag>
@@ -2874,8 +2885,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>POJ</tag>
         <tag>计算几何</tag>
@@ -2890,8 +2901,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>数论</tag>
         <tag>HDU</tag>
@@ -2923,8 +2934,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>ZOJ</tag>
@@ -2939,8 +2950,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
@@ -2956,8 +2967,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>UVA</tag>
@@ -2972,8 +2983,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>URAL</tag>
@@ -2988,8 +2999,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>水题</tag>
@@ -3005,8 +3016,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>DP</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
@@ -3022,8 +3033,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>几何</tag>
@@ -3040,8 +3051,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>水题</tag>
@@ -3057,8 +3068,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>二分</tag>
         <tag>2018暑假集训</tag>
         <tag>POJ</tag>
@@ -3073,8 +3084,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>二分</tag>
         <tag>水题</tag>
         <tag>POJ</tag>
@@ -3089,8 +3100,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>二分</tag>
         <tag>2018暑假集训</tag>
         <tag>水题</tag>
@@ -3106,8 +3117,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>二分</tag>
         <tag>2018暑假集训</tag>
         <tag>CodeForces</tag>
@@ -3122,8 +3133,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
@@ -3138,8 +3149,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>Greedy</tag>
         <tag>HDU</tag>
@@ -3155,8 +3166,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>Greedy</tag>
         <tag>HDU</tag>
@@ -3172,8 +3183,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>数论</tag>
         <tag>HDU</tag>
@@ -3189,8 +3200,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>BFS</tag>
         <tag>HDU</tag>
@@ -3206,8 +3217,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
         <tag>2017HDU多校</tag>
@@ -3223,8 +3234,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>DP</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
@@ -3241,8 +3252,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>数据结构</tag>
         <tag>2018暑期选拔</tag>
@@ -3257,8 +3268,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑期选拔</tag>
         <tag>BFS</tag>
@@ -3314,8 +3325,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>CSU</tag>
         <tag>矩阵快速幂</tag>
@@ -3330,8 +3341,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>CSU</tag>
         <tag>矩阵快速幂</tag>
@@ -3346,8 +3357,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>AtCoder</tag>
         <tag>math</tag>
         <tag>2018春季训练</tag>
@@ -3362,8 +3373,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>二分</tag>
         <tag>CodeForces</tag>
@@ -3378,8 +3389,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>math</tag>
         <tag>2018春季训练</tag>
         <tag>CodeForces</tag>
@@ -3395,8 +3406,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>math</tag>
         <tag>2018春季训练</tag>
         <tag>CodeForces</tag>
@@ -3412,8 +3423,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>水题</tag>
         <tag>CodeForces</tag>
@@ -3429,8 +3440,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>Greedy</tag>
         <tag>CodeForces</tag>
@@ -3446,8 +3457,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>水题</tag>
         <tag>CodeForces</tag>
@@ -3462,8 +3473,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>CSU</tag>
         <tag>二分</tag>
@@ -3478,8 +3489,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>HDU</tag>
         <tag>线段树</tag>
@@ -3494,8 +3505,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>HDU</tag>
         <tag>线段树</tag>
@@ -3510,8 +3521,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>HDU</tag>
         <tag>线段树</tag>
@@ -3526,8 +3537,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>CSU</tag>
         <tag>位运算</tag>
@@ -3674,8 +3685,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>DP</tag>
         <tag>2018寒假集训</tag>
         <tag>POJ</tag>
@@ -3690,8 +3701,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>补图</tag>
         <tag>HDU</tag>
@@ -3707,8 +3718,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>DP</tag>
         <tag>2018寒假集训</tag>
         <tag>CodeForces</tag>
@@ -3723,8 +3734,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>AtCoder</tag>
         <tag>DP</tag>
         <tag>2018寒假集训</tag>
@@ -3739,8 +3750,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>DP</tag>
         <tag>2018寒假集训</tag>
         <tag>DFS</tag>
@@ -3756,8 +3767,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>BFS</tag>
         <tag>HDU</tag>
@@ -3772,8 +3783,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>BFS</tag>
         <tag>补图</tag>
@@ -3789,8 +3800,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>BFS</tag>
         <tag>CodeForces</tag>
@@ -3805,8 +3816,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>BFS</tag>
         <tag>ZOJ</tag>
@@ -3821,8 +3832,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>Greedy</tag>
         <tag>CodeForces</tag>
@@ -3838,11 +3849,11 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
-        <tag>HDU</tag>
         <tag>STL</tag>
+        <tag>HDU</tag>
       </tags>
   </entry>
   <entry>
@@ -3854,8 +3865,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>Imitation</tag>
         <tag>Graph</tag>
@@ -3871,8 +3882,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>Greedy</tag>
         <tag>POJ</tag>
@@ -3887,8 +3898,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>Imitation</tag>
         <tag>CodeForces</tag>
@@ -3904,12 +3915,12 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>补图</tag>
-        <tag>HDU</tag>
         <tag>STL</tag>
+        <tag>HDU</tag>
       </tags>
   </entry>
   <entry>
