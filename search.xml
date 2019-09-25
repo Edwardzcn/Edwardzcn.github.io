@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[UbuntuToGo——打造属于自己的移动固态热插拔Liniux操作系统]]></title>
+    <url>%2Fpost%2F8bb234ab.html</url>
+    <content type="text"><![CDATA[本文写于我的 UbuntuToGo 系统，VScode 编辑器。 前言暑假末期给自己的戴尔游匣老本子换了西数固态，退役下来的一块 Toshiba 128G 的老固态成了闲置，拿来当移动硬盘总觉得有些浪费。恰好这时候一个室友做了个 WinToGo，“移动硬盘，移动系统，即插即用”，听起来很美妙的样子，便想着可否做个 Ubuntu 的移动版。 网上找了几篇资料给了我不小的启发，也算是顺着上面的教程加上自己的摸爬滚打完成的。 把 Ubuntu16.04 装进移动硬盘的惨痛实战 感谢先驱者的宝贵经验。 准备工作本文采用 U 盘引导 UEFI 安装的方式，希望虚拟机安装或者想用需要用 Legancy 启动的童鞋请参见这两篇文章：IT 之家学院：制作同时适用于 Legacy/UEFI 的 Ubuntu To Go 启动盘，Ubuntu To Go | 制作属于你的随身 Ubuntu 系统盘 启动 U 盘：一个 32G 的 Ubuntu 系统启动盘（需格式化） 移动 SSD：一个 128G 东芝的 SSD+硬盘盒（买壳子注意 M.2 接口类型以及支持协议，老的 SSD 并不是 NVMe 协议的，原理上只需要盘中有未分配空间即可，实操中建议先行备份以防杯具） Ubuntu 系统镜像文件：Ubuntu 桌面下载 18.04.3 LTS 启动盘制作软件 Rufus：官网下载Rufus3.8 你的脑子 制作启动盘下载好我们需要的镜像文件后，插入 U 盘，进行刻录（下图中是以硬盘为例，具体使用时无需点选显示外接硬盘，选择对应 U 盘即可） 安装 Ubuntu选择试用 Ubuntu 系统完成启动 U 盘制作后重启，进入 BIOS 界面（品牌机子 logo 处按对应键，一般为 F2，F9，F12 等，自行查手册），然后选择引导为 UEFI 并选择 Secure Off。 然后选择 U 盘启动项，grub 菜单选择 Try Ubuntu（试用 Ubuntu），进入试用的 Ubuntu 18.04 主界面。桌面上应该有一个 Install，这样操作的原因是为了避免直接安装 Ubuntu 过程中采用默认方案与原 Windows 整合 EFI 导致拔出硬盘后无法启动，且分区无法调整。 Gparted 分区调整确认建议使用试用系统上自带的分区调整工具：Gparted 进行分区的调整，如对 SSD 移动硬盘划分空闲区域与分区，确认设备名称等（sdx/nvmex）。 已经安装完成的系统好像并不能启动 Gparted（实际上是我不会），就不放图了。 自定义安装 Ubuntu双机桌面的 Install Ubuntu，进入安装，网速差的建议不联 Wifi 进行安装，后续换源后提速再安装其他必要包（比如语言包）。 建议选择英文，避免命令行、文件路径出现一些迷之错误。 记得选择其他方式安装，不与现有系统（Windows）整合或者格式化当前系统盘。 （后面几张图来源于网络） 挂载分区由于我们不需要通过 Legency 模式启动，无需考虑/boot，在安装过程中直接挂在分区即可。 在随后的这个界面中，假设/dev/sda 是你的想要安装系统的移动盘，选中其下的所有盘符，点击下面的“－”删去不需要的分区（相当于格式化），然后点击 free space，点击下面的“＋”，按下图挂载三个 partition： 交换分区（建议 8G 与内存大小相同） swap，主分区 操作系统里面讲的留在硬盘里换入换出的交换区。 根目录（“/”，建议 10-50GB） ext4，主分区 空间有充分盈余的话可以考虑多给一些，毕竟是 SSD 固态速度不会很慢，而且 10G 装软件真的不够用，如果后续还需要添加空间只能通过外置硬盘引导开机然后重新调整分区方式了 home（“/home”，建议 30-50GB） ext4 储存各种用户文件，建议分配较多空间。 由于介质是固态硬盘，除了交换分区外，格式均无需拘泥于 FAT32，建议选择 ext4，亲测可行。 注意点： 最下方“Device for boot loader installation”，选择你的移动硬盘（不要误选，且不要选择成后面的分区） 启动引导修复安装完后重启进入 BIOS，启动项多了 ubuntu 一项，点选后正常进入 ubuntu 系统，但是插在其他电脑上并不能像 U 盘一样被检测识别。 用 DiskGenuis 观察 U 盘启动盘与移动硬盘系统不同，发现移动硬盘并无 EFI 分区（如果分区时分了 EFI，应该会发现该分区为空）。 启动盘启动在本系统运行下无法修复引导，老样子通过 U 盘启动盘选择 Try Ubuntu 进入系统。 ctrl+alt+T打开终端，输入以下命令： 123sudo add-apt-repository ppa:yannubuntu/boot-repairsudo apt-get updatesudo apt-get install boot-repair 安装 boot-repair 工具（由于源的问题下载可能会很慢） 安装后打开 boot-repair 选择 Recommended repair，修复完成即可。 这时候关机拔下硬盘就可以在其他机器的 BIOS 识别并运行了。返回 Windows 系统使用 DiskGenius 分析发现 EFI 分区填充部分内容。 其他常见问题显卡驱动问题在使用两次后发现插入现在用的 Dell 笔记本和部分笔记本，进入用户登陆密码界面输入密码正确后，鼠标卡住，短暂黑屏后自动关机，无法进入系统。 查阅部分资料后发现大概率为显卡驱动（主要是 Nvida 笔记本独显与原装的开源驱动不适配导致的）。 修复方法如下 Ubuntu高级模式启动这个模式貌似可以忽略显卡驱动的问题（怪不得分辨率小的可怜），BIOS选择ubuntu启动后，进入界面按ESC（或者默认情况）进入grub界面，选择Ubuntu高级模式（常为第二个）。 正常输入密码后进入系统，若此方法行不通请自行查找单用户模式等进入方法。 更换驱动软件和更新（Software &amp; Updates）-&gt;附加驱动（Additional Drivers） 改用nvidia-driver-390驱动。 更新后重启进入ubuntu系统，输入密码后正常进入系统 Terminal乱码问题常发生在换用zsh和oh-my-zsh后乱码。 安装必须字体，从设置（Setting）-&gt; 地区和语言（Region &amp; Language）更改一下language和formats然后改回来即可。 拔出硬盘后默认系统不能启动从BIOS修改启动顺序，将Windows（原系统）调整到最上方。]]></content>
+      <categories>
+        <category>操作系统</category>
+        <category>UbuntuToGo</category>
+      </categories>
+      <tags>
+        <tag>UbuntuToGo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[数字图像处理学习——直方图匹配]]></title>
     <url>%2Fpost%2F973eccf1.html</url>
     <content type="text"><![CDATA[基本概念上一篇文章讲了直方图均衡相关内容，从实际应用中我们发现，只能对直方图做均衡操作并不能完全满足我们的需要，有时我们更希望调整概率分布（直方图）为指定形状，这就是直方图匹配。 比如下图图一猫咪的直方图较为集中在中间，我们希望它的分布贴近第二幅文字图的分布（集中在暗区域） 数学基础从上一篇文章的介绍中我们发现，对于任何图像（$r$的概率密度分布），我们都可以通过其累积分布函数将其函数变换到随机变量$s$，而$s$是均匀分布的。那我们反过来想，能否将均匀分布的随机变量逆变换到某个特定的分布呢？ 公式推导设$r$为随机变量值域为$[0,255]$，其概率密度函数为$p_r(r)$。一函数（变换为）： s = T(r) = (L-1) \int_{0}^{r} p_r(m) \mathrm{d}m由上一篇文章我们易知$s$服从均匀分布，我们寻找一个$z$随机变量符合另一特殊分布$p_z(z)$，易知存在一函数（变换）： s = G(z) = (L-1) \int_{0}^{z} p_z(m) \mathrm{d}m由于$G(z)$为累积分布函数，单调，故存在反函数$G^{-1}(z)$，则有新变换 $N = G^{-1} \cdot T$，使得$r$随机变量经$N$变换后符合$z$的分布特征。 z = G^{-1}(s) = G^{-1}(T(r)) = N(r)由此，我们找到了某值域内求从某一分布随机变量$r$变换到指定分布随机变量$z$的方法。 个人理解直方图均衡，均匀分布，实际上在中间做了桥接。 实验效果均衡化输出两幅图原图以及均衡化后的图片，直方图。 直观对比两图的累积分布函数与直方图 $T(r)$表示$r$的累积分布函数，本样例中为小猫图像的累积分布函数，图示为淡蓝色曲线。$G(z)$表示为$z$的累积分布函数，本样例中为文字图片的累积分布函数，图示为橙黄色曲线。 求反函数反函数的计算，并没有按照课本上所说，搜索找最近值，对于一张$m \times n$图像，对于每个搜索需要$O(log(L))$，总复杂度是相乘的关系$O(MNlog(L))$，而通过一个二重循环实现打表计算则可以优化到$O(MN)+O(L)$，对于实际图片$MN$远大于$L$，所以这种优化是值得的 123456cnt = 0for i in range(256): while cnt&lt;=raw_table[i]: new_table[cnt] = i cnt+=1return new_table 计算反函数表方便后面对图像进行变换。 123reverse_imtest1_table = GetReverseTable(imtest1_tabel)match_imtest0_table = reverse_imtest1_table[imtest0_tabel]match_imtest0 = match_imtest0_table[imtest0] 输出结果如下 直方图对比表示了 image0，image1，匹配后的 image0 三图，由图可以看出匹配后的 image0 直方图分布已经很贴近 image1 了。 图片效果（小猫被玩的有点可怜） 核心代码图像直方图展示12345678910111213141516# 展示直方图def DrawHist(input_img,pic_handle,histogram_handle): kwargs = dict(bins = 50, histtype='bar', edgecolor = "white",alpha=0.5, density = True) pic_handle.set_title("The image") pic_handle.imshow(input_img) histogram_handle.set_title("The histogram") histogram_handle.hist(input_img.flatten(),**kwargs)imtest0 = imageio.imread('imageio:chelsea.png')imtest1 = GetRGB('./3_3Photo/3.jpg')plt.figure(figsize=(20,10))DrawHist(imtest0,plt.subplot(221),plt.subplot(222))DrawHist(imtest1,plt.subplot(223),plt.subplot(224))plt.show() 直方图匹配12345678910# 获取目标图像累积分布函数的反函数lut表（离散）def GetReverseTable(raw_table): new_table = np.zeros(256,dtype = np.int64) cnt = 0 for i in range(256): while cnt&lt;=raw_table[i]: new_table[cnt] = i cnt+=1 return new_table 加入反函数输出12345678910111213141516171819202122# 加入反函数，再绘图plt.figure(figsize=(15,5))plotline = plt.subplot(121)plotline.set_title("The function")plotline.plot(np.arange(256),imtest0_tabel,label = "$T(r)$")plotline.plot(np.arange(256),np.arange(256),color = "black",label = "$r$")plotline.plot(np.arange(256),imtest1_tabel,label = "$G(z)$")plotline.plot(np.arange(256),reverse_imtest1_table, label = "$G^&#123;-1&#125;(z)$")plotline.plot(np.arange(256),match_imtest0_table, label= "$G^&#123;-1&#125;(T(r)), N(r)$")plotline.legend()# 设置直方图参数 分割块 叠加模式 边界颜色 透明度 正则化（映射到0~1）kwargs = dict(bins = 50, histtype='bar', edgecolor = "white",alpha=0.5, density = True)histogram1 = plt.subplot(122)histogram1.set_title("The histogram")histogram1.hist(imtest0.flatten(),color = "black",label = "imtest0 original",**kwargs )histogram1.hist(imtest1.flatten(),label = "imtest1 original",**kwargs)histogram1.hist(match_imtest0.flatten(),label = "imtest0 after match",**kwargs)histogram1.legend()plt.show() 完整代码123456import numpy as npimport imageioimport cv2import matplotlib.pyplot as pltim = imageio.imread('photo2.jpg') 12345# 获取RGB图像def GetRGB(path): im_BGR = cv2.imread(path,cv2.COLOR_GRAY2RGB) im = cv2.cvtColor(im_BGR,cv2.COLOR_BGR2RGB) return im 12345678910111213141516# 展示直方图def DrawHist(input_img,pic_handle,histogram_handle): kwargs = dict(bins = 50, histtype='bar', edgecolor = "white",alpha=0.5, density = True) pic_handle.set_title("The image") pic_handle.imshow(input_img) histogram_handle.set_title("The histogram") histogram_handle.hist(input_img.flatten(),**kwargs)imtest0 = imageio.imread('imageio:chelsea.png')imtest1 = GetRGB('./3_3Photo/3.jpg')plt.figure(figsize=(20,10))DrawHist(imtest0,plt.subplot(221),plt.subplot(222))DrawHist(imtest1,plt.subplot(223),plt.subplot(224))plt.show() 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172# 尝试直方图均衡化，def CaculateHistogram(input_image): # 参数1. 单通道8位灰度图像 # 输出1. 总像素值 # 输出2. 灰度值分布计数 # 输出3. 灰度值分布前缀和（用来做后续直方图平局奴化） # 区分通道 if len(np.shape(input_image)) == 3: height,width,level = np.shape(input_image) summ = height*width*level else : height,width = np.shape(input_image) summ = height*width# 第一种 通过访问指定位置像素 耗时executed in 7m 9s# 巨慢无比# for i in range(height):# for j in range(width):# caculate_num[input_image[i][j]] += 1# 第二种 直接拆分行，像素获取像素值 耗时executed in 14.4s# for line in input_image:# for px in line:# caculate_num[px] +=1# 第三种 调用np.histogram()方法 耗时executed in 644ms caculate_num,index_x = GetHistogramArray(input_image) caculate_num = np.append(caculate_num,1)# print(np.shape(caculate_num)) # 第四种 吕少推荐的方法(还没看懂)# caculate_num = cumsum(input_image,256)# print(np.shape(caculate_num)) sum_num = np.copy(caculate_num) for i in range(1,256):# print(sum_num[i-1],caculate_num[i]) sum_num[i] = sum_num[i-1] + sum_num[i] return summ,caculate_num,sum_numdef GetHistogramArray(image): return np.histogram(image,np.arange(0,256));def cumsum(img, bins): histogram = np.zeros(bins) for pixel in np.arange(0, bins, 1): histogram[pixel] += len(img[img==pixel]) return histogramdef HistogramEqualizationLUT(input_image): # 参数1, 单通道8位灰度图像 # 输出1. 单通道8位灰度图像（直方图均衡化后） size,data,data_sum = CaculateHistogram(input_image) fxy = lambda x: (255*data_sum[x])//size table = np.array([fxy(i) for i in range(256)])# print(table)# 不可以这样# image_new = table[input_image] lut = lambda x: table[x] return lut(input_image),tableimtest0_he,imtest0_tabel = HistogramEqualizationLUT(imtest0)imtest1_he,imtest1_tabel = HistogramEqualizationLUT(imtest1)plt.figure(figsize=(20,20))DrawHist(imtest0,plt.subplot(421),plt.subplot(422))DrawHist(imtest0_he,plt.subplot(423),plt.subplot(424))DrawHist(imtest1,plt.subplot(425),plt.subplot(426))DrawHist(imtest1_he,plt.subplot(427),plt.subplot(428)) 123456789101112131415plt.figure(figsize=(15,5))plotline = plt.subplot(121)plotline.set_title("The function")plotline.plot(np.arange(256),np.arange(256),color = 'black',label = "$r$")plotline.plot(np.arange(256),imtest0_tabel,label = "$T(r)$")plotline.plot(np.arange(256),imtest1_tabel,label = "$G(z)$")plotline.legend()kwargs = dict(bins = 50, histtype='bar', edgecolor = "white",alpha=0.6, density = True)histogram = plt.subplot(122)histogram.set_title("The histogram")histogram.hist(imtest0.flatten(),**kwargs, label = "imtest0 $p_r(r)$" )histogram.hist(imtest1.flatten(), **kwargs, label = "imtest1 $p_z(z)$")histogram.legend()plt.show() 1234567891011121314# 获取目标图像累积分布函数的反函数lut表（离散）def GetReverseTable(raw_table): new_table = np.zeros(256,dtype = np.int64) cnt = 0 for i in range(256): while cnt&lt;=raw_table[i]: new_table[cnt] = i cnt+=1 return new_tablereverse_imtest1_table = GetReverseTable(imtest1_tabel)match_imtest0_table = reverse_imtest1_table[imtest0_tabel]match_imtest0 = match_imtest0_table[imtest0] 12345678910111213141516171819202122# 加入反函数，再绘图plt.figure(figsize=(15,5))plotline = plt.subplot(121)plotline.set_title("The function")plotline.plot(np.arange(256),imtest0_tabel,label = "$T(r)$")plotline.plot(np.arange(256),np.arange(256),color = "black",label = "$r$")plotline.plot(np.arange(256),imtest1_tabel,label = "$G(z)$")plotline.plot(np.arange(256),reverse_imtest1_table, label = "$G^&#123;-1&#125;(z)$")plotline.plot(np.arange(256),match_imtest0_table, label= "$G^&#123;-1&#125;(T(r)), N(r)$")plotline.legend()# 设置直方图参数 分割块 叠加模式 边界颜色 透明度 正则化（映射到0~1）kwargs = dict(bins = 50, histtype='bar', edgecolor = "white",alpha=0.5, density = True)histogram1 = plt.subplot(122)histogram1.set_title("The histogram")histogram1.hist(imtest0.flatten(),color = "black",label = "imtest0 original",**kwargs )histogram1.hist(imtest1.flatten(),label = "imtest1 original",**kwargs)histogram1.hist(match_imtest0.flatten(),label = "imtest0 after match",**kwargs)histogram1.legend()plt.show() 123456# 输出三种图像plt.figure(figsize=(20,15))DrawHist(imtest0,plt.subplot(321),plt.subplot(322))DrawHist(imtest0_he,plt.subplot(323),plt.subplot(324))DrawHist(match_imtest0,plt.subplot(325),plt.subplot(326))plt.show()]]></content>
@@ -565,8 +577,8 @@
         <tag>ACM</tag>
         <tag>2019春季训练</tag>
         <tag>二分</tag>
-        <tag>待补充</tag>
         <tag>并查集</tag>
+        <tag>待补充</tag>
         <tag>洛谷</tag>
         <tag>二分图</tag>
       </tags>
@@ -1155,6 +1167,11 @@
       </tags>
   </entry>
   <entry>
+    <title><![CDATA[Hello Hexo]]></title>
+    <url>%2Fpost%2Fa1751c09.html</url>
+    <content type="text"><![CDATA[今日博客搬家 bing 基于Hexo-Next-Gemini 还在搬运Evernote和CSDN上的东西 还有很多功能没有添加，欢迎各位提意见]]></content>
+  </entry>
+  <entry>
     <title><![CDATA[VSCode——Git配置及终端替换]]></title>
     <url>%2Fpost%2Feae0b80e.html</url>
     <content type="text"><![CDATA[Git安装如果本机还没有安装过Git，那么首先从官网上下载合适的版本（Mac OS/Windows/Linux） 官方地址为：https://git-scm.com/download/win 下载完以后双击进行安装，勾选使用Git Bash以及使用VSCode作为默认编辑器（这个看个人喜好）。 安装成功界面 检查Git命令行输入 git --version 得到结果 git version 2.20.1.windows.1 证明Git安装正常，若出现异常，无对应函数，确定一下环境变量是否配置正常 VSCode中Git配置 Git 路径 Ctrl+,打开Setting界面，搜索Git.path，编辑到User Setting中（本机都使用所以可以不必每次都添加到Workspace Setting处设计），值为本机安装的Git文件目录里git.exe的路径。（注意Windows修改’\‘为’\\‘） Git Bash替换原有终端 鉴于不少人习惯通过Git Bash命令行进行操作，我们利用VSCode提供的内置终端功能，将终端替换为Git Bash，再也不用担心一堆Git窗口来回切了，还可以配合Ctrl+\等快捷键充分发挥终端小窗口并行工作的潜力。 Ctrl+,打开Setting界面，搜索git.integrated.shell.window,编辑对应框，路径改为对应的Bash.exe路径（我的机器中是D:\Program Files\Git\bin\bash.exe） Thanks to微软爸爸，现在我们就可以在VSCode里优雅的使用Git啦。 关于Git的教程，后续读完《精通Git》会补一篇。链接在这里。]]></content>
@@ -1276,8 +1293,8 @@
         <tag>ACM</tag>
         <tag>算法</tag>
         <tag>2018秋季训练</tag>
-        <tag>待补充</tag>
         <tag>并查集</tag>
+        <tag>待补充</tag>
         <tag>POJ</tag>
       </tags>
   </entry>
@@ -1309,8 +1326,8 @@
         <tag>ACM</tag>
         <tag>算法</tag>
         <tag>HDU</tag>
-        <tag>待补充</tag>
         <tag>并查集</tag>
+        <tag>待补充</tag>
         <tag>2018球季训练</tag>
       </tags>
   </entry>
@@ -1326,8 +1343,8 @@
         <tag>ACM</tag>
         <tag>算法</tag>
         <tag>2018秋季训练</tag>
-        <tag>待补充</tag>
         <tag>并查集</tag>
+        <tag>待补充</tag>
         <tag>POJ</tag>
       </tags>
   </entry>
@@ -3546,11 +3563,6 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[Hello Hexo]]></title>
-    <url>%2Fpost%2Fa1751c09.html</url>
-    <content type="text"><![CDATA[今日博客搬家 bing 基于Hexo-Next-Gemini 还在搬运Evernote和CSDN上的东西 还有很多功能没有添加，欢迎各位提意见]]></content>
-  </entry>
-  <entry>
     <title><![CDATA[《1Q84》读书笔记]]></title>
     <url>%2Fpost%2F280fbdcb.html</url>
     <content type="text"><![CDATA[内容摘录第一部 P371 “世界这个东西，青豆啊，就是一种记忆和相反的另一种记忆永无休止的斗争。” 第二部 P262 “人的生命虽然本质上是孤独的存在，却不是孤立的存在。” P270 “但店内除了天吾，只有一对像是大学生的青年男女并肩坐在吧台前，正在交头接耳，起劲地说着悄悄话。望着他们，天吾感到了许久不曾有过的深深地寂寞。在这个世界上，自己是孤独的，和谁都没有关联。” P274 “我当时看见了月亮。青豆也看见了同一个月亮。浮在下午三点半依然十分明亮的天上的灰色岩块。沉默而孤独的卫星。两人并肩而立，望着那个月亮。但是，那究竟意味着什么？难道月亮会领我去青豆所在的地方吗？” P276 “天吾专注着望着月光，心中从远古时代传承下来的记忆般的东西被唤醒了。远在人类获得火、工具和语言之前，月亮就始终不变地是人们的朋友。它作为天赐地灯火，不时照亮黑暗的世界，缓解了人们的恐惧。它地圆缺给了人们时间观念。对月亮这种无偿地感谢之情，纵然在黑暗已从绝大部分地域驱逐的现在，似乎依然牢牢烙印在人类的遗传因子里。作为一种温暖的集体记忆。” P311 “我隔着一条马路看到了她，还因为可能被他拥入怀中而颤抖。虽说只有几分钟，我毕竟也全身心地题为过那种激烈的喜悦和期待。她闭上眼睛，紧攥着滑梯的扶手，咬住嘴唇。” P312 “不过这将无所谓。我将为他而死。我不能为自己而活，这种可能性从一开始就被剥夺了。可是，我却能为他而死。这样就够了。我可以微笑着去死。 这不是谎言。” P338 “他像被遗弃在风暴逝去后的静谧中，无法在任何事物上集中精神。” P341 “父亲依旧纹丝不动，他的双眼被牢牢封闭在那黑暗地深坑底部，望去仿佛在静静地等待降雪，将深坑填成白色。” Emmm…我喜欢带鼓点的纯音乐，因为在不知哪个关键的时刻，想起的鼓点声总能巧妙地切合这个场景。 P350 “这二十年间，他心里时时刻刻装着这位少女的面容。 青豆，天吾叫出声来。 少女沉在深深的睡眠中。似乎是很深的自然的睡眠，连呼吸都极其微弱。她的心脏也只是轻微地鼓动着，虚幻得传不到人的耳朵里。甚至连抬起眼睑得力量都没有……青豆在遥远的地方听见了这呼唤。天吾君，她在心中念道，还清晰地呼出声来。但这句话却不会掀动躺在空气蛹中少女的嘴唇，也不会传入天吾的耳朵。”]]></content>
@@ -3578,8 +3590,8 @@
       </categories>
       <tags>
         <tag>阅读</tag>
-        <tag>龙应台</tag>
         <tag>书信</tag>
+        <tag>龙应台</tag>
         <tag>安德烈</tag>
         <tag>亲爱的安德烈</tag>
       </tags>
@@ -3630,9 +3642,9 @@
         <category>随笔</category>
       </categories>
       <tags>
+        <tag>龙应台</tag>
         <tag>随笔</tag>
         <tag>读后感</tag>
-        <tag>龙应台</tag>
       </tags>
   </entry>
   <entry>

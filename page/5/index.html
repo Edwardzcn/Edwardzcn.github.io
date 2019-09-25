@@ -377,6 +377,203 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/7c86d8e8.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/7c86d8e8.html" itemprop="url">分布式系统学习——GFS谷歌文件系统Paper翻译</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-25T23:32:28+08:00">
+                2019-08-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/" itemprop="url" rel="index">
+                    <span itemprop="name">操作系统</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/分布式系统/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  11,684
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  41
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="读书笔记——The-Google-File-System"><a href="#读书笔记——The-Google-File-System" class="headerlink" title="读书笔记——The Google File System"></a>读书笔记——The Google File System</h1><p><a href="https://www.cnblogs.com/finalboss1987/p/5169559.html" target="_blank" rel="noopener">参考翻译版本：Google File System 翻译（转）</a></p>
+<p>加粗和笔者注是重点关注的部分。</p>
+<h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>我们已经设计和实现了 Google File System，一个适用于大规模分布式数据处理相关应用的，可扩展的分布式文件系统。它基于普通的不算昂贵的硬件设备，<strong>实现了容错的设计，并且为大量客户端提供极高的整体处理性能</strong>。</p>
+<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>我们已经为 Google 迅速增长的数据处理需求而设计和实现了 Google File System(GFS)。GFS 和上一个分布式文件系统有着很多相同的设计目的，比如性能，扩展性，可靠性，以及可用性。不过，包括现在和未来预期下，它的设计是基于我们应用的工作量和技术环境驱动的，因而 GFS 都有一些和上一个版本明显不同的地方。这就要求我们重新审视传统的设计选择，并探索完全不同的设计要点。</p>
+<ul>
+<li>首先，<strong>节点失效将被看成是正常情况，而不再视为异常情况</strong>。整个文件系统包含了几百个或者几千个由廉价的普通机器组成的存储机器，而且这些机器是被与之匹配数量的客户端机器访问。这些节点的质量和数量都实际上都导致总会出现一些失效情况，并且某一部分机器并不会从当前失效中恢复回来。原因是多样的，比如程序的 bug，操作系统的 bug，人工操作 error，以及硬盘坏掉，内存，网络，插板的损坏，电源的坏掉等等。因此，<strong>持续监视，错误检测，容错处理，自动恢复</strong>必须集成到这个文件系统的设计中来。</li>
+<li>第二，<strong>大型数据文件的规模出现导致文件观念的改变</strong>。当我们通常操作迅速增长的，由很多 TB 组成的，包含数十亿对象的数据集，我们可不希望管理数十亿个 KB 大小的文件（无论文件系统是否有如此能理）。所以，设计约定和设计参数比如 I/O 操作以及 blocksize（块大小），都需要重新审查。</li>
+<li>第三，<strong>文件的改变常为追加（append）而非覆盖（overwrite），对一个文件的随机写操作（random write）实际上是几乎不存在的</strong>。当一旦写完，文件就是只读的，并且一般都是顺序读取。许多 data 都具备这样的特性：仅供应用扫描数据的超大数据库、应用不断产生的数据流、归档的数据、机器交互的中间数据生成和处理。对于这些巨型文件的访问模式来说，“追加（append）”是最重要的，所以我们首要在性能上优化并保证原子性操作的就是它，而缓存客户端中的数据块则失去吸引力（不是 GFS 重点关注的对象）。</li>
+<li>第四，结合应用与文件系统 API 一同设计对于增加整个系统的弹性有很大的好处。例如我们放宽 GFS 一致性模型后可以在避免给应用增加负担的同时简化文件系统。我们也引入了原子的追加（append）操作，这样可以让多个客户端并发对同一文件进行追加操作，而不需要额外的同步。这些在本论文的后边章节有描述。</li>
+</ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/7c86d8e8.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/cbabc18d.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1209,239 +1406,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/2810df46.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/2810df46.html" itemprop="url">细数我去过的那些博物馆（院）</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-10T20:23:34+08:00">
-                2019-07-10
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/旅行/" itemprop="url" rel="index">
-                    <span itemprop="name">旅行</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  4,200
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  14
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>出了广东省博物馆的大门，感觉自己跑编了大半个中国的省级及以上的博物馆（博物院），随手发了个朋友圈，感慨之余，朋友圈下面的评论倒是提醒我，为何不给造访过的这些博物馆排个位序，比较一下其间的不同？我觉得颇有道理。今天由于出行方式的选择失误导致了我错过了最后一班去往深圳的高铁，目前返回广州东站搭乘城际列车，不过事情总有好的一面，我便多了几十分钟写这篇文章的时间。虽然一拖再拖，不过总算是写了大半部分。</p>
-<p>接下来的部分，我将自己对各个博物馆印象最深刻的地方作为章节标题来逐个介绍他们，整篇文章完整阅读约耗费 8 分钟时间，若您无暇完整阅读，想留一个初步印象作为接下来规划旅行的“扫盲贴”的话，那我建议您花 1-2 分钟阅读以下各节标题。</p>
-<p>我对各博物馆（院）的评价主要参考（但不限于）以下几个方面：</p>
-<ol>
-<li>馆藏文物丰富程度</li>
-<li>考古科研贡献程度</li>
-<li>展示文物丰富程度</li>
-<li>馆内安保情况以及展示文物保护措施</li>
-<li>配套讲解以及辅助文字说明</li>
-<li>博物馆布局以及展示的相关性</li>
-</ol>
-<h1 id="最推介——陕西历史博物馆"><a href="#最推介——陕西历史博物馆" class="headerlink" title="最推介——陕西历史博物馆"></a>最推介——陕西历史博物馆</h1><ol>
-<li><p>前述</p>
-<p>如果让我从参观的众多博物馆中挑出一个 The Best One 的话，我个人觉得，陕历博当之无愧。我本人一直信奉将已拥有的全部发挥出来便是 The Best，博物馆（院）中，陕历博即是如此。</p>
-<p>我是高三毕业的暑假参加西安交大自招的时候顺路参观的陕西历史博物馆，虽然那时距离写这篇文章已经有一段时间了，但我后续造访的很多博物馆（院）在许多方面依旧稍逊（甚至远逊于）当时的陕历博。如果您之前从未造访过任何一个博物馆（院），抑或是您想从新从头开启自己的“博物馆神奇之旅”，那我一定要推荐您去陕西西安看看。一个陕历博，是将半部中国古代史，毫无保留地铺开展现在你眼前。</p>
-<p>陕历博位于陕西省西安市雁塔区，大雁塔西北侧，除去节假日里外里两圈等候参观的长队，其实看外观也颇具历史范，地铁抵达也比较方便。</p>
-</li>
-<li><p>推介理由</p>
-<p>藏品数量质量及连贯性最佳，文字讲解我见过得博物馆中最为详尽，有语音导览配套，但不依赖（个别博物馆语音导览做过头了，文字少的可怜）。展厅装潢切合历史（石器的灰黄，秦朝的黑，特别是汉朝的赤红），国宝级文物丰富且配有重点介绍（兵符和独孤信的煤精印我至今还能清晰的回忆起来）。大唐遗宝的发觉过程也可以让参观者详尽的了解到国宝的发掘过程。</p>
-</li>
-<li><p>周边景点</p>
-<p>大雁塔（大慈恩寺）、秦始皇陵地宫展览馆、秦始皇兵马俑博物馆（不知道玉甲那个分馆开了没有）。</p>
-</li>
-<li><p>其他</p>
-<p>南方的同学可能吃不太习惯北方的面食，可以的话我还是非常推介羊肉泡馍+各式各样的肉夹馍的，PS 羊肉泡馍不要晚上吃。</p>
-</li>
-</ol>
-<h1 id="最恢宏——北京故宫博物院"><a href="#最恢宏——北京故宫博物院" class="headerlink" title="最恢宏——北京故宫博物院"></a>最恢宏——北京故宫博物院</h1><ol>
-<li><p>前述</p>
-<p>作为一个河北人，我这个从小学就被拉去看天安门升旗仪式的娃，比其他省份抵达首都有着交通上的便利，三次参观北京故宫博物院，怎么说，故宫应该是我印象中展出/馆藏占比最小的一个博物院，但单单这展出部分，或许就已经足够体现中国古代后期封建王朝的历史了。</p>
-<p>大众游客初访博物院一般走的是午门——神武门线路，节假日游客很多，而且需要提醒的是该线路以在外参观建筑为主，露天而且是没有树木给你遮挡烈日的（为何如此大家可以自己做做攻略）。PS 野导游经常会给你讲野史，关于故宫线路的网上讲解以及官方讲解都还不错，起码不是野史，或者说不带着奇怪民间迷信。</p>
-</li>
-<li><p>推介理由</p>
-<p>理由这个有点难写，谈起博物馆（院）不谈故宫不谈紫禁城是很难的，这座独一无二的皇家园林建筑群本身就是一个无价的文物，首批五 A 级景区，内涵之丰富我想应该是我等不能想象的。但这客观上也造成了我们多是仰视高高在上的故宫，想要探寻其内在的种种则需要我们花费更多的精力和时间。此外，故宫在文物保护，流失文物找回，文物修缮（《我在故宫修文物》）等方面做出的巨大努力也让这里除去文物本身观赏价值外，更有些其他方面的韵味。据闻西区东区也在逐步开放了，我想讲解服务方面北京故宫也会继续走在路上。</p>
-</li>
-<li><p>周边景点</p>
-<p>八达岭长城可以去看一下，不推荐鸟巢水立方（除非你想打卡照片）。可以再去一下天坛和中国国家博物馆（这个我没去过，惭愧）。</p>
-</li>
-<li><p>其他</p>
-<p>游北京，千万别跟团，团体游水有些深，现在网络也发达了，自由行不仅可以自己把握时间，而且防止被骗被宰，京油子这个名字可不是没道理（抱歉，我真的没有贬义）。</p>
-</li>
-</ol>
-<h1 id="最内涵——上海博物馆"><a href="#最内涵——上海博物馆" class="headerlink" title="最内涵——上海博物馆"></a>最内涵——上海博物馆</h1><ol>
-<li><p>前述</p>
-<p>上海博物馆新馆与 96 年建成，馆址在人民广场附近，交通很便利。印象中东北部还有上海城市规划馆和一个小的商圈。我讲上海博物馆内涵是因为从外观上，尽管周围是公园平地，但是整体看上海博物馆并不是很大（或许仅仅是错觉，上博陈列面积约 12000 平方米，已经不小了），从正门进入以后也是以四方形正厅构造，略窄的楼梯缓步登上二楼三楼逐步参观，但同时，其馆藏之丰富，文物来源之广泛确实告诉我们，人不可貌相，博物馆也是这个道理。</p>
-</li>
-<li><p>推介理由</p>
-<p>除了文物丰富程度，上博文物的配套文字介绍以及相关知识延拓是国内一流水平的，陕历博和上博在这方面我觉得做的真的很到位，我现在还能回想起来古代青铜馆内对各类青铜器上的装饰纹理的介绍（云纹，鱼纹，云雷纹，夔龙纹，饕餮纹，火纹等等），带图，带解释，详尽丰富，甚至你还可以学到辨析商周青铜器早晚期的一些方法。</p>
-<p>Further More，上博和国外知名博物馆的交流也是国内博物馆中最为频繁的，这也为上博带来了更多的其他国家的藏品展览机会以及更好的国际视角，我当时参观的时候恰好碰上大英博物馆在上博设展，刘易斯棋子（还记得哈利波特与魔法石吗？），埃及藏品等等。除了更多的国际交流活动外，上博的公众号经营的也是最为优秀的，不仅有“硬”科普，还会向公众推送近期上博要举行的各类活动，将 2</p>
-</li>
-<li><p>周边景点</p>
-<p>上海市城市规划馆（同在人民广场，步行不过五分钟，一睹上海发展史还是很不错的），外滩，思南路（北头的 Line Friend 店，文艺青年专属街道），十号线路线（上海市图书馆、宋庆龄故居），田子坊+日月光中心。</p>
-</li>
-<li><p>其他</p>
-<p>节假日出行请提前安排好住宿，另外工作日上海的地铁真的很挤，我和朋友亲眼目睹了 2 号线挤停。</p>
-</li>
-</ol>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/2810df46.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1496,7 +1460,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">267</span>
+                  <span class="site-state-item-count">268</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1507,7 +1471,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-count">31</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -1518,7 +1482,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">158</span>
+                  <span class="site-state-item-count">159</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -1646,7 +1610,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">285.9k</span>
+    <span title="Site words total count">287.6k</span>
   
 </div>
 
