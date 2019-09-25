@@ -377,6 +377,193 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/f82955ec.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/f82955ec.html" itemprop="url">CCFADL105——面向非易失性存储介质的文件系统设计、实现与形式化验证</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-09T18:55:55+08:00">
+                2019-09-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/讲座/" itemprop="url" rel="index">
+                    <span itemprop="name">讲座</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,329
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  9
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="面向非易失性存储介质的文件系统设计、实现与形式化验证"><a href="#面向非易失性存储介质的文件系统设计、实现与形式化验证" class="headerlink" title="面向非易失性存储介质的文件系统设计、实现与形式化验证"></a>面向非易失性存储介质的文件系统设计、实现与形式化验证</h1><p>主讲人：陈海波老师（上海交通大学教授， IPAD 小组导师，华为鸿蒙系统研发）</p>
+<h1 id="Background：How-to-Climb-Up-the-Memory-Hierarchy"><a href="#Background：How-to-Climb-Up-the-Memory-Hierarchy" class="headerlink" title="Background：How to Climb Up the Memory Hierarchy"></a>Background：How to Climb Up the Memory Hierarchy</h1><p>Jim Gray 对于存储层次（Memory Hierarchy）演进的经典论断：<strong>Tape is Dead, Disk is Tape, Flash is Disk, RAM Locality is King.</strong></p>
+<p>JG 论断提出的背景是 06 年 SSD 刚刚出来，那么随着硬件技术的发展，JG 的论断也该有新的诠释。</p>
+<h1 id="Non-volatile-Memory-NVM-Revolution"><a href="#Non-volatile-Memory-NVM-Revolution" class="headerlink" title="Non-volatile Memory(NVM) Revolution"></a>Non-volatile Memory(NVM) Revolution</h1><h2 id="产品化元年"><a href="#产品化元年" class="headerlink" title="产品化元年"></a>产品化元年</h2><p>非易失性存储硬件的出现，Non-volatile Memory（NVM），带来的数据可持久化是颠覆性的改变。从体系结构的角度，CPU 内部整合内存虽然还没有实际上发生，但是今年发生的一件事是，放了许多年鸽子的 NVM Memory 终于产品化了，今年三月份 Intel 开始对外出售，中文名傲腾系列。<a href="https://zh.wikipedia.org/wiki/3D_XPoint" target="_blank" rel="noopener">3D XPoint 维基百科</a></p>
+<p>先前为了实现 Persistence（持久化），NVDIM 技术是附加电容，在断电时通过电容，将 RAM 的数据刷到硬盘中，从而达到持久化的效果。</p>
+<p>抉择：Performance vs. Persistence，以传统结构来说，选择 Performance，我们减少写回磁盘的次数，而主要在 RAM 上操作，但是这就面临掉电丢失数据的风险，难以持久化，而若选择 Persistence，频繁写入磁盘，则在 IO 上就要耗费更多的时间，效率降低。</p>
+<p>Intel Optane DC Persistent Memory 性能表现</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0006.jpg" alt="NVM1"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0007.jpg" alt="NVM2"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0008.jpg" alt="NVM3"></p>
+<p>在 NVM 产品化元年，真正的 Persistent Memory 到来时，如果针对其特性构建系统？</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/f82955ec.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/f74c511d.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1288,212 +1475,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/86266eca.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/86266eca.html" itemprop="url">数论学习——欧拉函数与中国剩余定理</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-05T14:01:31+08:00">
-                2019-09-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数学/" itemprop="url" rel="index">
-                    <span itemprop="name">数学</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数学/数论/" itemprop="url" rel="index">
-                    <span itemprop="name">数论</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  871
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  4
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="欧拉函数"><a href="#欧拉函数" class="headerlink" title="欧拉函数"></a>欧拉函数</h1><p>针对前面所学习的欧拉公式，如果我们无法快速有效的计算出来欧拉函数$\phi$的值的话，我们就不能充分发挥欧拉公式的作用，下面给出欧拉函数的计算方法。</p>
-<blockquote>
-<p><strong>定理 11.1 （$\phi$函数公式）</strong></p>
-<p>(a) 如果$p$是素数且$k ≥ 1$，则</p>
-<script type="math/tex; mode=display">\phi(p^k) = p^k - p^{k-1}</script><p>(b) 如果$\gcd (m,n) =1$，则$\phi(mn) = \phi(m) \phi(n)$</p>
-</blockquote>
-<h2 id="证明过程"><a href="#证明过程" class="headerlink" title="证明过程"></a>证明过程</h2><p><strong>证明</strong> (a)素数情况的证明用全部数$p^k$减去与$p$不互素的$p,2p,3p, \cdots , (p^{k-1}-1)p, p^{k-1}p$，共$p^{k-1}$个。所以是$p^{k} - p^{k-1}$，余下要证明(b),</p>
-<p>构造两个集合，集合 A，${ a: 1 \le a \le mn , \gcd (a, mn) = 1}$，集合 B， ${ (b,c): 1 \le b \le m, \gcd(b,m) =1 , 1 \le c \le n, \gcd(c,n) = 1  }$，显然两个集合的大小分别为$\phi(mn)$和$\phi(m) \phi(n)$</p>
-<p>对于下面这种 A-&gt;B 的映射关系 $a \mod mn   \to  (a \mod m, a \mod n$)，我们可以证明它是一一映射的，由此也就得到了$\phi(mn) = \phi(m) \phi(n)$</p>
-<ol>
-<li><p><strong>单射</strong>的证明（A 集合的不同数对应 B 集合的不同序对），假设原像为$a_1,a_2$，他们在 B 中有相同的映像，则有：</p>
-<script type="math/tex; mode=display">a_1 \equiv a_2 \mod m</script><script type="math/tex; mode=display">a_1 \equiv a_2 \mod n</script><p>可以推导得$a_1 - a_2 \equiv 0 \mod mn$，而又因为$m,n$互素，所以我们可以得到</p>
-<script type="math/tex; mode=display">a_1 \equiv a_2 \mod mn</script></li>
-<li><p><strong>满射</strong>的证明（B 集合的每个序对适合 A 集合的某个数），根据映射式以及对于任意$b,c$已知值：</p>
-<script type="math/tex; mode=display">a \equiv b \mod m</script><script type="math/tex; mode=display">a \equiv c \mod n</script><p>这个同余式组有解，这个用到了中国剩余定理的简化版（两个方程），给出证明。</p>
-<p>因为$\gcd(m,n) = 1$，可计算（存在逆元）$m^{-1} ,n^{-1}$，满足$m^{-1}m \equiv 1 \mod n , n^{-1}n \equiv 1 \mod m$，则有</p>
-<script type="math/tex; mode=display">bn^{-1}n+cm^{-1}m \equiv b \mod m</script><script type="math/tex; mode=display">bn^{-1}n+cm^{-1}m \equiv c \mod n</script><p>我们便找到了一个解$a = bn^{-1}n+cm^{-1}m$，实际上可证明在$\mod mn$条件下这个解是唯一的，见后面完整版中国剩余定理的证明。</p>
-</li>
-</ol>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/86266eca.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1548,7 +1529,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">268</span>
+                  <span class="site-state-item-count">269</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1698,7 +1679,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">287.6k</span>
+    <span title="Site words total count">288.7k</span>
   
 </div>
 
