@@ -1,9 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[数字图像处理——高斯滤波器与零填充避免DFT固有周期性影响]]></title>
+    <url>%2Fpost%2Fd140a694.html</url>
+    <content type="text"><![CDATA[高斯滤波高斯高通滤波 GaussianHPF频率域高斯高通滤波公式如下，注意公式$D$和$D_0$的区别 H(u,v) = 1-e^{\dfrac{-D^2(u,v)}{2D_0^2}}高斯低通滤波 GaussianLPF频率域高斯低通滤波公式如下 H(u,v) = e^{\dfrac{-D^2(u,v)}{2D_0^2}}123456789101112131415161718192021222324252627282930def getGaussianFilterPassImg(input_img : np.array, filter_type : str , filter_size = 20 , size = None): assert filter_type in ("lpf","hpf") f_img = np.fft.fft2(input_img , s = size) shift_img = np.fft.fftshift(f_img) def getGaussianMask(mask_size): rows,cols = f_img.shape crow = rows/2 ccol = cols/2 mask = np.zeros(f_img.shape) for i in range(rows): for j in range(cols): dis = sqrt((i-crow)**2 + (j-ccol)**2) if filter_type == "hpf": mask[i,j] = 1-np.exp(-(dis**2) / (2*(filter_size**2))) elif filter_type == "lpf": mask[i,j] = np.exp(-(dis**2)/(2*(filter_size**2))) return mask mask_shift_img = getGaussianMask(filter_size) new_shift_img = mask_shift_img*shift_img new_manitude_img = 20*np.log(np.abs(new_shift_img+eps)) new_f_img = np.fft.ifftshift(new_shift_img) new_img = np.fft.ifft2(new_f_img) new_img = np.abs(new_img) return new_img,new_manitude_img,mask_shift_img DFT 固有周期影响实现方法，由于 numpy.fft.fft2 方法参数中可以指定输出图像的大小，官方描述如下： s : sequence of ints, optional Shape (length of each transformed axis) of the output (s[0] refers to axis 0, s[1] to axis 1, etc.). This corresponds to n for fft(x, n). Along each axis, if the given shape is smaller than that of the input, the input is cropped. If it is larger, the input is padded with zeros. if s is not given, the shape of the input along the axes specified by axes is used. 该参数默认为 DFT 变换后大小为原图大小，若指定输出大小大于原图大小，则进行 0 填充，我们可以利用该参数实现我们的测试。 不经裁剪直接以 s 的默认值（None）调用 numpy.fft.fft2 实际上就是进行的非 0 填充 调用我之前写的方法，实现如下 1lpf_cycle_img, manitude_cycle_img,mask_img = getGaussianFilterPassImg(cycle_img , "lpf" , 5 ) 或者如下 1lpf_cycle_img, manitude_cycle_img,mask_img = getGaussianFilterPassImg(cycle_img , "lpf" , 5 ,size = None) 进行裁剪根据教材 P157 解释以及 P159、P163 页，二维零填充避免缠绕错误的结论与一维相同，令$f(x)$和$h(x)$分别是大小为$A \times B$和$C \times D$像素的图像阵列。循环卷积中的缠绕错误可以通过下面函数进行零填充来避免，方法如下： \begin{aligned} f(x,y) & , & 0 \le x \le A-1 和 0 \le y\le B-1 \\ 0 & , & A \le x \le P 或 B \le y \le Q \end{aligned} \right.和 \begin{aligned} h(x,y) & , & 0 \le x \le C-1 和 0 \le y\le D-1 \\ 0 & , & C \le x \le P 或 D \le y \le Q \end{aligned} \right. \\\$\$ 其中， $$ P \ge A+C -1和 Q \ge B+D-1那么实现方法就有两种： 通过其他方法进行补 0 后调用 s 为 None 的 DFT 通过调整 s 为(P,Q)大小调用 DFT 填充的代码实现： 123456789101112131415def getPaddingSize(fimg,himgsize): return fimg.shape[0]+himgsize[0]-1,fimg.shape[1]+himgsize[1]-1def getPaddingImg(fimg,himgsize, position = "corner"): assert position in ("corner","middle") fimg = np.array(fimg) rows,cols = fimg.shape prows,pcols = getPaddingSize(fimg,[himgsize for i in range(len(fimg.shape))]) if position == "corner": new_img = np.pad(fimg,((0,prows-rows),(0,pcols-cols)),'constant', constant_values = 0) else: cal = lambda x,y: ((x-y)//2 , x-y-(x-y)//2) new_img = np.pad(fimg,(cal(prows,rows),cal(pcols,cols)),'constant', constant_values = 0) return new_img 123456789101112131415161718192021222324def getPaddingSize(fimg,himgsize): return fimg.shape[0]+himgsize[0]-1,fimg.shape[1]+himgsize[1]-1def getPaddingImg(fimg,himgsize, position = "corner"): assert position in ("corner","middle") fimg = np.array(fimg) rows,cols = fimg.shape prows,pcols = getPaddingSize(fimg,[himgsize for i in range(len(fimg.shape))]) if position == "corner": new_img = np.pad(fimg,((0,prows-rows),(0,pcols-cols)),'constant', constant_values = 0) else: cal = lambda x,y: ((x-y)//2 , x-y-(x-y)//2) new_img = np.pad(fimg,(cal(prows,rows),cal(pcols,cols)),'constant', constant_values = 0) return new_imgdef cutOriginalImg(pad_img,originalsize,position = "corner"): assert position in ("corner","middle") if(position == "corner"): return pad_img[0:originalsize[0],0:originalsize[1]] else: padsizer = pad_img.shape[0]-originalsize[0] padsizec = pad_img.shape[1]-originalsize[1] return pad_img[padsizer//2:padsizer//2+originalsize[0],padsizec//2:padsizec//2+originalsize[1]] 1234567891011121314cycle_img = cv2.imread('./DIP3E_Original_Images_CH04/Fig0432(a)(square_original).tif',0)cycle_img_corner = getPaddingImg(cycle_img,1000,position = "corner")cycle_img_middle = getPaddingImg(cycle_img,1000,position = "middle")plt.figure(figsize=(12,8))ax1 = plt.subplot(131)ax1.imshow(cycle_img, cmap = "gray")ax1.set_title("Original Test Img")ax2 = plt.subplot(132)ax2.imshow(cycle_img_corner, cmap = "gray")ax2.set_title("After Padding Img (Corner)")ax3 = plt.subplot(133)ax3.imshow(cycle_img_middle, cmap = "gray" )ax3.set_title("After Padding Img (Middle)")plt.show() 12345678910111213141516171819202122232425262728293031323334353637def showThreeImg(img1,img2,img3,img_name1 = None,img_name2 = None,img_name3 = None): plt.figure(figsize=(12,4)) ax1 = plt.subplot(131) ax1.set_title(img_name1) ax1.imshow(img1 , cmap = "gray") ax2 = plt.subplot(132) ax2.imshow(img2, cmap = "gray") ax2.set_title(img_name2) ax3 = plt.subplot(133) ax3.imshow(img3,cmap = "gray") ax3.set_title(img_name3) plt.show()mfilter_size = 8# 尝试方法零（不填充）# 通过自编写方法补零后再进行DFT加高斯低通滤波lpf_cycle_img_nopadding, manitude_cycle_img,mask_img = getGaussianFilterPassImg(cycle_img , "lpf" , mfilter_size)showThreeImg(lpf_cycle_img_nopadding,manitude_cycle_img,mask_img,"Original Img Without Padding","Manitude","Mask")# 尝试方法1 （预填充）## Cornerpad_cycle_img_corner = getPaddingImg(cycle_img,mfilter_size,"corner")lpf_cycle_img_padcorner_m1, manitude_cycle_img,mask_img = getGaussianFilterPassImg(pad_cycle_img_corner , "lpf" , mfilter_size)cut_lpf_cycle_img_padcorner_m1 = cutOriginalImg(lpf_cycle_img_padcorner_m1,cycle_img.shape,"corner")showThreeImg(cut_lpf_cycle_img_padcorner_m1,manitude_cycle_img,mask_img,"Corner Padding Method 1 (After Cut)","Manitude (No Cut)","Mask (No Cut)")## Middlepad_cycle_img_middle = getPaddingImg(cycle_img,mfilter_size,"middle")lpf_cycle_img_padmiddle_m1, manitude_cycle_img,mask_img = getGaussianFilterPassImg(pad_cycle_img_middle , "lpf" , mfilter_size)cut_lpf_cycle_img_padmiddle_m1 = cutOriginalImg(lpf_cycle_img_padmiddle_m1,cycle_img.shape,"middle")showThreeImg(cut_lpf_cycle_img_padmiddle_m1,manitude_cycle_img,mask_img,"Middle Padding Method 1 (After Cut)","Manitude (No Cut)","Mask (No Cut)")# 尝试方法2 （限定s自动零填充）## 实现了相同的效果lpf_cycle_img_padcorner_m2, manitude_cycle_img,mask_img = getGaussianFilterPassImg(cycle_img , "lpf" , mfilter_size , size = getPaddingSize(cycle_img,[mfilter_size,mfilter_size]))cut_lpf_cycle_img_padcorner_m2 = cutOriginalImg(lpf_cycle_img_padcorner_m2,cycle_img.shape,"corner")showThreeImg(cut_lpf_cycle_img_padcorner_m2,manitude_cycle_img,mask_img,"Corner Padding Method 2 (After Cut)","Manitude (No Cut)","Mask (No Cut)") 123456print(lpf_cycle_img_padmiddle_m1.shape)print(cut_lpf_cycle_img_padmiddle_m1.shape)print("Really Cut")print((cut_lpf_cycle_img_padcorner_m1==cut_lpf_cycle_img_padcorner_m2).all())print("Method 2 has the same effect as Method 1 and generalize the same img.") 12345(775, 775)(768, 768)Really CutTrueMethod 2 has the same effect as Method 1 and generalize the same img. 上述实验证明了 DFT 固有周期带来的一些影响，未进行零填充的 Original Img 由于固有周期亮色部分左右仍旧是亮色部分，所以使滤波器丧失了能力，在一些情况下我们希望避免这种固有周期带来的影响，因而才引入了零填充的方式。 正如课本 P163 以及 P164 所讲： 用 0 填充图像后，在周期序列的周围建立了一个平坦的边界。 从这个例子可以看到，错误地填充一幅图像会导致错误的结果。 当然，这种错误只存在于“ 边界” 如果滤波的目的仅是粗糙的视觉分析，那么有时可以跳过填充步骤。 根据两种方式 Padding 得到的最终裁减后图像的比较（All True），也证明了我使用的两种方法，Method 1：手动填充 0 金和 Method 2：利用numpy.fft.fft2()中自动 0 填充的方式确实都得到了相同的结果。]]></content>
+      <categories>
+        <category>数字图像处理</category>
+      </categories>
+      <tags>
+        <tag>数字图像处理</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[行为金融学——线性成长与指数成长]]></title>
+    <url>%2Fpost%2F684a8ddc.html</url>
+    <content type="text"><![CDATA[请描绘线性成长与指数成长的规律，你从中得到了什么启示用数学公式描述两种成长模式 线性成长狭义：一次线性 Q(t) = a_1 t + a_0广义：多项式线性 Q(t) = a_n t^n + a_{n-1} t^{n-1} + \cdots + a_1 t + a_0理解性描述：线性成长是一种可按差值描述“成长度”的成长模式，稍微数学解释一下应该是在某个阶差分为 0（则在上一阶是个等差变化），属于增长值“固定”的一种增长模式。 指数成长Q(t) = a r^t理解性描述：指数成长则是一种按比率描述“成长度”的成长模式，最基本的指数成长实际上就是我们高中所学的一个首项为正，公比为正的等比数列通项公式，这种成长模式是不能用差分来描述的，而需要比率描述，属于增长率“固定”的一张增长模式。 启示看了网上一段话，将两种增长模式与人的自身发展联系起来，他是这么说的： 线性成长可以让一个人变得优秀，但是要成为人中的佼佼者，让自己变得卓越，则一定是指数式的成长。指数式成长其实就是一种复利的作用，每一天的努力、坚持可以产生复利效应。 这段话有点结语结论的味道，话虽不错，但是没有给出一定程度的解释，我自己补充了一些。 首先，对于一个大多数活着的人来说，每天都有各式各样的“新”知识通过人的各种感官进入脑部中枢，清洗，筛选，分析，学习。所以对于这些大多数，成长是必然的，相较于前一天必然有数值的增大。 但要解释大多数中的那些小部分“枭雄”，我们不仅要看到增长，还要区分增长的模式。接纳新事物，学习新知识，若是做的好的话，在较长时间跨度内都能保持稳定的（某个阶恒差）的增长，这就体现了所谓的线性成长，而那小部分人，则可以调动起过去所有的资源（包括自己的基本能力和过去刚学习到的知识），全部用来转化吸收新的知识，类似于一种复利的计算，这种增长是可怕的，因为他每接收一分知识，就会在下一个瞬间加速（或者加大）下一份知识的吸收。]]></content>
+      <categories>
+        <category>行为金融学</category>
+      </categories>
+      <tags>
+        <tag>行为金融学</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[数字图像处理——频率域滤波初步]]></title>
     <url>%2Fpost%2Fd5cc0f91.html</url>
-    <content type="text"><![CDATA[频率域滤波傅里叶变换复习傅里叶级数、傅里叶变换（说实话这么久只知道个大概没有推过数学公式很丢人。。） 待补充 参考资料主要使用 OpenCV、Numpy 以及提供的对应方法。 图片来源为冈萨雷斯数字图像处理提供的图像。 OpenCV 关于 Fourier Transform 应用的示例 1234import numpy as npimport cv2import imageioimport matplotlib.pyplot as plt 1234567891011121314151617181920# 选取部分测试照片并显示img1 = cv2.imread('./DIP3E_CH07_Original_Images/Fig0723(a).tif',0)img2 = cv2.imread('./DIP3E_Original_Images_CH04/Fig0429(a)(blown_ic).tif',0)img3 = cv2.imread('./DIP3E_Original_Images_CH04/Fig0431(d)(blown_ic_crop).tif',0)img4 = cv2.imread('./DIP3E_Original_Images_CH04/Fig0438(a)(bld_600by600).tif',0)plt.figure(figsize=(8,8))ax1 = plt.subplot(221)ax1.set_title("Image1 Original Image")ax1.imshow(img1,cmap = "gray")ax2 = plt.subplot(222)ax2.set_title("Image2 Original Image")ax2.imshow(img2,cmap = "gray")ax3 = plt.subplot(223)ax3.set_title("Image3 Original Image")ax3.imshow(img3,cmap = "gray")ax4 = plt.subplot(224)ax4.set_title("Image4 Original Image")ax4.imshow(img4,cmap = "gray")plt.show() 原理概述 For a sinusoidal signal, $x(t) = A \sin(2 \pi ft)$, we can say $f$ is the frequency of signal, and if its frequency domain is taken, we can see a spike at $f$. If signal is sampled to form a discrete signal, we get the same frequency domain, but is periodic in the range $[- \pi, \pi]$ or $[0,2\pi]$ (or $[0,N]$ for N-point DFT). You can consider an image as a signal which is sampled in two directions. So taking fourier transform in both X and Y directions gives you the frequency representation of image 中文翻译：对于正弦信号$x(t) = A \sin(2 \pi ft)$，$f$是信号的频率，如果我们考虑它的频域，我们则可以再$f$处看到一个峰值，如果信号采样形成离散信号，我们得到了相同的频域，但是频域在 $[- \pi, \pi]$ 或者 $[0,2\pi]$ （又或者 $[0,N]$ 对于一个$N$点 DFT）。划重点！！你可以把一幅图像看作是在两个方向上采样的信号。在 X 和 Y 方向上进行傅里叶变换就得到了图像的频率表示。 使用 Numpy 实现 DFT首先使用 Numpy 提供的工具实现傅里叶变换，Numpy 提供了一个 FFT 包numpy.fft来做这些。 numpy.fft.fft2(a, s=None, axes=(-2, -1), norm=None) 提供了计算二维 DFT 的方法，参数描述： a : array_like 输入数组，可以为复数，灰度图。 s : sequence of ints, optional 决定输出数组的大小，如果输入图像的大小大于输入图像的大小，则在计算 FFT 之前用零填充输入图像。如果它小于输入图像，输入图像将被裁剪。 axes : sequence of ints, optional 没看懂，原始这么写的：Axes over which to compute the FFT. If not given, the last two axes are used. A repeated index in axes means the transform over that axis is performed multiple times. A one-element sequence means that a one-dimensional FFT is performed. norm : {None, &quot;ortho&quot;}, optional 1.10.0.新加入，归一化方式，默认为 None。 当获得了频域的结果，由于图像直流分量（DC component）在图片的左上角，如果要使其居中，则需要在两个方向上移动结果，Nuumpy 也提供了对应的函数。 numpy.fft.fftshift(x, axes=None) 提供了将零频率分量移到频谱的中心的方法，对于二维输入，交换第一和第三象限，第二和第四象限，参数描述： x : array_like 输入数组 axes : int or shape tuple, optional 要移动的轴。 默认值为 None 这样在频率变换后，我们也可找到幅度谱（magnitude spectrum） 使用 OpenCV 实现 DFTOpenCV 也提供的工具用于实现傅里叶变换，分别是cv2.dft()和cv2.idft()函数。返回有两个通道，第一个通道是结果的实部，第二个通道是结果的虚部。所以在计算其幅度的时候需要先手动转化一次。 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758## Magnitude spectrum## 使用Numpy实现DFT## 进行二维DFT变换f_img1 = np.fft.fft2(img1)## 对换象限fshift_img1 = np.fft.fftshift(f_img1)## 幅度谱 对数化？manitude_img1 = 20*np.log(np.abs(fshift_img1))## img2图像也做相同的处理f_img2 = np.fft.fft2(img2)fshift_img2 = np.fft.fftshift(f_img2)manitude_img2 = 20*np.log(np.abs(fshift_img2))## 使用OpenCV实现DFTf_img3 = cv2.dft(np.float32(img3), flags = cv2.DFT_COMPLEX_OUTPUT)fshift_img3 = np.fft.fftshift(f_img3)# manitude_img3 = 20*np.log(np.abs(fshift_img3))# 手动转化计算magnitudemanitude_img3 = 20*np.log(cv2.magnitude(fshift_img3[:,:,0],fshift_img3[:,:,1])+1e-15)## 使用OpenCV实现DFTf_img4 = cv2.dft(np.float32(img4), flags = cv2.DFT_COMPLEX_OUTPUT)fshift_img4 = np.fft.fftshift(f_img4)manitude_img4 = 20*np.log(cv2.magnitude(fshift_img4[:,:,0],fshift_img4[:,:,1]))print("显示各图像对应的频谱")print("其中图三的频谱有些奇怪")plt.figure(figsize=(16,16))ax1 = plt.subplot(421)ax1.set_title("Image1 Original Image")ax1.imshow(img1, cmap = "gray")ax2 = plt.subplot(422)ax2.set_title("Image1 Magnitude Spectrum")ax2.imshow(manitude_img1, cmap = "gray")ax3 = plt.subplot(423)ax3.set_title("Image2 Original Image")ax3.imshow(img2, cmap = "gray")ax4 = plt.subplot(424)ax4.set_title("Image2 Magnitude Spectrum")ax4.imshow(manitude_img2, cmap = "gray")ax5 = plt.subplot(425)ax5.set_title("Image3 Original Image")ax5.imshow(img3, cmap = "gray")ax6 = plt.subplot(426)ax6.set_title("Image3 Magnitude Spectrum")ax6.imshow(manitude_img3, cmap = "gray")ax7 = plt.subplot(427)ax7.set_title("Image4 Original Image")ax7.imshow(img4, cmap = "gray")ax8 = plt.subplot(428)ax8.set_title("Image4 Magnitude Spectrum")ax8.imshow(manitude_img4, cmap = "gray")plt.show() 显示各图像对应的频谱 1print(np.shape(fshift_img3)) 1(1026, 1026, 2) 根据运行结果不难验证 OpenCV 提供的 cv.dft()确实返回结果为表示实部和虚部的双通道，np 就没有这些顾虑，毕竟科学计算专门的库，复数支持很自然。 教程中也给了 Numpy 和 OpenCV 各自速度的解释，以及一些性能优化上的问题（比如 2 的整数此幂的时候速度会加快，自动填充等）： Note: As usual, OpenCV functions cv2.dft() and cv2.idft() are faster than Numpy counterparts. But Numpy functions are more user-friendly. For more details about performance issues, see below section. 这个 Note 就已经说明了 cv 的方法会更快一些，但是 numpy 的方法更加 friendly 性能测试针对前述的性能测试，以及教程上所给出的方法，可以利用 IPython 上的一个 magic command %timeit 用同一张图片 img2 来测试，下面是测试结果 测试使用 OpenCV 进行 DFT 变换 1%timeit cv2.dft(np.float32(img2), flags = cv2.DFT_COMPLEX_OUTPUT) 测试结果：10.3 ms ± 105 µs per loop (mean ± std. dev. of 7 runs, 100 loops each) 测试使用 Numpy 进行 DFT 变换 1%timeit np.fft.fft2(img2) 测试结果：100 ms ± 1.4 ms per loop (mean ± std. dev. of 7 runs, 10 loops each) 通过测试比较，竟然有 10x 的速度差距，还是很明显的。 频率域滤波高通滤波 HPF对于给定的图片对频域中心（低频部分）赋值为 0，通过这种掩膜方式（masking）过滤掉低频部分从而实现 HPF。 低通滤波 LPF同理，给定图片保留频率中心部分（低频部分）赋值为 1，剩下的通过掩膜过滤掉，从而实现 LPF。 1234567891011121314151617181920212223242526def getFilterPassImg(input_img : np.array, filter_type : str , filter_size = 20 ): assert filter_type in ("lpf","hpf") f_img = np.fft.fft2(input_img) shift_img = np.fft.fftshift(f_img) def getMask(input_shift_img : np.array , mask_type , mask_size): rows,cols = input_shift_img.shape crow,ccol = rows//2,cols//2 if(mask_type == "hpf"): mask = np.ones(input_shift_img.shape) mask[crow - mask_size:crow+mask_size, ccol-mask_size:ccol+mask_size] = 0.0 else : mask = np.zeros(input_shift_img.shape) mask[crow - mask_size:crow+mask_size, ccol-mask_size:ccol+mask_size] = 1.0 return mask mask_shift_img = getMask(shift_img, filter_type ,filter_size) new_shift_img = mask_shift_img*shift_img new_manitude_img = 20*np.log(np.abs(new_shift_img)) new_f_img = np.fft.ifftshift(new_shift_img) new_img = np.fft.ifft2(new_f_img) new_img = np.abs(new_img) return new_img,new_manitude_img 123456789101112131415161718192021222324hpf_img2,hpf_manitude_img2 = getFilterPassImg(img2,"hpf",30)lpf_img2,lpf_manitude_img2 = getFilterPassImg(img2,"lpf",30)plt.figure(figsize=(8,12))ax1 = plt.subplot(321)ax1.set_title("Original Image")ax1.imshow(img2, cmap = "gray")ax2 = plt.subplot(322)ax2.set_title("Magnitude Spectrum")ax2.imshow(manitude_img2, cmap = "gray")ax3 = plt.subplot(323)ax3.set_title("With HPF(Size=30x30)")ax3.imshow(hpf_img2,cmap = "gray")ax4 = plt.subplot(324)ax4.set_title("With HPF(Size=30x30) Magnitude Spectrum")ax4.imshow(hpf_manitude_img2,cmap = "gray")ax5 = plt.subplot(325)ax5.set_title("With LPF(Size=30x30)")ax5.imshow(lpf_img2,cmap = "gray")ax6 = plt.subplot(326)ax6.set_title("With LPF(Size=30x30) Magnitude Spectrum")ax6.imshow(lpf_manitude_img2,cmap = "gray")plt.show()]]></content>
+    <content type="text"><![CDATA[频率域滤波基础傅里叶变换复习傅里叶级数、傅里叶变换（说实话这么久只知道个大概没有推过数学公式很丢人。。） 待补充 参考资料主要使用 OpenCV、Numpy 以及提供的对应方法。 图片来源为冈萨雷斯数字图像处理提供的图像。 OpenCV 关于 Fourier Transform 应用的示例 1234import numpy as npimport cv2import imageioimport matplotlib.pyplot as plt 1234567891011121314151617181920# 选取部分测试照片并显示img1 = cv2.imread('./DIP3E_CH07_Original_Images/Fig0723(a).tif',0)img2 = cv2.imread('./DIP3E_Original_Images_CH04/Fig0429(a)(blown_ic).tif',0)img3 = cv2.imread('./DIP3E_Original_Images_CH04/Fig0431(d)(blown_ic_crop).tif',0)img4 = cv2.imread('./DIP3E_Original_Images_CH04/Fig0438(a)(bld_600by600).tif',0)plt.figure(figsize=(8,8))ax1 = plt.subplot(221)ax1.set_title("Image1 Original Image")ax1.imshow(img1,cmap = "gray")ax2 = plt.subplot(222)ax2.set_title("Image2 Original Image")ax2.imshow(img2,cmap = "gray")ax3 = plt.subplot(223)ax3.set_title("Image3 Original Image")ax3.imshow(img3,cmap = "gray")ax4 = plt.subplot(224)ax4.set_title("Image4 Original Image")ax4.imshow(img4,cmap = "gray")plt.show() 原理概述 For a sinusoidal signal, $x(t) = A \sin(2 \pi ft)$, we can say $f$ is the frequency of signal, and if its frequency domain is taken, we can see a spike at $f$. If signal is sampled to form a discrete signal, we get the same frequency domain, but is periodic in the range $[- \pi, \pi]$ or $[0,2\pi]$ (or $[0,N]$ for N-point DFT). You can consider an image as a signal which is sampled in two directions. So taking fourier transform in both X and Y directions gives you the frequency representation of image 中文翻译：对于正弦信号$x(t) = A \sin(2 \pi ft)$，$f$是信号的频率，如果我们考虑它的频域，我们则可以再$f$处看到一个峰值，如果信号采样形成离散信号，我们得到了相同的频域，但是频域在 $[- \pi, \pi]$ 或者 $[0,2\pi]$ （又或者 $[0,N]$ 对于一个$N$点 DFT）。划重点！！你可以把一幅图像看作是在两个方向上采样的信号。在 X 和 Y 方向上进行傅里叶变换就得到了图像的频率表示。 使用 Numpy 实现 DFT首先使用 Numpy 提供的工具实现傅里叶变换，Numpy 提供了一个 FFT 包numpy.fft来做这些。 numpy.fft.fft2(a, s=None, axes=(-2, -1), norm=None) 提供了计算二维 DFT 的方法，参数描述： a : array_like 输入数组，可以为复数，灰度图。 s : sequence of ints, optional 决定输出数组的大小，如果输入图像的大小大于输入图像的大小，则在计算 FFT 之前用零填充输入图像。如果它小于输入图像，输入图像将被裁剪。 axes : sequence of ints, optional 没看懂，原始这么写的：Axes over which to compute the FFT. If not given, the last two axes are used. A repeated index in axes means the transform over that axis is performed multiple times. A one-element sequence means that a one-dimensional FFT is performed. norm : {None, &quot;ortho&quot;}, optional 1.10.0.新加入，归一化方式，默认为 None。 当获得了频域的结果，由于图像直流分量（DC component）在图片的左上角，如果要使其居中，则需要在两个方向上移动结果，Nuumpy 也提供了对应的函数。 numpy.fft.fftshift(x, axes=None) 提供了将零频率分量移到频谱的中心的方法，对于二维输入，交换第一和第三象限，第二和第四象限，参数描述： x : array_like 输入数组 axes : int or shape tuple, optional 要移动的轴。 默认值为 None 这样在频率变换后，我们也可找到幅度谱（magnitude spectrum） 使用 OpenCV 实现 DFTOpenCV 也提供的工具用于实现傅里叶变换，分别是cv2.dft()和cv2.idft()函数。返回有两个通道，第一个通道是结果的实部，第二个通道是结果的虚部。所以在计算其幅度的时候需要先手动转化一次。 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758## Magnitude spectrum## 使用Numpy实现DFT## 进行二维DFT变换f_img1 = np.fft.fft2(img1)## 对换象限fshift_img1 = np.fft.fftshift(f_img1)## 幅度谱 对数化？manitude_img1 = 20*np.log(np.abs(fshift_img1))## img2图像也做相同的处理f_img2 = np.fft.fft2(img2)fshift_img2 = np.fft.fftshift(f_img2)manitude_img2 = 20*np.log(np.abs(fshift_img2))## 使用OpenCV实现DFTf_img3 = cv2.dft(np.float32(img3), flags = cv2.DFT_COMPLEX_OUTPUT)fshift_img3 = np.fft.fftshift(f_img3)# manitude_img3 = 20*np.log(np.abs(fshift_img3))# 手动转化计算magnitudemanitude_img3 = 20*np.log(cv2.magnitude(fshift_img3[:,:,0],fshift_img3[:,:,1])+1e-15)## 使用OpenCV实现DFTf_img4 = cv2.dft(np.float32(img4), flags = cv2.DFT_COMPLEX_OUTPUT)fshift_img4 = np.fft.fftshift(f_img4)manitude_img4 = 20*np.log(cv2.magnitude(fshift_img4[:,:,0],fshift_img4[:,:,1]))print("显示各图像对应的频谱")print("其中图三的频谱有些奇怪")plt.figure(figsize=(16,16))ax1 = plt.subplot(421)ax1.set_title("Image1 Original Image")ax1.imshow(img1, cmap = "gray")ax2 = plt.subplot(422)ax2.set_title("Image1 Magnitude Spectrum")ax2.imshow(manitude_img1, cmap = "gray")ax3 = plt.subplot(423)ax3.set_title("Image2 Original Image")ax3.imshow(img2, cmap = "gray")ax4 = plt.subplot(424)ax4.set_title("Image2 Magnitude Spectrum")ax4.imshow(manitude_img2, cmap = "gray")ax5 = plt.subplot(425)ax5.set_title("Image3 Original Image")ax5.imshow(img3, cmap = "gray")ax6 = plt.subplot(426)ax6.set_title("Image3 Magnitude Spectrum")ax6.imshow(manitude_img3, cmap = "gray")ax7 = plt.subplot(427)ax7.set_title("Image4 Original Image")ax7.imshow(img4, cmap = "gray")ax8 = plt.subplot(428)ax8.set_title("Image4 Magnitude Spectrum")ax8.imshow(manitude_img4, cmap = "gray")plt.show() 显示各图像对应的频谱 1print(np.shape(fshift_img3)) 1(1026, 1026, 2) 根据运行结果不难验证 OpenCV 提供的 cv.dft()确实返回结果为表示实部和虚部的双通道，np 就没有这些顾虑，毕竟科学计算专门的库，复数支持很自然。 教程中也给了 Numpy 和 OpenCV 各自速度的解释，以及一些性能优化上的问题（比如 2 的整数此幂的时候速度会加快，自动填充等）： Note: As usual, OpenCV functions cv2.dft() and cv2.idft() are faster than Numpy counterparts. But Numpy functions are more user-friendly. For more details about performance issues, see below section. 这个 Note 就已经说明了 cv 的方法会更快一些，但是 numpy 的方法更加 friendly 性能测试针对前述的性能测试，以及教程上所给出的方法，可以利用 IPython 上的一个 magic command %timeit 用同一张图片 img2 来测试，下面是测试结果 测试使用 OpenCV 进行 DFT 变换 1%timeit cv2.dft(np.float32(img2), flags = cv2.DFT_COMPLEX_OUTPUT) 测试结果：10.3 ms ± 105 µs per loop (mean ± std. dev. of 7 runs, 100 loops each) 测试使用 Numpy 进行 DFT 变换 1%timeit np.fft.fft2(img2) 测试结果：100 ms ± 1.4 ms per loop (mean ± std. dev. of 7 runs, 10 loops each) 通过测试比较，竟然有 10x 的速度差距，还是很明显的。 频率域滤波高通滤波 HPF对于给定的图片对频域中心（低频部分）赋值为 0，通过这种掩膜方式（masking）过滤掉低频部分从而实现 HPF。 低通滤波 LPF同理，给定图片保留频率中心部分（低频部分）赋值为 1，剩下的通过掩膜过滤掉，从而实现 LPF。 频率域滤波高通滤波 HPF对于给定的图片对频域中心（低频部分）赋值为 0，通过这种掩膜方式（masking）过滤掉低频部分从而实现 HPF。 低通滤波 LPF同理，给定图片保留频率中心部分（低频部分）赋值为 1，剩下的通过掩膜过滤掉，从而实现 LPF。 123456789101112131415161718192021222324def getFilterPassImg(input_img : np.array, filter_type : str , filter_size = 20): assert filter_type in ("lpf","hpf") f_img = np.fft.fft2(input_img) shift_img = np.fft.fftshift(f_img) def getMask(input_shift_img : np.array , mask_type , mask_size): rows,cols = input_shift_img.shape crow,ccol = rows//2,cols//2 if(mask_type == "hpf"): mask = np.ones(input_shift_img.shape) mask[crow - mask_size:crow+mask_size, ccol-mask_size:ccol+mask_size] = 0.0 else : mask = np.zeros(input_shift_img.shape) mask[crow - mask_size:crow+mask_size, ccol-mask_size:ccol+mask_size] = 1.0 return mask mask_shift_img = getMask(shift_img, filter_type ,filter_size) new_shift_img = mask_shift_img*shift_img new_manitude_img = 20*np.log(np.abs(new_shift_img)+eps) new_f_img = np.fft.ifftshift(new_shift_img) new_img = np.fft.ifft2(new_f_img) new_img = np.abs(new_img) return new_img,new_manitude_img 123456789101112131415161718192021222324hpf_img2,hpf_manitude_img2 = getFilterPassImg(img2,"hpf",30)lpf_img2,lpf_manitude_img2 = getFilterPassImg(img2,"lpf",30)plt.figure(figsize=(8,12))ax1 = plt.subplot(321)ax1.set_title("Original Image")ax1.imshow(img2, cmap = "gray")ax2 = plt.subplot(322)ax2.set_title("Magnitude Spectrum")ax2.imshow(manitude_img2, cmap = "gray")ax3 = plt.subplot(323)ax3.set_title("With HPF(Size=30x30)")ax3.imshow(hpf_img2,cmap = "gray")ax4 = plt.subplot(324)ax4.set_title("With HPF(Size=30x30) Magnitude Spectrum")ax4.imshow(hpf_manitude_img2,cmap = "gray")ax5 = plt.subplot(325)ax5.set_title("With LPF(Size=30x30)")ax5.imshow(lpf_img2,cmap = "gray")ax6 = plt.subplot(326)ax6.set_title("With LPF(Size=30x30) Magnitude Spectrum")ax6.imshow(lpf_manitude_img2,cmap = "gray")plt.show()]]></content>
       <categories>
         <category>数字图像处理</category>
       </categories>
@@ -13,7 +35,7 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[行为金融学——一些问题]]></title>
+    <title><![CDATA[行为金融学——博弈论一些经典实验]]></title>
     <url>%2Fpost%2F73209085.html</url>
     <content type="text"><![CDATA[实验类型 实验描述 现实举例 经济人模型的均衡解 实验结果 社会偏好 囚徒博弈实验 两个实验对象进行囚徒博弈分别有合作和不合作两个决策，双方博弈的收益支付矩阵为合作不合作合作 H，H S，T 不合作 T，S L，L 其中，H ＞ L，T ＞ H，L ＞ S 负外部性产品比如环境污染、噪音等的生产 双方均选择不合作 50%的人选择合作，而且互相交流机制能有效增强合作的频率 互惠偏好 最后通牒实验 双人或多人分别扮演提议者和响应者角色对一财富 S 进行分配方案的选择博弈，提议者分配 x 个筹码给对方，如果响应者拒绝则双方受益为 0，如果响应者接受，则提议者获得 S-x，响应者获得 x 易腐烂商品的垄断定价 提议者分配 x ＝ ε，其中 ε 为任意小的一个正数，响应者接受该分配额 平均分配额在 0.3S 和 0.5S 之间，当 x ＜ 0.2S 时大约一半的人会拒绝 互惠偏好、利他偏好、差异厌恶偏好 独裁者实验 在最后通牒博弈基础上取消了响应者的拒绝权利，即独裁者决定对 S 财富的分配，若独裁者分配 x 个筹码给对方，双方收益即决定为(S-x，x) 慈善的捐赠行为 独裁者分配给接收者 x ＝ 0 平均来看独裁者会分配给接收者 x ＝ 0.2S 利他偏好 第三方惩罚实验 在独裁者基础上加入了一个局外者即第三方，该第三方可以对独裁者的分配行为进行带有成本的惩罚 对不公现象的社会谴责和批评 独裁者照样分配给接受者 x ＝ 0，而第三方不会选择惩罚 当独裁者给接收者的分配额小于一定数目时，第三方会对独裁者进行惩罚而且分配数目越小惩罚越大 利他偏好 公共品博弈实验 拥有初始禀赋 y 的 n 个实验对象同时对一个公共项目进行投资，投资额为 gi(0≤gi≤y)，此时每人收益为 πi ＝ y－gi ＋ mG，其中 G 为各实验对象的投资总额，m 为公共品投资回报率 团队合作，小型社会中的公共产出，共有资源的过度使用等 每个实验对象投资额为 gi ＝ 0 在一次性匿名实验中人们会投资 50%的初始禀赋，如果实验次数增加，则投资额为越来越小，交流机制和惩罚机制可以有效提升合作水平 互惠偏好，利他偏好，差异厌恶偏好 信任博弈实验 双人分别扮演委托人和代理人角色并拥有初始禀赋 S，委托人可以从初始禀赋 S 中选择投资 y(0≤y≤S)给代理人，代理人自动获得 3y 后可以选择返还一个 x(0≤x≤3y)给委托人。此时委托人收益为 S－y+x，而代理人收益为 S+3y－x 没有法律合同的买卖行为 委托人选择投资 y ＝ 0；代理人选择返还 x ＝ 0. 平均上来看实验者会选择 y ＝ 0.5S 投资给代理人，而代理人会选择返还一个略小于 0.5S 的值给委托人，而且 x 与 y 成正比 互惠偏好，利他偏好 礼物交换实验 雇主提供给一个工资 w 给雇员，雇员选择一个工作努力程度 e(1≤e≤10)，并付出成本 c(e)，此时雇员工作产出效益为 10e，雇主收益为 10e-w，雇员收益为 w-c(e) 雇主和雇员的上下关系 雇员选择最小努力程度即 e ＝ 0，而雇主提供最小工资 雇员的努力程度和雇主的工资水平成正比。 互惠偏好，利他偏好]]></content>
       <categories>
@@ -248,8 +270,8 @@
         <category>分布式系统</category>
       </categories>
       <tags>
-        <tag>论文</tag>
         <tag>操作系统</tag>
+        <tag>论文</tag>
         <tag>分布式系统</tag>
       </tags>
   </entry>
@@ -275,8 +297,8 @@
         <category>分布式系统</category>
       </categories>
       <tags>
-        <tag>论文</tag>
         <tag>操作系统</tag>
+        <tag>论文</tag>
         <tag>分布式系统</tag>
       </tags>
   </entry>
@@ -345,8 +367,8 @@
         <category>分布式系统</category>
       </categories>
       <tags>
-        <tag>论文</tag>
         <tag>操作系统</tag>
+        <tag>论文</tag>
         <tag>分布式系统</tag>
         <tag>GFS</tag>
       </tags>
@@ -360,8 +382,8 @@
         <category>分布式系统</category>
       </categories>
       <tags>
-        <tag>论文</tag>
         <tag>操作系统</tag>
+        <tag>论文</tag>
         <tag>分布式系统</tag>
         <tag>MapReduce</tag>
       </tags>
@@ -375,8 +397,8 @@
         <category>分布式系统</category>
       </categories>
       <tags>
-        <tag>论文</tag>
         <tag>操作系统</tag>
+        <tag>论文</tag>
         <tag>分布式系统</tag>
         <tag>状态机</tag>
       </tags>
@@ -390,8 +412,8 @@
         <category>分布式系统</category>
       </categories>
       <tags>
-        <tag>论文</tag>
         <tag>操作系统</tag>
+        <tag>论文</tag>
         <tag>分布式系统</tag>
       </tags>
   </entry>
@@ -3170,8 +3192,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>二分</tag>
         <tag>2018暑假集训</tag>
+        <tag>二分</tag>
         <tag>POJ</tag>
       </tags>
   </entry>
@@ -3202,8 +3224,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>二分</tag>
         <tag>2018暑假集训</tag>
+        <tag>二分</tag>
         <tag>水题</tag>
         <tag>CodeForces</tag>
       </tags>
@@ -3219,8 +3241,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>二分</tag>
         <tag>2018暑假集训</tag>
+        <tag>二分</tag>
         <tag>CodeForces</tag>
       </tags>
   </entry>
@@ -3321,8 +3343,8 @@
         <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
-        <tag>2017HDU多校</tag>
         <tag>规律</tag>
+        <tag>2017HDU多校</tag>
       </tags>
   </entry>
   <entry>

@@ -379,6 +379,403 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/d140a694.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/d140a694.html" itemprop="url">数字图像处理——高斯滤波器与零填充避免DFT固有周期性影响</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-23T21:25:53+08:00">
+                2019-10-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数字图像处理/" itemprop="url" rel="index">
+                    <span itemprop="name">数字图像处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,541
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  8
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="高斯滤波"><a href="#高斯滤波" class="headerlink" title="高斯滤波"></a>高斯滤波</h1><h2 id="高斯高通滤波-GaussianHPF"><a href="#高斯高通滤波-GaussianHPF" class="headerlink" title="高斯高通滤波 GaussianHPF"></a>高斯高通滤波 GaussianHPF</h2><p>频率域高斯高通滤波公式如下，注意公式$D$和$D_0$的区别</p>
+<script type="math/tex; mode=display">H(u,v) = 1-e^{\dfrac{-D^2(u,v)}{2D_0^2}}</script><h2 id="高斯低通滤波-GaussianLPF"><a href="#高斯低通滤波-GaussianLPF" class="headerlink" title="高斯低通滤波 GaussianLPF"></a>高斯低通滤波 GaussianLPF</h2><p>频率域高斯低通滤波公式如下</p>
+<script type="math/tex; mode=display">H(u,v) = e^{\dfrac{-D^2(u,v)}{2D_0^2}}</script><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getGaussianFilterPassImg</span><span class="params">(input_img : np.array, filter_type : str , filter_size = <span class="number">20</span> , size = None)</span>:</span></span><br><span class="line">    <span class="keyword">assert</span> filter_type <span class="keyword">in</span> (<span class="string">"lpf"</span>,<span class="string">"hpf"</span>)</span><br><span class="line">    f_img = np.fft.fft2(input_img , s = size)</span><br><span class="line">    shift_img = np.fft.fftshift(f_img)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">getGaussianMask</span><span class="params">(mask_size)</span>:</span></span><br><span class="line">        rows,cols = f_img.shape</span><br><span class="line">        crow = rows/<span class="number">2</span></span><br><span class="line">        ccol = cols/<span class="number">2</span></span><br><span class="line">        mask = np.zeros(f_img.shape)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(rows):</span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> range(cols):</span><br><span class="line">                dis = sqrt((i-crow)**<span class="number">2</span> + (j-ccol)**<span class="number">2</span>)</span><br><span class="line">                <span class="keyword">if</span> filter_type == <span class="string">"hpf"</span>:</span><br><span class="line">                    mask[i,j] = <span class="number">1</span>-np.exp(-(dis**<span class="number">2</span>) / (<span class="number">2</span>*(filter_size**<span class="number">2</span>)))</span><br><span class="line">                <span class="keyword">elif</span> filter_type == <span class="string">"lpf"</span>:</span><br><span class="line">                    mask[i,j] = np.exp(-(dis**<span class="number">2</span>)/(<span class="number">2</span>*(filter_size**<span class="number">2</span>)))</span><br><span class="line">        <span class="keyword">return</span> mask</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    mask_shift_img = getGaussianMask(filter_size)</span><br><span class="line">    new_shift_img = mask_shift_img*shift_img</span><br><span class="line">    new_manitude_img = <span class="number">20</span>*np.log(np.abs(new_shift_img+eps))</span><br><span class="line"></span><br><span class="line">    new_f_img = np.fft.ifftshift(new_shift_img)</span><br><span class="line">    new_img = np.fft.ifft2(new_f_img)</span><br><span class="line">    new_img = np.abs(new_img)</span><br><span class="line">    <span class="keyword">return</span> new_img,new_manitude_img,mask_shift_img</span><br></pre></td></tr></table></figure>
+<h1 id="DFT-固有周期影响"><a href="#DFT-固有周期影响" class="headerlink" title="DFT 固有周期影响"></a>DFT 固有周期影响</h1><p>实现方法，由于 numpy.fft.fft2 方法参数中可以指定输出图像的大小，官方描述如下：</p>
+<blockquote>
+<p>s : sequence of ints, optional</p>
+<p><em>Shape (length of each transformed axis) of the output (s[0] refers to axis 0, s[1] to axis 1, etc.). This corresponds to n for fft(x, n). Along each axis, if the given shape is smaller than that of the input, the input is cropped. If it is larger, the input is padded with zeros. if s is not given, the shape of the input along the axes specified by axes is used.</em></p>
+</blockquote>
+<p>该参数默认为 DFT 变换后大小为原图大小，若指定输出大小大于原图大小，则进行 0 填充，我们可以利用该参数实现我们的测试。</p>
+<h2 id="不经裁剪"><a href="#不经裁剪" class="headerlink" title="不经裁剪"></a>不经裁剪</h2><p>直接以 s 的默认值（None）调用 numpy.fft.fft2 实际上就是进行的非 0 填充</p>
+<p>调用我之前写的方法，实现如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lpf_cycle_img, manitude_cycle_img,mask_img = getGaussianFilterPassImg(cycle_img , <span class="string">"lpf"</span> , <span class="number">5</span> )</span><br></pre></td></tr></table></figure>
+<p>或者如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lpf_cycle_img, manitude_cycle_img,mask_img = getGaussianFilterPassImg(cycle_img , <span class="string">"lpf"</span> , <span class="number">5</span> ,size = <span class="keyword">None</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="进行裁剪"><a href="#进行裁剪" class="headerlink" title="进行裁剪"></a>进行裁剪</h2><p>根据教材 P157 解释以及 P159、P163 页，二维零填充避免缠绕错误的结论与一维相同，令$f(x)$和$h(x)$分别是大小为$A \times B$和$C \times D$像素的图像阵列。循环卷积中的缠绕错误可以通过下面函数进行零填充来避免，方法如下：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+f(x,y)  & , &  0 \le x \le A-1 和  0 \le y\le B-1 \\
+0 & , & A \le x \le P 或 B \le y \le Q
+\end{aligned}
+\right.</script><p>和</p>
+<script type="math/tex; mode=display">
+
+\begin{aligned}
+h(x,y) & , & 0 \le x \le C-1 和 0 \le y\le D-1 \\
+0 & , & C \le x \le P 或 D \le y \le Q
+\end{aligned}
+\right. \\\$\$
+
+其中，
+
+$$ P \ge A+C -1</script><p>和</p>
+<script type="math/tex; mode=display">Q \ge B+D-1</script><p>那么实现方法就有两种：</p>
+<ol>
+<li>通过其他方法进行补 0 后调用 s 为 None 的 DFT</li>
+<li>通过调整 s 为(P,Q)大小调用 DFT</li>
+</ol>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/d140a694.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/684a8ddc.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/684a8ddc.html" itemprop="url">行为金融学——线性成长与指数成长</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-21T12:48:57+08:00">
+                2019-10-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/行为金融学/" itemprop="url" rel="index">
+                    <span itemprop="name">行为金融学</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  639
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  2
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="请描绘线性成长与指数成长的规律，你从中得到了什么启示"><a href="#请描绘线性成长与指数成长的规律，你从中得到了什么启示" class="headerlink" title="请描绘线性成长与指数成长的规律，你从中得到了什么启示"></a>请描绘线性成长与指数成长的规律，你从中得到了什么启示</h1><p>用数学公式描述两种成长模式</p>
+<h2 id="线性成长"><a href="#线性成长" class="headerlink" title="线性成长"></a>线性成长</h2><p>狭义：一次线性</p>
+<script type="math/tex; mode=display">Q(t) = a_1 t + a_0</script><p>广义：多项式线性</p>
+<script type="math/tex; mode=display">Q(t) = a_n t^n + a_{n-1} t^{n-1} + \cdots + a_1 t + a_0</script><p>理解性描述：线性成长是一种可按差值描述“成长度”的成长模式，稍微数学解释一下应该是在某个阶差分为 0（则在上一阶是个等差变化），属于增长<strong>值</strong>“固定”的一种增长模式。</p>
+<h2 id="指数成长"><a href="#指数成长" class="headerlink" title="指数成长"></a>指数成长</h2><script type="math/tex; mode=display">Q(t) = a r^t</script><p>理解性描述：指数成长则是一种按比率描述“成长度”的成长模式，最基本的指数成长实际上就是我们高中所学的一个首项为正，公比为正的等比数列通项公式，这种成长模式是不能用差分来描述的，而需要比率描述，属于增长<strong>率</strong>“固定”的一张增长模式。</p>
+<h2 id="启示"><a href="#启示" class="headerlink" title="启示"></a>启示</h2><p>看了网上一段话，将两种增长模式与人的自身发展联系起来，他是这么说的：</p>
+<blockquote>
+<p><em>线性成长可以让一个人变得优秀，但是要成为人中的佼佼者，让自己变得卓越，则一定是指数式的成长。指数式成长其实就是一种复利的作用，每一天的努力、坚持可以产生复利效应。</em></p>
+</blockquote>
+<p>这段话有点结语结论的味道，话虽不错，但是没有给出一定程度的解释，我自己补充了一些。</p>
+<p>首先，对于一个大多数活着的人来说，每天都有各式各样的“新”知识通过人的各种感官进入脑部中枢，清洗，筛选，分析，学习。所以对于这些大多数，成长是必然的，相较于前一天必然有数值的增大。</p>
+<p>但要解释大多数中的那些小部分“枭雄”，我们不仅要看到增长，还要区分增长的模式。接纳新事物，学习新知识，若是做的好的话，在较长时间跨度内都能保持稳定的（某个阶恒差）的增长，这就体现了所谓的<strong>线性成长</strong>，而那小部分人，则可以调动起过去所有的资源（包括自己的基本能力和过去刚学习到的知识），全部用来转化吸收新的知识，类似于一种<strong>复利</strong>的计算，这种增长是可怕的，因为他每接收一分知识，就会在下一个瞬间加速（或者加大）下一份知识的吸收。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/d5cc0f91.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -464,7 +861,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1,976
+                  2,070
                 </span>
               
 
@@ -502,7 +899,7 @@
 
       
         
-          <h1 id="频率域滤波"><a href="#频率域滤波" class="headerlink" title="频率域滤波"></a>频率域滤波</h1><h2 id="傅里叶变换"><a href="#傅里叶变换" class="headerlink" title="傅里叶变换"></a>傅里叶变换</h2><p>复习傅里叶级数、傅里叶变换（说实话这么久只知道个大概没有推过数学公式很丢人。。）</p>
+          <h1 id="频率域滤波基础"><a href="#频率域滤波基础" class="headerlink" title="频率域滤波基础"></a>频率域滤波基础</h1><h2 id="傅里叶变换"><a href="#傅里叶变换" class="headerlink" title="傅里叶变换"></a>傅里叶变换</h2><p>复习傅里叶级数、傅里叶变换（说实话这么久只知道个大概没有推过数学公式很丢人。。）</p>
 <p>待补充</p>
 <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>主要使用 OpenCV、Numpy 以及提供的对应方法。</p>
 <p>图片来源为冈萨雷斯数字图像处理提供的图像。</p>
@@ -582,7 +979,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/post/73209085.html" itemprop="url">行为金融学——一些问题</a></h1>
+                <a class="post-title-link" href="/post/73209085.html" itemprop="url">行为金融学——博弈论一些经典实验</a></h1>
         
 
         <div class="post-meta">
@@ -982,388 +1379,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/efa709aa.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/efa709aa.html" itemprop="url">机器学习——决策树实现（Python版）</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-11T13:37:33+08:00">
-                2019-10-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/机器学习/" itemprop="url" rel="index">
-                    <span itemprop="name">机器学习</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  6,441
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  30
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>完成 ID3、C4.5、CART 决策树构建，阈值限制，连续属性划分，剪枝，缺省值处理。</p>
-<h1 id="什么是决策树"><a href="#什么是决策树" class="headerlink" title="什么是决策树"></a>什么是决策树</h1><p><strong>直观理解</strong>：通过自顶向下的方式，构造一棵数据不断被纯化的树，可用来分类、回归，有监督学习的一种。</p>
-<p><strong>构造过程</strong>：递归构造</p>
-<p><strong>核心问题</strong>：划分的选择（决策依据）</p>
-<p>来自<a href="https://shuwoom.com/?p=1452" target="_blank" rel="noopener">SGUWOOM 的博客</a><br>`</p>
-<blockquote>
-<p>决策树学习采用的是自顶向下的递归方法，其基本思想是以信息熵为度量构造一颗熵值下降最快的树，到叶子节点处，熵值为 $0$。其具有可读性、分类速度快的优点，是一种有监督学习。最早提及决策树思想的是 Quinlan 在 1986 年提出的 ID3 算法和 1993 年提出的 C4.5 算法，以及 Breiman 等人在 1984 年提出的 CART 算法</p>
-</blockquote>
-<p>随着划分不断进行，决策树的分支节点应趋向于属于同一类别，样本集合属于同一类别的程度用“纯度”（purity）表示。</p>
-<h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><h2 id="信息熵"><a href="#信息熵" class="headerlink" title="信息熵"></a>信息熵</h2><p>“信息熵”（Information entropy），衡量样本集合纯度最常用的一种方法，公式：</p>
-<script type="math/tex; mode=display">Ent(D) = - \sum_{k=1}^{ |y|} p_k \log_2 p_k</script><p>其中$p_k$ 为第$k$ 类样本占该样本集的比例。</p>
-<p><del>甚至可以联想热学熵</del>，熵值越低应该越好（纯度越高），从公式易知熵值范围应是$[ 0 , \log_2 |D|]$。</p>
-<h2 id="信息增益"><a href="#信息增益" class="headerlink" title="信息增益"></a>信息增益</h2><p>对于该集合的一种划分（实践上我们尝试通过对某一列属性是否相同，即该属性上的等价关系，对集合进行划分），我们会产生一个<strong>商集</strong>。</p>
-<p>如西瓜书上所假设，离散属性$a$有$V$个可能的取值${ a^1,a^2, \cdots , a^n }$，用该属性对样本集进行划分，会产生$V$个分支节点，属性值与分支节点对应关系为$a^v \rightarrow D^v$，对这$V$个分支节点分别计算信息熵并赋予权重$\frac{ |D^v| }{ | D | }$，与原样本集合的信息熵作比较我们就可以得出<strong>信息增益</strong>，公式：</p>
-<script type="math/tex; mode=display">Gain(D,a) = Ent(D) - \sum_{v=1}^{V} \frac{ |D^v| }{ | D | } Ent(D^v)</script><p>ID3 决策树学习算法采用<strong>信息增益</strong>为准则决定划分属性。</p>
-<h2 id="信息增益率"><a href="#信息增益率" class="headerlink" title="信息增益率"></a>信息增益率</h2><p>对于信息增益，我们很容易发现其偏好属性值可取值较多的属性有偏好（因为分后各分支节点样本都趋近于完全纯和），在一些数据集中会丧失泛化能力。</p>
-<p>信息增益率在信息增益的基础上，增加了“固有值”（Intrinsic Value）的概念，可取值越多的属性，其固有值 IV 常常会越大，计算增益率的公式为：</p>
-<script type="math/tex; mode=display">Gain\_radio(D,a) = \frac{Gain(D,a)}{IV(a)}</script><script type="math/tex; mode=display">IV(a) = - \sum_{v=1}^{V} \frac{ |D^v| }{ | D | } \log_2 \frac{ |D^v| }{ | D | }</script><p>C4.5 决策树算法采用<strong>信息增益率</strong>来选择最优的划分属性，不过由于增益率准则对可取数目较少的属性有所偏好<del>反过来了</del>，因此，C4.5 算法并不是直接选择增益率最大的候选划分属性，而是使用了一个启发式算法，<strong>先从候选划分属性中找出信息增益高于平均水平的属性，再从中选择增益率最高的</strong>。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/efa709aa.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/44da4894.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/44da4894.html" itemprop="url">WordPress——Hexo导出xml并迁移</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-09T01:55:06+08:00">
-                2019-10-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/WordPress/" itemprop="url" rel="index">
-                    <span itemprop="name">WordPress</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  261
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="Hexo-导出-xml"><a href="#Hexo-导出-xml" class="headerlink" title="Hexo 导出 xml"></a>Hexo 导出 xml</h1><h2 id="安装-feed-插件"><a href="#安装-feed-插件" class="headerlink" title="安装 feed 插件"></a>安装 feed 插件</h2><p>安装插件<code>hexo-generator-feed</code>。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-generator-feed</span><br></pre></td></tr></table></figure>
-<h2 id="使用插件"><a href="#使用插件" class="headerlink" title="使用插件"></a>使用插件</h2><p>在<code>_config.yml</code>文件添加以下内容</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">plugins:</span></span><br><span class="line">    <span class="string">hexo-generator-feed</span></span><br><span class="line"><span class="comment">#Feed Atom</span></span><br><span class="line"><span class="attr">feed:</span></span><br><span class="line">    <span class="comment">#type: atom</span></span><br><span class="line">    <span class="comment">#path: atom.xml</span></span><br><span class="line">    <span class="comment">#limit: 20</span></span><br><span class="line">    <span class="comment">#改为RSS2.0标准</span></span><br><span class="line"><span class="attr">    type:</span> <span class="string">rss2</span></span><br><span class="line"><span class="attr">    path:</span> <span class="string">rss2.xml</span></span><br><span class="line"><span class="attr">    limit:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">    hub:</span></span><br></pre></td></tr></table></figure>
-<p><code>hexo g</code>完成后从<code>public</code>文件夹中找对应的文件<code>rss2.xml</code>。这个 xml 就可以用来做订阅或者导入 WP 了。</p>
-<h1 id="WordPress-导入-xml"><a href="#WordPress-导入-xml" class="headerlink" title="WordPress 导入 xml"></a>WordPress 导入 xml</h1><p>登录到 WP 仪表盘（控制台），选择工具-&gt;导入-&gt;WordPress-&gt;现在安装-&gt;运行导入器</p>
-<h1 id="解决单次导入限制-2M-问题"><a href="#解决单次导入限制-2M-问题" class="headerlink" title="解决单次导入限制 2M 问题"></a>解决单次导入限制 2M 问题</h1><p>根据官方解释，可能是 php 和 nginx 两方面原因</p>
-<ol>
-<li><p>php<br><a href="https://blog.csdn.net/Mike_Roger/article/details/80711299" target="_blank" rel="noopener">解除 wordpress 上传最大限制</a></p>
-<p>访问 vps，找到 WP 根目录（很多 wp-xxx.php 的那个），编写文件<code>.user.ini</code>，写入如下内容：</p>
-<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">; Memory and file sizes</span></span><br><span class="line"> memory_limit = 64M</span><br><span class="line"> upload_max_filesize = 5M</span><br><span class="line"> post_max_size = 5M</span><br><span class="line"> file_uploads = On</span><br><span class="line"> max_execution_time = 300</span><br><span class="line"> <span class="comment">; End Upload Restrictions</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>nginx</p>
-<p>打开 nginx 服务的配置文件<code>nginx.conf</code>,http 块中加入<code>client_max_body_size xxm</code>, <code>xx</code>根据需求改动。</p>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1418,7 +1433,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">277</span>
+                  <span class="site-state-item-count">279</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1575,7 +1590,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">299.4k</span>
+    <span title="Site words total count">301.7k</span>
   
 </div>
 
@@ -1817,7 +1832,7 @@
         }
       });
     </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -1825,4 +1840,4 @@
 
   
 
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
