@@ -379,6 +379,544 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/b1db88f.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/b1db88f.html" itemprop="url">CCFADL105——大数据系统实践：从MapReduce到融合计算</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-08T13:08:21+08:00">
+                2019-09-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/讲座/" itemprop="url" rel="index">
+                    <span itemprop="name">讲座</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,815
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="大数据系统实践：从-MapReduce-到融合计算"><a href="#大数据系统实践：从-MapReduce-到融合计算" class="headerlink" title="大数据系统实践：从 MapReduce 到融合计算"></a>大数据系统实践：从 MapReduce 到融合计算</h1><p>主讲人：郭振宇（蚂蚁金服分布式计算总监）</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-001.jpg" alt="FirstPage"></p>
+<h1 id="融合计算模型"><a href="#融合计算模型" class="headerlink" title="融合计算模型"></a>融合计算模型</h1><h2 id="观察-趋势"><a href="#观察-趋势" class="headerlink" title="观察/趋势"></a>观察/趋势</h2><p>举一个蚂蚁金融一个常见的应用场景：扫码支付</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-002.jpg" alt="ScanPay"></p>
+<p>审视机器学习（或者大数据分析）产品三个层面的发展：</p>
+<ul>
+<li><strong>计算范畴</strong>：统计-&gt;规则（专家会议沉淀）-&gt;图-&gt;AI-&gt;复杂决策</li>
+<li><strong>计算复杂度</strong>：静态线性工作流-&gt;静态图工作流-&gt;动态工作流-&gt;多流-&gt;多流融合</li>
+<li><strong>质量</strong>：时效、安全/隐私、数据可靠性。</li>
+</ul>
+<p>实际上真正的 Machine Learning Code 只是很小的一部分，图源：《Hidden Technology Google》</p>
+<p>而应用要落地，关键的问题在：</p>
+<ul>
+<li><p>学习/开发/调试的成本</p>
+<ul>
+<li>对接很多独立的引擎/框架</li>
+<li>Ad-hoc/碎片化的集成/联调（多机联调）</li>
+</ul>
+</li>
+<li><p>运行时质量</p>
+<ul>
+<li>破碎的上下游衔接<ul>
+<li>形象点说，就是：上面跑数据不确定，下面就可能接受到不对的结果，</li>
+<li>具体在：<strong>接口</strong>/<strong>时效性</strong>/<strong>一致性</strong>/<strong>故障恢复</strong>/<strong>中间状态管理</strong></li>
+<li>对于中间状态管理的解释：生产者（上游）通过 HDFS 存放中间状态（产品），消费者（下游）不知道什么时候可以删除而不产生危害，导致存储过载、溢出。</li>
+</ul>
+</li>
+<li>盲目调度，存在很多优化的空间<ul>
+<li><strong>资源</strong>/<strong>数据</strong>/<strong>计算</strong>/<strong>服务</strong></li>
+</ul>
+</li>
+<li>冗余/低效的数据传输/拷贝/计算等</li>
+<li>安全隐私</li>
+<li>…</li>
+</ul>
+</li>
+<li><p>运维效率</p>
+<ul>
+<li>多引擎/平台异构运维</li>
+</ul>
+</li>
+</ul>
+<h2 id="胶水"><a href="#胶水" class="headerlink" title="胶水"></a>胶水</h2><p>平台化，将不同工作胶合在一起，常通过 GUIWorkFlow 的形式展示出来，一些公司已经有一些相关的工作。</p>
+<p>e.g. Azure ML Workflow， Google Kubeflow</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>包容性好</li>
+<li>易用</li>
+</ul>
+</li>
+<li><p>局限性</p>
+<ul>
+<li>组件质量/接口参差不齐-&gt;接口难做</li>
+<li>组件对于胶水来说是黑盒-&gt;跨接口优化难做</li>
+</ul>
+</li>
+</ul>
+<p>想法：<strong>胶水</strong>-&gt;<strong>统一的分布式支撑</strong></p>
+<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-005.jpg" alt="Fusion Computing"></p>
+<p><strong>融合计算</strong>：本地编程、自动云化、渐进融合</p>
+<p><strong>核心挑战 1</strong>：统一的通用编程抽象/执行模型是什么</p>
+<p>前面的讲座中已经多次提到了抽象的重要性，抽象就意味着：</p>
+<ul>
+<li>抽取面对不同分布式计算模式下的共同需求</li>
+<li>甚至混合模式下的需求。</li>
+</ul>
+<p><strong>核心挑战 2</strong>：如何解决通用和特定之间的固有矛盾</p>
+<p>通用性和领域专用性常看做是不可调和的矛盾。</p>
+<ul>
+<li>一般情况下，<strong>越通用，解决特定场景</strong>能力越弱。</li>
+<li>抽象是一种通用性的体现，而不同计算模式的不同需求/特定优化则体现了领域专用性</li>
+</ul>
+<h2 id="融合计算编程抽象"><a href="#融合计算编程抽象" class="headerlink" title="融合计算编程抽象"></a>融合计算编程抽象</h2><p>为何需要分布式计算？以 MapReduce 中使用的字符计数问题为例：</p>
+<ul>
+<li>对于单机：存储空间不够、计算能力不构、</li>
+<li>分布式计算目标：提供远超的单机的存储、计算能力，包装成单机的<strong>假象</strong>使上层没有意识到改变</li>
+</ul>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-010.jpg" alt="ComputationChanging"></p>
+<h3 id="状态切分"><a href="#状态切分" class="headerlink" title="状态切分"></a>状态切分</h3><p>MapReduce 的启发，状态切分成 slice，两个子方案，一是不需要代码改动的方案：remote memory，file system。二是需要代码改动的：KV，database</p>
+<h3 id="避免数据共享冲突的方法？调整架构"><a href="#避免数据共享冲突的方法？调整架构" class="headerlink" title="避免数据共享冲突的方法？调整架构"></a>避免数据共享冲突的方法？调整架构</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>控制流架构（冯·诺依曼）</th>
+<th>数据流架构</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>执行由<strong>控制流</strong>驱动</td>
+<td>执行由<strong>数据流</strong>驱动</td>
+</tr>
+<tr>
+<td>控制流导致状态访问冲突</td>
+<td>数据是无消息/无冲突问题</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>改写代码是必要的。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/b1db88f.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/72aa152d.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/72aa152d.html" itemprop="url">分布式系统学习——阶段性总结2</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-06T12:48:54+08:00">
+                2019-09-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/" itemprop="url" rel="index">
+                    <span itemprop="name">操作系统</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/分布式系统/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,478
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  9
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="感受"><a href="#感受" class="headerlink" title="感受"></a>感受</h1><p>这篇阶段性总结写于乘高铁从长沙前往北京参加讲习会议的路途中，主要目的是回顾一下已经阅读完成的四篇分布式系统（Distributed System）相关论文的重点概念，相关实践（虽然很小），以及自我感受和后面的想法。</p>
+<h1 id="Paper3——The-Google-File-System"><a href="#Paper3——The-Google-File-System" class="headerlink" title="Paper3——The Google File System"></a>Paper3——The Google File System</h1><p>关键词：<strong>集群存储</strong>、<strong>分布式存储</strong>、<strong>高可用性</strong>、<strong>一致性原则</strong></p>
+<p>回忆梳理重点词：<strong>单 master</strong>、<strong>chunk 和 chunkserver</strong>、<strong>追加 append</strong>、</p>
+<p>坦白讲这篇文章是四篇中读的时间最长的一篇文章，概念性比较强导致我不能通过代码或者公式的方式去直观的理解。</p>
+<p>这篇总结主要写我印象深刻的点，更多的细节还要回去翻自己的翻译修改版本。</p>
+<h2 id="Design-Motivation"><a href="#Design-Motivation" class="headerlink" title="Design Motivation"></a>Design Motivation</h2><p>应用需求/系统发展带来的一些对应的设计模式观念上的转变。</p>
+<ul>
+<li>对于计算机集群，<strong>故障是常态</strong></li>
+<li>存储超大量</li>
+<li>追加（append）而非覆盖（overwrite）</li>
+<li>尽可能并行化操作</li>
+<li>带宽重要性大于时延，要考虑网络带宽和负载</li>
+</ul>
+<h2 id="Architecture"><a href="#Architecture" class="headerlink" title="Architecture"></a>Architecture</h2><h3 id="GFS-chunkserver"><a href="#GFS-chunkserver" class="headerlink" title="GFS chunkserver"></a>GFS chunkserver</h3><p>在 GFS chunkserver 中，文件都是分成固定大小的 chunk（64MB）来存储的，每个 chunk 通过全局唯一的 64 位的 chunk handle 来标识。handle 由 master 分配。多台备份（GFS 中默认是 3 台）。</p>
+<h3 id="GFS-master"><a href="#GFS-master" class="headerlink" title="GFS master"></a>GFS master</h3><p>GFS master 管理所有的元数据信息（metadata），包括 namespaces，访问控制信息，文件到 chunk 的映射信息，以及 chunk 的地址信息（即 chunk 存放在哪台 GFS chunkserver 上）。</p>
+<h3 id="GFS-client"><a href="#GFS-client" class="headerlink" title="GFS client"></a>GFS client</h3><p>GFS client 是 GFS 应用端使用的 API 接口，client 和 GFS master 交互来获取元数据信息，但是所有和数据相关的信息都是直接和 GFS chunkserver 来交互的。</p>
+<h3 id="Application"><a href="#Application" class="headerlink" title="Application"></a>Application</h3><p>Application 为使用 gfs 的应用，应用通过 GFS client 与 GFS 系统打交道，系统有一些必要的性质（以适应在 GFS 上的高效利用）。</p>
+<h2 id="Strategies"><a href="#Strategies" class="headerlink" title="Strategies"></a>Strategies</h2><h3 id="Single-Master"><a href="#Single-Master" class="headerlink" title="Single Master"></a>Single Master</h3><p>单 Master 很容易导致 Master 成为性能瓶颈和单点故障。对于前者，GFS 的解决策略是 client 对 master 返回的请求 chunk 位置具备短暂记忆性（60s），下放部分职能给 chunkserver（包括指派 private 来保证数据的一致性）。</p>
+<p>对于后者，才有心跳线备份 Master 是可行的。</p>
+<h3 id="Consistency-Model"><a href="#Consistency-Model" class="headerlink" title="Consistency Model"></a>Consistency Model</h3><p>GFS 论文介绍中写明了：采用了一种简化的一致性模型，可以高效服务于所需应用。</p>
+<p>模型中的一致的（consistent）和定义的（defined）概念如下：</p>
+<ul>
+<li>consistent：所有的客户端都能看到一样的数据，不管它们从哪个副本读取。</li>
+<li>defined：当一个文件区域发生操作后，client 可以看到刚刚操作和所有数据，那么说这次操作是 defined。</li>
+</ul>
+<p>可以确定 defined 要求更强，在实际应用中会有不同情况出现，在原论文中用表格的形式直观化了。</p>
+<p>我的感受：<strong>GFS 的保证是成功操作一次</strong>，由于所适应的应用以追加（append）为主。这样的策略和一致性模型保证操作会出现但是非幂等的冗余操作会导致结果错误，GFS 通过要求在应用层面上加过滤（filter）或者唯一话来解决这一问题。一言以蔽之：“宁滥勿缺”。</p>
+<h3 id="Master-Operation-Namespace-Management-and-Locking"><a href="#Master-Operation-Namespace-Management-and-Locking" class="headerlink" title="Master Operation-Namespace Management and Locking"></a>Master Operation-Namespace Management and Locking</h3><ul>
+<li>快照对本层和对应的快照层都加写锁。</li>
+<li>写操作对所写文件加写锁而对文件所在目录加读锁。</li>
+</ul>
+<p>这样的分配策略既保证了一定程度上的并发许可（比如同一目录下的多个文件写），也保证了快照操作和写文件操作在相同目录下的串行化从而避免冲突。</p>
+<h3 id="Master-Operation-Replica-Placement"><a href="#Master-Operation-Replica-Placement" class="headerlink" title="Master Operation-Replica Placement"></a>Master Operation-Replica Placement</h3><p>对于 Creation , Rebalancing 策略都是相近的。</p>
+<ul>
+<li>利用率低于平均水平的磁盘优先，平均化磁盘利用。</li>
+<li>低频读写的 chunkserver 优先，平均化网络带宽利用，避免单点拥塞。</li>
+<li>跨机架，防止整架挂掉。</li>
+</ul>
+<p>对于 Re-replication，则要考虑对于备份更紧迫的情况：</p>
+<ul>
+<li>丢失两个副本的 chunk 比丢失一个副本的 chunk 的复制认为优先级高</li>
+<li>文件正在使用比文件已被删除的 chunk 的优先级高</li>
+<li>阻塞了 client 进程的 chunk 的优先级高</li>
+</ul>
+<p>但是实现中如何让 master 高效查询 client 阻塞进程，以及副本数量（涉及到计数），我觉得也是个算法上可以研究的地方。</p>
+<h2 id="读后感受"><a href="#读后感受" class="headerlink" title="读后感受"></a>读后感受</h2><p>GFS 的介绍应该是四篇文章中目前读的最慢的一篇了，太多概念都是通过文字方式讲述的，需要一点点在大脑里构建 GFS 中 Master，chunk，chunkserver 的关系。而且并列的概念关系我也没抓住重点（可能这也是我读论文的不足之处），所以这篇总结主要写了一些几个构成和我理解整理以后他们的工作策略，还请老师能指点我以后该怎样读这种文字多，新概念多的论文。</p>
+<h1 id="Paper4——MapReduce-Simplified-Data-Processing-on-Large-Clusters"><a href="#Paper4——MapReduce-Simplified-Data-Processing-on-Large-Clusters" class="headerlink" title="Paper4——MapReduce: Simplified Data Processing on Large Clusters"></a>Paper4——MapReduce: Simplified Data Processing on Large Clusters</h1><p>关键词：<strong>Map 函数</strong>、<strong>Reduce 函数</strong></p>
+<p>啥是 MapReduce？——一种编程模型，适于处理大规模数据集</p>
+<p>为啥叫 MapReduce？——核心就是两个函数，分别叫 Map、Reduce</p>
+<p>如果前述 GFS 系统实现了文件，那 MapReduce 则是利用了这个文件系统和其他底层实现，规划出一种编程范型，提供了对外便捷的接口，可以让程序员忽略分布式算法/并行/容错/数据分发的细节，而达到分布式计算的目的。</p>
+<p>下面回顾一下核心 Model：</p>
+<h2 id="Model"><a href="#Model" class="headerlink" title="Model"></a>Model</h2><p><strong>Map</strong>，是由用户编写的，取一个输入对，并且产生一系列中间的键值对。MapReduce 库将那些具有相同的中间键 I 的中间值聚集在一起，然后将它们传递给 Reduce 函数。</p>
+<p><strong>Reduce</strong>，同样是由用户编写的，接收一个中间键 I 和该键对应的一系列的中间值。Reduce 函数通过将这些值合并来组成一个可能更小的集合（值的集合）。通常每个 Reduce 函数只产生 0 个或 1 个输出值。Reduce 函数一般通过一个迭代器（via an iterator）来获取中间值，从而在中间值的数目远远大于内存容量时，我们也能够处理。</p>
+<h3 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h3><ul>
+<li>Distributed Grep（分布式查找）：Map 函数获取匹配提供的模式的行，Reduce 函数只是简单地将这些中间数据拷贝到输出。</li>
+<li>Count of URL Access Frequency（计算 URL 访问频率）：Map 函数处理 web 请求的日志，并且输出<url, 1="">。Reduce 函数将拥有相同 URL 的 value 相加，得到<url, total="" count="">对</url,></url,></li>
+<li>Reverse Web-Link Graph：Map 函数输出<target, source="">对，其中 source 所在的 page 都有连向 target 这个 URL 的链接。Reduce 函数将给定 target 的所有的 source URL 连接起来，输出<target, list(source)="">对</target,></target,></li>
+<li>Term-Vector per Host：一个 term vector 表示一系列<word, frequency="">的键值对，word 表示一篇或者一系列文章中出现的比较重要的单词，frequency 表示它们出现的次数。Map 函数对于每篇输入的文章输出<hostname, term="" vector="">键值对（其中 hostname 是从文章所在的 URL 中抽取出来的）Reduce 函数获取给定 host 的 term vectors。它将这些 term vectors 累加起来，丢弃非频繁出现的 term，并产生一个最终的<hostname, term="" vector="">对。</hostname,></hostname,></word,></li>
+<li>Inverted Index：Map 函数对每篇文章进行处理，并输出一系列的<word, document="" id="">对。Reduce 函数接收给定 word 的所有键值对，对相应的 document ID 进行排序并且输出<word, list="">对。所有输出对的集合构成了一个简单的倒排索引。用了 MapReduce 模型，对单词位置的追踪就变得非常简单了。</word,></word,></li>
+<li>Distributed Sort：Map 函数从每个 record 中抽取出 key，产生<key, record="">键值对。Reduce 函数只是简单地将所有对输出。这个计算模型依赖于 Section 4.1 中描述的划分技巧以及 Section 4.2 中描述的排序特性。</key,></li>
+</ul>
+<h2 id="Implement"><a href="#Implement" class="headerlink" title="Implement"></a>Implement</h2><p>实现的细节不再赘述，在翻译文档中翻译过切理解了，M 份 Map 操作的 Worker 和 R 份 Reduce 操作的 Worker。</p>
+<h3 id="Fault-Tolerance"><a href="#Fault-Tolerance" class="headerlink" title="Fault Tolerance"></a>Fault Tolerance</h3><ul>
+<li>Worker Failure：不在响应 master 而被 master 标记为 failure 状态后，其任务会被分摊至其他 wordker。对于 M 任务，需要重做前面已经完成的（因为 Map 产生的中间结果本地存储，而此时“本地”是 failure 的），而对于 R 任务，继续完成即可。</li>
+<li>Master Failure：我们可以很快地根据最新的快照来重新启动一个 master task。但是，因为我们只有一个 master，因此故障的概率比较低。所以，在我们的实现中如果 master 出现了故障就只是简单地停止 MapReduce 操作。用户可以检测到这种情况，并且如果他们需要的话可以重新开始一次 MapReduce 操作。</li>
+<li>Semantics in the Presence of Failures：针对非确定性执行，是解集空间中的一个。</li>
+</ul>
+<h2 id="Refinements"><a href="#Refinements" class="headerlink" title="Refinements"></a>Refinements</h2><p>此外还有一些有用的扩展：</p>
+<ul>
+<li>Hash 之前的划分操作</li>
+<li>划分产生文件的顺序性</li>
+<li>Map 和 Reduce 之间加 Combiner 操作合并简化（C 和 R 操作很像，只是输出到哪有了差别）</li>
+<li>跳过故障点</li>
+<li>Status 动态显示</li>
+</ul>
+<h2 id="读后感受-1"><a href="#读后感受-1" class="headerlink" title="读后感受"></a>读后感受</h2><p>很神奇的一种编程范式，相当于做了一个介于应用和分布式环境中间的接口，按照这种编程范式去编程便可以充分利用下面的分布式资源而忽略其具体实现细节。</p>
+<p>实现方案理解起来也是非常巧妙，给人的感觉更像是从大的集合中抽出键值相同的小集合，再做合并。</p>
+<p>希望后续可以读到更多关于分布式有趣的想法！</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/86266eca.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1017,429 +1555,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/799b8bb4.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/799b8bb4.html" itemprop="url">数论学习——同余式、幂与费马小定理</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-01T19:49:02+08:00">
-                2019-09-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数学/" itemprop="url" rel="index">
-                    <span itemprop="name">数学</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数学/数论/" itemprop="url" rel="index">
-                    <span itemprop="name">数论</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  301
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="费马小定理"><a href="#费马小定理" class="headerlink" title="费马小定理"></a>费马小定理</h1><blockquote>
-<p>设$p$是素数，$a$是任意整数且$a$，则</p>
-<script type="math/tex; mode=display">a^{p-1} \not\equiv 1 \mod p</script></blockquote>
-<h2 id="证明过程"><a href="#证明过程" class="headerlink" title="证明过程"></a>证明过程</h2><p>尝试证明一般性的费马小定理。首先证明如下断言。</p>
-<blockquote>
-<p><strong>引理 9.2</strong> 设$p$是素数，$a$是任何整数且$a \not\equiv 0 \mod p$，则数$a,2a,3a, \cdots , (p-1)a \mod p$与数$1,2,3, \cdots ,(p-1)$相同，尽管他们的次序并不相同。</p>
-</blockquote>
-<p><strong>证明</strong> 反证法，假设存在两个模$p$同余的$ka,ja$，且两个数本身是不同的，做差后在这个假设下反推，若同余，而$p$为素数，素数整除乘积，必定整除乘积的一个因数，而我们从要求中已经得到$p \nmid a$，而又$\vert k-j \vert &lt; p-1$，得到$k-j = 0$，而这与我们假设两者本身不同相违背，得证。</p>
-<p>利用该引理，容易完成费马小定理的证明，引理说明数列$a,2a,3a, \cdots , (p-1)a \mod p$与数列$1,2,3, \cdots ,(p-1) \mod p$相同，构造：</p>
-<script type="math/tex; mode=display">a \cdot (2a) \cdot (3a) \cdots ((p-1)a) \equiv 1 \cdot 2 \cdot 3 \cdots (p-1) \mod p</script><p>从左边提出$p-1$个$a$得：</p>
-<script type="math/tex; mode=display">a^{p-1} \cdot (p-1)!  \equiv  (p-1)!  \mod p</script><p>根据同余式两边消的性质（参加另一篇《同余式、线性同余定理》拓展性质 2），我们便可以得到。</p>
-<script type="math/tex; mode=display">a^{p-1} \equiv 1 \mod p</script>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/ebe560d9.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/ebe560d9.html" itemprop="url">数论学习——同余式、线性同余定理</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-01T19:31:23+08:00">
-                2019-09-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数学/" itemprop="url" rel="index">
-                    <span itemprop="name">数学</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数学/数论/" itemprop="url" rel="index">
-                    <span itemprop="name">数论</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,512
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  6
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>今天写密码学实验报告放射密码一题的时候，看到线性同余式$c = ma+ b \mod n$，感觉到自己对于同余方程的掌握一点也不牢固，所以又拿出来《数论概论》重新回顾了一下，后续会写一个数论专题，本章主要讨论线性同余式定理。</p>
-<h1 id="同余式"><a href="#同余式" class="headerlink" title="同余式"></a>同余式</h1><p>对于同余式我们已经很熟悉了，如果$m$整除$a-b$我们就说$a$与$b$模$m$同余。</p>
-<p>记为</p>
-<script type="math/tex; mode=display">a \equiv b \mod m</script><p>同余式满足一些我们熟悉的通常的等式的性质，例如：$a_1 \equiv b_1 \mod m$，且，$a_2 \equiv b_2 \mod m$，那么我们可以得到$a_1 \pm b_1 \equiv a_2 \pm b_2 \mod m$（类似等式两边相加），以及$a_1 a_2 \equiv b_1 b_2 \mod m$（类似等式两边相乘），但是需要指出的是，用数除同余式并不总是可能的，这个问题详见拓展性质 2。</p>
-<p>数$m$叫做同余式的<strong>模</strong>，我们也很容易得知，每个整数必然与 0~m-1 的一个数模$m$同余。</p>
-<p>一些同余式的拓展性质</p>
-<ol>
-<li><p>同余式 $ab \equiv (a \mod m)(b \mod m) \mod m$ 恒成立。</p>
-<p>证明：已知$a \equiv (a \mod m) \mod m$，$b \equiv (b \mod m) \mod m$，所以由相乘的性质德政。</p>
-</li>
-<li><p>当满足$\gcd (c,m) = 1$，则同余式$a c \equiv b c \mod m$可从同余式两边消去$c$。</p>
-<p>证明：对于同余式$a c \equiv b c \mod m$成立，则有等式$ac-bc = km, k \in Z$，即$(a-b)c = km$成立，我们容易观察得等式左边为$c$的倍数，所以等式右侧也应为$c$的倍数，而我们又知道$\gcd (c,m) = 1$，也即$c \nmid m$，所以$c \mid k$，不妨设$k’c = k$，所以我们可以得到$a - b = k’ m$，故有，$a \equiv b \mod m$，得证。</p>
-</li>
-</ol>
-<h1 id="同余方程"><a href="#同余方程" class="headerlink" title="同余方程"></a>同余方程</h1><p>我们的任务是解同余式$ax \equiv c \mod m$，包括判断其有没有解，有几个解，各个解是什么。</p>
-<p>当然，可以应用同余式的性质解决一些简单的带未知数的同余式，如$4x \equiv 3 \mod 19$，我们两边乘以$5$得出，$20x \equiv 15 \mod 19$，应用性质 1，可得到$x \equiv 15 \mod 19$，代入可检测我们的答案。事实上，该式也只有这一个解。</p>
-<p>我们接下来回归到一般形的求解过程中。对于同余式：</p>
-<script type="math/tex; mode=display">ax \equiv c \mod m</script><p>我们需要求整数$x$使得$m \mid ax-c$，如果可以求得整数$y$使得$ax-c = my$，则数$m$ 就整除数$ax-c$，移项后我们看到$ax \equiv c \mod m$有解当且仅当线性方程$ax-my =c$有解（等价推导），这个问题很像线性方程和最大公因数里讨论的问题（拓展欧几里得算法）。</p>
-<p>设$g = \gcd(a,m)$，我们观察到，形如$ax-my$的每个数都是$g$的倍数。因此：</p>
-<ol>
-<li>$g \nmid c$，则$ax-my = c$无解，从而由等价性，原同余方程也没有解。</li>
-<li><p>$g \mid c$，则由线性方程定理我们可以知道</p>
-<script type="math/tex; mode=display">au+mv = g</script><p>总是有解的，不妨假设通过拓展欧几里得算法求得$u = u_0$，$v = v_0$，则有：</p>
-<script type="math/tex; mode=display">a u_0 + m v_0 = g</script><p>我们可以与原同余方程等价的线性方程的一个解。</p>
-<script type="math/tex; mode=display">a \frac{c u_0}{g} + m \frac{c v_0}{g} = c</script><p>即我们得到了$x_0 \equiv \frac{c u_0}{g} \mod m$式原同余方程的一个解，那其他解呢？假设$x_1$是同余式的其他解，则$a x_1 \equiv a x_0 \mod m$，那么$m \mid a x_1 - a x_0$，这蕴含：</p>
-<script type="math/tex; mode=display">\frac{m}{g} \mid \frac{a(x_1 -x_0)}{g}</script><p>我们已知$\frac{m}{g}$与$\frac{a}{g}$没有大于 1 的公因数（除以最大公因数），从而$\frac{m}{g} \mid x_1 - x_0$。</p>
-<script type="math/tex; mode=display">x_1 = x_0 + k \bullet \frac{m}{g}</script><p>但是相差为$m$的倍数的两个解在模数意义下被认为是相同的，所以原同余方程恰好有$g$个不同的解，即</p>
-<script type="math/tex; mode=display">x_i = x_0 + i \bullet \frac{m}{g}, i = 0,1,2 \cdots , g-1</script><p>子证明，假设有$g+1$个不同解，则由鸽笼定理知，必存在$i_p \equiv i_q \mod g$，则$x_p - x_q = (p-q) \bullet \frac{m}{g} = k’g \bullet \frac{m}{g} = k’m$，那么这两个解是相同的，矛盾。</p>
-</li>
-</ol>
-<p>这就完成了对同余式$ax \equiv c \mod m$的分析，结果为如下定理</p>
-<h1 id="线性同余定理"><a href="#线性同余定理" class="headerlink" title="线性同余定理"></a>线性同余定理</h1><blockquote>
-<p><strong>设$a,c,m \in Z$,$m \geq 1$，且设$g = \gcd (a,m)$.</strong></p>
-<p>(a)如果$g \nmid c$，则同余式$ax \equiv c \mod m$没有解。</p>
-<p>(b)如果$g \mid c$，则同余式子$ax \equiv c \mod m$恰好有$g$个不同的解，先利用拓展欧几里得算法求得线性方程</p>
-<script type="math/tex; mode=display">au+mv = g</script><p>的一个解$(u_0,v_0)$，则$x_0 = \frac{c u_0}{g}$是同余方程的一个解，完全集由</p>
-<script type="math/tex; mode=display">x = x_0 + k \bullet \frac{m}{g}  \mod m , k = 0,1,2 \cdots , g-1</script></blockquote>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/ebe560d9.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/56/">56</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/57/">57</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1489,7 +1609,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">279</span>
+                  <span class="site-state-item-count">281</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1646,7 +1766,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">301.7k</span>
+    <span title="Site words total count">305.6k</span>
   
 </div>
 
