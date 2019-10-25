@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+<meta name="baidu-site-verification" content="ZzhwBFUe1V" />
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/0f81ff2f.js","daovoice")
+  daovoice('init', {
+      app_id: "61c4e5db"
+    });
+  daovoice('update');
+  </script>
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="讲座,CCFADL," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="Eddy的个人博客" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="大数据系统实践：从 MapReduce 到融合计算主讲人：郭振宇（蚂蚁金服分布式计算总监）  融合计算模型观察/趋势举一个蚂蚁金融一个常见的应用场景：扫码支付  审视机器学习（或者大数据分析）产品三个层面的发展：  计算范畴：统计-&amp;gt;规则（专家会议沉淀）-&amp;gt;图-&amp;gt;AI-&amp;gt;复杂决策 计算复杂度：静态线性工作流-&amp;gt;静态图工作流-&amp;gt;动态工作流-&amp;gt;多流-&amp;gt;多">
+<meta name="keywords" content="讲座,CCFADL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CCFADL105——大数据系统实践：从MapReduce到融合计算">
+<meta property="og:url" content="http://www.edwardzcn98yx.com/post/b1db88f.html">
+<meta property="og:site_name" content="Eddy的个人博客">
+<meta property="og:description" content="大数据系统实践：从 MapReduce 到融合计算主讲人：郭振宇（蚂蚁金服分布式计算总监）  融合计算模型观察/趋势举一个蚂蚁金融一个常见的应用场景：扫码支付  审视机器学习（或者大数据分析）产品三个层面的发展：  计算范畴：统计-&amp;gt;规则（专家会议沉淀）-&amp;gt;图-&amp;gt;AI-&amp;gt;复杂决策 计算复杂度：静态线性工作流-&amp;gt;静态图工作流-&amp;gt;动态工作流-&amp;gt;多流-&amp;gt;多">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-001.jpg">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-002.jpg">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-005.jpg">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-010.jpg">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-016.jpg">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-017.jpg">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-018.jpg">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-021.jpg">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-034.jpg">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-038.jpg">
+<meta property="og:updated_time" content="2019-09-16T06:09:36.510Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CCFADL105——大数据系统实践：从MapReduce到融合计算">
+<meta name="twitter:description" content="大数据系统实践：从 MapReduce 到融合计算主讲人：郭振宇（蚂蚁金服分布式计算总监）  融合计算模型观察/趋势举一个蚂蚁金融一个常见的应用场景：扫码支付  审视机器学习（或者大数据分析）产品三个层面的发展：  计算范畴：统计-&amp;gt;规则（专家会议沉淀）-&amp;gt;图-&amp;gt;AI-&amp;gt;复杂决策 计算复杂度：静态线性工作流-&amp;gt;静态图工作流-&amp;gt;动态工作流-&amp;gt;多流-&amp;gt;多">
+<meta name="twitter:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-001.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'I0P7TBILS9',
+      apiKey: '1cbd304cdb7292372541bc8f3d868016',
+      indexName: 'EddyBlog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.edwardzcn98yx.com/post/b1db88f.html"/>
+
+
+
+
+
+  <title>CCFADL105——大数据系统实践：从MapReduce到融合计算 | Eddy的个人博客</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/Edwardzcn" class="github-corner" aria-label="View source on Github">
+    <svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true">
+    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+    <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+    <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path>
+    </svg>
+    </a>
+    <style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Eddy的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">相知相遇，即是幸运</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            我的首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于我
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            目录总览
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-reading">
+          <a href="/categories/阅读" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            阅读
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-travelling">
+          <a href="/categories/旅行" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            旅行
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-programming">
+          <a href="/categories/编程" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            编程
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-essay">
+          <a href="/categories/随笔" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            随笔
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            时间线
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-schedule">
+          <a href="/schedule/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />
+            
+            日程表
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/b1db88f.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">CCFADL105——大数据系统实践：从MapReduce到融合计算</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-08T13:08:21+08:00">
+                2019-09-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/讲座/" itemprop="url" rel="index">
+                    <span itemprop="name">讲座</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,815
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="大数据系统实践：从-MapReduce-到融合计算"><a href="#大数据系统实践：从-MapReduce-到融合计算" class="headerlink" title="大数据系统实践：从 MapReduce 到融合计算"></a>大数据系统实践：从 MapReduce 到融合计算</h1><p>主讲人：郭振宇（蚂蚁金服分布式计算总监）</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-001.jpg" alt="FirstPage"></p>
+<h1 id="融合计算模型"><a href="#融合计算模型" class="headerlink" title="融合计算模型"></a>融合计算模型</h1><h2 id="观察-趋势"><a href="#观察-趋势" class="headerlink" title="观察/趋势"></a>观察/趋势</h2><p>举一个蚂蚁金融一个常见的应用场景：扫码支付</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-002.jpg" alt="ScanPay"></p>
+<p>审视机器学习（或者大数据分析）产品三个层面的发展：</p>
+<ul>
+<li><strong>计算范畴</strong>：统计-&gt;规则（专家会议沉淀）-&gt;图-&gt;AI-&gt;复杂决策</li>
+<li><strong>计算复杂度</strong>：静态线性工作流-&gt;静态图工作流-&gt;动态工作流-&gt;多流-&gt;多流融合</li>
+<li><strong>质量</strong>：时效、安全/隐私、数据可靠性。</li>
+</ul>
+<p>实际上真正的 Machine Learning Code 只是很小的一部分，图源：《Hidden Technology Google》</p>
+<p>而应用要落地，关键的问题在：</p>
+<ul>
+<li><p>学习/开发/调试的成本</p>
+<ul>
+<li>对接很多独立的引擎/框架</li>
+<li>Ad-hoc/碎片化的集成/联调（多机联调）</li>
+</ul>
+</li>
+<li><p>运行时质量</p>
+<ul>
+<li>破碎的上下游衔接<ul>
+<li>形象点说，就是：上面跑数据不确定，下面就可能接受到不对的结果，</li>
+<li>具体在：<strong>接口</strong>/<strong>时效性</strong>/<strong>一致性</strong>/<strong>故障恢复</strong>/<strong>中间状态管理</strong></li>
+<li>对于中间状态管理的解释：生产者（上游）通过 HDFS 存放中间状态（产品），消费者（下游）不知道什么时候可以删除而不产生危害，导致存储过载、溢出。</li>
+</ul>
+</li>
+<li>盲目调度，存在很多优化的空间<ul>
+<li><strong>资源</strong>/<strong>数据</strong>/<strong>计算</strong>/<strong>服务</strong></li>
+</ul>
+</li>
+<li>冗余/低效的数据传输/拷贝/计算等</li>
+<li>安全隐私</li>
+<li>…</li>
+</ul>
+</li>
+<li><p>运维效率</p>
+<ul>
+<li>多引擎/平台异构运维</li>
+</ul>
+</li>
+</ul>
+<h2 id="胶水"><a href="#胶水" class="headerlink" title="胶水"></a>胶水</h2><p>平台化，将不同工作胶合在一起，常通过 GUIWorkFlow 的形式展示出来，一些公司已经有一些相关的工作。</p>
+<p>e.g. Azure ML Workflow， Google Kubeflow</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>包容性好</li>
+<li>易用</li>
+</ul>
+</li>
+<li><p>局限性</p>
+<ul>
+<li>组件质量/接口参差不齐-&gt;接口难做</li>
+<li>组件对于胶水来说是黑盒-&gt;跨接口优化难做</li>
+</ul>
+</li>
+</ul>
+<p>想法：<strong>胶水</strong>-&gt;<strong>统一的分布式支撑</strong></p>
+<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-005.jpg" alt="Fusion Computing"></p>
+<p><strong>融合计算</strong>：本地编程、自动云化、渐进融合</p>
+<p><strong>核心挑战 1</strong>：统一的通用编程抽象/执行模型是什么</p>
+<p>前面的讲座中已经多次提到了抽象的重要性，抽象就意味着：</p>
+<ul>
+<li>抽取面对不同分布式计算模式下的共同需求</li>
+<li>甚至混合模式下的需求。</li>
+</ul>
+<p><strong>核心挑战 2</strong>：如何解决通用和特定之间的固有矛盾</p>
+<p>通用性和领域专用性常看做是不可调和的矛盾。</p>
+<ul>
+<li>一般情况下，<strong>越通用，解决特定场景</strong>能力越弱。</li>
+<li>抽象是一种通用性的体现，而不同计算模式的不同需求/特定优化则体现了领域专用性</li>
+</ul>
+<h2 id="融合计算编程抽象"><a href="#融合计算编程抽象" class="headerlink" title="融合计算编程抽象"></a>融合计算编程抽象</h2><p>为何需要分布式计算？以 MapReduce 中使用的字符计数问题为例：</p>
+<ul>
+<li>对于单机：存储空间不够、计算能力不构、</li>
+<li>分布式计算目标：提供远超的单机的存储、计算能力，包装成单机的<strong>假象</strong>使上层没有意识到改变</li>
+</ul>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-010.jpg" alt="ComputationChanging"></p>
+<h3 id="状态切分"><a href="#状态切分" class="headerlink" title="状态切分"></a>状态切分</h3><p>MapReduce 的启发，状态切分成 slice，两个子方案，一是不需要代码改动的方案：remote memory，file system。二是需要代码改动的：KV，database</p>
+<h3 id="避免数据共享冲突的方法？调整架构"><a href="#避免数据共享冲突的方法？调整架构" class="headerlink" title="避免数据共享冲突的方法？调整架构"></a>避免数据共享冲突的方法？调整架构</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>控制流架构（冯·诺依曼）</th>
+<th>数据流架构</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>执行由<strong>控制流</strong>驱动</td>
+<td>执行由<strong>数据流</strong>驱动</td>
+</tr>
+<tr>
+<td>控制流导致状态访问冲突</td>
+<td>数据是无消息/无冲突问题</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>改写代码是必要的。</p>
+<a id="more"></a>
+<h3 id="回到-MapReduce"><a href="#回到-MapReduce" class="headerlink" title="回到 MapReduce"></a>回到 MapReduce</h3><p>MapReduce 做的事情是将整个字符统计拆分成两个任务，Map 任务，Reduce 任务。</p>
+<p>实际上各种计算范畴（computation paradigm）表达能力都可以通过数据流二部图（Task Object）表达出来，复现 PPT 展示的表格：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>范畴（Computation paradigm）</th>
+<th>Task</th>
+<th>Object</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU Computation</td>
+<td>instruction instance</td>
+<td>register/memory operand</td>
+</tr>
+<tr>
+<td>MapReduce</td>
+<td>mapper, reducer instance</td>
+<td>input &amp; output (memory/HDFS) shards/buckets</td>
+</tr>
+<tr>
+<td>Graph Traversal</td>
+<td>graph shard worker traverse instance</td>
+<td>graph shard state snapshot, input/output messages</td>
+</tr>
+<tr>
+<td>Streaming</td>
+<td>streaming operator execution instance</td>
+<td>messages transmitted in channels among operators</td>
+</tr>
+<tr>
+<td>Tensor Computation</td>
+<td>tenser computation operator instance</td>
+<td>tensors</td>
+</tr>
+<tr>
+<td>Parameter sever based model training</td>
+<td>worker running for one iteration</td>
+<td>data,model parameters</td>
+</tr>
+<tr>
+<td>Actor based computation(object oriented computation)</td>
+<td>actor method execution instance</td>
+<td>actor method input/output, actor state snapshot</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>但是，Master 是个 exception，Master 是有状态的，相对于 Master 和 Reduce，对于有状态的 Master，MapReduce 论文中巧妙的忽略了这一点，对于单点故障，只需重启整个任务即可，数据流框架中不可采取这种“莽撞”的方法。</p>
+<h3 id="无状态任务-vs-有状态任务"><a href="#无状态任务-vs-有状态任务" class="headerlink" title="无状态任务 vs 有状态任务"></a>无状态任务 vs 有状态任务</h3><ul>
+<li>无状态<ul>
+<li>大多数数据流计算（MapReduce，Dryad，Spark）</li>
+<li>大多数 SOA 里面的 Method Call</li>
+<li>随便哪里都能跑</li>
+</ul>
+</li>
+<li>有状态<ul>
+<li>某些有迭代的数据流计算（Tensorflow，Grap Computation2）</li>
+<li>存储操作</li>
+<li>带状态的服务操作（大多数 Job Master）</li>
+<li>执行逻辑必须和状态绑在一起</li>
+</ul>
+</li>
+</ul>
+<h3 id="编程抽象之-服务"><a href="#编程抽象之-服务" class="headerlink" title="编程抽象之 服务"></a>编程抽象之 <strong>服务</strong></h3><p>服务 vs Actor</p>
+<ul>
+<li>服务 = [同构 Actor]*（一组同构 Actor 的集合），Actor 是单进程的。蚂蚁金服团队认为多线程一些地方还存在相似性和优化空间，更适合作为抽象单元，所以最终选择以<strong>服务</strong>作为自己的抽象单元。</li>
+<li>尽量隐藏分布式计算带来的复杂度<ul>
+<li>Scale out</li>
+<li>Elasticity 弹性，日夜差别</li>
+<li>Load balance</li>
+<li>Fail over</li>
+</ul>
+</li>
+</ul>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-016.jpg" alt="Summary1"></p>
+<h3 id="静态数据流-vs-动态数据流"><a href="#静态数据流-vs-动态数据流" class="headerlink" title="静态数据流 vs 动态数据流"></a>静态数据流 vs 动态数据流</h3><p>业务的需求，动态越来越多，NLP/Reinforcement learning，Nested Graph。没办法一下子把图给全。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-017.jpg" alt="Summary2"></p>
+<p>数据流图是一边跑一边长出来的。</p>
+<h2 id="核心编程抽象"><a href="#核心编程抽象" class="headerlink" title="核心编程抽象"></a>核心编程抽象</h2><p>本地化编程-&gt;分布式编程</p>
+<p>三元一一对应</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-018.jpg" alt="Summary3"></p>
+<p>eg</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-021.jpg" alt="Summary4"></p>
+<h2 id="本地编程（On-Premise-Programming）"><a href="#本地编程（On-Premise-Programming）" class="headerlink" title="本地编程（On-Premise Programming）"></a>本地编程（On-Premise Programming）</h2><h2 id="微内核架构"><a href="#微内核架构" class="headerlink" title="微内核架构"></a>微内核架构</h2><ul>
+<li>不仅仅是性能问题</li>
+<li>多方面统一和特定之间的两难问题</li>
+<li>最重要，执行统一的架构和合约，避免无序<ul>
+<li>团队合作</li>
+<li>简化产品化/研发效能的问题（e.g.通过 AOP）</li>
+</ul>
+</li>
+</ul>
+<h2 id="插件分类和实现"><a href="#插件分类和实现" class="headerlink" title="插件分类和实现"></a>插件分类和实现</h2><p>eg：执行流调度、状态管理、服务部署策略、资源分配策略、进程故障恢复、状态故障恢复</p>
+<p>优点：</p>
+<ul>
+<li>模块可重用，不同场景需求选用不同组合</li>
+<li>根据场景制作特定优化插件</li>
+<li>功能级别相同插件可替换、方便排查问题</li>
+<li>（基本）独立开发，无缝集成，方便团队合作</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>模块繁杂，系统配置复杂（状态管理插件存放的位置，HBase，Redis，放哪里都有区别）</li>
+<li>插件抽象要求高，还完全 stable</li>
+<li>某些插件相互依赖、不独立（理论上是笛卡尔乘积组合情况，但耦合性降低现在仍然是努力的目标）</li>
+</ul>
+<h1 id="融合优化"><a href="#融合优化" class="headerlink" title="融合优化"></a>融合优化</h1><h2 id="Level-of-indirection-solves-everything"><a href="#Level-of-indirection-solves-everything" class="headerlink" title="Level of indirection solves everything"></a>Level of indirection solves everything</h2><p>可以解决谁产生谁消费的问题，但是交互比较麻烦。</p>
+<p>Problem： The indirection layer does enable flexibility but also brings cost</p>
+<p>从静态数据流（static data flow）思考，并不会出现这种问题，图确定，必然有。</p>
+<p>Back to the future，借鉴过去经验，想着能不能把动态往静态拉一把，我们还需要获取一些信息。</p>
+<p>基于为微核架构的 Runtime optimization hybrid run-time</p>
+<h2 id="Our-Work"><a href="#Our-Work" class="headerlink" title="Our Work"></a>Our Work</h2><h3 id="Distributed-Gabbage-Collection"><a href="#Distributed-Gabbage-Collection" class="headerlink" title="Distributed Gabbage Collection"></a>Distributed Gabbage Collection</h3><p>现在解决方案存在的问题：LRU（页面置换算法：最近最久未使用），删 object，但是可能还会用，删了可能会触发后面请求的 Failue，导致:</p>
+<ul>
+<li>负担增大</li>
+<li>无法找回</li>
+</ul>
+<p>蚂蚁金服的解决方案：</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-034.jpg" alt="Ourwork"></p>
+<h2 id="融合计算的思考路径"><a href="#融合计算的思考路径" class="headerlink" title="融合计算的思考路径"></a>融合计算的思考路径</h2><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-038.jpg" alt=""></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tag/讲座/" rel="tag"> <i class="fa fa-tag"></i> 讲座</a>
+          
+            <a href="/tag/CCFADL/" rel="tag"> <i class="fa fa-tag"></i> CCFADL</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/post/72aa152d.html" rel="next" title="分布式系统学习——阶段性总结2">
+                <i class="fa fa-chevron-left"></i> 分布式系统学习——阶段性总结2
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/post/3f0572b0.html" rel="prev" title="CCFADL105——大数据系统的演化：理论、实践和愿望">
+                CCFADL105——大数据系统的演化：理论、实践和愿望 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Edwardzcn" />
+            
+              <p class="site-author-name" itemprop="name">Edwardzcn</p>
+              <p class="site-description motion-element" itemprop="description">这是一个利用（可爱的）Hexo搭建的博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">282</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+            
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">162</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/rss2.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Edwardzcn" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:edwardzcn98@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.google.com" target="_blank" title="Google">
+                      
+                        <i class="fa fa-fw fa-google"></i>Google</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.zhihu.com/people/decades-42/activities" target="_blank" title="Zhihu">
+                      
+                        <i class="fa fa-fw fa-globe"></i>Zhihu</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.instagram.com/edwardz98" target="_blank" title="Instagram">
+                      
+                        <i class="fa fa-fw fa-instagram"></i>Instagram</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.github.com" title="Github" target="_blank">Github</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://yangyangyang.cc" title="yyy的博客" target="_blank">yyy的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://blog.mrcactus.cn" title="syx的博客" target="_blank">syx的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/wawcac-blog" title="SHer_zfc的博客" target="_blank">SHer_zfc的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://csuwangj.github.io/" title="DJ的博客" target="_blank">DJ的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://blog.csdn.net/SSS_Benjamin" title="cx的博客" target="_blank">cx的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.cnblogs.com/csu-lmw" title="吕少的博客" target="_blank">吕少的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://ipads.se.sjtu.edu.cn/zh/index.html" title="SJTU_IPAD梦想" target="_blank">SJTU_IPAD梦想</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#大数据系统实践：从-MapReduce-到融合计算"><span class="nav-number">1.</span> <span class="nav-text">大数据系统实践：从 MapReduce 到融合计算</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#融合计算模型"><span class="nav-number">2.</span> <span class="nav-text">融合计算模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#观察-趋势"><span class="nav-number">2.1.</span> <span class="nav-text">观察/趋势</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#胶水"><span class="nav-number">2.2.</span> <span class="nav-text">胶水</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#目标"><span class="nav-number">2.3.</span> <span class="nav-text">目标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#融合计算编程抽象"><span class="nav-number">2.4.</span> <span class="nav-text">融合计算编程抽象</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#状态切分"><span class="nav-number">2.4.1.</span> <span class="nav-text">状态切分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#避免数据共享冲突的方法？调整架构"><span class="nav-number">2.4.2.</span> <span class="nav-text">避免数据共享冲突的方法？调整架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#回到-MapReduce"><span class="nav-number">2.4.3.</span> <span class="nav-text">回到 MapReduce</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#无状态任务-vs-有状态任务"><span class="nav-number">2.4.4.</span> <span class="nav-text">无状态任务 vs 有状态任务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编程抽象之-服务"><span class="nav-number">2.4.5.</span> <span class="nav-text">编程抽象之 服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#小结"><span class="nav-number">2.4.6.</span> <span class="nav-text">小结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#静态数据流-vs-动态数据流"><span class="nav-number">2.4.7.</span> <span class="nav-text">静态数据流 vs 动态数据流</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#核心编程抽象"><span class="nav-number">2.5.</span> <span class="nav-text">核心编程抽象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#本地编程（On-Premise-Programming）"><span class="nav-number">2.6.</span> <span class="nav-text">本地编程（On-Premise Programming）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#微内核架构"><span class="nav-number">2.7.</span> <span class="nav-text">微内核架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#插件分类和实现"><span class="nav-number">2.8.</span> <span class="nav-text">插件分类和实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#融合优化"><span class="nav-number">3.</span> <span class="nav-text">融合优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Level-of-indirection-solves-everything"><span class="nav-number">3.1.</span> <span class="nav-text">Level of indirection solves everything</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Our-Work"><span class="nav-number">3.2.</span> <span class="nav-text">Our Work</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Distributed-Gabbage-Collection"><span class="nav-number">3.2.1.</span> <span class="nav-text">Distributed Gabbage Collection</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#融合计算的思考路径"><span class="nav-number">3.3.</span> <span class="nav-text">融合计算的思考路径</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Edwardzcn</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">305.6k</span>
+  
+</div>
+
+<div class="copyright">
+<span id="busuanzi_container_site_uv"><a class="theme-link" href="http://www.miitbeian.gov.cn">冀ICP备18024730号</a></span>
+<span id="bei_an"> <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641" ><img src="https://www.edwardzcn98yx.com/batb.png" />湘公网安备 43010402000641号</a></span>
+</div>
+
+<div class="powered-by">
+<i class ="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+    本站访客数：<span id="busuanzi_value_site_uv"></span></spam></div>
+
+<!--
+
+   <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+-->
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
