@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+<meta name="baidu-site-verification" content="ZzhwBFUe1V" />
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/0f81ff2f.js","daovoice")
+  daovoice('init', {
+      app_id: "61c4e5db"
+    });
+  daovoice('update');
+  </script>
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="数字图像处理," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="Eddy的个人博客" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="频率域滤波图像复原在频率域滤波进行图像复原主要在两个方面效果较好，其一是利用频率域滤波消除周期噪声，另一个是利用频率域做退化函数的逆滤波，周期噪声还没有细致研究，这篇文章主要关注其逆滤波相关的问题。 为什么要在频率域做逆滤波？观察之前退化模型的两个式子，我们不难发现： g(x,y) = h(x,y) \star f(x,y) + \eta(x,y)g(u,v) = H(u,v) F(u,v) +">
+<meta name="keywords" content="数字图像处理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数字图像处理——图像复原（频率域）">
+<meta property="og:url" content="http://www.edwardzcn98yx.com/post/8809c911.html">
+<meta property="og:site_name" content="Eddy的个人博客">
+<meta property="og:description" content="频率域滤波图像复原在频率域滤波进行图像复原主要在两个方面效果较好，其一是利用频率域滤波消除周期噪声，另一个是利用频率域做退化函数的逆滤波，周期噪声还没有细致研究，这篇文章主要关注其逆滤波相关的问题。 为什么要在频率域做逆滤波？观察之前退化模型的两个式子，我们不难发现： g(x,y) = h(x,y) \star f(x,y) + \eta(x,y)g(u,v) = H(u,v) F(u,v) +">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_1.png">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_2.png">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_3.png">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_4.png">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_5.png">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_6.png">
+<meta property="og:updated_time" content="2019-10-30T12:53:20.247Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数字图像处理——图像复原（频率域）">
+<meta name="twitter:description" content="频率域滤波图像复原在频率域滤波进行图像复原主要在两个方面效果较好，其一是利用频率域滤波消除周期噪声，另一个是利用频率域做退化函数的逆滤波，周期噪声还没有细致研究，这篇文章主要关注其逆滤波相关的问题。 为什么要在频率域做逆滤波？观察之前退化模型的两个式子，我们不难发现： g(x,y) = h(x,y) \star f(x,y) + \eta(x,y)g(u,v) = H(u,v) F(u,v) +">
+<meta name="twitter:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'I0P7TBILS9',
+      apiKey: '1cbd304cdb7292372541bc8f3d868016',
+      indexName: 'EddyBlog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.edwardzcn98yx.com/post/8809c911.html"/>
+
+
+
+
+
+  <title>数字图像处理——图像复原（频率域） | Eddy的个人博客</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/Edwardzcn" class="github-corner" aria-label="View source on Github">
+    <svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true">
+    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+    <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+    <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path>
+    </svg>
+    </a>
+    <style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Eddy的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">相知相遇，即是幸运</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            我的首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于我
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            目录总览
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-reading">
+          <a href="/categories/阅读" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            阅读
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-travelling">
+          <a href="/categories/旅行" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            旅行
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-programming">
+          <a href="/categories/编程" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            编程
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-essay">
+          <a href="/categories/随笔" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            随笔
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            时间线
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-schedule">
+          <a href="/schedule/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />
+            
+            日程表
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/8809c911.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">数字图像处理——图像复原（频率域）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-30T20:47:24+08:00">
+                2019-10-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数字图像处理/" itemprop="url" rel="index">
+                    <span itemprop="name">数字图像处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,819
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  9
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="频率域滤波图像复原"><a href="#频率域滤波图像复原" class="headerlink" title="频率域滤波图像复原"></a>频率域滤波图像复原</h1><p>在频率域滤波进行图像复原主要在两个方面效果较好，其一是利用频率域滤波消除周期噪声，另一个是利用频率域做退化函数的逆滤波，周期噪声还没有细致研究，这篇文章主要关注其逆滤波相关的问题。</p>
+<p>为什么要在频率域做逆滤波？观察之前退化模型的两个式子，我们不难发现：</p>
+<script type="math/tex; mode=display">g(x,y) = h(x,y) \star f(x,y) + \eta(x,y)</script><script type="math/tex; mode=display">g(u,v) = H(u,v) F(u,v) + N(u,v)</script><p>对(1)式空间域来说，想要从$g(x,y)$恢复$f(x,y)$，避不开的是“卷积”的逆运算，这在定义和实现的复杂上都比较困难，而转化到频率域，从(2)式我们或许可以通过一个“除法”来实现逆滤波，结合之前噪声模型相关内容，我们尝试在频率域上对仅退化函数影响的图像，和更复杂一些的，退化函数和加性噪声双重影响的图像进行复原。</p>
+<h2 id="估计退化函数"><a href="#估计退化函数" class="headerlink" title="估计退化函数"></a>估计退化函数</h2><p>在图像复原时，主要有 3 种用于估计退化函数的方法：（1）观察法，（2）试验法，（3）数学建模法。这里我们着重讲建模估计。</p>
+<ol>
+<li><p>湍流模糊</p>
+<p>Hufnagel and Stanley[1964]根据大气湍流的物理特性提出了一个退化模型，其通式为：</p>
+<script type="math/tex; mode=display">H(u,v) = e^{-k{(u^2+v^2)}^{5/6}}</script><p>式中，$k$是与湍流性质有关的常熟。除了指数为$5/6$之外，该式与高斯低通及其相似。</p>
+<p>实现：</p>
+</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getVesMask</span><span class="params">(mask_shape,k)</span>:</span></span><br><span class="line">    rows,cols = mask_shape[<span class="number">0</span>],mask_shape[<span class="number">1</span>]</span><br><span class="line">    crow = rows/<span class="number">2</span></span><br><span class="line">    ccol = cols/<span class="number">2</span></span><br><span class="line">    mask = np.zeros((rows,cols))</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(rows):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(cols):</span><br><span class="line">            dis = (i-crow)**<span class="number">2</span> + (j-ccol)**<span class="number">2</span></span><br><span class="line">            mask[i,j] = np.exp(-k*(dis**(<span class="number">5</span>/<span class="number">6</span>)))</span><br><span class="line">    <span class="keyword">return</span> mask</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getVesFilterPassImg</span><span class="params">(input_img : np.array, k  , size = None)</span>:</span></span><br><span class="line">    f_img = np.fft.fft2(input_img , s = size)</span><br><span class="line">    shift_img = np.fft.fftshift(f_img)</span><br><span class="line">    mask_shift_img = getVesMask(f_img.shape,k)</span><br><span class="line">    new_shift_img = mask_shift_img*shift_img</span><br><span class="line">    new_manitude_img = <span class="number">20</span>*np.log(np.abs(new_shift_img+eps))</span><br><span class="line">    new_f_img = np.fft.ifftshift(new_shift_img)</span><br><span class="line">    new_img = np.fft.ifft2(new_f_img)</span><br><span class="line">    new_img = np.abs(new_img)</span><br><span class="line">    <span class="keyword">return</span> new_img</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试</span></span><br><span class="line"><span class="comment"># 参数设置</span></span><br><span class="line">mask_shape = (<span class="number">480</span>,<span class="number">480</span>)</span><br><span class="line">k = [<span class="number">0</span>,<span class="number">0.0025</span>,<span class="number">0.001</span>,<span class="number">0.00025</span>]</span><br><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">12</span>))</span><br><span class="line">ax = [plt.subplot(<span class="number">221</span>,projection = <span class="string">"3d"</span>),plt.subplot(<span class="number">222</span>,projection = <span class="string">"3d"</span>),plt.subplot(<span class="number">223</span>,projection = <span class="string">"3d"</span>),plt.subplot(<span class="number">224</span>,projection = <span class="string">"3d"</span>)]</span><br><span class="line"><span class="comment"># 获得滤波器</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">4</span>):</span><br><span class="line">    <span class="keyword">if</span> i == <span class="number">0</span>:</span><br><span class="line">        drawPerspective(ax[i],np.ones(mask_shape),title =<span class="string">"Original Img"</span>,cmap = <span class="string">"gray"</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        myfilter = getVesMask(mask_shape,k[i])</span><br><span class="line">        drawPerspective(ax[i],myfilter,title = <span class="string">f"Ves Mask with $k=<span class="subst">&#123;k[i]&#125;</span>$"</span>, cmap = <span class="string">"gray"</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line">test_img = cv2.imread(<span class="string">"./5_3Photo/Fig0525(a).tif"</span>,<span class="number">0</span>)</span><br><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">12</span>))</span><br><span class="line">ax = [plt.subplot(<span class="number">221</span>),plt.subplot(<span class="number">222</span>),plt.subplot(<span class="number">223</span>),plt.subplot(<span class="number">224</span>)]</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">4</span>):</span><br><span class="line">    <span class="keyword">if</span> i == <span class="number">0</span>:</span><br><span class="line">        ax[i].imshow(test_img,cmap = <span class="string">"gray"</span>)</span><br><span class="line">        ax[i].set_title(<span class="string">"Original Img"</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        out_img = getVesFilterPassImg(test_img,k[i])</span><br><span class="line">        ax[i].imshow(out_img,cmap = <span class="string">"gray"</span>)</span><br><span class="line">        ax[i].set_title(<span class="string">f"Ves Mask with $k=<span class="subst">&#123;k[i]&#125;</span>$"</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_1.png" alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_2.png" alt="png"></p>
+<a id="more"></a>
+<ul>
+<li><p>运动模糊</p>
+<p>是从基本原理开始推导的一个数学模型，光学成像图像获取时被被图像与传感器之间的均匀线性运动模糊了，最终$g(x,y)$反映为$f(x,y)$不同时间间隔内瞬时曝光量叠加形成的，（空间域）数学表达为：</p>
+<script type="math/tex; mode=display">g(x,y) = \int_0^{T}{ f [x-x_0(t),y-y_0(t)] } \mathrm{d}t</script><p>频率域中的操作，应用傅里叶变换，中间省略，最后根据$F(u,v)$与$t$无关得出，我们想要的频率域退化函数表达：</p>
+<script type="math/tex; mode=display">H(u,v) = \int_0^T {e^{-j2\pi[ux_0(t)+vy_0(t)]}} \mathrm{d}t</script><p>满足 x,y 方向做匀速直线运动$x_0(t) = at/T$和$y_0(t) = bt/T$，则退化函数可以直接由上式得。</p>
+<script type="math/tex; mode=display">H(u,v) =  \dfrac{T}{\pi (ua+vb)} sin[\pi(ua+vb)]   e^{-j\pi[ua+vb]}</script><p>那么我们用$(u,v)$对该式取样，就可以生成一个离散滤波器，我的实现是（这个实现 bug 了）：</p>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getMoveMask</span><span class="params">(mask_shape,param_a,param_b,param_T)</span>:</span></span><br><span class="line">    rows,cols = mask_shape[<span class="number">0</span>],mask_shape[<span class="number">1</span>]</span><br><span class="line">    crow = rows/<span class="number">2</span></span><br><span class="line">    ccol = cols/<span class="number">2</span></span><br><span class="line">    mask = np.zeros((rows,cols), dtype = np.complex)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(rows):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(cols):</span><br><span class="line">            <span class="keyword">if</span> i == <span class="number">0</span> <span class="keyword">and</span> j== <span class="number">0</span>:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                temp = i*param_a+j*param_b</span><br><span class="line">                temp2 = np.exp(np.complex(<span class="number">0</span>,-np.pi*temp))</span><br><span class="line">                mask[i,j] = temp2*np.sin(np.pi*temp)*param_T/(np.pi*temp)</span><br><span class="line">    <span class="keyword">return</span> mask</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getMoveFilterPassImg</span><span class="params">(input_img : np.array, a,b,T , size = None)</span>:</span></span><br><span class="line">    f_img = np.fft.fft2(input_img , s = size)</span><br><span class="line">    shift_img = np.fft.fftshift(f_img)</span><br><span class="line">    mask_shift_img = getMoveMask(f_img.shape,a,b,T)</span><br><span class="line">    new_shift_img = mask_shift_img*shift_img</span><br><span class="line">    new_manitude_img = <span class="number">20</span>*np.log(np.abs(new_shift_img+eps))</span><br><span class="line">    new_f_img = np.fft.ifftshift(new_shift_img)</span><br><span class="line">    new_img = np.fft.ifft2(new_f_img)</span><br><span class="line">    new_img = np.abs(new_img)</span><br><span class="line">    <span class="keyword">return</span> new_img,new_manitude_img</span><br><span class="line"></span><br><span class="line">test_img = cv2.imread(<span class="string">"./5_3Photo/Fig0526.tif"</span>,<span class="number">0</span>)</span><br><span class="line">a = <span class="number">0.2</span></span><br><span class="line">b = <span class="number">0.15</span></span><br><span class="line">T = <span class="number">1</span></span><br><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">6</span>))</span><br><span class="line">ax1 = plt.subplot(<span class="number">121</span>)</span><br><span class="line">ax2 = plt.subplot(<span class="number">122</span>)</span><br><span class="line">ax1.imshow(test_img,cmap = <span class="string">"gray"</span>)</span><br><span class="line">ax1.set_title(<span class="string">"Original Img2"</span>)</span><br><span class="line">out_img,test = getMoveFilterPassImg(test_img,a,b,T)</span><br><span class="line">ax2.imshow(out_img,cmap=<span class="string">"gray"</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_3.png" alt="png"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getMotionMask</span><span class="params">(mask_shape,param_len,param_theta)</span>:</span></span><br><span class="line">    rows,cols = mask_shape[<span class="number">0</span>],mask_shape[<span class="number">1</span>]</span><br><span class="line">    crow = (rows<span class="number">-1</span>)/<span class="number">2</span></span><br><span class="line">    ccol = (cols<span class="number">-1</span>)/<span class="number">2</span></span><br><span class="line">    mask = np.zeros((rows,cols))</span><br><span class="line">    sin_val = np.sin(param_theta*np.pi/<span class="number">180</span>)</span><br><span class="line">    cos_val = np.cos(param_theta*np.pi/<span class="number">180</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(param_len):</span><br><span class="line">        x_offset = round(sin_val*i)</span><br><span class="line">        y_offset = round(cos_val*i)</span><br><span class="line">        mask[int(crow+x_offset),int(ccol+y_offset)] =<span class="number">1</span></span><br><span class="line">    mask = mask/mask.sum()</span><br><span class="line">    <span class="keyword">return</span> np.fft.fft2(mask)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getMotionFilterPassImg</span><span class="params">(input_img : np.array, l,t , size = None)</span>:</span></span><br><span class="line">    f_img = np.fft.fft2(input_img , s = size)</span><br><span class="line">    mask_img = getMotionMask(f_img.shape,l,t)</span><br><span class="line">    new_img = f_img*mask_img</span><br><span class="line">    new_img = np.fft.ifft2(new_img)</span><br><span class="line">    output_img = np.fft.ifftshift(new_img)</span><br><span class="line">    output_img = np.abs(output_img)</span><br><span class="line">    <span class="keyword">return</span> output_img</span><br><span class="line"></span><br><span class="line">test_img = cv2.imread(<span class="string">"./5_3Photo/Fig0526.tif"</span>,<span class="number">0</span>)</span><br><span class="line">l = <span class="number">50</span></span><br><span class="line">t = <span class="number">30</span></span><br><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">6</span>))</span><br><span class="line">ax1 = plt.subplot(<span class="number">121</span>)</span><br><span class="line">ax2 = plt.subplot(<span class="number">122</span>)</span><br><span class="line">ax1.imshow(test_img,cmap = <span class="string">"gray"</span>)</span><br><span class="line">ax1.set_title(<span class="string">"Original Img2"</span>)</span><br><span class="line">out_img = getMotionFilterPassImg(test_img,l,t)</span><br><span class="line">ax2.imshow(out_img,cmap=<span class="string">"gray"</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_4.png" alt="png"></p>
+<h2 id="逆滤波"><a href="#逆滤波" class="headerlink" title="逆滤波"></a>逆滤波</h2><p>退化函数已给出，或者由上面退化函数的估计方法获得后，最简单的复原方法是直接做逆滤波，即：</p>
+<script type="math/tex; mode=display">\hat{F}(u,v) = \dfrac{G(u,v)}{H(u,v)}</script><p>然而根据前述我们知道，在噪声的影响下，$\hat{F}(u,v)$和$F(u,v)$仍有差别，即</p>
+<script type="math/tex; mode=display">\hat{F}(u,v) = F(u,v) \dfrac{N(u,v)}{H(u,v)}</script><p>这个式子两点启发：</p>
+<ol>
+<li>知道退化函数也不能完全复原未退化图像，因为噪声函数未知。</li>
+<li>如果退化函数是零或是非常小的之，那么噪声影响会被放大</li>
+</ol>
+<h2 id="最小均方误差（维纳）滤波"><a href="#最小均方误差（维纳）滤波" class="headerlink" title="最小均方误差（维纳）滤波"></a>最小均方误差（维纳）滤波</h2><p>实际上维纳滤波是在这里是相对逆滤波来说的，而并非指特别的滤波函数，且不仅应用在运动模糊滤波中。</p>
+<script type="math/tex; mode=display">\hat{F}(u,v) =[\dfrac{1}{H(u,v)} \dfrac{ {|H(u,v)|}^2 }{ {|H(u,v)|}^2+ S_{\eta}(u,v)/S_f(u,v) }] G(u,v)</script><p>$S_{\eta}(u,v)$为噪声的功率谱而$S_f(u,v)$是未退化图像的功率谱，比值为噪信比。而由于谱${|N(u,v)|}^2$是一个常数，这大大简化了处理。我们常用下面的表达式来近似。</p>
+<script type="math/tex; mode=display">\hat{F}(u,v) =[\dfrac{1}{H(u,v)} \dfrac{ {|H(u,v)|}^2 }{ {|H(u,v)|}^2+ K }] G(u,v)</script><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">wienerFiltering</span><span class="params">(input_img, h, NSR ,htype = <span class="string">"frequency"</span>)</span>:</span></span><br><span class="line">    <span class="keyword">assert</span> htype <span class="keyword">in</span> (<span class="string">"frequency"</span>,<span class="string">"spatial"</span>)</span><br><span class="line">    <span class="comment"># 输入图像的傅里叶变换</span></span><br><span class="line">    input_img_fft = np.fft.fft2(input_img)</span><br><span class="line">    input_img_fft = np.fft.ifftshift(input_img_fft)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(htype == <span class="string">"spatial"</span>):</span><br><span class="line">        <span class="comment"># 模糊化函数的傅里叶变换</span></span><br><span class="line">        h_fft = np.fft.fft2(h)</span><br><span class="line">    <span class="keyword">else</span> :</span><br><span class="line">        h_fft = h</span><br><span class="line">    <span class="comment"># 退化函数模值的平方</span></span><br><span class="line">    h_abs_square = np.abs(h_fft)**<span class="number">2</span></span><br><span class="line">    <span class="comment"># 维纳滤波</span></span><br><span class="line">    <span class="comment"># 使用的是 共轭/模方+NSR的形式，并非 9 10 式</span></span><br><span class="line">    output_image_fft = np.conj(h_fft) / (h_abs_square + NSR)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 输出图像傅里叶反变换</span></span><br><span class="line">    output_image = np.fft.ifft2(output_image_fft * input_img_fft)</span><br><span class="line">    output_image = np.abs(np.fft.fftshift(output_image))</span><br><span class="line">    <span class="keyword">return</span> output_image</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试 逆滤波</span></span><br><span class="line"></span><br><span class="line">nsr = <span class="number">0</span></span><br><span class="line">h = getMotionMask(test_img.shape,l,t)</span><br><span class="line">output_img= getMotionFilterPassImg(test_img,l,t)</span><br><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">6</span>))</span><br><span class="line">ax1 = plt.subplot(<span class="number">121</span>)</span><br><span class="line">ax2 = plt.subplot(<span class="number">122</span>)</span><br><span class="line">ax1.imshow(output_img,cmap = <span class="string">"gray"</span>)</span><br><span class="line">ax1.set_title(<span class="string">"Original Img2"</span>)</span><br><span class="line">inverse_img = wienerFiltering(out_img,h,nsr,<span class="string">"frequency"</span>)</span><br><span class="line">ax2.imshow(inverse_img,cmap=<span class="string">"gray"</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">nsr = <span class="number">0.01</span></span><br><span class="line">h = getMotionMask(test_img.shape,l,t)</span><br><span class="line">output_img = getMotionFilterPassImg(test_img,l,t)</span><br><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">6</span>))</span><br><span class="line">ax1 = plt.subplot(<span class="number">121</span>)</span><br><span class="line">ax2 = plt.subplot(<span class="number">122</span>)</span><br><span class="line">ax1.imshow(output_img,cmap = <span class="string">"gray"</span>)</span><br><span class="line">ax1.set_title(<span class="string">"Original Img2"</span>)</span><br><span class="line">inverse_img = wienerFiltering(out_img,h,nsr,<span class="string">"frequency"</span>)</span><br><span class="line">ax2.imshow(inverse_img,cmap=<span class="string">"gray"</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_5.png" alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_6.png" alt="png"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tag/数字图像处理/" rel="tag"> <i class="fa fa-tag"></i> 数字图像处理</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/post/c7192b31.html" rel="next" title="数字图像处理——图像复原（空间域）">
+                <i class="fa fa-chevron-left"></i> 数字图像处理——图像复原（空间域）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Edwardzcn" />
+            
+              <p class="site-author-name" itemprop="name">Edwardzcn</p>
+              <p class="site-description motion-element" itemprop="description">这是一个利用（可爱的）Hexo搭建的博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">286</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+            
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/rss2.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Edwardzcn" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:edwardzcn98@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.google.com" target="_blank" title="Google">
+                      
+                        <i class="fa fa-fw fa-google"></i>Google</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.zhihu.com/people/decades-42/activities" target="_blank" title="Zhihu">
+                      
+                        <i class="fa fa-fw fa-globe"></i>Zhihu</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.instagram.com/edwardz98" target="_blank" title="Instagram">
+                      
+                        <i class="fa fa-fw fa-instagram"></i>Instagram</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.github.com" title="Github" target="_blank">Github</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://yangyangyang.cc" title="yyy的博客" target="_blank">yyy的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://blog.mrcactus.cn" title="syx的博客" target="_blank">syx的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/wawcac-blog" title="SHer_zfc的博客" target="_blank">SHer_zfc的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://csuwangj.github.io/" title="DJ的博客" target="_blank">DJ的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://blog.csdn.net/SSS_Benjamin" title="cx的博客" target="_blank">cx的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.cnblogs.com/csu-lmw" title="吕少的博客" target="_blank">吕少的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://ipads.se.sjtu.edu.cn/zh/index.html" title="SJTU_IPAD梦想" target="_blank">SJTU_IPAD梦想</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#频率域滤波图像复原"><span class="nav-number">1.</span> <span class="nav-text">频率域滤波图像复原</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#估计退化函数"><span class="nav-number">1.1.</span> <span class="nav-text">估计退化函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#逆滤波"><span class="nav-number">1.2.</span> <span class="nav-text">逆滤波</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最小均方误差（维纳）滤波"><span class="nav-number">1.3.</span> <span class="nav-text">最小均方误差（维纳）滤波</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Edwardzcn</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">312.0k</span>
+  
+</div>
+
+<div class="copyright">
+<span id="busuanzi_container_site_uv"><a class="theme-link" href="http://www.miitbeian.gov.cn">冀ICP备18024730号</a></span>
+<span id="bei_an"> <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641" ><img src="https://www.edwardzcn98yx.com/batb.png" />湘公网安备 43010402000641号</a></span>
+</div>
+
+<div class="powered-by">
+<i class ="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+    本站访客数：<span id="busuanzi_value_site_uv"></span></spam></div>
+
+<!--
+
+   <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+-->
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
