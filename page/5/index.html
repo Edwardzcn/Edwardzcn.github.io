@@ -379,6 +379,192 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/785396af.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/785396af.html" itemprop="url">WordPress——网站搭建常见问题</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-09T01:06:57+08:00">
+                2019-10-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/WordPress/" itemprop="url" rel="index">
+                    <span itemprop="name">WordPress</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  421
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  2
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="安装-删除主题或者插件时需要-FTP-用户名密码"><a href="#安装-删除主题或者插件时需要-FTP-用户名密码" class="headerlink" title="安装/删除主题或者插件时需要 FTP 用户名密码"></a>安装/删除主题或者插件时需要 FTP 用户名密码</h2><p>安装好 WP 后，无论是安装插件还是安装主题都会弹出框：权限缺失，需要 FTP 用户名和密码。实际上时服务器权限设置的问题。</p>
+<p><strong>解决方法 1：修改配置文件</strong></p>
+<p>修改<code>wordpress</code>目录下的<code>wp-config.php</code>，加上如下三行：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">define(<span class="string">"FS_METHOD"</span>, <span class="string">"direct"</span>);</span><br><span class="line">define(<span class="string">"FS_CHMOD_DIR"</span>, <span class="number">0777</span>);</span><br><span class="line">define(<span class="string">"FS_CHMOD_FILE"</span>, <span class="number">0777</span>);</span><br></pre></td></tr></table></figure>
+<p>实际上是在上传时候修改权限。</p>
+<p><strong>解决方法 2：修改文件夹权限</strong></p>
+<p>如果你的 WP 按默认方式或者大多数教程方式，则<code>/var/www/html/wordpress</code>应是你的根目录，修改根目录权限</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo chmod -R 775 /var/www/html/wordpress</span><br></pre></td></tr></table></figure>
+<h2 id="安装-删除主题或者插件时提示安装失败，无法创建目录"><a href="#安装-删除主题或者插件时提示安装失败，无法创建目录" class="headerlink" title="安装/删除主题或者插件时提示安装失败，无法创建目录"></a>安装/删除主题或者插件时提示安装失败，无法创建目录</h2><p>源自<a href="https://blog.csdn.net/qq_32846595/article/details/54766833" target="_blank" rel="noopener">解决 wordpress 下载插件，安装失败，无法创建目录问题</a></p>
+<blockquote>
+<p>其实，出现无法创建目录的确是权限的问题，但是，不是目录读写的权限，而是用户组的问题。想要下载插件的用户组为 web 用户组，用户名组名为 www（大家可能不太一样，如果是按照我之前的方式装 lnmp 环境的同学，就是 www，可以在 ngnix.conf 中第一行查看，至于 nginx.conf 的位置就用 locate nginx.conf 搜索一下） ，而此时 wordpress 用户组为 root，这样就不能创建目录了，具体原因大家可以查阅 linux 相关知识。</p>
+</blockquote>
+<p>查阅自己的<code>nginx.conf</code>文件确定用户，我的是<code>www-data</code>，所以在<code>/var/www/html</code>路径下修改<code>wordpress</code>文件夹的用户组就可以了。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo chown -R www-data:www-data wordpress</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/63282d5d.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1070,191 +1256,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/973eccf1.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/973eccf1.html" itemprop="url">数字图像处理——直方图匹配</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-22T00:32:45+08:00">
-                2019-09-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数字图像处理/" itemprop="url" rel="index">
-                    <span itemprop="name">数字图像处理</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2,101
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  10
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><p>上一篇文章讲了<a href="https://www.edwardzcn98yx.com/post/b44049c5.html">直方图均衡</a>相关内容，从实际应用中我们发现，只能对直方图做均衡操作并不能完全满足我们的需要，有时我们更希望调整概率分布（直方图）为<strong>指定形状</strong>，这就是<strong>直方图匹配</strong>。</p>
-<p>比如下图图一猫咪的直方图较为集中在中间，我们希望它的分布贴近第二幅文字图的分布（集中在暗区域）</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/HistogramMatch/output_2_0.png" alt="im1"></p>
-<h1 id="数学基础"><a href="#数学基础" class="headerlink" title="数学基础"></a>数学基础</h1><p>从上一篇文章的介绍中我们发现，对于<strong>任何图像</strong>（$r$的概率密度分布），我们都可以通过其累积分布函数将其函数变换到随机变量$s$，而$s$是均匀分布的。那我们反过来想，能否将均匀分布的随机变量逆变换到某个特定的分布呢？</p>
-<h2 id="公式推导"><a href="#公式推导" class="headerlink" title="公式推导"></a>公式推导</h2><p>设$r$为随机变量值域为$[0,255]$，其概率密度函数为$p_r(r)$。一函数（变换为）：</p>
-<script type="math/tex; mode=display">s = T(r) = (L-1) \int_{0}^{r} p_r(m) \mathrm{d}m</script><p>由上一篇文章我们易知$s$服从均匀分布，我们寻找一个$z$随机变量符合另一特殊分布$p_z(z)$，易知存在一函数（变换）：</p>
-<script type="math/tex; mode=display">s = G(z) = (L-1) \int_{0}^{z} p_z(m) \mathrm{d}m</script><p>由于$G(z)$为累积分布函数，单调，故存在反函数$G^{-1}(z)$，则有新变换 $N = G^{-1} \cdot T$，使得$r$随机变量经$N$变换后符合$z$的分布特征。</p>
-<script type="math/tex; mode=display">z = G^{-1}(s) = G^{-1}(T(r)) = N(r)</script><p>由此，我们找到了某值域内求从<strong>某一分布</strong>随机变量$r$变换到<strong>指定分布</strong>随机变量$z$的方法。</p>
-<h2 id="个人理解"><a href="#个人理解" class="headerlink" title="个人理解"></a>个人理解</h2><p>直方图均衡，均匀分布，实际上在中间做了桥接。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/973eccf1.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1309,7 +1310,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">291</span>
+                  <span class="site-state-item-count">292</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1466,7 +1467,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">318.7k</span>
+    <span title="Site words total count">318.9k</span>
   
 </div>
 

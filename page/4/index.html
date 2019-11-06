@@ -379,6 +379,190 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/d5cc0f91.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/d5cc0f91.html" itemprop="url">数字图像处理——频率域滤波初步</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-16T20:56:38+08:00">
+                2019-10-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数字图像处理/" itemprop="url" rel="index">
+                    <span itemprop="name">数字图像处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,133
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  10
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="频率域滤波基础"><a href="#频率域滤波基础" class="headerlink" title="频率域滤波基础"></a>频率域滤波基础</h1><h2 id="傅里叶变换"><a href="#傅里叶变换" class="headerlink" title="傅里叶变换"></a>傅里叶变换</h2><p>复习傅里叶级数、傅里叶变换（说实话这么久只知道个大概没有推过数学公式很丢人。。）</p>
+<p>待补充</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>主要使用 OpenCV、Numpy 以及提供的对应方法。</p>
+<p>图片来源为冈萨雷斯数字图像处理提供的图像。</p>
+<p><a href="https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_imgproc/py_transforms/py_fourier_transform/py_fourier_transform.html#fourier-transform" target="_blank" rel="noopener">OpenCV 关于 Fourier Transform 应用的示例</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">import</span> imageio</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 选取部分测试照片并显示</span></span><br><span class="line">img1 = cv2.imread(<span class="string">'./DIP3E_CH07_Original_Images/Fig0723(a).tif'</span>,<span class="number">0</span>)</span><br><span class="line">img2 = cv2.imread(<span class="string">'./DIP3E_Original_Images_CH04/Fig0429(a)(blown_ic).tif'</span>,<span class="number">0</span>)</span><br><span class="line">img3 = cv2.imread(<span class="string">'./DIP3E_Original_Images_CH04/Fig0431(d)(blown_ic_crop).tif'</span>,<span class="number">0</span>)</span><br><span class="line">img4 = cv2.imread(<span class="string">'./DIP3E_Original_Images_CH04/Fig0438(a)(bld_600by600).tif'</span>,<span class="number">0</span>)</span><br><span class="line">plt.figure(figsize=(<span class="number">8</span>,<span class="number">8</span>))</span><br><span class="line">ax1 = plt.subplot(<span class="number">221</span>)</span><br><span class="line">ax1.set_title(<span class="string">"Image1 Original Image"</span>)</span><br><span class="line">ax1.imshow(img1,cmap = <span class="string">"gray"</span>)</span><br><span class="line">ax2 = plt.subplot(<span class="number">222</span>)</span><br><span class="line">ax2.set_title(<span class="string">"Image2 Original Image"</span>)</span><br><span class="line">ax2.imshow(img2,cmap = <span class="string">"gray"</span>)</span><br><span class="line">ax3 = plt.subplot(<span class="number">223</span>)</span><br><span class="line">ax3.set_title(<span class="string">"Image3 Original Image"</span>)</span><br><span class="line">ax3.imshow(img3,cmap = <span class="string">"gray"</span>)</span><br><span class="line">ax4 = plt.subplot(<span class="number">224</span>)</span><br><span class="line">ax4.set_title(<span class="string">"Image4 Original Image"</span>)</span><br><span class="line">ax4.imshow(img4,cmap = <span class="string">"gray"</span>)</span><br><span class="line"></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/FFTFilter/FFT_1.png" alt="png"></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/d5cc0f91.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/73209085.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1180,192 +1364,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/785396af.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/785396af.html" itemprop="url">WordPress——网站搭建常见问题</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-09T01:06:57+08:00">
-                2019-10-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/WordPress/" itemprop="url" rel="index">
-                    <span itemprop="name">WordPress</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  421
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  2
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="安装-删除主题或者插件时需要-FTP-用户名密码"><a href="#安装-删除主题或者插件时需要-FTP-用户名密码" class="headerlink" title="安装/删除主题或者插件时需要 FTP 用户名密码"></a>安装/删除主题或者插件时需要 FTP 用户名密码</h2><p>安装好 WP 后，无论是安装插件还是安装主题都会弹出框：权限缺失，需要 FTP 用户名和密码。实际上时服务器权限设置的问题。</p>
-<p><strong>解决方法 1：修改配置文件</strong></p>
-<p>修改<code>wordpress</code>目录下的<code>wp-config.php</code>，加上如下三行：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">define(<span class="string">"FS_METHOD"</span>, <span class="string">"direct"</span>);</span><br><span class="line">define(<span class="string">"FS_CHMOD_DIR"</span>, <span class="number">0777</span>);</span><br><span class="line">define(<span class="string">"FS_CHMOD_FILE"</span>, <span class="number">0777</span>);</span><br></pre></td></tr></table></figure>
-<p>实际上是在上传时候修改权限。</p>
-<p><strong>解决方法 2：修改文件夹权限</strong></p>
-<p>如果你的 WP 按默认方式或者大多数教程方式，则<code>/var/www/html/wordpress</code>应是你的根目录，修改根目录权限</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo chmod -R 775 /var/www/html/wordpress</span><br></pre></td></tr></table></figure>
-<h2 id="安装-删除主题或者插件时提示安装失败，无法创建目录"><a href="#安装-删除主题或者插件时提示安装失败，无法创建目录" class="headerlink" title="安装/删除主题或者插件时提示安装失败，无法创建目录"></a>安装/删除主题或者插件时提示安装失败，无法创建目录</h2><p>源自<a href="https://blog.csdn.net/qq_32846595/article/details/54766833" target="_blank" rel="noopener">解决 wordpress 下载插件，安装失败，无法创建目录问题</a></p>
-<blockquote>
-<p>其实，出现无法创建目录的确是权限的问题，但是，不是目录读写的权限，而是用户组的问题。想要下载插件的用户组为 web 用户组，用户名组名为 www（大家可能不太一样，如果是按照我之前的方式装 lnmp 环境的同学，就是 www，可以在 ngnix.conf 中第一行查看，至于 nginx.conf 的位置就用 locate nginx.conf 搜索一下） ，而此时 wordpress 用户组为 root，这样就不能创建目录了，具体原因大家可以查阅 linux 相关知识。</p>
-</blockquote>
-<p>查阅自己的<code>nginx.conf</code>文件确定用户，我的是<code>www-data</code>，所以在<code>/var/www/html</code>路径下修改<code>wordpress</code>文件夹的用户组就可以了。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo chown -R www-data:www-data wordpress</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1420,7 +1418,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">291</span>
+                  <span class="site-state-item-count">292</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1577,7 +1575,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">318.7k</span>
+    <span title="Site words total count">318.9k</span>
   
 </div>
 
