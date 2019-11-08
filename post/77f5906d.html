@@ -106,7 +106,7 @@
 <meta property="og:site_name" content="Eddy的个人博客">
 <meta property="og:description" content="布尔与数值类型注释//单行注释被编译器当作一个换行符，/* */多行注释划定同行被当作一个空格，多行被当作换行符。 常量和变量1234567const limit = 512       // 常量，其类型兼容任何数字const top uint16 = 1421  // 常量，类型，uint16start := -19              // 变量，推断类型，intend := int6">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-11-06T13:41:37.692Z">
+<meta property="og:updated_time" content="2019-11-08T06:55:59.745Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Go学习——《Go语言程序设计》Chap2">
 <meta name="twitter:description" content="布尔与数值类型注释//单行注释被编译器当作一个换行符，/* */多行注释划定同行被当作一个空格，多行被当作换行符。 常量和变量1234567const limit = 512       // 常量，其类型兼容任何数字const top uint16 = 1421  // 常量，类型，uint16start := -19              // 变量，推断类型，intend := int6">
@@ -462,7 +462,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  165
+                  933
                 </span>
               
 
@@ -478,7 +478,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  1
+                  4
                 </span>
               
             </div>
@@ -503,7 +503,26 @@
 <h2 id="常量和变量"><a href="#常量和变量" class="headerlink" title="常量和变量"></a>常量和变量</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">const</span> limit = <span class="number">512</span>       <span class="comment">// 常量，其类型兼容任何数字</span></span><br><span class="line"><span class="keyword">const</span> top <span class="keyword">uint16</span> = <span class="number">1421</span>  <span class="comment">// 常量，类型，uint16</span></span><br><span class="line">start := <span class="number">-19</span>              <span class="comment">// 变量，推断类型，int</span></span><br><span class="line">end := <span class="keyword">int64</span>(<span class="number">9876543210</span>)    <span class="comment">// 变量。类型，int64</span></span><br><span class="line"><span class="keyword">var</span> i <span class="keyword">int</span>                   <span class="comment">// 变量，类型，int</span></span><br><span class="line"><span class="keyword">var</span> debug = <span class="literal">false</span>           <span class="comment">// 变量，推断类型，bool</span></span><br></pre></td></tr></table></figure>
 <p>多个常量，用一个<code>const</code>组合</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123;</span><br><span class="line">    Cyan = <span class="number">0</span></span><br><span class="line">    Magenta = <span class="number">1</span></span><br><span class="line">    Yellow = <span class="number">2</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><code>iota</code>预定义的标识符表示连续的无类型整数常量。每次关键字<code>const</code></p>
+<p><code>iota</code>预定义的标识符表示连续的无类型整数常量。每次关键字<code>const</code>出现时，它的值重设为 0（因此，每次都会定义一组新的常量），而每个常量的声明的增量为 1。</p>
+<a id="more"></a>
+<h2 id="布尔与布尔表达式"><a href="#布尔与布尔表达式" class="headerlink" title="布尔与布尔表达式"></a>布尔与布尔表达式</h2><p>布尔类型：<code>ture</code>,<code>false</code></p>
+<p>布尔操作符：与 C 常见（除了位运算）相同。</p>
+<p>注意<code>&amp;&amp;</code>,<code>||</code>仍然是短路规则的。</p>
+<p>用于比较操作符（小于大于等）进行比较的值，Go 会严格筛选，两个值必须是相通类型的，或者如果它们是接口，就必须实现了相同的接口类型。如果有一个值是常量，那么他的类型必须与另一个类型兼容。这意味着一个无类型的数值常量可以跟另一个任意数值类型的值进行比较，但是不同类型且非常量的数值不能直接比较。</p>
+<h2 id="数值类型"><a href="#数值类型" class="headerlink" title="数值类型"></a>数值类型</h2><p>类型转换用<code>type(value)</code>的形式。</p>
+<p>大整数的用法（Machin 公式），一些方法会再返回时将结果保存回其接收器中，也即<code>big.Int</code>类型大部分方法会修改他的接收器（这样做是为了节省创建大量临时<code>big.Int</code>值的开销）。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> π<span class="params">(places <span class="keyword">int</span>)</span> *<span class="title">big</span>.<span class="title">Int</span></span> &#123;</span><br><span class="line">    digits := big.NewInt(<span class="keyword">int64</span>(places))</span><br><span class="line">    unity := big.NewInt(<span class="number">0</span>)</span><br><span class="line">    ten := big.NewInt(<span class="number">10</span>)</span><br><span class="line">    exponent := big.NewInt(<span class="number">0</span>)</span><br><span class="line">    unity.Exp(ten, exponent.Add(digits, ten), <span class="literal">nil</span>)</span><br><span class="line">    pi := big.NewInt(<span class="number">4</span>)</span><br><span class="line">    left := arccot(big.NewInt(<span class="number">5</span>), unity)</span><br><span class="line">    left.Mul(left, big.NewInt(<span class="number">4</span>))</span><br><span class="line">    right := arccot(big.NewInt(<span class="number">239</span>), unity)</span><br><span class="line">    left.Sub(left, right)</span><br><span class="line">    pi.Mul(pi, left)</span><br><span class="line">    <span class="keyword">return</span> pi.Div(pi, big.NewInt(<span class="number">0</span>).Exp(ten, ten, <span class="literal">nil</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="浮点类型"><a href="#浮点类型" class="headerlink" title="浮点类型"></a>浮点类型</h2><p>Go 内置的浮点类型：<code>float32</code>,<code>float64</code>,<code>complex64</code>（实部虚部都是一个 float32）,<code>complex128</code>（实部虚部都是一个 float64）。</p>
+<p>介绍了一些 math 包中的常量与函数</p>
+<h2 id="例子：statistics"><a href="#例子：statistics" class="headerlink" title="例子：statistics"></a>例子：statistics</h2><p>一个 Web 服务器统计工具</p>
+<h3 id="实现一个简单的统计函数"><a href="#实现一个简单的统计函数" class="headerlink" title="实现一个简单的统计函数"></a>实现一个简单的统计函数</h3><p>定义类型</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> statistics <span class="keyword">struct</span> &#123;</span><br><span class="line">    numbers []<span class="keyword">float64</span></span><br><span class="line">    mean    <span class="keyword">float64</span></span><br><span class="line">    median  <span class="keyword">float64</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">getStats</span><span class="params">(numbers []<span class="keyword">float64</span>)</span> <span class="params">(stats statistics)</span></span> &#123;</span><br><span class="line">    <span class="comment">// 切片赋值</span></span><br><span class="line">    stats.numbers = numbers</span><br><span class="line">    <span class="comment">// 修改了</span></span><br><span class="line">    sort.Float64s(stats.numbers)</span><br><span class="line">    stats.mean = sum(numbers) / <span class="keyword">float64</span>(<span class="built_in">len</span>(numbers))</span><br><span class="line">    stats.median = median(numbers)</span><br><span class="line">    <span class="keyword">return</span> stats</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>getStatus 函数作用就是传入<code>[]float64</code>切片，然后统计，返回制定类型（带切片、统计数据的 statistics 聚合类型）。</p>
+<p>其中计算中位数使用了<code>sort</code>包里的<code>Float64s()</code>函数对原数组进行排序，也就是说<code>getStatus</code>修改了切片参数，这种情况在传切片、引用或者指针到函数时很常见。<strong>如果要保留</strong>原始切片，可以使用 Go 语言内置的<code>copy()</code>函数，将它赋值到一个临时变量，使用临时变量来工作。</p>
+<h3 id="实现一个基本的-HTTP-服务器"><a href="#实现一个基本的-HTTP-服务器" class="headerlink" title="实现一个基本的 HTTP 服务器"></a>实现一个基本的 HTTP 服务器</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    http.HandleFunc(<span class="string">"/"</span>, homePage)</span><br><span class="line">    <span class="keyword">if</span> err := http.ListenAndServ    (<span class="string">":9002"</span>, <span class="literal">nil</span>); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatal(<span class="string">"failed to start  server"</span>, err)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>http.HandleFunc()</code>函数用来注册“路径-函数”，两个参数：一个路径，一个当这个路径被请求时会被执行的函数的引用。</p>
+<p><code>http.ListenAndServe()</code>函数使用给定的 TCP 地址启动一个 Web 服务器，第二个参数支持自定义服务器，为空的花表示使用默认的类型。</p>
 
       
     </div>
@@ -543,6 +562,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/post/c8194796.html" rel="prev" title="UbuntuToGo——Ubuntu系统便捷设置">
+                UbuntuToGo——Ubuntu系统便捷设置 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -623,7 +646,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">292</span>
+                  <span class="site-state-item-count">297</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -634,7 +657,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-count">39</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -645,7 +668,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">165</span>
+                  <span class="site-state-item-count">167</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -761,7 +784,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#布尔与数值类型"><span class="nav-number">1.</span> <span class="nav-text">布尔与数值类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#注释"><span class="nav-number">1.1.</span> <span class="nav-text">注释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常量和变量"><span class="nav-number">1.2.</span> <span class="nav-text">常量和变量</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#布尔与数值类型"><span class="nav-number">1.</span> <span class="nav-text">布尔与数值类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#注释"><span class="nav-number">1.1.</span> <span class="nav-text">注释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常量和变量"><span class="nav-number">1.2.</span> <span class="nav-text">常量和变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#布尔与布尔表达式"><span class="nav-number">1.3.</span> <span class="nav-text">布尔与布尔表达式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数值类型"><span class="nav-number">1.4.</span> <span class="nav-text">数值类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#浮点类型"><span class="nav-number">1.5.</span> <span class="nav-text">浮点类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#例子：statistics"><span class="nav-number">1.6.</span> <span class="nav-text">例子：statistics</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实现一个简单的统计函数"><span class="nav-number">1.6.1.</span> <span class="nav-text">实现一个简单的统计函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现一个基本的-HTTP-服务器"><span class="nav-number">1.6.2.</span> <span class="nav-text">实现一个基本的 HTTP 服务器</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -796,7 +819,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">318.9k</span>
+    <span title="Site words total count">323.6k</span>
   
 </div>
 
