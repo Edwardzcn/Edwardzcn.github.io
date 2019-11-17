@@ -106,7 +106,7 @@
 <meta property="og:site_name" content="Eddy的个人博客">
 <meta property="og:description" content="开始编辑、编译与运行Go 语言的官方编译器被称为 gc，包括编译工具5g、6g和8g，链接工具5l、6l和8l，以及文档查看工具godoc，这些古怪的命名习惯源自 Plan 9 操作系统，例如用数字来表示处理器的架构（5 代表 ARM，6 代表包括 Intel 64 位处理器在内的 AMD64 架构，而 8 则代表 Intel 386） Go 语言针对的处理单元是包而非文件，这意味着我们可以将包拆">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-11-07T01:10:13.480Z">
+<meta property="og:updated_time" content="2019-11-10T05:00:19.871Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Go学习——《Go语言程序设计》Chap1">
 <meta name="twitter:description" content="开始编辑、编译与运行Go 语言的官方编译器被称为 gc，包括编译工具5g、6g和8g，链接工具5l、6l和8l，以及文档查看工具godoc，这些古怪的命名习惯源自 Plan 9 操作系统，例如用数字来表示处理器的架构（5 代表 ARM，6 代表包括 Intel 64 位处理器在内的 AMD64 架构，而 8 则代表 Intel 386） Go 语言针对的处理单元是包而非文件，这意味着我们可以将包拆">
@@ -431,7 +431,18 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Go/" itemprop="url" rel="index">
+                  <a href="/categories/编程/" itemprop="url" rel="index">
+                    <span itemprop="name">编程</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/编程/Go/" itemprop="url" rel="index">
                     <span itemprop="name">Go</span>
                   </a>
                 </span>
@@ -560,7 +571,7 @@
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    questions := <span class="built_in">make</span>(<span class="keyword">chan</span> polar)</span><br><span class="line">    <span class="keyword">defer</span> <span class="built_in">close</span>(questions)</span><br><span class="line">    answers := createSolver(questions)</span><br><span class="line">    <span class="keyword">defer</span> <span class="built_in">close</span>(answers)</span><br><span class="line">    interact(questions, answers)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">createSolver</span><span class="params">(questions <span class="keyword">chan</span> polar)</span> <span class="title">chan</span> <span class="title">cartesian</span></span> &#123;</span><br><span class="line">    answers := <span class="built_in">make</span>(<span class="keyword">chan</span> cartesian)</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">for</span> &#123;</span><br><span class="line">            polarCoord := &lt;-questions</span><br><span class="line">            θ := polarCoord.θ * math.Pi / <span class="number">180.0</span> <span class="comment">// degrees to radians</span></span><br><span class="line">            x := polarCoord.radius * math.Cos(θ)</span><br><span class="line">            y := polarCoord.radius * math.Sin(θ)</span><br><span class="line">            answers &lt;- cartesian&#123;x, y&#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line">    <span class="keyword">return</span> answers</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">interact</span><span class="params">(questions <span class="keyword">chan</span> polar, answers <span class="keyword">chan</span> cartesian)</span></span> &#123;</span><br><span class="line">    reader := bufio.NewReader(os.Stdin)</span><br><span class="line">    fmt.Println(prompt)</span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        fmt.Printf(<span class="string">"Radius and angle: "</span>)</span><br><span class="line">        line, err := reader.ReadString(<span class="string">'\n'</span>)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">var</span> radius, θ <span class="keyword">float64</span></span><br><span class="line">        <span class="keyword">if</span> _, err := fmt.Sscanf(line, <span class="string">"%f %f"</span>, &amp;radius, &amp;θ); err != <span class="literal">nil</span> &#123;</span><br><span class="line">            fmt.Fprintln(os.Stderr, <span class="string">"invalid input"</span>)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        &#125;</span><br><span class="line">        questions &lt;- polar&#123;radius, θ&#125;</span><br><span class="line">        coord := &lt;-answers</span><br><span class="line">        fmt.Printf(result, radius, θ, coord.x, coord.y)</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Println()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>原理解释：</p>
 <blockquote>
-<p>用户输入了合法数字并已经以<code>polar</code>结构体的格式发送到<code>questions</code>通道，那么就会阻塞主<code>goroutine</code>，等待answers通道的响应。<code>createSolver()</code>函数额外创建的一个<code>goroutine</code>会阻塞等待<code>questions</code>通道接收到一个<code>polar</code>类型的数据，因此当我们发送<code>polar</code>数据后，这个<code>goroutine</code>将会执行计算，并将计算结果发送会<code>answer</code>通道，然后等待另一个问题的输入（在开始阻塞自身），而一旦<code>interact()</code>函数在<code>answers</code>通道上接收到<code>cartesian</code>，就不再阻塞，这样就会打印出相关信息。</p>
+<p>用户输入了合法数字并已经以<code>polar</code>结构体的格式发送到<code>questions</code>通道，那么就会阻塞主<code>goroutine</code>，等待 answers 通道的响应。<code>createSolver()</code>函数额外创建的一个<code>goroutine</code>会阻塞等待<code>questions</code>通道接收到一个<code>polar</code>类型的数据，因此当我们发送<code>polar</code>数据后，这个<code>goroutine</code>将会执行计算，并将计算结果发送会<code>answer</code>通道，然后等待另一个问题的输入（在开始阻塞自身），而一旦<code>interact()</code>函数在<code>answers</code>通道上接收到<code>cartesian</code>，就不再阻塞，这样就会打印出相关信息。</p>
 </blockquote>
 
       
@@ -685,7 +696,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">297</span>
+                  <span class="site-state-item-count">302</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -696,7 +707,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">39</span>
+                  <span class="site-state-item-count">41</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -707,7 +718,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">167</span>
+                  <span class="site-state-item-count">169</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -858,7 +869,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">323.6k</span>
+    <span title="Site words total count">327.2k</span>
   
 </div>
 
@@ -1104,7 +1115,7 @@
         }
       });
     </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -1112,4 +1123,4 @@
 
   
 
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>

@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+<meta name="baidu-site-verification" content="ZzhwBFUe1V" />
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/0f81ff2f.js","daovoice")
+  daovoice('init', {
+      app_id: "61c4e5db"
+    });
+  daovoice('update');
+  </script>
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Go," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="Eddy的个人博客" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="集合类型Go 语言的指针与 C/C++中的之后怎类似，无论是语法上还是语意上。但是 Go 语言的指针不支持指针运算，这样就消除了在 C/C++程序中一类潜在的 bug。Go 语言也不用 free()函数或者 delete 操作符号，因为 Go 语言有垃圾回收器，并且自动管理内存。 值、指针和引用类型通常情况下 Go 语言的变量持有相应的值。也就是说，我们可以将一个变量想象成它所持有的值来使用。其中">
+<meta name="keywords" content="Go">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go学习——《Go语言程序设计》Chap4">
+<meta property="og:url" content="http://www.edwardzcn98yx.com/post/9e963558.html">
+<meta property="og:site_name" content="Eddy的个人博客">
+<meta property="og:description" content="集合类型Go 语言的指针与 C/C++中的之后怎类似，无论是语法上还是语意上。但是 Go 语言的指针不支持指针运算，这样就消除了在 C/C++程序中一类潜在的 bug。Go 语言也不用 free()函数或者 delete 操作符号，因为 Go 语言有垃圾回收器，并且自动管理内存。 值、指针和引用类型通常情况下 Go 语言的变量持有相应的值。也就是说，我们可以将一个变量想象成它所持有的值来使用。其中">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-11-17T09:03:49.616Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Go学习——《Go语言程序设计》Chap4">
+<meta name="twitter:description" content="集合类型Go 语言的指针与 C/C++中的之后怎类似，无论是语法上还是语意上。但是 Go 语言的指针不支持指针运算，这样就消除了在 C/C++程序中一类潜在的 bug。Go 语言也不用 free()函数或者 delete 操作符号，因为 Go 语言有垃圾回收器，并且自动管理内存。 值、指针和引用类型通常情况下 Go 语言的变量持有相应的值。也就是说，我们可以将一个变量想象成它所持有的值来使用。其中">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'I0P7TBILS9',
+      apiKey: '1cbd304cdb7292372541bc8f3d868016',
+      indexName: 'EddyBlog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.edwardzcn98yx.com/post/9e963558.html"/>
+
+
+
+
+
+  <title>Go学习——《Go语言程序设计》Chap4 | Eddy的个人博客</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/Edwardzcn" class="github-corner" aria-label="View source on Github">
+    <svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true">
+    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+    <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+    <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path>
+    </svg>
+    </a>
+    <style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Eddy的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">相知相遇，即是幸运</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            我的首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于我
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            目录总览
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-reading">
+          <a href="/categories/阅读" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            阅读
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-travelling">
+          <a href="/categories/旅行" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            旅行
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-programming">
+          <a href="/categories/编程" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            编程
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-essay">
+          <a href="/categories/随笔" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            随笔
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            时间线
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-schedule">
+          <a href="/schedule/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />
+            
+            日程表
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/9e963558.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Go学习——《Go语言程序设计》Chap4</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-10T12:58:14+08:00">
+                2019-11-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/编程/" itemprop="url" rel="index">
+                    <span itemprop="name">编程</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/编程/Go/" itemprop="url" rel="index">
+                    <span itemprop="name">Go</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3,011
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  13
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="集合类型"><a href="#集合类型" class="headerlink" title="集合类型"></a>集合类型</h1><p>Go 语言的指针与 C/C++中的之后怎类似，无论是语法上还是语意上。但是 Go 语言的指针不支持指针运算，这样就消除了在 C/C++程序中一类潜在的 bug。Go 语言也不用 free()函数或者 delete 操作符号，因为 Go 语言有垃圾回收器，并且自动管理内存。</p>
+<h2 id="值、指针和引用类型"><a href="#值、指针和引用类型" class="headerlink" title="值、指针和引用类型"></a>值、指针和引用类型</h2><p>通常情况下 Go 语言的变量持有相应的值。也就是说，我们可以将一个变量想象成它所持有的值来使用。其中有些例外是对于通道、函数、方法、映射以及切片的引用变量。它们持有的都是<strong>引用</strong>，也即<strong>保存指针的变量</strong>。</p>
+<p>对于字符串，如果修改一个传入的字符串（例如，使用<code>+=</code>操作符），Go 语言必须创建一个新的字符串，并且复制原始的字符串，并将其加到该字符串之后，这对于大字符串来说很可能代价非常大。（实际上，如<a href="https://www.edwardzcn98yx.com/post/f2a0fb.html">Chap3</a>里面讲的，更多时候我们会准备一个字符切片<code>[]string</code>,或者用<code>bytes.Buffer</code>对应方法实现）</p>
+<p>剩下的指针与 C/C++及其类似，在此不再赘述，需要特别了解的是，虽然 Go 编译器可能在内部将栈和堆的内存区分对待，但是 Go 程序员从不需要担心这些，因为 Go 语言自己会在内部处理好内存管理的事情。</p>
+<p>我的测试</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">z := <span class="number">37</span></span><br><span class="line">pi := &amp;z</span><br><span class="line">ppi := &amp;pi</span><br><span class="line">fmt.Println(z, *pi, **ppi)</span><br><span class="line">**ppi++</span><br><span class="line">fmt.Println(z, *pi, **ppi)</span><br><span class="line">fmt.Println(reflect.TypeOf(pi))</span><br><span class="line">fmt.Println(reflect.TypeOf(ppi))</span><br></pre></td></tr></table></figure>
+<p>测试结果</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">37</span> <span class="number">37</span> <span class="number">37</span></span><br><span class="line"><span class="number">38</span> <span class="number">38</span> <span class="number">38</span></span><br><span class="line">*<span class="keyword">int</span></span><br><span class="line">**<span class="keyword">int</span></span><br></pre></td></tr></table></figure>
+<p>对于 swap 等操作（需要对变量本身而非变量的副本进行操作），C/C++的常见思路是将需要操作的原始变量的指针以参数形式传入函数并进行修改，而 Go 提供了一个更人性化的方法，一般而言，对于少量这样的变量，我们仍采用按值传递的方式，然后通过<strong>多返回值</strong>的设计完成需要，或者，对于大量的，我们会传入一个切片来达到效果。</p>
+<p>表示成功与失败，C/C++中习惯传入一个布尔类型指针，Go 语言中直接以最后一个返回值的形式返回一个布尔型的成功标志（或者最好是一个 error 值）的写法更好用。</p>
+<h2 id="数组和切片"><a href="#数组和切片" class="headerlink" title="数组和切片"></a>数组和切片</h2><h3 id="数组的创建方法"><a href="#数组的创建方法" class="headerlink" title="数组的创建方法"></a>数组的创建方法</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[length]Type</span><br><span class="line">[N]Type&#123;v1,v2,v3,...,vn&#125;</span><br><span class="line">[...]Type&#123;v1,v2,v3,...,vn&#125;</span><br></pre></td></tr></table></figure>
+<p><code>...</code>在这种场景下使用，Go 会自动补全，我们可以理解为定长度的（与后面切片的变长相对应）。</p>
+<p>一般而言，Go 语言的切片比数组更加灵活、强大且方便。数组是按值传递的（即传递副本，虽然可以通过传递指针来避免，PS 这么操作的话 Go 比 C/C++还反人类）。</p>
+<p>虽然数组和切片所保存的元素类型相同，但<strong>在实际使用中并不受此限</strong>。这是因为其类型也可以是一个接口。因此<strong>我们可以保存任意满足</strong>所声明的接口的元素（即它们定义了该接口所需的方法）。然后我们可以让一个数组或者切片为空接口 <code>interface{}</code>，这意味着我们可以存储任意类型的元素，不过这导致我们在获取一个元素时需要使用<strong>类型断言</strong>或者<strong>类型转变</strong>，或者两者配合使用。</p>
+<h3 id="切片的创建方法"><a href="#切片的创建方法" class="headerlink" title="切片的创建方法"></a>切片的创建方法</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">make</span>([]Type, length, capacity)</span><br><span class="line"><span class="built_in">make</span>([]Type, length)</span><br><span class="line">[]Type&#123;&#125;</span><br><span class="line">[]Type&#123;value1,value2,...,valueN&#125;</span><br></pre></td></tr></table></figure>
+<p>切片创建时会创建一个<strong>隐藏的</strong>初始化为零值的数组（如果使用第四种方法则是有初始值的）。一个切片的容量即为其隐藏数组的长度，而其长度为不超过容量的任意值。</p>
+<p>实际中使用空切片，<code>make()</code>创建会更实用，只需将长度设为 0，并且将容量设为一个我们估计需要保存元素的个数。</p>
+<p><strong>切片再切片是引用</strong>，<strong>切片参数也是引用</strong>，都是对同一底层数组的引用，其中一个<strong>改变</strong>会影响到其他所有指向该相同数组的任何其他引用。</p>
+<p>二维切片的实验：</p>
+<p>使用长度为 3（即包含三个切片和容量为 3（默认容量为其长度）来创建一个切片的切片 grid），我们尝试让内层切片长度不一样。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"os"</span></span><br><span class="line">    <span class="string">"strconv"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// debug参数设定为 ["3","4","5"]</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(os.Args) &lt; <span class="number">4</span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">"This program needs three int:"</span>)</span><br><span class="line">    os.Exit(<span class="number">1</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    grid1 := <span class="built_in">make</span>([][]<span class="keyword">int</span>, <span class="number">3</span>)</span><br><span class="line">    <span class="keyword">for</span> index := <span class="number">0</span>; index &lt; <span class="number">3</span>; index++ &#123;</span><br><span class="line">        parint, _ := strconv.ParseInt(os.Args[index+<span class="number">1</span>], <span class="number">10</span>, <span class="number">0</span>)</span><br><span class="line">        grid1[index] = <span class="built_in">make</span>([]<span class="keyword">int</span>, parint)</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Println(grid1)</span><br><span class="line">    grid1[<span class="number">0</span>][<span class="number">0</span>], grid1[<span class="number">1</span>][<span class="number">1</span>], grid1[<span class="number">2</span>][<span class="number">2</span>] = <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span></span><br><span class="line">    fmt.Println(grid1)</span><br><span class="line">    <span class="comment">// [[0 0 0] [0 0 0 0] [0 0 0 0 0]]</span></span><br><span class="line">    <span class="comment">// [[1 0 0] [0 2 0 0] [0 0 3 0 0]]</span></span><br><span class="line">    <span class="comment">// 符合预期</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="遍历切片"><a href="#遍历切片" class="headerlink" title="遍历切片"></a>遍历切片</h3><p>for…range 循化，带循环计数器的循环，（”_“）表示丢弃该值</p>
+<p>我的实验：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">grid2 := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">5</span>)</span><br><span class="line"><span class="keyword">for</span> _, i := <span class="keyword">range</span> grid2 &#123;</span><br><span class="line">    fmt.Println(i)</span><br><span class="line">    i = <span class="number">2</span></span><br><span class="line">&#125;</span><br><span class="line">fmt.Println(grid2)</span><br><span class="line"><span class="keyword">for</span> k, _ := <span class="keyword">range</span> grid2 &#123;</span><br><span class="line">    grid2[k] = <span class="number">2</span></span><br><span class="line">&#125;</span><br><span class="line">fmt.Println(grid2)</span><br></pre></td></tr></table></figure>
+<p>输出为</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span></span><br><span class="line"><span class="number">0</span></span><br><span class="line"><span class="number">0</span></span><br><span class="line"><span class="number">0</span></span><br><span class="line"><span class="number">0</span></span><br><span class="line">[<span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span>]</span><br><span class="line">[<span class="number">2</span> <span class="number">2</span> <span class="number">2</span> <span class="number">2</span> <span class="number">2</span>]</span><br></pre></td></tr></table></figure>
+<p>发现取到的值是值，改变并不会引起切片的改变，<strong>如果我们想要修改切片中的项，我们必须使用可以提供有效切片索引而非仅仅是元素副本的 for 循环</strong>，需要区分切片本身引用与 for 循环取值副本的差别。</p>
+<h3 id="切片的修改"><a href="#切片的修改" class="headerlink" title="切片的修改"></a>切片的修改</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">s = []<span class="keyword">string</span>&#123;&#125;</span><br><span class="line">t = []<span class="keyword">string</span>&#123;<span class="string">"a"</span>,<span class="string">"b"</span>,<span class="string">"c"</span>,<span class="string">"d"</span>&#125;</span><br><span class="line">s = <span class="built_in">append</span>(s,<span class="string">"h"</span>,<span class="string">"i"</span>,<span class="string">"j"</span>) <span class="comment">//添加多个单一值</span></span><br><span class="line">s = <span class="built_in">append</span>(s, t...) <span class="comment">//添加t整个切片中所有值</span></span><br><span class="line">s = <span class="built_in">append</span>(s, t[<span class="number">1</span>:<span class="number">3</span>]...) <span class="comment">// 添加一个子切片所有值</span></span><br><span class="line">b := []<span class="keyword">byte</span>&#123;<span class="string">'U'</span>,<span class="string">'V'</span>&#125;</span><br><span class="line">letters := <span class="string">"WXY"</span></span><br><span class="line">b = <span class="built_in">append</span>(b, letters...) <span class="comment">//将字符串字节添加到字节且片中</span></span><br></pre></td></tr></table></figure>
+<p><code>...</code>这时候很像<code>解包</code>，把切片拆解为底层构成元素然后统一放入。</p>
+<h3 id="排序和搜索切片"><a href="#排序和搜索切片" class="headerlink" title="排序和搜索切片"></a>排序和搜索切片</h3><p>一些常用方法：<code>sort.Float64s()</code>,<code>sort.Ints()</code>,<code>sort.IntsAreSorted()</code>等等。</p>
+<p><code>sort.Sort()</code>函数能够对任意类型进行排序，只需其类型提供了<code>sort.Int结果义的方法，**即只要这些类型根据相应的签名实现了</code>Len(结果 Swap()`**等方法，便可以使用函数排序，下面是自己对结果</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> m结果</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span>结果</span><br><span class="line">    <span class="string">"sort"</span></span><br><span class="line">    <span class="string">"strings"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> FoldedString []<span class="keyword">string</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(slice FoldedString)</span> <span class="title">Len</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">len</span>(slice)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(slice FoldedString)</span> <span class="title">Less</span><span class="params">(i <span class="keyword">int</span>, j <span class="keyword">int</span>)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> strings.ToLower(slice[i]) &lt; strings.ToLower(slice[j])</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(slice FoldedString)</span> <span class="title">Swap</span><span class="params">(i <span class="keyword">int</span>, j <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    slice[i], slice[j] = slice[j], slice[i]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    test1 := <span class="built_in">make</span>(FoldedString, <span class="number">2</span>)</span><br><span class="line">    test1 = <span class="built_in">append</span>(test1, <span class="string">"who"</span>)</span><br><span class="line">    test1 = <span class="built_in">append</span>(test1, <span class="string">"What"</span>)</span><br><span class="line">    test1 = <span class="built_in">append</span>(test1, <span class="string">"Answer"</span>)</span><br><span class="line">    fmt.Println(test1)</span><br><span class="line">    sort.Sort(test1)</span><br><span class="line">    fmt.Println(test1)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>sort.Search()</code>提供了一个二分搜索算法的函数。该函数两个参数：长度、与元素比较的函数（必须为闭包，闭包在下一节涉及）。</p>
+<h2 id="映射"><a href="#映射" class="headerlink" title="映射"></a>映射</h2><p>某些场合也成为散列映射、散列表、无序映射、字典。</p>
+<h3 id="映射的操作"><a href="#映射的操作" class="headerlink" title="映射的操作"></a>映射的操作</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:left">语法</th>
+<th style="text-align:left">含义/结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>make[k] = v</code></td>
+<td style="text-align:left">用键 k 将值 v 赋给映射 m。如果映射中存在，抛弃原先值。</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>Delete(m,k)</code></td>
+<td style="text-align:left">将键 k 及其值从映射 m 删除，如果不存在则安全地不进行任何操作。</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>v:= m[k]</code></td>
+<td style="text-align:left">从映射 m 中取得键 k 的值赋给 v，如果不存在则赋<strong>类型 0 值</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>v,found := m[k]</code></td>
+<td style="text-align:left">v 同上，存在则 found 为 true，否则为 false</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>len(m)</code></td>
+<td style="text-align:left">返回映射 m 中的项数</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>创建删除等过程和切片很类似（make 方式），时间复杂度直接索引要比切片慢两个数量级（非正式数据）</p>
+<h2 id="例子：猜测分割符"><a href="#例子：猜测分割符" class="headerlink" title="例子：猜测分割符"></a>例子：猜测分割符</h2><p>例子很简单，二维切片<code>counts [][]int</code>，外层是<code>sepIndex</code>（分割符的 index），内层是<code>lineIndex</code>行数，统计一下内层全相同且不为 0 的就可以了。</p>
+<h2 id="例子：词频统计"><a href="#例子：词频统计" class="headerlink" title="例子：词频统计"></a>例子：词频统计</h2><p>这个例子里面涉及到 UTF 编码文件的分割和映射反转（多值），所以详细看了下。</p>
+<h3 id="处理文件"><a href="#处理文件" class="headerlink" title="处理文件"></a>处理文件</h3><ul>
+<li><p>主函数</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(os.Args) == <span class="number">1</span> || os.Args[<span class="number">1</span>] == <span class="string">"-h"</span> || os.Args[<span class="number">1</span>] == <span class="string">"--help"</span> &#123;</span><br><span class="line">        fmt.Printf(<span class="string">"usage: %s &lt;file1&gt; [&lt;file2&gt; [... &lt;fileN&gt;]]\n"</span>,</span><br><span class="line">            filepath.Base(os.Args[<span class="number">0</span>]))</span><br><span class="line">        os.Exit(<span class="number">1</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    frequencyForWord := <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>&#123;&#125; <span class="comment">// Same as: make(map[string]int)</span></span><br><span class="line">    <span class="keyword">for</span> _, filename := <span class="keyword">range</span> commandLineFiles(os.Args[<span class="number">1</span>:]) &#123;</span><br><span class="line">        updateFrequencies(filename, frequencyForWord)</span><br><span class="line">    &#125;</span><br><span class="line">    reportByWords(frequencyForWord)</span><br><span class="line">    wordsForFrequency := invertStringIntMap(frequencyForWord)</span><br><span class="line">    reportByFrequency(wordsForFrequency)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>主函数描述了基本流程，建立空映射，便利文件处理更新映射。得到第一个映射后就输出第一份报告<code>reportByWords()</code>这是以字符为键的，然后进行映射反转构建以频数为键的多值映射，并输出第二份报告<code>reportByFrequency()</code>。</p>
+</li>
+<li><p>Windows 通配符处理函数</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">commandLineFiles</span><span class="params">(files []<span class="keyword">string</span>)</span> []<span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> runtime.GOOS == <span class="string">"windows"</span> &#123;</span><br><span class="line">        args := <span class="built_in">make</span>([]<span class="keyword">string</span>, <span class="number">0</span>, <span class="built_in">len</span>(files))</span><br><span class="line">        <span class="keyword">for</span> _, name := <span class="keyword">range</span> files &#123;</span><br><span class="line">            <span class="keyword">if</span> matches, err := filepath.Glob(name); err != <span class="literal">nil</span> &#123;</span><br><span class="line">                args = <span class="built_in">append</span>(args, name) <span class="comment">// Invalid pattern</span></span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> matches != <span class="literal">nil</span> &#123; <span class="comment">// At least one match</span></span><br><span class="line">                args = <span class="built_in">append</span>(args, matches...)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> args</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> files</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由于 cmd 不支持通配符，对传入参数（文件名）进行预处理</p>
+</li>
+<li><p>文件处理函数</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">updateFrequencies</span><span class="params">(filename <span class="keyword">string</span>, frequencyForWord <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> file *os.File</span><br><span class="line">    <span class="keyword">var</span> err error</span><br><span class="line">    <span class="keyword">if</span> file, err = os.Open(filename); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Println(<span class="string">"failed to open the file: "</span>, err)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> file.Close()</span><br><span class="line">    readAndUpdateFrequencies(bufio.NewReader(file), frequencyForWord)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>打开文件，并用<code>defer</code>让函数返回时关闭文件句柄，并将文件作为<code>*bufferio.Reader</code>传给实际工作函数，实际工作函数<code>readAndUpdateFrequencies()</code><strong>按行读取而不是读取</strong>字节流。</p>
+</li>
+<li><p>实际工作函数</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">readAndUpdateFrequencies</span><span class="params">(reader *bufio.Reader,</span></span></span><br><span class="line"><span class="function"><span class="params">    frequencyForWord <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        line, err := reader.ReadString(<span class="string">'\n'</span>)</span><br><span class="line">        <span class="keyword">for</span> _, word := <span class="keyword">range</span> SplitOnNonLetters(strings.TrimSpace(line)) &#123;</span><br><span class="line">            <span class="keyword">if</span> <span class="built_in">len</span>(word) &gt; utf8.UTFMax ||</span><br><span class="line">                utf8.RuneCountInString(word) &gt; <span class="number">1</span> &#123;</span><br><span class="line">                frequencyForWord[strings.ToLower(word)] += <span class="number">1</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> err != io.EOF &#123;</span><br><span class="line">                log.Println(<span class="string">"failed to finish reading the file: "</span>, err)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>一个无限循环一行一行读取文件，出现错误的时候报告并给 log，但不直接退出程序（因为还有其他文件需要处理）。</p>
+<p>按行读取<code>reader.ReadString(&#39;\n&#39;)</code>，然后内循环处理每行，对单词进行分割并忽略掉非单词的字符。一开始使用<code>strings.TrimeSpace(line)</code>去除行开头和结束的空白。</p>
+<p>为了快速检查，使用 if 的两个分句，首先检查其长度是否大于 UTF 最多需要的字节，如果多，则必为符合要求的 word（因为分割是按照非 unicode 的 letter 分割的），如果少，那么再特判断，检查 rune 的个数。</p>
+<ul>
+<li><p>分割函数</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">SplitOnNonLetters</span><span class="params">(s <span class="keyword">string</span>)</span> []<span class="title">string</span></span> &#123;</span><br><span class="line">    notALetter := <span class="function"><span class="keyword">func</span><span class="params">(char <span class="keyword">rune</span>)</span> <span class="title">bool</span></span> &#123; <span class="keyword">return</span> !unicode.IsLetter(char) &#125;</span><br><span class="line">    <span class="keyword">return</span> strings.FieldsFunc(s, notALetter)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>用于对行进行字符切分，应用的是<code>strings.FieldsFunc</code>，传入原始字符串和 bool 类型返回值的函数，进行多字符切分（字符串一节有涉及），<code>strings.Split</code>和<code>strings.FieldsFunc</code>详细解释，可以看着一篇<a href="https://medium.com/@mlowicki/strings-fieldsfunc-vs-strings-split-96c667912f78" target="_blank" rel="noopener">Medium:strings.FieldsFunc vs strings.Split</a>。</p>
+</li>
+</ul>
+</li>
+<li><p>统计、反映射与输出函数</p>
+<p>给出实现，不再分析</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">reportByWords</span><span class="params">(frequencyForWord <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    words := <span class="built_in">make</span>([]<span class="keyword">string</span>, <span class="number">0</span>, <span class="built_in">len</span>(frequencyForWord))</span><br><span class="line">    wordWidth, frequencyWidth := <span class="number">0</span>, <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> word, frequency := <span class="keyword">range</span> frequencyForWord &#123;</span><br><span class="line">        words = <span class="built_in">append</span>(words, word)</span><br><span class="line">        <span class="keyword">if</span> width := utf8.RuneCountInString(word); width &gt; wordWidth &#123;</span><br><span class="line">            wordWidth = width</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> width := <span class="built_in">len</span>(fmt.Sprint(frequency)); width &gt; frequencyWidth &#123;</span><br><span class="line">            frequencyWidth = width</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    sort.Strings(words)</span><br><span class="line">    gap := wordWidth + frequencyWidth - <span class="built_in">len</span>(<span class="string">"Word"</span>) - <span class="built_in">len</span>(<span class="string">"Frequency"</span>)</span><br><span class="line">    fmt.Printf(<span class="string">"Word %*s%s\n"</span>, gap, <span class="string">" "</span>, <span class="string">"Frequency"</span>)</span><br><span class="line">    <span class="keyword">for</span> _, word := <span class="keyword">range</span> words &#123;</span><br><span class="line">        fmt.Printf(<span class="string">"%-*s %*d\n"</span>, wordWidth, word, frequencyWidth,</span><br><span class="line">            frequencyForWord[word])</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">reportByFrequency</span><span class="params">(wordsForFrequency <span class="keyword">map</span>[<span class="keyword">int</span>][]<span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    frequencies := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">0</span>, <span class="built_in">len</span>(wordsForFrequency))</span><br><span class="line">    <span class="keyword">for</span> frequency := <span class="keyword">range</span> wordsForFrequency &#123;</span><br><span class="line">        frequencies = <span class="built_in">append</span>(frequencies, frequency)</span><br><span class="line">    &#125;</span><br><span class="line">    sort.Ints(frequencies)</span><br><span class="line">    width := <span class="built_in">len</span>(fmt.Sprint(frequencies[<span class="built_in">len</span>(frequencies)<span class="number">-1</span>]))</span><br><span class="line">    fmt.Println(<span class="string">"Frequency → Words"</span>)</span><br><span class="line">    <span class="keyword">for</span> _, frequency := <span class="keyword">range</span> frequencies &#123;</span><br><span class="line">        words := wordsForFrequency[frequency]</span><br><span class="line">        sort.Strings(words)</span><br><span class="line">        fmt.Printf(<span class="string">"%*d %s\n"</span>, width, frequency, strings.Join(words, <span class="string">", "</span>))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tag/Go/" rel="tag"> <i class="fa fa-tag"></i> Go</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/post/a5919c23.html" rel="next" title="投资银行学——Lec2">
+                <i class="fa fa-chevron-left"></i> 投资银行学——Lec2
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/post/68340cec.html" rel="prev" title="Linux操作系统——Linux文件系统">
+                Linux操作系统——Linux文件系统 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Edwardzcn" />
+            
+              <p class="site-author-name" itemprop="name">Edwardzcn</p>
+              <p class="site-description motion-element" itemprop="description">这是一个利用（可爱的）Hexo搭建的博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">302</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">41</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+            
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">169</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/rss2.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Edwardzcn" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:edwardzcn98@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.google.com" target="_blank" title="Google">
+                      
+                        <i class="fa fa-fw fa-google"></i>Google</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.zhihu.com/people/decades-42/activities" target="_blank" title="Zhihu">
+                      
+                        <i class="fa fa-fw fa-globe"></i>Zhihu</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.instagram.com/edwardz98" target="_blank" title="Instagram">
+                      
+                        <i class="fa fa-fw fa-instagram"></i>Instagram</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.github.com" title="Github" target="_blank">Github</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://yangyangyang.cc" title="yyy的博客" target="_blank">yyy的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://blog.mrcactus.cn" title="syx的博客" target="_blank">syx的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/wawcac-blog" title="SHer_zfc的博客" target="_blank">SHer_zfc的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://csuwangj.github.io/" title="DJ的博客" target="_blank">DJ的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://blog.csdn.net/SSS_Benjamin" title="cx的博客" target="_blank">cx的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.cnblogs.com/csu-lmw" title="吕少的博客" target="_blank">吕少的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://ipads.se.sjtu.edu.cn/zh/index.html" title="SJTU_IPAD梦想" target="_blank">SJTU_IPAD梦想</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#集合类型"><span class="nav-number">1.</span> <span class="nav-text">集合类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#值、指针和引用类型"><span class="nav-number">1.1.</span> <span class="nav-text">值、指针和引用类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数组和切片"><span class="nav-number">1.2.</span> <span class="nav-text">数组和切片</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数组的创建方法"><span class="nav-number">1.2.1.</span> <span class="nav-text">数组的创建方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#切片的创建方法"><span class="nav-number">1.2.2.</span> <span class="nav-text">切片的创建方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#遍历切片"><span class="nav-number">1.2.3.</span> <span class="nav-text">遍历切片</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#切片的修改"><span class="nav-number">1.2.4.</span> <span class="nav-text">切片的修改</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#排序和搜索切片"><span class="nav-number">1.2.5.</span> <span class="nav-text">排序和搜索切片</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#映射"><span class="nav-number">1.3.</span> <span class="nav-text">映射</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#映射的操作"><span class="nav-number">1.3.1.</span> <span class="nav-text">映射的操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#例子：猜测分割符"><span class="nav-number">1.4.</span> <span class="nav-text">例子：猜测分割符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#例子：词频统计"><span class="nav-number">1.5.</span> <span class="nav-text">例子：词频统计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#处理文件"><span class="nav-number">1.5.1.</span> <span class="nav-text">处理文件</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Edwardzcn</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">327.2k</span>
+  
+</div>
+
+<div class="copyright">
+<span id="busuanzi_container_site_uv"><a class="theme-link" href="http://www.miitbeian.gov.cn">冀ICP备18024730号</a></span>
+<span id="bei_an"> <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641" ><img src="https://www.edwardzcn98yx.com/batb.png" />湘公网安备 43010402000641号</a></span>
+</div>
+
+<div class="powered-by">
+<i class ="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+    本站访客数：<span id="busuanzi_value_site_uv"></span></spam></div>
+
+<!--
+
+   <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+-->
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
