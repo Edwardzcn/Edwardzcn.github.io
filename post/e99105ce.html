@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+<meta name="baidu-site-verification" content="ZzhwBFUe1V" />
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/0f81ff2f.js","daovoice")
+  daovoice('init', {
+      app_id: "61c4e5db"
+    });
+  daovoice('update');
+  </script>
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Go," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="Eddy的个人博客" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="过程式编程我学习的主要关注点是 Go 语言的并发编程，而过程式编程是并发编成和面向对象编程的基础，这一节主要细致探究过程式编程中的一些问题（语句控制结构、自定义类型和函数等） 语句基础形式上 Go 语言语法需要分号，但是编译器帮我们完成了这项任务，在以字母字面量、字符串字面量、右括号系列、一些特定关键字和增建操作符结尾的非空行末尾自动加上了分号。 两个地方必须使用分号：  一行中放入一条或者多条语">
+<meta name="keywords" content="Go">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go学习——《Go语言程序设计》Chap5">
+<meta property="og:url" content="http://www.edwardzcn98yx.com/post/e99105ce.html">
+<meta property="og:site_name" content="Eddy的个人博客">
+<meta property="og:description" content="过程式编程我学习的主要关注点是 Go 语言的并发编程，而过程式编程是并发编成和面向对象编程的基础，这一节主要细致探究过程式编程中的一些问题（语句控制结构、自定义类型和函数等） 语句基础形式上 Go 语言语法需要分号，但是编译器帮我们完成了这项任务，在以字母字面量、字符串字面量、右括号系列、一些特定关键字和增建操作符结尾的非空行末尾自动加上了分号。 两个地方必须使用分号：  一行中放入一条或者多条语">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Go/Go_Ch5_1.png">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Go/Go_Ch5_2.png">
+<meta property="og:updated_time" content="2019-11-20T08:02:05.872Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Go学习——《Go语言程序设计》Chap5">
+<meta name="twitter:description" content="过程式编程我学习的主要关注点是 Go 语言的并发编程，而过程式编程是并发编成和面向对象编程的基础，这一节主要细致探究过程式编程中的一些问题（语句控制结构、自定义类型和函数等） 语句基础形式上 Go 语言语法需要分号，但是编译器帮我们完成了这项任务，在以字母字面量、字符串字面量、右括号系列、一些特定关键字和增建操作符结尾的非空行末尾自动加上了分号。 两个地方必须使用分号：  一行中放入一条或者多条语">
+<meta name="twitter:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Go/Go_Ch5_1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'I0P7TBILS9',
+      apiKey: '1cbd304cdb7292372541bc8f3d868016',
+      indexName: 'EddyBlog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.edwardzcn98yx.com/post/e99105ce.html"/>
+
+
+
+
+
+  <title>Go学习——《Go语言程序设计》Chap5 | Eddy的个人博客</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/Edwardzcn" class="github-corner" aria-label="View source on Github">
+    <svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true">
+    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+    <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+    <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path>
+    </svg>
+    </a>
+    <style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Eddy的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">相知相遇，即是幸运</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            我的首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于我
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            目录总览
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-reading">
+          <a href="/categories/阅读" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            阅读
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-travelling">
+          <a href="/categories/旅行" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            旅行
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-programming">
+          <a href="/categories/编程" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            编程
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-essay">
+          <a href="/categories/随笔" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            随笔
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            时间线
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-schedule">
+          <a href="/schedule/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />
+            
+            日程表
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/e99105ce.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Go学习——《Go语言程序设计》Chap5</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-18T14:17:59+08:00">
+                2019-11-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/编程/" itemprop="url" rel="index">
+                    <span itemprop="name">编程</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/编程/Go/" itemprop="url" rel="index">
+                    <span itemprop="name">Go</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3,371
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  12
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="过程式编程"><a href="#过程式编程" class="headerlink" title="过程式编程"></a>过程式编程</h1><p>我学习的主要关注点是 Go 语言的并发编程，而过程式编程是并发编成和面向对象编程的基础，这一节主要细致探究过程式编程中的一些问题（语句控制结构、自定义类型和函数等）</p>
+<h2 id="语句基础"><a href="#语句基础" class="headerlink" title="语句基础"></a>语句基础</h2><p>形式上 Go 语言语法需要分号，但是编译器帮我们完成了这项任务，在以<strong>字母字面量、字符串字面量、右括号系列、一些特定关键字和增建操作符</strong>结尾的<strong>非空行末尾</strong>自动加上了分号。</p>
+<p>两个地方必须使用分号：</p>
+<ul>
+<li>一行中放入一条或者多条语句</li>
+<li>原始 for 循环</li>
+</ul>
+<p>自动插入分号的一个重要结果是<strong>一个左大括号不能单独成行</strong>（变相限制了代码风格），比如下面这个就是不可通过编译的</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 错误代码</span></span><br><span class="line"><span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">5</span>; i++</span><br><span class="line">&#123;</span><br><span class="line">    fmt.Println(i)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>内置函数</p>
+<p>除了之前见到较多的<code>append()</code>，<code>len()</code>，<code>cap()</code>，<code>make()</code>等，要着重关注学习异常相关的两个内置函数：</p>
+<ul>
+<li><code>panic(x)</code> 抛出一个运行时异常，其值为 x。</li>
+<li><code>recover()</code> 捕获一个运行时异常。</li>
+</ul>
+<h3 id="快速声明操作符"><a href="#快速声明操作符" class="headerlink" title="快速声明操作符"></a>快速声明操作符</h3><p>快速声明操作符号<code>:=</code>用于同时在一个语句中声明和赋值一个变量。多个逗号分割的用法和<code>=</code>赋值操作符一样，需要强调的是，其本身不会新建作用域，即<strong>除了必须至少有一个非空变量为新的，如果变量已经存在了，它就会被直接赋值，而不会新建一个变量，除非该<code>:=</code>操作符位于作用域的起始处，如<code>if</code>或者<code>for</code>语句中的初始化语句</strong>。</p>
+<p><code>:=</code>可以创建“影子”变量覆盖外层同名变量的值，这很方便，但在有些地方可能会引起失误和问题。</p>
+<p>我们可以在有<strong>一到多个命名返回值</strong>的函数中写<strong>无需返回值的裸 return</strong>。这种情况下，返回值将是命名的返回值，它们在函数入口被初始化为其类型零值。</p>
+<p>如果出现了返回值同名“影子”变量且涉及到 return，好在 Go 编译器会给出一个错误消息，正如下面这个样子。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Go/Go_Ch5_1.png" alt="png"></p>
+<h3 id="类型转换"><a href="#类型转换" class="headerlink" title="类型转换"></a>类型转换</h3><p>转换语法</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">resultOfType := Type(expression)</span><br></pre></td></tr></table></figure>
+<p>非数值类型之间的转换不会丢失精度，但是数值类型之间可能会。</p>
+<h3 id="类型断言"><a href="#类型断言" class="headerlink" title="类型断言"></a>类型断言</h3><p>方式有安全/非安全（抛出异常）两种</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">resultOfType, boolean := expression.(Type) <span class="comment">// 安全类型断言</span></span><br><span class="line">resultOfType := expression.(Type) <span class="comment">//非安全类型断言，失败时panic()</span></span><br></pre></td></tr></table></figure>
+<p>if+类型断言赋值给同名变量（影子变量）很常见，如果目标类型可以是很多类型之一，我们可以使用类型开关。</p>
+<h2 id="分支"><a href="#分支" class="headerlink" title="分支"></a>分支</h2><h3 id="if-语句"><a href="#if-语句" class="headerlink" title="if 语句"></a>if 语句</h3><p>Go 里面的经典用法：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> optionalSatement1; booleanExpression1&#123;</span><br><span class="line">    block1</span><br><span class="line">&#125;<span class="keyword">else</span> <span class="keyword">if</span> optionalStatement2; booleanExpression2&#123;</span><br><span class="line">    block2</span><br><span class="line">&#125;<span class="keyword">else</span> &#123;</span><br><span class="line">    block3</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>放在 if 语句中的<code>optionalStatement</code>作用于整个 if…else…if 语句，也限制于其中。</p>
+<h3 id="switch-语句"><a href="#switch-语句" class="headerlink" title="switch 语句"></a>switch 语句</h3><p>Go 语言中有两种类型的 switch 语句：表达式开关（expression switch）和类型开关（type switch）。表达式开关语句对于 C/C++/Java 程序员来说比较熟悉，然而类型开关语句是 Go<strong>专有的</strong>。</p>
+<p>需要强调的是，不同于 C/C++/Java，Go 语言的 switch 语句不会自动地乡下贯穿（因此不用每个 case 后面都加 break），相反，我们可以在需要的时候通过显式地调用 fallthrough 语句来这样做。</p>
+<ul>
+<li><p>表达式开关<br>紧凑经典实用举例：</p>
+<p>只使用一个表达式，一个带返回类型的函数，然后用逗号分割相同操作的不同 case（而舍弃用 fallthrough 贯穿写）。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">switch</span> Suffix(file)&#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">".gz"</span>:</span><br><span class="line">        <span class="keyword">return</span> GzipFileList(file)</span><br><span class="line">    <span class="keyword">case</span> <span class="string">".tar"</span>, <span class="string">".tar.gz"</span>, <span class="string">"tgz"</span>:</span><br><span class="line">        <span class="keyword">return</span> TarFileList(file)</span><br><span class="line">    <span class="keyword">case</span> <span class="string">".zip"</span>:</span><br><span class="line">        <span class="keyword">return</span> ZipFileList(file)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>字符开关<br>与类型断言相似，但是使用<code>type</code>关键字代替实际类型，以用于表示任意类型</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">switch</span> x.(<span class="keyword">type</span>)&#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="keyword">bool</span>:</span><br><span class="line">        block1</span><br><span class="line">    <span class="keyword">case</span> <span class="keyword">float64</span>:</span><br><span class="line">        block2</span><br><span class="line">    <span class="keyword">case</span> <span class="keyword">int</span>,<span class="keyword">int8</span>,<span class="keyword">int16</span>,<span class="keyword">int32</span>,<span class="keyword">int64</span>:</span><br><span class="line">        block3</span><br><span class="line">    <span class="keyword">case</span> <span class="literal">nil</span>:</span><br><span class="line">        block4</span><br><span class="line">    <span class="keyword">case</span> <span class="keyword">string</span>:</span><br><span class="line">        block5</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        block6</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>经典应用，反序列化一个内部结构未知的原始 JSON 对象，并创建和打印 JSON 对象的字符串表示。</p>
+</li>
+</ul>
+<a id="more"></a>
+<h3 id="for-循环语句"><a href="#for-循环语句" class="headerlink" title="for 循环语句"></a>for 循环语句</h3><p>for 和 for…range，记住 Go 的循环全是 for，包括但不限于</p>
+<ul>
+<li>for{} -&gt; while(1)</li>
+<li>for Expression -&gt; while(expression)</li>
+<li>for k,v := range() -&gt; for k,v in …</li>
+</ul>
+<h3 id="通信和并发语句"><a href="#通信和并发语句" class="headerlink" title="通信和并发语句"></a>通信和并发语句</h3><p>通信与并发特性在第 7 章详讲，这里描述基本语法。</p>
+<ul>
+<li><p><code>goroutine</code></p>
+<p><code>goroutine</code>是程序中与其他<code>goroutine</code>完全相互独立而并发执行的函数或者方法调用。每一个 Go 程序都至少有一个，即 main 函数中运行的。</p>
+<p><code>goroutine</code>非常像轻量级的线程或者协程。它们可以被大批量地创建。所有的<code>goroutine</code>共享相同的地址空间。同时 Go 语言提供了锁原语 🔓 来保证数据能够安全地跨<code>goroutine</code>共享。然而，Go 语言推荐的并发编程方式是通信，而非共享数据。</p>
+<p>创建方式</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">go</span> function(argu) <span class="comment">// 调用已有的函数</span></span><br><span class="line"><span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(parameters)</span></span> &#123; block &#125; (argu) <span class="comment">// 调用一个临时创建的匿名函数</span></span><br></pre></td></tr></table></figure>
+<p>被调用函数执行会立即进行，但是是在另一个<code>goroutine</code>上执行，并且当前<code>goroutine</code>（包含 go 语句的）会从下一条语句中恢复。</p>
+</li>
+<li><p>通信</p>
+<p>通过通信管道实现多个<code>goroutine</code>之间通信（发送接受数据）。发送分为阻塞发送 （<code>channeel &lt;- value</code>）和非阻塞发送（<code>select</code>实现）</p>
+<p>创建通道的方式</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">make</span>(<span class="keyword">chan</span> Type) <span class="comment">//未指定容量，同步</span></span><br><span class="line"><span class="built_in">make</span>(<span class="keyword">chan</span> Type, capacity)  <span class="comment">//指定容量，异步。</span></span><br></pre></td></tr></table></figure>
+<p>我的实验代码，实验结果输出至 testoutput.txt，发现每次运行，输出顺序不一致，可以体现不同<code>goroutine</code>的相对独立。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// createChannel 接受一个int类型的参数，返回一个int类型的通道</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">createChannel</span><span class="params">(startInt <span class="keyword">int</span>, chanName <span class="keyword">string</span>)</span> <span class="title">chan</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    next := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">    <span class="comment">// 建立新的goruntime</span></span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(i <span class="keyword">int</span>, name <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">for</span> &#123;</span><br><span class="line">            next &lt;- i</span><br><span class="line">            fmt.Printf(<span class="string">"Channel %8s is now adding number %d\n"</span>, name, i)</span><br><span class="line">            i++</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;(startInt, chanName)</span><br><span class="line">    <span class="comment">// 由于chan是引用类型，所以返回以后在子goruntime还会继续运行</span></span><br><span class="line">    <span class="keyword">return</span> next</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">  counterA := createChannel(<span class="number">8</span>, <span class="string">"ChannelA"</span>)</span><br><span class="line">  counterB := createChannel(<span class="number">108</span>, <span class="string">"ChannelB"</span>)</span><br><span class="line">  <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">20</span>; i++ &#123;</span><br><span class="line">      a := &lt;-counterA</span><br><span class="line">      fmt.Printf(<span class="string">"(A-&gt;%d, B-&gt;%d)\n"</span>, a, &lt;-counterB)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>select</code>语句，在一个<code>select</code>语句中，如果发现任意一句可以继续执行（没有被阻塞），则选择。如果全部通道都被阻塞，有 default 则执行并从<code>select</code>后恢复，否则整个语句阻塞，直到一一句可以继续执行。</p>
+</li>
+</ul>
+<h3 id="defer、panic-和-recover"><a href="#defer、panic-和-recover" class="headerlink" title="defer、panic 和 recover"></a>defer、panic 和 recover</h3><p>defer 语句用于延迟一个函数或者方法（或者当前所创建的匿名函数）的执行，它会再外围函数或者方法返回之前但是其返回值计算之后执行。这样就有可能在一个<strong>延迟执行</strong>的函数内部<strong>修改函数的命名返回值</strong>。多个 defer 语句按 LIFO 顺序执行。</p>
+<p>defer 最常用是保证一个文件使用完以后关闭<code>defer file.Close()</code></p>
+<p>panic 和 revover，前文已经阐述过 Go 语言将错误和异常区分对待，错误（可预期的）常通过函数的返回值形式实现，而对于“不可能发生”的情况（异常）我们使用内置的<code>panic()</code>函数。</p>
+<p>当内置的<code>panic()</code>函数被调用时，外围函数或者方法的执行会立即中止。然后，任何延迟执行的函数或者方法都会被调用，就像返回一样。最后，调用返回到该外围函数的调用者，就像该外围调用函数或者方法调用了<code>panic()</code>一样，该过程在调用栈中重复发生：函数停止执行，调用延迟执行函数等。当到达<code>main()</code>函数时不再有可以返回的调用者，因此这时程序会中止，并将包含传入原始<code>panic()</code>函数中的值的调用栈信息输出到<code>os.Stderr</code>。</p>
+<p>上面所描述的只是一个异常发生时正常情况下所展开的。然而，如果其中有个延迟执行的函数或者方法包含一个对内值的<code>recover()</code>函数（可能值在一个延迟执行的函数或者方法中调用），该异常展开就会中止（被捕获）。这种情况下，我们就能够以任何我们想要的方式相应该异常（忽略，转错误等）。</p>
+<h3 id="异常和错误的使用规范"><a href="#异常和错误的使用规范" class="headerlink" title="异常和错误的使用规范"></a>异常和错误的使用规范</h3><p><strong>绝大多数情况下，Go 语言标准库实验嗯 error 值而非异常。</strong>（标准库的规范），对于我们手写的自定义的包，尽量不要使用<code>panic()</code>，如果要使用，也要避免异常离开这个自定义包的边界，可以用<code>recover()</code>捕获异常并返回一个相应的错误值，就像标准库中所作的那样。</p>
+<p>作为一个程序员，如果程序中有逻辑错误，我们希望程序能够立马崩溃，以便我们可以发现并修改该问题。但一旦程序部署好了，我们就不想让我们的程序崩溃。</p>
+<p>对于任何特殊情况下可能运行也可能不运行的函数或者方法，如果调用了<code>panic()</code>函数或者调用了发生异常的函数或者方法，我们应该使用<code>recover()</code>以保证将异常转换成错误。理想情况下，<code>recover()</code>函数应该在尽可能接近于<code>panic()</code>的地方背调用，并在设置其外围函数 error 返回值之前尽可能合理的将程序恢复到健康状态。对于 main 包的<code>main()</code>函数，我们可以放入一个<strong>“捕获一切”的<code>recover</code>函数</strong>，用于记录任何捕获的异常。</p>
+<h2 id="自定义函数"><a href="#自定义函数" class="headerlink" title="自定义函数"></a>自定义函数</h2><p>这里内容有点繁杂，需要自己多动手实践体会</p>
+<p>关于返回值：如果函数有返回值，则函数必须至少有一个 return 语句或者<code>panic()</code>调用，如果返回值不是命名的，则 return 语句必须指定和返回值列表一样多的值。如果有命名，也尽量写全 return（空 return 语句虽然合法，但是被认为是一种拙劣的写法。）</p>
+<h3 id="函数参数"><a href="#函数参数" class="headerlink" title="函数参数"></a>函数参数</h3><ul>
+<li><p>函数调用可以作为函数参数</p>
+<p>需要类型和数量匹配，如<code>Heron(a,b,c)</code>与<code>Heron(PythagoreanTriple(i,i+1))</code>，其中<code>PythagoreanTriple(i,i+1)</code>返回三个整数值。</p>
+</li>
+<li><p>可变函数参数</p>
+<p>最后一个类型前面加一个省略号，在函数里面这个参数实际上变成了一个对应参数类型的切片。如我们有一个签名是<code>Join(first string, xs ...String)</code>的函数，<code>xs</code>类型实际上是<code>[]string</code></p>
+<p>常见的可变参数设置是：完全任意（可空参），至少一参，至少两参（前面单独列出即可）。</p>
+</li>
+<li><p>可选参数</p>
+<p>Go 没有直接支持可选参数，要实现也不难，只需增加一个额外的结构体即可，而且 Go 语言能保证所有值都会被初始化为零值。</p>
+</li>
+</ul>
+<p>一个比较优雅的做法是这样定义函数 <code>ProcessItems(items Items, options Options)</code>，其中 Options 结构体保存了所有其他参数的值，其结构为：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Options <span class="keyword">struct</span>&#123;</span><br><span class="line">    First <span class="keyword">int</span> <span class="comment">//要处理的第一项</span></span><br><span class="line">    Last <span class="keyword">int</span> <span class="comment">//要处理的最后一项</span></span><br><span class="line">    Audit <span class="keyword">bool</span> <span class="comment">//如果为true，所有动作都被记录</span></span><br><span class="line">    ErrorHandler <span class="function"><span class="keyword">func</span><span class="params">(item Item)</span></span></span><br><span class="line"><span class="function">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>Go 保证结构体传入初始化为零值，大部分需要默认场合（全零值的情况），调用很简单，如果需要制定一个或者多个，则填入对应的字段名即可，如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ProcessItems(items, Options&#123;&#125;)</span><br><span class="line">ProcessItems(items, Options&#123;Audit: <span class="literal">true</span>, ErrorHandler: errorHandler&#125;)</span><br></pre></td></tr></table></figure>
+<h3 id="init-函数和-main-函数"><a href="#init-函数和-main-函数" class="headerlink" title="init()函数和 main()函数"></a>init()函数和 main()函数</h3><p>Go 语言保留两个函数名：<code>init()</code>函数用来导入包后执行，全<code>main()</code>函数，作为入口，这两个函数不显示调用，也不可接受任何参数，不返回任何结果。建议一个包最多只用一个<code>init()</code>函数。</p>
+<p>程序启动顺序如下：</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Go/Go_Ch5_2.png" alt="png"></p>
+<h3 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h3><p>这是个重要的概念，所谓闭包就是一个函数“捕获”了和它在同意作用域地其他常量和变量（或许可以理解成声明时就调用了在这个作用域地其他常量和变量），闭包使用这些捕获的量且不关心它们是否已经超出作用域，所以只要闭包还在使用它，这些变量就还会存在。在 Go 语言里，<strong>所有的匿名函数（Go 语言规范中称之为函数字面量）</strong>都是<strong>闭包</strong>。</p>
+<p>闭包没有名字，通常使用方法时赋值给一个变量或者将它放在一个数据结构里（如映射/切片）。</p>
+<p>另外，工厂函数（装饰函数）返回的也常为一个函数闭包，函数闭包也常出现在一些函数参数中</p>
+<h3 id="运行时选择函数"><a href="#运行时选择函数" class="headerlink" title="运行时选择函数"></a>运行时选择函数</h3><p>在 Go 语言里，函数属于第一类值（first-class value），也就是说，你可以将它保存到一个变量（实际上是一个引用）里，这样我们就可以在运行时决定要执行哪一个函数（比 if-else 运行时选择来的快）。</p>
+<p>根据书上写的实验</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tag/Go/" rel="tag"> <i class="fa fa-tag"></i> Go</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/post/45783d4c.html" rel="next" title="服务外包——赛题类别及可做行梳理">
+                <i class="fa fa-chevron-left"></i> 服务外包——赛题类别及可做行梳理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/post/d296acb5.html" rel="prev" title="投资银行学——Lec3">
+                投资银行学——Lec3 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Edwardzcn" />
+            
+              <p class="site-author-name" itemprop="name">Edwardzcn</p>
+              <p class="site-description motion-element" itemprop="description">这是一个利用（可爱的）Hexo搭建的博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">304</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">41</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+            
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">169</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/rss2.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Edwardzcn" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:edwardzcn98@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.google.com" target="_blank" title="Google">
+                      
+                        <i class="fa fa-fw fa-google"></i>Google</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.zhihu.com/people/decades-42/activities" target="_blank" title="Zhihu">
+                      
+                        <i class="fa fa-fw fa-globe"></i>Zhihu</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.instagram.com/edwardz98" target="_blank" title="Instagram">
+                      
+                        <i class="fa fa-fw fa-instagram"></i>Instagram</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.github.com" title="Github" target="_blank">Github</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://yangyangyang.cc" title="yyy的博客" target="_blank">yyy的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://blog.mrcactus.cn" title="syx的博客" target="_blank">syx的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/wawcac-blog" title="SHer_zfc的博客" target="_blank">SHer_zfc的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://csuwangj.github.io/" title="DJ的博客" target="_blank">DJ的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://blog.csdn.net/SSS_Benjamin" title="cx的博客" target="_blank">cx的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.cnblogs.com/csu-lmw" title="吕少的博客" target="_blank">吕少的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://ipads.se.sjtu.edu.cn/zh/index.html" title="SJTU_IPAD梦想" target="_blank">SJTU_IPAD梦想</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#过程式编程"><span class="nav-number">1.</span> <span class="nav-text">过程式编程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#语句基础"><span class="nav-number">1.1.</span> <span class="nav-text">语句基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#快速声明操作符"><span class="nav-number">1.1.1.</span> <span class="nav-text">快速声明操作符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类型转换"><span class="nav-number">1.1.2.</span> <span class="nav-text">类型转换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类型断言"><span class="nav-number">1.1.3.</span> <span class="nav-text">类型断言</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分支"><span class="nav-number">1.2.</span> <span class="nav-text">分支</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#if-语句"><span class="nav-number">1.2.1.</span> <span class="nav-text">if 语句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#switch-语句"><span class="nav-number">1.2.2.</span> <span class="nav-text">switch 语句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#for-循环语句"><span class="nav-number">1.2.3.</span> <span class="nav-text">for 循环语句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通信和并发语句"><span class="nav-number">1.2.4.</span> <span class="nav-text">通信和并发语句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#defer、panic-和-recover"><span class="nav-number">1.2.5.</span> <span class="nav-text">defer、panic 和 recover</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#异常和错误的使用规范"><span class="nav-number">1.2.6.</span> <span class="nav-text">异常和错误的使用规范</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义函数"><span class="nav-number">1.3.</span> <span class="nav-text">自定义函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#函数参数"><span class="nav-number">1.3.1.</span> <span class="nav-text">函数参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#init-函数和-main-函数"><span class="nav-number">1.3.2.</span> <span class="nav-text">init()函数和 main()函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#闭包"><span class="nav-number">1.3.3.</span> <span class="nav-text">闭包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行时选择函数"><span class="nav-number">1.3.4.</span> <span class="nav-text">运行时选择函数</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Edwardzcn</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">332.5k</span>
+  
+</div>
+
+<div class="copyright">
+<span id="busuanzi_container_site_uv"><a class="theme-link" href="http://www.miitbeian.gov.cn">冀ICP备18024730号</a></span>
+<span id="bei_an"> <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641" ><img src="https://www.edwardzcn98yx.com/batb.png" />湘公网安备 43010402000641号</a></span>
+</div>
+
+<div class="powered-by">
+<i class ="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+    本站访客数：<span id="busuanzi_value_site_uv"></span></spam></div>
+
+<!--
+
+   <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+-->
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
