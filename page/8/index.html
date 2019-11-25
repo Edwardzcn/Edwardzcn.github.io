@@ -379,6 +379,724 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/44da4894.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/44da4894.html" itemprop="url">WordPress——Hexo导出xml并迁移</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-09T01:55:06+08:00">
+                2019-10-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/WordPress/" itemprop="url" rel="index">
+                    <span itemprop="name">WordPress</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  261
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Hexo-导出-xml"><a href="#Hexo-导出-xml" class="headerlink" title="Hexo 导出 xml"></a>Hexo 导出 xml</h1><h2 id="安装-feed-插件"><a href="#安装-feed-插件" class="headerlink" title="安装 feed 插件"></a>安装 feed 插件</h2><p>安装插件<code>hexo-generator-feed</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-generator-feed</span><br></pre></td></tr></table></figure>
+<h2 id="使用插件"><a href="#使用插件" class="headerlink" title="使用插件"></a>使用插件</h2><p>在<code>_config.yml</code>文件添加以下内容</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">plugins:</span></span><br><span class="line">    <span class="string">hexo-generator-feed</span></span><br><span class="line"><span class="comment">#Feed Atom</span></span><br><span class="line"><span class="attr">feed:</span></span><br><span class="line">    <span class="comment">#type: atom</span></span><br><span class="line">    <span class="comment">#path: atom.xml</span></span><br><span class="line">    <span class="comment">#limit: 20</span></span><br><span class="line">    <span class="comment">#改为RSS2.0标准</span></span><br><span class="line"><span class="attr">    type:</span> <span class="string">rss2</span></span><br><span class="line"><span class="attr">    path:</span> <span class="string">rss2.xml</span></span><br><span class="line"><span class="attr">    limit:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">    hub:</span></span><br></pre></td></tr></table></figure>
+<p><code>hexo g</code>完成后从<code>public</code>文件夹中找对应的文件<code>rss2.xml</code>。这个 xml 就可以用来做订阅或者导入 WP 了。</p>
+<h1 id="WordPress-导入-xml"><a href="#WordPress-导入-xml" class="headerlink" title="WordPress 导入 xml"></a>WordPress 导入 xml</h1><p>登录到 WP 仪表盘（控制台），选择工具-&gt;导入-&gt;WordPress-&gt;现在安装-&gt;运行导入器</p>
+<h1 id="解决单次导入限制-2M-问题"><a href="#解决单次导入限制-2M-问题" class="headerlink" title="解决单次导入限制 2M 问题"></a>解决单次导入限制 2M 问题</h1><p>根据官方解释，可能是 php 和 nginx 两方面原因</p>
+<ol>
+<li><p>php<br><a href="https://blog.csdn.net/Mike_Roger/article/details/80711299" target="_blank" rel="noopener">解除 wordpress 上传最大限制</a></p>
+<p>访问 vps，找到 WP 根目录（很多 wp-xxx.php 的那个），编写文件<code>.user.ini</code>，写入如下内容：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">; Memory and file sizes</span></span><br><span class="line"> memory_limit = 64M</span><br><span class="line"> upload_max_filesize = 5M</span><br><span class="line"> post_max_size = 5M</span><br><span class="line"> file_uploads = On</span><br><span class="line"> max_execution_time = 300</span><br><span class="line"> <span class="comment">; End Upload Restrictions</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>nginx</p>
+<p>打开 nginx 服务的配置文件<code>nginx.conf</code>,http 块中加入<code>client_max_body_size xxm</code>, <code>xx</code>根据需求改动。</p>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/785396af.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/785396af.html" itemprop="url">WordPress——网站搭建常见问题</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-09T01:06:57+08:00">
+                2019-10-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/WordPress/" itemprop="url" rel="index">
+                    <span itemprop="name">WordPress</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  421
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  2
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="安装-删除主题或者插件时需要-FTP-用户名密码"><a href="#安装-删除主题或者插件时需要-FTP-用户名密码" class="headerlink" title="安装/删除主题或者插件时需要 FTP 用户名密码"></a>安装/删除主题或者插件时需要 FTP 用户名密码</h2><p>安装好 WP 后，无论是安装插件还是安装主题都会弹出框：权限缺失，需要 FTP 用户名和密码。实际上时服务器权限设置的问题。</p>
+<p><strong>解决方法 1：修改配置文件</strong></p>
+<p>修改<code>wordpress</code>目录下的<code>wp-config.php</code>，加上如下三行：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">define(<span class="string">"FS_METHOD"</span>, <span class="string">"direct"</span>);</span><br><span class="line">define(<span class="string">"FS_CHMOD_DIR"</span>, <span class="number">0777</span>);</span><br><span class="line">define(<span class="string">"FS_CHMOD_FILE"</span>, <span class="number">0777</span>);</span><br></pre></td></tr></table></figure>
+<p>实际上是在上传时候修改权限。</p>
+<p><strong>解决方法 2：修改文件夹权限</strong></p>
+<p>如果你的 WP 按默认方式或者大多数教程方式，则<code>/var/www/html/wordpress</code>应是你的根目录，修改根目录权限</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo chmod -R 775 /var/www/html/wordpress</span><br></pre></td></tr></table></figure>
+<h2 id="安装-删除主题或者插件时提示安装失败，无法创建目录"><a href="#安装-删除主题或者插件时提示安装失败，无法创建目录" class="headerlink" title="安装/删除主题或者插件时提示安装失败，无法创建目录"></a>安装/删除主题或者插件时提示安装失败，无法创建目录</h2><p>源自<a href="https://blog.csdn.net/qq_32846595/article/details/54766833" target="_blank" rel="noopener">解决 wordpress 下载插件，安装失败，无法创建目录问题</a></p>
+<blockquote>
+<p>其实，出现无法创建目录的确是权限的问题，但是，不是目录读写的权限，而是用户组的问题。想要下载插件的用户组为 web 用户组，用户名组名为 www（大家可能不太一样，如果是按照我之前的方式装 lnmp 环境的同学，就是 www，可以在 ngnix.conf 中第一行查看，至于 nginx.conf 的位置就用 locate nginx.conf 搜索一下） ，而此时 wordpress 用户组为 root，这样就不能创建目录了，具体原因大家可以查阅 linux 相关知识。</p>
+</blockquote>
+<p>查阅自己的<code>nginx.conf</code>文件确定用户，我的是<code>www-data</code>，所以在<code>/var/www/html</code>路径下修改<code>wordpress</code>文件夹的用户组就可以了。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo chown -R www-data:www-data wordpress</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/63282d5d.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/63282d5d.html" itemprop="url">WordPress——ubuntu16建站指南</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-09T01:06:20+08:00">
+                2019-10-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  0
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/360c9b8d.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/360c9b8d.html" itemprop="url">建国七十周年，我在思考什么</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-28T13:59:07+08:00">
+                2019-09-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/随笔/" itemprop="url" rel="index">
+                    <span itemprop="name">随笔</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  472
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  2
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>本文写于<a href="https://www.edwardzcn98yx.com/post/8bb234ab.html">我的 UbuntuToGo 系统</a>，VScode 编辑器。</p>
+<h1 id="建国七十周年，我在思考什么"><a href="#建国七十周年，我在思考什么" class="headerlink" title="建国七十周年，我在思考什么"></a>建国七十周年，我在思考什么</h1><p>2019 年的夏天，注定是个不平凡的夏天。</p>
+<p>退出校队，濒临失学，再度分手，或许多年以后再看此时遭遇的这些挫折，都算不了什么，但是后来人说今日事未免有了些时间对伤口的消毒处理，虽然缓慢，总是愈合了些的。</p>
+<p>人不仅软弱，而且健忘，但是文字不同，日久弥新，越发坚实可靠。或许就是因为对文字这样的印象（或许是德池老师给的？），我才会扛着这从高中就不被人看好的文字功力，坚持经营着自己的博客吧。</p>
+<p>仅以文字祭奠过去的种种。</p>
+<h2 id="意外相遇"><a href="#意外相遇" class="headerlink" title="意外相遇"></a>意外相遇</h2><p>建国七十周年，我既没有选择和国旗和张影，也没有选择给头像一见生成一面国旗，相反，我的社交平台上对“国庆”二字丝毫没有提及，甚至对铺天盖地而来的“祖国万岁”等呼声有一些嗤之以鼻。</p>
+<p>我开始质问自己：</p>
+<ul>
+<li><strong>为什么你对国庆看似无动于衷？</strong></li>
+<li><strong>为什么你对这些行为嗤之以鼻？</strong></li>
+</ul>
+<p>以及由这些问题引出的一些深层次的问题</p>
+<ul>
+<li><strong>什么是爱国主义（Patriotism）？</strong></li>
+<li><strong>怎样算爱国行为？</strong></li>
+<li><strong>我爱国吗？</strong></li>
+</ul>
+<hr>
+<p>  无论我曾经有没有回答过自己，那些答案都没能给我留下足够深刻的印象以至我现在一九迷茫</p>
+<p>我开始从自己反映的表象螺旋盘问自己，希望弄清点什么。</p>
+<p>现在是 10 月 2 号晚上 8 点 42 分。</p>
+<p>最后还是没能摆脱自己的拖延症，已经返程，目的与结果相差甚远的一场旅行，虽有收获，遗憾也留下很多。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/f9c435a6.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -557,770 +1275,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/8bb234ab.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/8bb234ab.html" itemprop="url">UbuntuToGo——打造属于自己的移动固态热插拔Liniux操作系统</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-25T10:13:36+08:00">
-                2019-09-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作系统/" itemprop="url" rel="index">
-                    <span itemprop="name">操作系统</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作系统/UbuntuToGo/" itemprop="url" rel="index">
-                    <span itemprop="name">UbuntuToGo</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,727
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  6
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>本文写于<a href="https://www.edwardzcn98yx.com/post/8bb234ab.html">我的 UbuntuToGo 系统</a>，VScode 编辑器。</p>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>暑假末期给自己的戴尔游匣老本子换了西数固态，退役下来的一块 Toshiba 128G 的老固态成了闲置，拿来当移动硬盘总觉得有些浪费。恰好这时候一个室友做了个 WinToGo，“移动硬盘，移动系统，即插即用”，听起来很美妙的样子，便想着可否做个 Ubuntu 的移动版。</p>
-<p>网上找了几篇资料给了我不小的启发，也算是顺着上面的教程<del>加上自己的摸爬滚打</del>完成的。</p>
-<p><a href="https://mzz.pub/2017/12/22/justplay/mobileubuntu/" target="_blank" rel="noopener">把 Ubuntu16.04 装进移动硬盘的惨痛实战</a></p>
-<p>感谢先驱者的宝贵经验。</p>
-<h1 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h1><p>本文采用 U 盘引导 UEFI 安装的方式，希望虚拟机安装或者<del>想用</del>需要用 Legancy 启动的童鞋请参见这两篇文章：<a href="https://www.ithome.com/html/win10/316637.htm" target="_blank" rel="noopener">IT 之家学院：制作同时适用于 Legacy/UEFI 的 Ubuntu To Go 启动盘</a>，<a href="https://www.littleqiu.net/archives/771#]" target="_blank" rel="noopener">Ubuntu To Go | 制作属于你的随身 Ubuntu 系统盘</a></p>
-<ol>
-<li><strong>启动 U 盘</strong>：一个 32G 的 Ubuntu 系统启动盘（需格式化）</li>
-<li><strong>移动 SSD</strong>：一个 128G 东芝的 SSD+硬盘盒（买壳子注意 M.2 接口类型以及支持协议，老的 SSD 并不是 NVMe 协议的，原理上只需要盘中有未分配空间即可，实操中建议先行备份以防杯具）</li>
-<li><strong>Ubuntu 系统镜像</strong>文件：<a href="https://cn.ubuntu.com/download" target="_blank" rel="noopener">Ubuntu 桌面下载 18.04.3 LTS</a></li>
-<li><strong>启动盘制作软件 Rufus</strong>：官网下载<a href="http://rufus.ie" target="_blank" rel="noopener">Rufus3.8</a></li>
-<li><strong>你的脑子</strong></li>
-</ol>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/UbuntuToGo/Ubuntu_1.png" alt="Ubuntu_1"></p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/UbuntuToGo/Ubuntu_2.png" alt="Ubuntu_2"></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/8bb234ab.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/973eccf1.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/973eccf1.html" itemprop="url">数字图像处理——直方图匹配</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-22T00:32:45+08:00">
-                2019-09-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数字图像处理/" itemprop="url" rel="index">
-                    <span itemprop="name">数字图像处理</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2,101
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  10
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><p>上一篇文章讲了<a href="https://www.edwardzcn98yx.com/post/b44049c5.html">直方图均衡</a>相关内容，从实际应用中我们发现，只能对直方图做均衡操作并不能完全满足我们的需要，有时我们更希望调整概率分布（直方图）为<strong>指定形状</strong>，这就是<strong>直方图匹配</strong>。</p>
-<p>比如下图图一猫咪的直方图较为集中在中间，我们希望它的分布贴近第二幅文字图的分布（集中在暗区域）</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/HistogramMatch/output_2_0.png" alt="im1"></p>
-<h1 id="数学基础"><a href="#数学基础" class="headerlink" title="数学基础"></a>数学基础</h1><p>从上一篇文章的介绍中我们发现，对于<strong>任何图像</strong>（$r$的概率密度分布），我们都可以通过其累积分布函数将其函数变换到随机变量$s$，而$s$是均匀分布的。那我们反过来想，能否将均匀分布的随机变量逆变换到某个特定的分布呢？</p>
-<h2 id="公式推导"><a href="#公式推导" class="headerlink" title="公式推导"></a>公式推导</h2><p>设$r$为随机变量值域为$[0,255]$，其概率密度函数为$p_r(r)$。一函数（变换为）：</p>
-<script type="math/tex; mode=display">s = T(r) = (L-1) \int_{0}^{r} p_r(m) \mathrm{d}m</script><p>由上一篇文章我们易知$s$服从均匀分布，我们寻找一个$z$随机变量符合另一特殊分布$p_z(z)$，易知存在一函数（变换）：</p>
-<script type="math/tex; mode=display">s = G(z) = (L-1) \int_{0}^{z} p_z(m) \mathrm{d}m</script><p>由于$G(z)$为累积分布函数，单调，故存在反函数$G^{-1}(z)$，则有新变换 $N = G^{-1} \cdot T$，使得$r$随机变量经$N$变换后符合$z$的分布特征。</p>
-<script type="math/tex; mode=display">z = G^{-1}(s) = G^{-1}(T(r)) = N(r)</script><p>由此，我们找到了某值域内求从<strong>某一分布</strong>随机变量$r$变换到<strong>指定分布</strong>随机变量$z$的方法。</p>
-<h2 id="个人理解"><a href="#个人理解" class="headerlink" title="个人理解"></a>个人理解</h2><p>直方图均衡，均匀分布，实际上在中间做了桥接。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/973eccf1.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/b44049c5.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/b44049c5.html" itemprop="url">数字图像处理——直方图均衡</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-21T18:17:49+08:00">
-                2019-09-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数字图像处理/" itemprop="url" rel="index">
-                    <span itemprop="name">数字图像处理</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  3,880
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  18
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><p>对于一张$8$位灰度图像，像素灰度值$r \in [0,256), r \in Z$，必然满足一特定的概率分布$p(x)$，直方图可理解为分块显示的概率密度函数。</p>
-<p>以下面几图为例（彩色图取 R 通道）</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/HistogramEqualization/output_6_0.png" alt="Sample0"></p>
-<p>(代码见附录)</p>
-<p>由图片可以看出来，图一小猫亮度高的地方更多，所以直方图上显示出在灰度级高端分布更密集，而图二的风景图相反，图三的阿童木则明显亮暗区分较为明显，所以在直方图上体现为两极化。</p>
-<p>在某些情况下，我们希望通过某种函数变换$s = T(r)$，使变换后的函数概率分布均匀化（或贴近均匀），这就是<strong>直方图均衡</strong></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/b44049c5.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/460fad29.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/460fad29.html" itemprop="url">数论学习——黄金分割率</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-17T07:46:43+08:00">
-                2019-09-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数学/" itemprop="url" rel="index">
-                    <span itemprop="name">数学</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数学/数论/" itemprop="url" rel="index">
-                    <span itemprop="name">数论</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  317
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>黄金分割是指将整体一分为二，较大部分与整体部分的比值等于较小部分与较大部分的比值，其比值<strong>约</strong>为 $0.618$。这个比例被公认为是最能引起美感的比例，因此被称为<strong>黄金分割</strong>。</p>
-<h1 id="传说"><a href="#传说" class="headerlink" title="传说"></a>传说</h1><p>在古希腊时期，有一天毕达哥拉斯走在街上，在经过铁匠铺前他听到铁匠打铁的声音非常好听，于是驻足倾听。他发现铁匠打铁节奏很有规律，这个声音的比例被毕达哥拉斯用数学的方式表达出来</p>
-<h1 id="数学公式"><a href="#数学公式" class="headerlink" title="数学公式"></a>数学公式</h1><h2 id="直接解"><a href="#直接解" class="headerlink" title="直接解"></a>直接解</h2><p>设$x$为黄金比，便有：</p>
-<script type="math/tex; mode=display">\frac{1}{x} = \frac{x}{1-x}</script><script type="math/tex; mode=display">x^2 = 1-x</script><script type="math/tex; mode=display">x^2 + x - 1 = 0</script><script type="math/tex; mode=display">x_1 = \frac{-1-\sqrt{5}}{2}(舍),x_2 = \frac{-1+\sqrt{5}}{2}</script><p>上述即为数值解，$0.618$只是一个近似，从数值表述易知该数为一个<strong>无理数</strong>，给出前 32 位是：<br>$0.6180339887 4989484820458683436565$</p>
-<h2 id="无穷连分数"><a href="#无穷连分数" class="headerlink" title="无穷连分数"></a>无穷连分数</h2><p>对刚才的数学公式做变形可以得到</p>
-<script type="math/tex; mode=display">x= \frac{1}{x+1}</script><script type="math/tex; mode=display">x = \frac{1}{ 1 + \frac{1}{x+1} }</script><script type="math/tex; mode=display">x = \frac{1}{ 1 + \frac{1}{ 1+ \frac{1}{x+1}}}</script><h2 id="数列逼近"><a href="#数列逼近" class="headerlink" title="数列逼近"></a>数列逼近</h2><p>经计算发现相邻两个斐波那契数的比值是随序号的增加而逐渐逼近黄金分割比。由于斐波那契数都是整数，两个整数相除之商是有理数，而黄金分割是无理数，所以只是不断逼近黄金分割。</p>
-<p>Python 验证:</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/61/">61</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/62/">62</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1370,7 +1329,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">304</span>
+                  <span class="site-state-item-count">308</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1392,7 +1351,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">169</span>
+                  <span class="site-state-item-count">170</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -1527,7 +1486,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">332.5k</span>
+    <span title="Site words total count">334.6k</span>
   
 </div>
 
@@ -1769,7 +1728,7 @@
         }
       });
     </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -1777,4 +1736,4 @@
 
   
 
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
