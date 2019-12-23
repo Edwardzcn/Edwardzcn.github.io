@@ -98,13 +98,13 @@
 
 
 
-<meta name="description" content="频率域滤波图像复原在频率域滤波进行图像复原主要在两个方面效果较好，其一是利用频率域滤波消除周期噪声，另一个是利用频率域做退化函数的逆滤波，周期噪声还没有细致研究，这篇文章主要关注其逆滤波相关的问题。 为什么要在频率域做逆滤波？观察之前退化模型的两个式子，我们不难发现： g(x,y) = h(x,y) \star f(x,y) + \eta(x,y)g(u,v) = H(u,v) F(u,v) +">
+<meta name="description" content="频率域滤波图像复原在频率域滤波进行图像复原主要在两个方面效果较好，其一是利用频率域滤波消除周期噪声，另一个是利用频率域做退化函数的逆滤波，周期噪声还没有细致研究，这篇文章主要关注其逆滤波相关的问题。 为什么要在频率域做逆滤波？观察之前退化模型的两个式子，我们不难发现： g(x,y) = h(x,y) \star f(x,y) + \eta(x,y) \tag 1g(u,v) = H(u,v) F(">
 <meta name="keywords" content="数字图像处理">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数字图像处理——图像复原（频率域）">
 <meta property="og:url" content="http://www.edwardzcn98yx.com/post/8809c911.html">
 <meta property="og:site_name" content="Eddy的个人博客">
-<meta property="og:description" content="频率域滤波图像复原在频率域滤波进行图像复原主要在两个方面效果较好，其一是利用频率域滤波消除周期噪声，另一个是利用频率域做退化函数的逆滤波，周期噪声还没有细致研究，这篇文章主要关注其逆滤波相关的问题。 为什么要在频率域做逆滤波？观察之前退化模型的两个式子，我们不难发现： g(x,y) = h(x,y) \star f(x,y) + \eta(x,y)g(u,v) = H(u,v) F(u,v) +">
+<meta property="og:description" content="频率域滤波图像复原在频率域滤波进行图像复原主要在两个方面效果较好，其一是利用频率域滤波消除周期噪声，另一个是利用频率域做退化函数的逆滤波，周期噪声还没有细致研究，这篇文章主要关注其逆滤波相关的问题。 为什么要在频率域做逆滤波？观察之前退化模型的两个式子，我们不难发现： g(x,y) = h(x,y) \star f(x,y) + \eta(x,y) \tag 1g(u,v) = H(u,v) F(">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_1.png">
 <meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_2.png">
@@ -112,10 +112,10 @@
 <meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_4.png">
 <meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_5.png">
 <meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_6.png">
-<meta property="og:updated_time" content="2019-10-30T12:53:20.247Z">
+<meta property="og:updated_time" content="2019-12-23T08:18:09.675Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数字图像处理——图像复原（频率域）">
-<meta name="twitter:description" content="频率域滤波图像复原在频率域滤波进行图像复原主要在两个方面效果较好，其一是利用频率域滤波消除周期噪声，另一个是利用频率域做退化函数的逆滤波，周期噪声还没有细致研究，这篇文章主要关注其逆滤波相关的问题。 为什么要在频率域做逆滤波？观察之前退化模型的两个式子，我们不难发现： g(x,y) = h(x,y) \star f(x,y) + \eta(x,y)g(u,v) = H(u,v) F(u,v) +">
+<meta name="twitter:description" content="频率域滤波图像复原在频率域滤波进行图像复原主要在两个方面效果较好，其一是利用频率域滤波消除周期噪声，另一个是利用频率域做退化函数的逆滤波，周期噪声还没有细致研究，这篇文章主要关注其逆滤波相关的问题。 为什么要在频率域做逆滤波？观察之前退化模型的两个式子，我们不难发现： g(x,y) = h(x,y) \star f(x,y) + \eta(x,y) \tag 1g(u,v) = H(u,v) F(">
 <meta name="twitter:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_1.png">
 
 
@@ -470,7 +470,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1,819
+                  1,818
                 </span>
               
 
@@ -509,15 +509,15 @@
       
         <h1 id="频率域滤波图像复原"><a href="#频率域滤波图像复原" class="headerlink" title="频率域滤波图像复原"></a>频率域滤波图像复原</h1><p>在频率域滤波进行图像复原主要在两个方面效果较好，其一是利用频率域滤波消除周期噪声，另一个是利用频率域做退化函数的逆滤波，周期噪声还没有细致研究，这篇文章主要关注其逆滤波相关的问题。</p>
 <p>为什么要在频率域做逆滤波？观察之前退化模型的两个式子，我们不难发现：</p>
-<script type="math/tex; mode=display">g(x,y) = h(x,y) \star f(x,y) + \eta(x,y)</script><script type="math/tex; mode=display">g(u,v) = H(u,v) F(u,v) + N(u,v)</script><p>对(1)式空间域来说，想要从$g(x,y)$恢复$f(x,y)$，避不开的是“卷积”的逆运算，这在定义和实现的复杂上都比较困难，而转化到频率域，从(2)式我们或许可以通过一个“除法”来实现逆滤波，结合之前噪声模型相关内容，我们尝试在频率域上对仅退化函数影响的图像，和更复杂一些的，退化函数和加性噪声双重影响的图像进行复原。</p>
+<script type="math/tex; mode=display">g(x,y) = h(x,y) \star f(x,y) + \eta(x,y) \tag 1</script><script type="math/tex; mode=display">g(u,v) = H(u,v) F(u,v) + N(u,v) \tag 2</script><p>对(1)式空间域来说，想要从$g(x,y)$恢复$f(x,y)$，避不开的是“卷积”的逆运算，这在定义和实现的复杂上都比较困难，而转化到频率域，从(2)式我们或许可以通过一个“除法”来实现逆滤波，结合之前噪声模型相关内容，我们尝试在频率域上对仅退化函数影响的图像，和更复杂一些的，退化函数和加性噪声双重影响的图像进行复原。</p>
 <h2 id="估计退化函数"><a href="#估计退化函数" class="headerlink" title="估计退化函数"></a>估计退化函数</h2><p>在图像复原时，主要有 3 种用于估计退化函数的方法：（1）观察法，（2）试验法，（3）数学建模法。这里我们着重讲建模估计。</p>
-<ol>
+<ul>
 <li><p>湍流模糊</p>
 <p>Hufnagel and Stanley[1964]根据大气湍流的物理特性提出了一个退化模型，其通式为：</p>
-<script type="math/tex; mode=display">H(u,v) = e^{-k{(u^2+v^2)}^{5/6}}</script><p>式中，$k$是与湍流性质有关的常熟。除了指数为$5/6$之外，该式与高斯低通及其相似。</p>
+<script type="math/tex; mode=display">H(u,v) = e^{-k{(u^2+v^2)}^{5/6}}</script><p>式中，$k$是与湍流性质有关的常熟。除了指数为$5/6$之外，该式与高斯低通极其相似。</p>
 <p>实现：</p>
 </li>
-</ol>
+</ul>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getVesMask</span><span class="params">(mask_shape,k)</span>:</span></span><br><span class="line">    rows,cols = mask_shape[<span class="number">0</span>],mask_shape[<span class="number">1</span>]</span><br><span class="line">    crow = rows/<span class="number">2</span></span><br><span class="line">    ccol = cols/<span class="number">2</span></span><br><span class="line">    mask = np.zeros((rows,cols))</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(rows):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(cols):</span><br><span class="line">            dis = (i-crow)**<span class="number">2</span> + (j-ccol)**<span class="number">2</span></span><br><span class="line">            mask[i,j] = np.exp(-k*(dis**(<span class="number">5</span>/<span class="number">6</span>)))</span><br><span class="line">    <span class="keyword">return</span> mask</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getVesFilterPassImg</span><span class="params">(input_img : np.array, k  , size = None)</span>:</span></span><br><span class="line">    f_img = np.fft.fft2(input_img , s = size)</span><br><span class="line">    shift_img = np.fft.fftshift(f_img)</span><br><span class="line">    mask_shift_img = getVesMask(f_img.shape,k)</span><br><span class="line">    new_shift_img = mask_shift_img*shift_img</span><br><span class="line">    new_manitude_img = <span class="number">20</span>*np.log(np.abs(new_shift_img+eps))</span><br><span class="line">    new_f_img = np.fft.ifftshift(new_shift_img)</span><br><span class="line">    new_img = np.fft.ifft2(new_f_img)</span><br><span class="line">    new_img = np.abs(new_img)</span><br><span class="line">    <span class="keyword">return</span> new_img</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试</span></span><br><span class="line"><span class="comment"># 参数设置</span></span><br><span class="line">mask_shape = (<span class="number">480</span>,<span class="number">480</span>)</span><br><span class="line">k = [<span class="number">0</span>,<span class="number">0.0025</span>,<span class="number">0.001</span>,<span class="number">0.00025</span>]</span><br><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">12</span>))</span><br><span class="line">ax = [plt.subplot(<span class="number">221</span>,projection = <span class="string">"3d"</span>),plt.subplot(<span class="number">222</span>,projection = <span class="string">"3d"</span>),plt.subplot(<span class="number">223</span>,projection = <span class="string">"3d"</span>),plt.subplot(<span class="number">224</span>,projection = <span class="string">"3d"</span>)]</span><br><span class="line"><span class="comment"># 获得滤波器</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">4</span>):</span><br><span class="line">    <span class="keyword">if</span> i == <span class="number">0</span>:</span><br><span class="line">        drawPerspective(ax[i],np.ones(mask_shape),title =<span class="string">"Original Img"</span>,cmap = <span class="string">"gray"</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        myfilter = getVesMask(mask_shape,k[i])</span><br><span class="line">        drawPerspective(ax[i],myfilter,title = <span class="string">f"Ves Mask with $k=<span class="subst">&#123;k[i]&#125;</span>$"</span>, cmap = <span class="string">"gray"</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line">test_img = cv2.imread(<span class="string">"./5_3Photo/Fig0525(a).tif"</span>,<span class="number">0</span>)</span><br><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">12</span>))</span><br><span class="line">ax = [plt.subplot(<span class="number">221</span>),plt.subplot(<span class="number">222</span>),plt.subplot(<span class="number">223</span>),plt.subplot(<span class="number">224</span>)]</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">4</span>):</span><br><span class="line">    <span class="keyword">if</span> i == <span class="number">0</span>:</span><br><span class="line">        ax[i].imshow(test_img,cmap = <span class="string">"gray"</span>)</span><br><span class="line">        ax[i].set_title(<span class="string">"Original Img"</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        out_img = getVesFilterPassImg(test_img,k[i])</span><br><span class="line">        ax[i].imshow(out_img,cmap = <span class="string">"gray"</span>)</span><br><span class="line">        ax[i].set_title(<span class="string">f"Ves Mask with $k=<span class="subst">&#123;k[i]&#125;</span>$"</span>)</span><br></pre></td></tr></table></figure>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_1.png" alt="png"></p>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_2.png" alt="png"></p>
@@ -669,7 +669,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">313</span>
+                  <span class="site-state-item-count">317</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -842,7 +842,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">349.3k</span>
+    <span title="Site words total count">363.7k</span>
   
 </div>
 

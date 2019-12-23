@@ -106,7 +106,7 @@
 <meta property="og:site_name" content="Eddy的个人博客">
 <meta property="og:description" content="粗糙集理论算法优化研究摘要本文回顾了 Pawlak 粗糙集理论的基础知识，对该理论框架下如等价类划分，相对正域计算，约简过程等问题朴素算法的复杂度进行分析，介绍并总结了前人针对上述问题提出的各种优化算法。 引言20 世纪 80 年代，波兰的 Pawlak 教授提出了粗糙集的概念，并用数学形式明确了粗糙集的定义以及计算规则[@Pawlak]，为描述系统的不确定性并计算规约相关决策规则提供了一项新的工">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-12-02T02:54:55.678Z">
+<meta property="og:updated_time" content="2019-12-02T03:26:51.010Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数据分析与融合——粗糙集理论算法优化">
 <meta name="twitter:description" content="粗糙集理论算法优化研究摘要本文回顾了 Pawlak 粗糙集理论的基础知识，对该理论框架下如等价类划分，相对正域计算，约简过程等问题朴素算法的复杂度进行分析，介绍并总结了前人针对上述问题提出的各种优化算法。 引言20 世纪 80 年代，波兰的 Pawlak 教授提出了粗糙集的概念，并用数学形式明确了粗糙集的定义以及计算规则[@Pawlak]，为描述系统的不确定性并计算规约相关决策规则提供了一项新的工">
@@ -463,7 +463,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2,552
+                  3,104
                 </span>
               
 
@@ -479,7 +479,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  10
+                  12
                 </span>
               
             </div>
@@ -511,8 +511,11 @@
 <p>在粗集理论中，信息系统也被称为信息表、属性值表、数据表，可简记为$S = \langle U,A\rangle$，或者$S = \langle U,A,V \rangle$。粗集理论利用信息表（决策表）来描述论域对象及其属性，它是一个二维表，每一行表示一个对象，每一列表示对象的一个属性。与数据库的“表”概念不同，粗集理论所研究的表并不要求两个对象可完全区分，即至少存在一个属性列使得两个对象对应的属性值不同。粗糙集关注的是粒度，而非单个元素。</p>
 <a id="more"></a>
 <p>定义 2.2 在信息系统 S 中 ,对于每个属性子集$B \subseteq A$ ,可以定义一个不可分辨关系 $IND(B)$（在不引起歧义的情况下可简写为$I_B$）:</p>
-<script type="math/tex; mode=display">IND(B) = \{ (x,y) \in U \times U : f(x,a) = f(y,a) , \forall a \in B \} \tag{2-2}</script><p>如果$(x,y) \in I<em>B$，则$x$和$y$称为$B$不可分辨，显然$I_B$满足自反性、对称性和传递性，根据离散数学的内容我们知道，$I_B$是以等价关系，$I_B$的所有等价类族，即由$B$决定的划分，用$U/I_B$表示，包含元素$x$的等价类用$I_B(x)$ 表示，或者 $[x]</em>{I(B)}$。</p>
-<h3 id="相容关系表述和转化"><a href="#相容关系表述和转化" class="headerlink" title="相容关系表述和转化"></a>相容关系表述和转化</h3><p>设$S = \langle U,C \cup D \rangle$为一决策表，不可分辨关系$I_C$将论域划分为$U/C$，称为条件分类（条件粒度），不可分辨关系$I_D$将论域划分为$U/D$，称为决策分类（决策粒度）。对于单属性决策，则$D = {d}$，若非单属性决策，则$D$表示所有决策属性列的集合，表的相容关系有如下两种表述。</p>
+<script type="math/tex; mode=display">IND(B) = \{ (x,y) \in U \times U : f(x,a) = f(y,a) , \forall a \in B \} \tag{2-2}</script><p>如果$(x,y) \in I_B$，则$x$和$y$称为$B$不可分辨，显然$I_B$满足自反性、对称性和传递性，根据离散数学的内容我们知道，$I_B$是以等价关系，$I_B$的所有等价类族，即由$B$决定的划分，用$U/I_B$表示，包含元素$x$的等价类用$I_B(x)$ 表示</p>
+<!-- ，或者 $[ x ]_{I(B)}$。 -->
+<h3 id="相容关系表述和转化探究"><a href="#相容关系表述和转化探究" class="headerlink" title="相容关系表述和转化探究"></a>相容关系表述和转化探究</h3><p>在考虑决策表时，常常会考虑是否有如下情况出现：决策表元素出现属性相同（即具备不可分辨关系）的多个元素，却有不同的决策属性值。我们常常将这样类似的性质描述为决策表的相容性。若要通过决策表为自动化程序或者固定流程提供指导，我们希望决策表是相容的，在不断约简决策表过程中，我们也希望决策表保持原有的相容性，否则，具备不可分辨关系的两元素就会出现决策差异，这与程序设计与工业流程中要求的“确定性”产生了根本的对立。当然，若是考虑引入新的知识项（属性）、关联上下文等方法，我们或许可以将不相容的决策表转化为新的相容决策表且决策能力不变，但这已经超出了基本粗糙集和决策表约简的讨论范围，在此也不考虑这种拓展情形。</p>
+<p>相容性的刻画有很多方法，从定义上划分可以在不同资料</p>
+<p>设$S = \langle U,C \cup D \rangle$为一决策表，不可分辨关系$I_C$将论域划分为$U/C$，称为条件分类（条件粒度），不可分辨关系$I_D$将论域划分为$U/D$，称为决策分类（决策粒度）。对于单属性决策，则$D = {d}$，若非单属性决策，则$D$表示所有决策属性列的集合，决策表的相容关系有如下两种表述。</p>
 <p>定义 2.3 设$S = \langle U,C \cup D \rangle$为一决策表，对于其条件分类$U/C$与决策分类$U/D$，若有$U/C$细分$U/D$，则称$S$为相容决策表，否则成$S$为不相容决策表。</p>
 <p>相关文献讨论了通过决策值归纳函数来描述决策表相容性的方法，不过讨论局限在$D = {d}$，即决策属性单一的情况。为了与定义 2.3 保持等价性，这里给出拓展$D$不仅为单属性列情况下的定义。</p>
 <p>定义 2.4 设$S = \langle U,C \cup D \rangle$为一决策表，$B \subseteq C$，定义$S$的$B$决策值归纳函数为</p>
@@ -532,11 +535,13 @@
 <p>定义 2.5 设$S$未信息表,$X$为$U$的非空子集，属性$A$下$X$包含的最大粒度集合被称为$X$的$A$下近似$\underline{\mathrm{Apr}_A}(X)$，属性$A$下包含$X$的最小粒度集合被称为$X$的$A$上近似$\overline{\mathrm{Apr}_A}(X)$，当$A$均已知的时候可以省略。</p>
 <script type="math/tex; mode=display">\underline{\mathrm{Apr}_A}(X) = \{ x\in U: I_A(x) \subseteq X \} \tag{2-5}</script><script type="math/tex; mode=display">\overline{\mathrm{Apr}_A}(X) = \{ x\in U: I_A(x) \cap X \not ={\emptyset} \tag{2-6}</script><p>在集合近似的基础上，我们可以给出拓展的论域元素与集合近似成员关系的定义，$\underline{\in}<em>{A}$与$\overline{\in}</em>{A}$，具体定义如下：</p>
 <p>定义 2.6</p>
-<script type="math/tex; mode=display">x \underline{\in}_{A} X \quad \mathrm{iff} \quad x \in \underline{\mathrm{Apr}_A}(X) \tag{2-7}</script><script type="math/tex; mode=display">x \overline{\in}_{A} X \quad \mathrm{iff} \quad x \in \overline{\mathrm{Apr}_A}(X) \tag{2-8}</script><p>如果$x \underline{\in}<em>{A} X$，我们称“在属性$A$下$x$<strong>必然</strong>属于$X$”，而如果$x \overline{\in}</em>{A} X$，我们称“在属性$A$下$x$<strong>可能</strong>属于$X$”。如此通过模态逻辑中的必然性和可能性来解释近似性。</p>
+<script type="math/tex; mode=display">x \underline{\in}_{A} X \quad \mathrm{iff} \quad x \in \underline{\mathrm{Apr}_A}(X) \tag{2-7}</script><script type="math/tex; mode=display">x \overline{\in}_{A} X \quad \mathrm{iff} \quad x \in \overline{\mathrm{Apr}_A}(X) \tag{2-8}</script><p>如果$x \underline{\in}<em>{A} X$，我们称“在属性$A$下$x$ <strong>必然</strong> 属于$X$”，而如果$x \overline{\in}</em>{A} X$，我们称“在属性$A$下$x$，<strong>可能</strong> 属于$X$”。如此通过模态逻辑中的必然性和可能性来解释近似性。</p>
 <p>在集合近似的基础上，我们还可以根据属性$B$，将论域$U$中的所有元素针对给定的集合$X$划分到不同域中。$\underline{\mathrm{Apr}_A}(X)$实际上是由根据已知的属性划分出的知识粒度，判断肯定属于$X$的论域元素所构成的最大集合，所以也被称为$X$的$A$正域，记为$POS_A(X)$。而根据已有知识推断的必然不属于$X$的论域元素称为$X$的$A$负域，记为$NEG_A(X)$，$\overline{\mathrm{Apr}_A}(X)$应为可能属于$X$的论域元素构成的最大集合。根据当前已有知识，既不能推断属于$POS_A(X)$也不能推断属于$NEG_A(X)$的元素则属于边界域（可域）$BND_A(X)$（部分资料上写为$Bn_A(X)$），不能肯定其中的元素是否属于$X$，具体定义如下：</p>
 <p>定义 2.7</p>
 <script type="math/tex; mode=display">POS_A(X) = \underline{\mathrm{Apr}_A}(X) \tag{2-9}</script><script type="math/tex; mode=display">NEG_A(X) = U - \overline{\mathrm{Apr}_A}(X) \tag{2-10}</script><script type="math/tex; mode=display">BND_A(X) =  \overline{\mathrm{Apr}_A}(X) - \underline{\mathrm{Apr}_A}(X) \tag{2-11}</script><p>容易得出在各属性域限制下，论域元素集合$X,Y \subseteq U$，符合下述性质：</p>
-<script type="math/tex; mode=display">\underline{\mathrm{Apr}}(X) \subseteq X \subseteq \overline{\mathrm{Apr}}(X) \tag{2-12}</script><script type="math/tex; mode=display">\underline{\mathrm{Apr}}(\emptyset) = \overline{\mathrm{Apr}}(\emptyset) = \emptyset \tag{2-13}</script><script type="math/tex; mode=display">\underline{\mathrm{Apr}}(U) = \overline{\mathrm{Apr}}(U) = U \tag{2-14}</script><script type="math/tex; mode=display">\underline{\mathrm{Apr}}(X \cap Y) = \underline{\mathrm{Apr}}(X) \cap \underline{\mathrm{Apr}}(Y)  \tag{2-15}</script><script type="math/tex; mode=display">\overline{\mathrm{Apr}}(X \cup Y) = \overline{\mathrm{Apr}}(X) \cup \overline{\mathrm{Apr}}(Y)  \tag{2-16}</script><script type="math/tex; mode=display">\underline{\mathrm{Apr}}(X \cup Y) \supseteq \underline{\mathrm{Apr}}(X) \cup \underline{\mathrm{Apr}}(Y)  \tag{2-17}</script><script type="math/tex; mode=display">\overline{\mathrm{Apr}}(X \cap Y) \subseteq \overline{\mathrm{Apr}}(X) \cap \overline{\mathrm{Apr}}(Y) \tag{2-18}</script><script type="math/tex; mode=display">\underline{\mathrm{Apr}}(-X) = - \overline{\mathrm{Apr}}(X) \tag{2-19}</script><script type="math/tex; mode=display">\overline{\mathrm{Apr}}(-X) = - \underline{\mathrm{Apr}}(X) \tag{2-20}</script><script type="math/tex; mode=display">\underline{\mathrm{Apr}}(\underline{\mathrm{Apr}}(X)) = \overline{\mathrm{Apr}}(\underline{\mathrm{Apr}}(X)) = \underline{\mathrm{Apr}}(X)  \tag{2-21}</script><script type="math/tex; mode=display">\overline{\mathrm{Apr}}(\overline{\mathrm{Apr}}(X)) = \underline{\mathrm{Apr}}(\overline{\mathrm{Apr}}(X)) = \overline{\mathrm{Apr}}(X)  \tag{2-22}</script><p>其中$-X$ 表示$U - X$，即以论域元素集合为全集得补集。上述列出为常见的性质，其中式$\tag{2-10}$</p>
+<script type="math/tex; mode=display">\underline{\mathrm{Apr}}(X) \subseteq X \subseteq \overline{\mathrm{Apr}}(X) \tag{2-12}</script><script type="math/tex; mode=display">\underline{\mathrm{Apr}}(\emptyset) = \overline{\mathrm{Apr}}(\emptyset) = \emptyset \tag{2-13}</script><script type="math/tex; mode=display">\underline{\mathrm{Apr}}(U) = \overline{\mathrm{Apr}}(U) = U \tag{2-14}</script><script type="math/tex; mode=display">\underline{\mathrm{Apr}}(X \cap Y) = \underline{\mathrm{Apr}}(X) \cap \underline{\mathrm{Apr}}(Y)  \tag{2-15}</script><script type="math/tex; mode=display">\overline{\mathrm{Apr}}(X \cup Y) = \overline{\mathrm{Apr}}(X) \cup \overline{\mathrm{Apr}}(Y)  \tag{2-16}</script><script type="math/tex; mode=display">\underline{\mathrm{Apr}}(X \cup Y) \supseteq \underline{\mathrm{Apr}}(X) \cup \underline{\mathrm{Apr}}(Y)  \tag{2-17}</script><script type="math/tex; mode=display">\overline{\mathrm{Apr}}(X \cap Y) \subseteq \overline{\mathrm{Apr}}(X) \cap \overline{\mathrm{Apr}}(Y) \tag{2-18}</script><script type="math/tex; mode=display">\underline{\mathrm{Apr}}(-X) = - \overline{\mathrm{Apr}}(X) \tag{2-19}</script><script type="math/tex; mode=display">\overline{\mathrm{Apr}}(-X) = - \underline{\mathrm{Apr}}(X) \tag{2-20}</script><script type="math/tex; mode=display">\underline{\mathrm{Apr}}(\underline{\mathrm{Apr}}(X)) = \overline{\mathrm{Apr}}(\underline{\mathrm{Apr}}(X)) = \underline{\mathrm{Apr}}(X)  \tag{2-21}</script><script type="math/tex; mode=display">\overline{\mathrm{Apr}}(\overline{\mathrm{Apr}}(X)) = \underline{\mathrm{Apr}}(\overline{\mathrm{Apr}}(X)) = \overline{\mathrm{Apr}}(X)  \tag{2-22}</script><p>其中$-X$ 表示$U - X$，即以论域元素集合为全集得补集。</p>
+<p>上述列出为常见的性质，其中性质$\tag{2-12}$表示，如果严肃$x$属于$\underline{\mathrm{Apr}}(X)$时，则$x$一定属于$X$，而当$x$属于$\overline{\mathrm{Apr}}(X)$时，$x$可能属于$X$，而性质$\tag{2-17}$与性质$\tag{2-18}$则表明，不同集合近似的分布计算要慎重，并集的上近似等于上近似的并集，交集的下近似等于下近似的交集，但是如果考虑交集的上近似、并集的下近似，则会出现忽略粒度和过度包含粒度的情况出现，等式关系不再成立，转而变为包含与被包含的关系，证明这里从略。在实际应用中，这提醒我们如果信息表被分成几个部分先行计算近似与整体计算近似，可能得到不同的结果。</p>
+<p>当然，由近似引出的性质还可以继续深入研究，比如满足德摩根定律形式的一些性质，以及不同集合差集近似的性质，</p>
 
       
     </div>
@@ -577,8 +582,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/post/0.html" rel="prev" title="">
-                 <i class="fa fa-chevron-right"></i>
+              <a href="/post/1cc3e298.html" rel="prev" title="计算机图形学——复习">
+                计算机图形学——复习 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -660,7 +665,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">313</span>
+                  <span class="site-state-item-count">317</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -798,7 +803,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#粗糙集理论算法优化研究"><span class="nav-number">1.</span> <span class="nav-text">粗糙集理论算法优化研究</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#摘要"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引言"><span class="nav-number">1.2.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#粗糙集的基本概念"><span class="nav-number">1.3.</span> <span class="nav-text">粗糙集的基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#信息表和不可分辨关系"><span class="nav-number">1.3.1.</span> <span class="nav-text">信息表和不可分辨关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#相容关系表述和转化"><span class="nav-number">1.3.2.</span> <span class="nav-text">相容关系表述和转化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#集合的近似和相关性质"><span class="nav-number">1.3.3.</span> <span class="nav-text">集合的近似和相关性质</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#粗糙集理论算法优化研究"><span class="nav-number">1.</span> <span class="nav-text">粗糙集理论算法优化研究</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#摘要"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引言"><span class="nav-number">1.2.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#粗糙集的基本概念"><span class="nav-number">1.3.</span> <span class="nav-text">粗糙集的基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#信息表和不可分辨关系"><span class="nav-number">1.3.1.</span> <span class="nav-text">信息表和不可分辨关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#相容关系表述和转化探究"><span class="nav-number">1.3.2.</span> <span class="nav-text">相容关系表述和转化探究</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#集合的近似和相关性质"><span class="nav-number">1.3.3.</span> <span class="nav-text">集合的近似和相关性质</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -833,7 +838,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">349.3k</span>
+    <span title="Site words total count">363.7k</span>
   
 </div>
 
