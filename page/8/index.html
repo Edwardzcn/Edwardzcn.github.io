@@ -379,6 +379,507 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/199b3bb2.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/199b3bb2.html" itemprop="url">数字图像处理——图像复原与重建初步</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-30T20:34:28+08:00">
+                2019-10-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数字图像处理/" itemprop="url" rel="index">
+                    <span itemprop="name">数字图像处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,926
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  8
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="图像复原与重建初步"><a href="#图像复原与重建初步" class="headerlink" title="图像复原与重建初步"></a>图像复原与重建初步</h1><p>梳理所学重点知识</p>
+<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>前面所接触的图像增强是一个，已知原图像，经处理后，得到增强图像的一个过程，而这一章将要深入的图像复原（重建），则是希望从（被污染）过的图像，经处理后，得到原图像的过程，是以<strong>预先确定的目标</strong>来改善图像。图像复原试图利用退化现象的某种<strong>先验知识</strong>来复原被退化的图像。因而，复原技术时面向退化模型的，并且采用相反的过程进行处理，以便恢复出原图像。虽然图像增强和图像复原两者在覆盖的领域和使用的技术栈有所重叠，其中还是有几点区别我们还是要提起注意的。</p>
+<ul>
+<li><p>形象化的描述</p>
+<p>图像增强主要是一个主观的过程，而图像复原大部分是一个客观的过程。</p>
+</li>
+<li><p>已知与未知的区别</p>
+<p>图像增强已知原始图像与变换（卷积核或者其频率域的谱），对于增强效果是未知且非预先确定的（只有一个大概方向，比如模糊还是锐化），而图像复原则已知污染图像，且对原始图像是预先确定的（测试条件下甚至是有标准比对的原始图像，是已知的），对于复原变换（污染变换的逆）常常是未知的，这就要求我们在做图像处理时常常需要“估计”我们的复原变换。</p>
+</li>
+<li><p>期望与探索的区别<br>由于两者已知和未知上的差距，这就导致图像复原通常会涉及设立一个<strong>最佳准则</strong>来产生期望结果的最佳估计。相比之下，图像增强技术基本上是一个<strong>探索性过程</strong>，即根据人类视觉系统的生理特点来设计改善图像的方法。</p>
+</li>
+</ul>
+<h2 id="背景知识"><a href="#背景知识" class="headerlink" title="背景知识"></a>背景知识</h2><h3 id="线性系统"><a href="#线性系统" class="headerlink" title="线性系统"></a>线性系统</h3><p>可加性，$x_1(t)+x_2(t) = y_1(t)+y_2(t)$，从而有$a \times x_1(t) = a \times y_1(t)$</p>
+<p>平移不变性</p>
+<h3 id="卷积"><a href="#卷积" class="headerlink" title="卷积"></a>卷积</h3><p>卷积、离散二维卷积</p>
+<p>从而可以利用卷积这个工具。</p>
+<p>冲激响应：输入为一个脉冲信号，输出是一个冲激响应$h(x)$，实际上可以就是之前接触过的卷积核。</p>
+<h3 id="图形复原"><a href="#图形复原" class="headerlink" title="图形复原"></a>图形复原</h3><p>复原</p>
+<ul>
+<li>试图利用退化过程的先验知识使已退化的图像恢复本来面目</li>
+<li>根据退化的原因，分析引起退化的环境因素</li>
+<li>建立相应的数学模型</li>
+<li>沿着使图像降质的逆过程回复图像</li>
+</ul>
+<p>目的</p>
+<ul>
+<li>在于消除或减轻退化的影响</li>
+</ul>
+<p>方法</p>
+<ul>
+<li>由于退化系统是黑盒的，盲复原往往很困难，噪声干扰也为复原过程带来了困难和不确定性</li>
+<li>图像复原是寻求在一定优化准则下的原始图象的最有估计。因此，不同的优化准则会获得不同的图像复原。评价指标的选择目前也是研究的方向之一，如峰值信号比等。</li>
+</ul>
+<h2 id="图像退化-复原过程模型"><a href="#图像退化-复原过程模型" class="headerlink" title="图像退化/复原过程模型"></a>图像退化/复原过程模型</h2><p>退化过程（污染过程）的描述：建模为一个退化函数和一个加性噪声项，对于输入图像（原图像）$f(x,y)$进行处理，产生一副退化后的图像$g(x,y)$，图像复原目的就是已知$g(x,y)$的前提下，希望得到原图像的一个估计，这个估计越接近原始输入图像越好。空间域中的退化图像可由下式给出：</p>
+<script type="math/tex; mode=display">g(x,y) = h(x,y)  \star f(x,y) + \eta(x,y)</script><p>上式中$h(x,y)$是退化函数的空间表示，由第四章内容，我们可以将上式的模型写成等价的频率域表示：</p>
+<script type="math/tex; mode=display">g(u,v) = H(u,v) F(u,v) + N(u,v)</script><p>这两个式子是本章后面大部分复原内容的基础。</p>
+<h2 id="噪声模型"><a href="#噪声模型" class="headerlink" title="噪声模型"></a>噪声模型</h2><h3 id="噪声的空间和频率特性"><a href="#噪声的空间和频率特性" class="headerlink" title="噪声的空间和频率特性"></a>噪声的空间和频率特性</h3><p>一些重要概念：</p>
+<p>当噪声的傅里叶谱是常量时，噪声通常成为<strong>白噪声</strong>，这个术语是从白光的物理特性派生出来的，它以相等的比例包含可见光谱中的几乎所有频率。</p>
+<p>除了空间周期噪声之外，本章假设其他噪声与空间坐标无关，并且噪声与图像本身不想管（即像素值与噪声成分的值之间不相关）。虽然这些假设至少在某些应用中（例如 X 射线和医学成像的有限量子成像就是一个很好的例子）是无效的，但处理空间相关和相关性噪声的复杂性超出了我们讨论的范围。</p>
+<h3 id="一些重要的噪声概率密度函数"><a href="#一些重要的噪声概率密度函数" class="headerlink" title="一些重要的噪声概率密度函数"></a>一些重要的噪声概率密度函数</h3><p>概率论回顾</p>
+<ol>
+<li><p>高斯（正态）噪声</p>
+<p>其 PDF 由下式给出：</p>
+<script type="math/tex; mode=display">p(z) = \dfrac{1}{\sqrt{2 \pi} \sigma} e^{ \frac{ {(z- \overline{z})}^2 }{2 \sigma^2} }</script><p>$\overline{z}$表示$z$的均值，$\sigma$表示$z$的标准差。</p>
+</li>
+<li><p>瑞利噪声</p>
+<p>其 PDF 由下式给出：</p>
+</li>
+</ol>
+
+
+$$
+p(z)=\left \{
+\begin{aligned}
+\frac{2}{b}(z-a)e^{ \frac{-{(z-a)}^2}{b} }  & , &   z  \ge a \\
+0 & , & z < a
+\end{aligned}
+\right.
+$$
+
+
+<p>概率密度的均值与方差的给出：$\overline{z} = a + \sqrt{ \pi b / 4}$，$\sigma ^2 = \dfrac{b(4-\pi)}{4}$</p>
+<ol>
+<li><p>爱尔兰（伽马）噪声</p>
+<p>其 PDF 由下式给出：</p>
+</li>
+</ol>
+
+
+$$
+p(z)=\left \{
+\begin{aligned}
+\dfrac{a^b z^ {b-1} } { (b-1)!}e^{ -az}  & , &   z  \ge a \\
+0 & , & z < a
+\end{aligned}
+\right.
+$$
+
+
+<p>概率密度的均值与方差的给出：$\overline{z} = \dfrac{b}{a}$ ，$\sigma ^2 = \dfrac{b}{a^2}$</p>
+<ol>
+<li><p>指数噪声</p>
+<p>其 PDF 由下式给出：</p>
+</li>
+</ol>
+<script type="math/tex; mode=display">
+p(z)=\left \{
+\begin{aligned}
+ae^{ -az}  & , &   z  \ge a \\
+0 & , & z < a
+\end{aligned}
+\right.</script><p>可以看作是$b=1$时爱尔兰 PDF 的特殊情况。概率密度的均值和方差是：$\overline{z} = \dfrac{1}{a}$，$\sigma^2 = \dfrac{1}{a^2}$</p>
+<ol>
+<li><p>均匀噪声</p>
+<p>其 PDF 由下式给出：</p>
+</li>
+</ol>
+<script type="math/tex; mode=display">
+p(z)=\left \{
+\begin{aligned}
+\dfrac{1}{b-a}  & , &   a \le z \le b \\
+0 & , & 其他
+\end{aligned}
+\right.</script><p>概率密度的均值与方差的给出：$\overline{z} = \dfrac{a+b}{2}$，$\sigma^2 = \dfrac {  {  (b-a)}^2}{12}$</p>
+<ol>
+<li><p>脉冲（椒盐）噪声</p>
+<p>其 PDF 由下式给出：</p>
+</li>
+</ol>
+<script type="math/tex; mode=display">
+p(z)=\left \{
+\begin{aligned}
+P_a  & , &   z = a \\
+P_b & , &  z = b \\
+1-P_a-P_b & , & 其他
+\end{aligned}
+\right.</script>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/199b3bb2.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/be292322.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/be292322.html" itemprop="url">数据分析与融合——偏序格角度看决策系统代数约简</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-25T12:11:53+08:00">
+                2019-10-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数据分析与融合/" itemprop="url" rel="index">
+                    <span itemprop="name">数据分析与融合</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,911
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="偏序格角度看决策系统代数约简"><a href="#偏序格角度看决策系统代数约简" class="headerlink" title="偏序格角度看决策系统代数约简"></a>偏序格角度看决策系统代数约简</h1><p>基本知识：</p>
+<ul>
+<li>一个集合的所有划分构成一个<strong>细分偏序格</strong>。</li>
+<li>决策系统约简始终保持决策系统的一致性（不存在条件相同，决策不同）。</li>
+<li>对于一个决策系统来说，约简是条件分类$U/C → U/A$的过程，而条件分类$U/C$<strong>细分</strong>$U/A$。</li>
+</ul>
+<p>引发思考：</p>
+<p>课程的结尾老师提到我们的决策系统约见过程，其<strong>条件分类</strong>可以看作是在一个论语元素的全部划分构成的细分偏序格上<strong>寻优</strong>的过程。</p>
+<p>直观上给人的感觉是这样的，这篇文章主要是想回过头来，从偏序格角度回看这一寻优过程，并解决以下疑惑：</p>
+<ul>
+<li>Q1.为什么可以看做是细分偏序格上的寻优？</li>
+<li>Q2.寻优的终点（极小值）对应的是哪个（些）结点，有没有什么特征？</li>
+<li>Q3.寻优的路径是怎样的，有没有什么特征，是否会与“偏序”产生关系？</li>
+</ul>
+<p>带着这些疑问，我开始了自己的琢磨。</p>
+<p>由于里面一些很数学的东西并没有细致详尽的证明，我只能从数学角度看待，还不算科学的证明，有待于后面复习时巩固数学部分的证明。</p>
+<h2 id="Q1-寻优的解释"><a href="#Q1-寻优的解释" class="headerlink" title="Q1.寻优的解释"></a>Q1.寻优的解释</h2><p>为方便描述，我们使用老师所给出的决策系统样例。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/DataAnalysis/1.jpg" alt="png"></p>
+<p>同时做以下约定，与一些教材（包括老师提供的讲稿）中有些许不同：</p>
+<ul>
+<li>$U$为论域元素集合</li>
+<li>$Road_1,Road_2 \cdots$ 表示约简路径 1，2 等等。</li>
+<li>$C$为最初的属性集合，为方便约见过程中属性集的变换，我们再做以下规定。<ul>
+<li>$C<em>{i1}$表示约简路径$Road_i$上的第$1$次约简后的属性集，及初始状态，所以易知，$C</em>{i0} = C$</li>
+<li>$C_{ij},j \not ={0}$表示约简路径$i$上的第$j$次约简后的属性集。</li>
+</ul>
+</li>
+<li>$D$为决策值集合</li>
+</ul>
+<p>约定都完成了，我们该如何解释“约简”<strong>可以看做</strong>是细分偏序格上的寻优过程呢？我想可以从细分偏序格上<strong>结点</strong>，和<strong>路径</strong>两点与我们约简不同阶段的<strong>状态</strong>和<strong>转移过程</strong>对应起来</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/be292322.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/a793738.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -992,406 +1493,6 @@ h(x,y) & , & 0 \le x \le C-1 和 0 \le y\le D-1 \\
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/e371c683.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/e371c683.html" itemprop="url">数字图像处理——频率域平滑锐化图像常用滤波器</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-22T21:03:37+08:00">
-                2019-10-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数字图像处理/" itemprop="url" rel="index">
-                    <span itemprop="name">数字图像处理</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2,800
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  14
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="频率域滤波器"><a href="#频率域滤波器" class="headerlink" title="频率域滤波器"></a>频率域滤波器</h1><p>本文主要是动手实现一些常见的滤波器，并展示其频率域和空间域图像。</p>
-<p>这里介绍的常见滤波器为：（高通/低通）理想滤波、布特沃斯滤波器和高斯滤波器，根据书本 P169 页，他们的区别与联系如下：</p>
-<blockquote>
-<p>这三种滤波器涵盖了从非常急剧（理想）的滤波到非常平滑（高斯）的滤波范围。布特沃斯滤波器有一个参数，它成为滤波器的“阶数”。当阶数较高时，布特沃斯滤波器接近于理想滤波器。对于较低的阶数值，布特沃斯滤波器更像高斯滤波器。这样，布特沃斯滤波器可视为两种“极端”滤波器的过渡。</p>
-</blockquote>
-<p>为了方便后续实验，对一些辅助代码模块化编写，主要以可视化部分为主，见文末附录部分。</p>
-<h2 id="理想滤波器"><a href="#理想滤波器" class="headerlink" title="理想滤波器"></a>理想滤波器</h2><p>所谓”理想”是指无法通过硬件实现的硬截断</p>
-<h3 id="理想低通滤波器-ILPF"><a href="#理想低通滤波器-ILPF" class="headerlink" title="理想低通滤波器 ILPF"></a>理想低通滤波器 ILPF</h3><p>在圆外“阻断”所有频率，而在圆内无衰减的通过所有频率，这种二维低通滤波器称为理想低通滤波器（ILPF），由下面的函数确定</p>
-<script type="math/tex; mode=display">
-H_{ILPF}(u,v) = \left \{
-\begin{aligned}
-1, & D(u,v) \le D_0 \\
-0, & D(u,b) > D_0
-\end{aligned}
-\right.</script><p>其中$D_0$是一个正常数，$D(u,v)$表示频率域中的点$(u,v)$距离频率域中心$(\frac{P}{2},\frac{Q}{2})$的距离。</p>
-<h3 id="理想高通滤波器-IHPF"><a href="#理想高通滤波器-IHPF" class="headerlink" title="理想高通滤波器 IHPF"></a>理想高通滤波器 IHPF</h3><p>与低通类似，高通是将阈值的圆内“阻断”所有频率，而在圆外无衰减的通过所有频率，描述如下</p>
-<script type="math/tex; mode=display">
-H_{IHPF}(u,v) = \left \{
-\begin{aligned}
-0, & D(u,v) \le D_0 \\
-1, & D(u,b) > D_0
-\end{aligned}
-\right.</script><h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><p>代码实现低通滤波器并展示其频率域透视图、频率域图像显示、空间域图像显示和径向剖面图。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 获得指定大小的理想滤波器</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getIdealMask</span><span class="params">(mask_shape, filter_d0,hl_type)</span>:</span></span><br><span class="line">    <span class="keyword">assert</span> hl_type <span class="keyword">in</span> (<span class="string">"lpf"</span>,<span class="string">"hpf"</span>)</span><br><span class="line">    rows,cols = mask_shape[<span class="number">0</span>],mask_shape[<span class="number">1</span>]</span><br><span class="line">    crow = rows/<span class="number">2</span></span><br><span class="line">    ccol = cols/<span class="number">2</span></span><br><span class="line">    mask = np.zeros((rows,cols))</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(rows):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(cols):</span><br><span class="line">            dis = sqrt((i-crow)**<span class="number">2</span> + (j-ccol)**<span class="number">2</span>)</span><br><span class="line">            <span class="keyword">if</span> hl_type == <span class="string">"lpf"</span>:</span><br><span class="line">                <span class="keyword">if</span> dis &lt;= filter_d0:</span><br><span class="line">                    mask[i,j] = <span class="number">1</span></span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    mask[i,j] = <span class="number">0</span></span><br><span class="line">            <span class="keyword">elif</span> hl_type == <span class="string">"hpf"</span>:</span><br><span class="line">                <span class="keyword">if</span> dis &lt;= filter_d0:</span><br><span class="line">                    mask[i,j] = <span class="number">0</span></span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    mask[i,j] = <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> mask</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试ILPF</span></span><br><span class="line"><span class="comment"># 参数设置</span></span><br><span class="line">mask_shape = (<span class="number">100</span>,<span class="number">100</span>)</span><br><span class="line">d = <span class="number">20</span></span><br><span class="line">filter_type = <span class="string">"lpf"</span></span><br><span class="line"><span class="comment"># 获得滤波器</span></span><br><span class="line">myfilter = getIdealMask(mask_shape,d,filter_type)</span><br><span class="line"><span class="comment"># 绘图</span></span><br><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">12</span>))</span><br><span class="line">ax1=plt.subplot(<span class="number">221</span>,projection = <span class="string">"3d"</span>)</span><br><span class="line">ax2=plt.subplot(<span class="number">222</span>)</span><br><span class="line">ax3=plt.subplot(<span class="number">223</span>)</span><br><span class="line">ax4=plt.subplot(<span class="number">224</span>)</span><br><span class="line">drawPerspective(ax1,myfilter,title = <span class="string">"ILPF Perspective Axes3D"</span>, cmap = <span class="string">"gray"</span>)</span><br><span class="line"><span class="comment"># 不想进行列表解析,需要调用frompyfunc构建np可以用的分段函数</span></span><br><span class="line">ufunc1 = np.frompyfunc(<span class="keyword">lambda</span> x: <span class="number">0</span> <span class="keyword">if</span> (x-d)&gt;<span class="number">0</span> <span class="keyword">else</span> <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">drawCurv(ax2,[ufunc1],[<span class="string">"ILPF"</span>],d,title = <span class="string">"ILPF Curv"</span>)</span><br><span class="line">drawPanel(ax3,myfilter,title = <span class="string">"ILPF Frequency Panel Axes2D"</span>)</span><br><span class="line">spatial_myfilter = frequencyToSpatial(myfilter)</span><br><span class="line">drawPanel(ax4,spatial_myfilter,title = <span class="string">"ILPF Spatial Panel Axes2D"</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试IHPF</span></span><br><span class="line">d = <span class="number">20</span></span><br><span class="line">filter_type = <span class="string">"hpf"</span></span><br><span class="line">myfilter = getIdealMask(mask_shape,d,filter_type)</span><br><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">12</span>))</span><br><span class="line">ax1=plt.subplot(<span class="number">221</span>,projection = <span class="string">"3d"</span>)</span><br><span class="line">ax2=plt.subplot(<span class="number">222</span>)</span><br><span class="line">ax3=plt.subplot(<span class="number">223</span>)</span><br><span class="line">ax4=plt.subplot(<span class="number">224</span>)</span><br><span class="line">drawPerspective(ax1,myfilter,title = <span class="string">"IHPF Perspective Axes3D"</span>, cmap = <span class="string">"gray"</span>)</span><br><span class="line"><span class="comment"># 不想进行列表解析,需要调用frompyfunc构建np可以用的分段函数</span></span><br><span class="line">ufunc1 = np.frompyfunc(<span class="keyword">lambda</span> x: <span class="number">1</span> <span class="keyword">if</span> (x-d)&gt;<span class="number">0</span> <span class="keyword">else</span> <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">drawCurv(ax2,[ufunc1],[<span class="string">"IHPF"</span>],d,title = <span class="string">"Curv"</span>)</span><br><span class="line">drawPanel(ax3,myfilter,title = <span class="string">"IHPF Frequency Panel Axes2D"</span>)</span><br><span class="line">spatial_myfilter = frequencyToSpatial(myfilter)</span><br><span class="line">drawPanel(ax4,spatial_myfilter,title = <span class="string">"IHPF Spatial Panel Axes2D"</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
-<p>理想低通 ILPF 结果四图</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/3.png" alt="png"></p>
-<p>理想高通 IHPF 结果四图</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/4.png" alt="png"></p>
-<h2 id="布特沃斯滤波器"><a href="#布特沃斯滤波器" class="headerlink" title="布特沃斯滤波器"></a>布特沃斯滤波器</h2><p>可通过硬件实现，可以通过阶数进行控制，一些资料中又称之为“巴特沃斯滤波器”。</p>
-<h3 id="布特沃斯低通滤波器-BLPF"><a href="#布特沃斯低通滤波器-BLPF" class="headerlink" title="布特沃斯低通滤波器 BLPF"></a>布特沃斯低通滤波器 BLPF</h3><p>截止频率位于距原点$D_0$的$n$阶布特沃斯滤波器（BLPF）的传递函数定义为：</p>
-<script type="math/tex; mode=display">H_{BLPF}(u,v) = \dfrac{1}{ 1 + {[ \dfrac {D(u,v)}{D_0} ]}^{2n} }</script><h3 id="布特沃斯高通滤波器-BHPF"><a href="#布特沃斯高通滤波器-BHPF" class="headerlink" title="布特沃斯高通滤波器 BHPF"></a>布特沃斯高通滤波器 BHPF</h3><p>对应的传递函数定义为：</p>
-<script type="math/tex; mode=display">H_{BHPF}(u,v) = \dfrac{1}{ 1 + {[ \dfrac {D_0}{D_(u,v)} ]}^{2n} }</script><p>（分母分子颠倒）</p>
-<p>两式中$n$对应了即阶参数，下面的代码给出巴特沃斯滤波器的实现，其频率域透视图、频率域图像显示、空间域图像显示和径向剖面图，曲线图绘制出不同阶下的取值。</p>
-<h3 id="代码实现-1"><a href="#代码实现-1" class="headerlink" title="代码实现"></a>代码实现</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 获得指定大小的布特沃斯滤波器</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getButterworthMask</span><span class="params">(mask_shape,filter_d0,hl_type,butter_n = <span class="number">1</span>)</span>:</span></span><br><span class="line">    <span class="keyword">assert</span> hl_type <span class="keyword">in</span> (<span class="string">"lpf"</span>,<span class="string">"hpf"</span>)</span><br><span class="line">    rows,cols = mask_shape[<span class="number">0</span>],mask_shape[<span class="number">1</span>]</span><br><span class="line">    crow = rows/<span class="number">2</span></span><br><span class="line">    ccol = cols/<span class="number">2</span></span><br><span class="line">    mask = np.zeros((rows,cols))</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(rows):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(cols):</span><br><span class="line">            dis = sqrt((i-crow)**<span class="number">2</span> + (j-ccol)**<span class="number">2</span>)</span><br><span class="line">            <span class="keyword">if</span> hl_type == <span class="string">"lpf"</span>:</span><br><span class="line">                mask[i,j] = <span class="number">1.0</span>/(<span class="number">1</span>+(dis/filter_d0)**(<span class="number">2</span>*butter_n))</span><br><span class="line">            <span class="keyword">elif</span> hl_type == <span class="string">"hpf"</span>:</span><br><span class="line">                <span class="comment"># 除以0情况特判一下</span></span><br><span class="line">                <span class="keyword">if</span> np.abs(dis)&lt;eps:</span><br><span class="line">                    mask[i,j] = <span class="number">0</span></span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    mask[i,j] = <span class="number">1.0</span>/(<span class="number">1</span>+(filter_d0/dis)**(<span class="number">2</span>*butter_n))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> mask</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试BLPF</span></span><br><span class="line"><span class="comment"># 参数设置</span></span><br><span class="line">mask_shape = (<span class="number">100</span>,<span class="number">100</span>)</span><br><span class="line">d = <span class="number">20</span></span><br><span class="line">filter_type = <span class="string">"lpf"</span></span><br><span class="line"><span class="comment"># 获得滤波器</span></span><br><span class="line">myfilter = getButterworthMask(mask_shape,d,filter_type, butter_n=<span class="number">2</span>)</span><br><span class="line"><span class="comment"># 绘图</span></span><br><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">12</span>))</span><br><span class="line">ax1=plt.subplot(<span class="number">221</span>,projection = <span class="string">"3d"</span>)</span><br><span class="line">ax2=plt.subplot(<span class="number">222</span>)</span><br><span class="line">ax3=plt.subplot(<span class="number">223</span>)</span><br><span class="line">ax4=plt.subplot(<span class="number">224</span>)</span><br><span class="line">drawPerspective(ax1,myfilter,title = <span class="string">"BLPF(n=2) Perspective Axes3D"</span>, cmap = <span class="string">"gray"</span>)</span><br><span class="line">funcs = []</span><br><span class="line">labels = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">6</span>):</span><br><span class="line">    labels.append(<span class="string">"BLPF "</span>+<span class="string">"n="</span>+str(i))</span><br><span class="line">funcs.append(<span class="keyword">lambda</span> x:<span class="number">1.0</span>/(<span class="number">1</span>+(x/d)**(<span class="number">2</span>*<span class="number">1</span>)))</span><br><span class="line">funcs.append(<span class="keyword">lambda</span> x:<span class="number">1.0</span>/(<span class="number">1</span>+(x/d)**(<span class="number">2</span>*<span class="number">2</span>)))</span><br><span class="line">funcs.append(<span class="keyword">lambda</span> x:<span class="number">1.0</span>/(<span class="number">1</span>+(x/d)**(<span class="number">2</span>*<span class="number">3</span>)))</span><br><span class="line">funcs.append(<span class="keyword">lambda</span> x:<span class="number">1.0</span>/(<span class="number">1</span>+(x/d)**(<span class="number">2</span>*<span class="number">4</span>)))</span><br><span class="line">funcs.append(<span class="keyword">lambda</span> x:<span class="number">1.0</span>/(<span class="number">1</span>+(x/d)**(<span class="number">2</span>*<span class="number">5</span>)))</span><br><span class="line"></span><br><span class="line">drawCurv(ax2,funcs,labels,d,title = <span class="string">"BLPF(n=1,2,3,4,5) Curv"</span>)</span><br><span class="line">drawPanel(ax3,myfilter,title = <span class="string">"BLPF(n=2) Frequency Panel Axes2D"</span>)</span><br><span class="line">spatial_myfilter = frequencyToSpatial(myfilter)</span><br><span class="line">drawPanel(ax4,spatial_myfilter,title = <span class="string">"BLPF(n=2) Spatial Panel Axes2D"</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试BHPF</span></span><br><span class="line">d = <span class="number">20</span></span><br><span class="line">filter_type = <span class="string">"hpf"</span></span><br><span class="line">myfilter = getButterworthMask(mask_shape,d,filter_type, butter_n=<span class="number">1</span>)</span><br><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">12</span>))</span><br><span class="line">ax1=plt.subplot(<span class="number">221</span>,projection = <span class="string">"3d"</span>)</span><br><span class="line">ax2=plt.subplot(<span class="number">222</span>)</span><br><span class="line">ax3=plt.subplot(<span class="number">223</span>)</span><br><span class="line">ax4=plt.subplot(<span class="number">224</span>)</span><br><span class="line">drawPerspective(ax1,myfilter,title = <span class="string">"BHPF(n=2) Perspective Axes3D"</span>, cmap = <span class="string">"gray"</span>)</span><br><span class="line">funcs = []</span><br><span class="line">labels = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">6</span>):</span><br><span class="line"><span class="comment">#     funcs.append(lambda x:1.0/(1+(d/x)**(2*i)))</span></span><br><span class="line"><span class="comment">#     ufunc = np.frompyfunc(lambda x: 0 if np.abs(x)&lt;eps else 1.0/(1+(d/x)**(2*i)), 1, 1)</span></span><br><span class="line"><span class="comment">#     funcs.append(ufunc)</span></span><br><span class="line">    labels.append(<span class="string">"BHPF "</span>+<span class="string">"n="</span>+str(i))</span><br><span class="line">ufunc1 = np.frompyfunc(<span class="keyword">lambda</span> x: <span class="number">0</span> <span class="keyword">if</span> np.abs(x)&lt;eps <span class="keyword">else</span> <span class="number">1.0</span>/(<span class="number">1</span>+(d/x)**(<span class="number">2</span>*<span class="number">1</span>)), <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">ufunc2 = np.frompyfunc(<span class="keyword">lambda</span> x: <span class="number">0</span> <span class="keyword">if</span> np.abs(x)&lt;eps <span class="keyword">else</span> <span class="number">1.0</span>/(<span class="number">1</span>+(d/x)**(<span class="number">2</span>*<span class="number">2</span>)), <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">ufunc3 = np.frompyfunc(<span class="keyword">lambda</span> x: <span class="number">0</span> <span class="keyword">if</span> np.abs(x)&lt;eps <span class="keyword">else</span> <span class="number">1.0</span>/(<span class="number">1</span>+(d/x)**(<span class="number">2</span>*<span class="number">3</span>)), <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">ufunc4 = np.frompyfunc(<span class="keyword">lambda</span> x: <span class="number">0</span> <span class="keyword">if</span> np.abs(x)&lt;eps <span class="keyword">else</span> <span class="number">1.0</span>/(<span class="number">1</span>+(d/x)**(<span class="number">2</span>*<span class="number">4</span>)), <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">ufunc5 = np.frompyfunc(<span class="keyword">lambda</span> x: <span class="number">0</span> <span class="keyword">if</span> np.abs(x)&lt;eps <span class="keyword">else</span> <span class="number">1.0</span>/(<span class="number">1</span>+(d/x)**(<span class="number">2</span>*<span class="number">5</span>)), <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">funcs.append(ufunc1)</span><br><span class="line">funcs.append(ufunc2)</span><br><span class="line">funcs.append(ufunc3)</span><br><span class="line">funcs.append(ufunc4)</span><br><span class="line">funcs.append(ufunc5)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">drawCurv(ax2,funcs,labels,d,title = <span class="string">"BHPF(n=1,2,3,4,5) Curv"</span>)</span><br><span class="line">drawPanel(ax3,myfilter,title = <span class="string">"BHPF(n=2) Frequency Panel Axes2D"</span>)</span><br><span class="line">spatial_myfilter = frequencyToSpatial(myfilter)</span><br><span class="line">drawPanel(ax4,spatial_myfilter,title = <span class="string">"BHPF(n=2) Spatial Panel Axes2D"</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
-<p>布特沃斯低通 BLPF 结果四图</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/5.png" alt="png"></p>
-<p>布特沃斯高通 BHPF 结果四图</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/6.png" alt="png"></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/e371c683.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/684a8ddc.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/684a8ddc.html" itemprop="url">行为金融学——线性成长与指数成长</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-21T12:48:57+08:00">
-                2019-10-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/行为金融学/" itemprop="url" rel="index">
-                    <span itemprop="name">行为金融学</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  639
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  2
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="请描绘线性成长与指数成长的规律，你从中得到了什么启示"><a href="#请描绘线性成长与指数成长的规律，你从中得到了什么启示" class="headerlink" title="请描绘线性成长与指数成长的规律，你从中得到了什么启示"></a>请描绘线性成长与指数成长的规律，你从中得到了什么启示</h1><p>用数学公式描述两种成长模式</p>
-<h2 id="线性成长"><a href="#线性成长" class="headerlink" title="线性成长"></a>线性成长</h2><p>狭义：一次线性</p>
-<script type="math/tex; mode=display">Q(t) = a_1 t + a_0</script><p>广义：多项式线性</p>
-<script type="math/tex; mode=display">Q(t) = a_n t^n + a_{n-1} t^{n-1} + \cdots + a_1 t + a_0</script><p>理解性描述：线性成长是一种可按差值描述“成长度”的成长模式，稍微数学解释一下应该是在某个阶差分为 0（则在上一阶是个等差变化），属于增长<strong>值</strong>“固定”的一种增长模式。</p>
-<h2 id="指数成长"><a href="#指数成长" class="headerlink" title="指数成长"></a>指数成长</h2><script type="math/tex; mode=display">Q(t) = a r^t</script><p>理解性描述：指数成长则是一种按比率描述“成长度”的成长模式，最基本的指数成长实际上就是我们高中所学的一个首项为正，公比为正的等比数列通项公式，这种成长模式是不能用差分来描述的，而需要比率描述，属于增长<strong>率</strong>“固定”的一张增长模式。</p>
-<h2 id="启示"><a href="#启示" class="headerlink" title="启示"></a>启示</h2><p>看了网上一段话，将两种增长模式与人的自身发展联系起来，他是这么说的：</p>
-<blockquote>
-<p><em>线性成长可以让一个人变得优秀，但是要成为人中的佼佼者，让自己变得卓越，则一定是指数式的成长。指数式成长其实就是一种复利的作用，每一天的努力、坚持可以产生复利效应。</em></p>
-</blockquote>
-<p>这段话有点结语结论的味道，话虽不错，但是没有给出一定程度的解释，我自己补充了一些。</p>
-<p>首先，对于一个大多数活着的人来说，每天都有各式各样的“新”知识通过人的各种感官进入脑部中枢，清洗，筛选，分析，学习。所以对于这些大多数，成长是必然的，相较于前一天必然有数值的增大。</p>
-<p>但要解释大多数中的那些小部分“枭雄”，我们不仅要看到增长，还要区分增长的模式。接纳新事物，学习新知识，若是做的好的话，在较长时间跨度内都能保持稳定的（某个阶恒差）的增长，这就体现了所谓的<strong>线性成长</strong>，而那小部分人，则可以调动起过去所有的资源（包括自己的基本能力和过去刚学习到的知识），全部用来转化吸收新的知识，类似于一种<strong>复利</strong>的计算，这种增长是可怕的，因为他每接收一分知识，就会在下一个瞬间加速（或者加大）下一份知识的吸收。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1446,7 +1547,7 @@ H_{IHPF}(u,v) = \left \{
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">317</span>
+                  <span class="site-state-item-count">318</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1457,7 +1558,7 @@ H_{IHPF}(u,v) = \left \{
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-count">43</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -1468,7 +1569,7 @@ H_{IHPF}(u,v) = \left \{
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">171</span>
+                  <span class="site-state-item-count">172</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -1603,7 +1704,7 @@ H_{IHPF}(u,v) = \left \{
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">364.5k</span>
+    <span title="Site words total count">370.9k</span>
   
 </div>
 

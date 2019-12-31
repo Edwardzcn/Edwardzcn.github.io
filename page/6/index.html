@@ -379,6 +379,417 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/f2a0fb.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/f2a0fb.html" itemprop="url">Go学习——《Go语言程序设计》Chap3</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-07T15:50:00+08:00">
+                2019-11-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/编程/" itemprop="url" rel="index">
+                    <span itemprop="name">编程</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/编程/Go/" itemprop="url" rel="index">
+                    <span itemprop="name">Go</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,643
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  6
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h1><p>本章讲解 Go 语言的字符串类型</p>
+<p>一个 Go 语言字符串是一个任意字节的常量序列。大部分情况下，一个字符串的字节使用 UTF-8 编码表示 Unicode 文本。</p>
+<h2 id="字面量、操作符和转义"><a href="#字面量、操作符和转义" class="headerlink" title="字面量、操作符和转义"></a>字面量、操作符和转义</h2><p>字符串字面量使用双引号（”）或者反引号（’）来创建，主要区别如下</p>
+<ul>
+<li><p><code>&quot;</code></p>
+<p>双引号创建<strong>可解析的字符串字面量</strong>，比如带转义，但不能用来引用多行。</p>
+</li>
+<li><p><code>&#39;</code></p>
+<p>反引号创建<strong>原生的子字符串字面量</strong>，这些字符串可能由多行组成，不支持任何转义序列，并且可以包含除了反引号之外的任何字符。</p>
+</li>
+</ul>
+<p>可解析的字符串使用得最广泛，而原生的字符串字面量则用于书写多行消息、HTML 以及正则表达式，这里有一些例子。</p>
+<p>如果想创建一个长的可解析字符串字面量，但又不想在代码中写同样长的一行（想要换为多行），我们可以考虑使用<code>+</code>级联，或者<code>+=</code>追加。（当然这不是来追加的更好的方式，见下一节）</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">book := <span class="string">"The Spirit Level"</span> +</span><br><span class="line">        <span class="string">" by Richard Wilkinson"</span></span><br><span class="line">book += <span class="string">" and Kate Pickett"</span></span><br><span class="line">fmt.Print(book)</span><br></pre></td></tr></table></figure>
+<h2 id="字符和字符串"><a href="#字符和字符串" class="headerlink" title="字符和字符串"></a>字符和字符串</h2><p>一个字符串可以使用语法<code>chars := []rune(s)</code>转换成一个<code>rune</code>（即码点）切片，其中<code>s</code>是一个字符串类型的值。变量<code>chars</code>的类型为<code>[]int32</code>，因为<code>rune</code>是<code>int32</code>的同义词（基本数据类型处解释过）。这在我们需要<strong>逐个字符解析字符串</strong>，<strong>同时需要在解析过程中能产看前一个或后一个字符时会有用</strong>。相反的转换也同样简单，其语法为<code>s := string(chars)</code>。两个转化时间代价都是$O(n)$</p>
+<p>虽然方便，但是使用<code>+=</code>操作符并不是一个循环中往字符串末尾追加字符串最有效的方式。一个更好的方式（Python 程序员熟悉）是准备好一个字符串切片（[]string），然后使用<code>strings.Join()</code>函数一次性将其中所有字符串串连起来。但在 Go 语言中还有一个更好的方法，其原理类似 Java 中的<code>StringBuilder</code>，例子如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> buffer bytes.Buffer</span><br><span class="line"><span class="keyword">for</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> piece, ok := getNextValidString(); ok&#123;</span><br><span class="line">        buffer.WriteString(piece)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>将一个<code>bytes.Buffer</code>类型中的字符串累加起来可能比<code>+=</code>操作符在节省内存和操作符方面高效得多，特别当级联的字符串数量很大时。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/f2a0fb.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/c8194796.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/c8194796.html" itemprop="url">UbuntuToGo——Ubuntu系统便捷设置</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-07T14:08:34+08:00">
+                2019-11-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/" itemprop="url" rel="index">
+                    <span itemprop="name">操作系统</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/UbuntuToGo/" itemprop="url" rel="index">
+                    <span itemprop="name">UbuntuToGo</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  464
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  2
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="合盖休眠更改"><a href="#合盖休眠更改" class="headerlink" title="合盖休眠更改"></a>合盖休眠更改</h1><p>由于笔者经常中午带着🎧趴在电脑上睡觉，Windows上面电源设置可以更改合盖休眠的默认设定，所以想在Ubuntu上也作相同设置（不然一合上盖子就休眠了），方法如下：</p>
+<ul>
+<li>root账户编辑<code>/etc/systemd/logind.conf</code>，修改<code>HandleLidSwitch=suspend</code>为<code>HandleLidSwitch=ignore</code></li>
+<li>保存修改后<code>systemctl restart systemd-logind</code>，重启服务生效。（我的机子卡住了，要不就重启好了。。）</li>
+</ul>
+<p>输入 sudo vim /etc/systemd/logind.conf , 摁 i 编辑 去掉如下的行前面的 “#”，最后一个”HandleLidSwitch” 的值改为Lock ，如下图：</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/UbuntuToGo/Convinience_1.png" alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/UbuntuToGo/Convinience_2.png" alt="png"></p>
+<p>这样关上盖子就不会休眠了。（享受音乐，午休～）</p>
+<h1 id="截屏快捷键"><a href="#截屏快捷键" class="headerlink" title="截屏快捷键"></a>截屏快捷键</h1><p><code>Screenshot</code>是个很好的工具，截图用来插图片或者分享给朋友都很好用。不过<strong>每次</strong>都要通过功能键找应用未免太麻烦了。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/UbuntuToGo/Convinience_3.png" alt="png"></p>
+<p>虽然也可以命令行<code>gnome-screenshot -a</code>，不过好像更麻烦了？搜索了一下发现可以自定义<code>快捷键+命令</code>，如此便可一键截图，还可以自定义方式，方法如下：</p>
+<ul>
+<li><code>Settings</code>-&gt;<code>Keyboard</code>找到<code>Keyboard Shortcuts</code>，点击最下方”+”，增加快捷键设置。</li>
+<li>编辑快捷键名，快捷键命令，以及按键</li>
+<li>保存测试即可</li>
+</ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/c8194796.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/77f5906d.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -982,365 +1393,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/8278c2d3.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/8278c2d3.html" itemprop="url">++百里毅行</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-04T10:04:14+08:00">
-                2019-11-04
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/随笔/" itemprop="url" rel="index">
-                    <span itemprop="name">随笔</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  382
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="前面"><a href="#前面" class="headerlink" title="前面"></a>前面</h1><p>九月份看到今年秋季百里毅行开始报名时，基本没怎么犹豫。点开“幺零零”，看了一眼价钱可以接受，便填信息、付款、短信确认，没有拖泥带水，没有呼朋引伴，没有犹豫迟疑，仿佛早就做好了打算要参加一样。事后回想，我好像只是想再去“体验”一下那种感觉，那种可以卸下所有思想的负担，聚焦所有精神到眼前与脚下的感觉。</p>
-<p>准备工作是简单的，毅行前的一周每天还是早七点半到图书馆放下资料，上课时间去两百米外的教学楼上个课，该吃饭了就去后湖或者 B 座食堂填饱肚子，只是由于九月和十月落下的脚伤还没有好利索，不时还得穿着洞洞鞋度日，晚上洗完澡要用碘酒擦拭伤口。到了前一天，我采购了一下必要的护膝和热量补充食品，打理好包裹，调整了作息。虽然说最后一天晚上怎样都没有睡着，无梦，但或许是这些天休息的太过充足了，五点钟下了床，拿了包跟舍友说了声再见就出发了（他还没睡）。</p>
-<h1 id="我的毅行"><a href="#我的毅行" class="headerlink" title="我的毅行"></a>我的毅行</h1><blockquote>
-<p>“我绝对忘不了可以张开双臂，闭上眼，听着歌，坦荡走的感觉”</p>
-</blockquote>
-<p>只有走在毅行的路上，每个人才能找到行走下去的意义。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/2c8cec8f.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/2c8cec8f.html" itemprop="url">行为金融学——禀赋效应</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-01T19:23:19+08:00">
-                2019-11-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/行为金融学/" itemprop="url" rel="index">
-                    <span itemprop="name">行为金融学</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  576
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  2
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="问题-1-请列举现实生活中或金融决策中禀赋效应的例子"><a href="#问题-1-请列举现实生活中或金融决策中禀赋效应的例子" class="headerlink" title="问题 1. 请列举现实生活中或金融决策中禀赋效应的例子"></a>问题 1. 请列举现实生活中或金融决策中禀赋效应的例子</h1><p>禀赋效应重点是发现了人在不同的环境下，对同一个东西的偏好(preference)出现了偏差 (偏好是通过出价，也就是”人愿意付出的最高买价”和”人愿意接受的最低卖价”，来衡量的。</p>
-<h2 id="现实生活中"><a href="#现实生活中" class="headerlink" title="现实生活中"></a>现实生活中</h2><p>只要满足 “当一个人拥有某个东西的时候，他对该物品的估价(或者说偏好)要大于没有拥有该物品的时候（的偏好）”，都可以被说成是“禀赋效应”。</p>
-<p>人们对自己的工作、学习成果要比观摩他人的学习、工作成果觉得更有成就感。</p>
-<p>“不满意七天可以退货”的商品，或许真的可以退货，但当人把一件商品带回家试用时，“禀赋效应”就已经开始在身上起作用了。人们不太可能把已经拥有的东西退回去。</p>
-<h2 id="金融决策中"><a href="#金融决策中" class="headerlink" title="金融决策中"></a>金融决策中</h2><p>一旦买入某一只股票，立刻对这家公司产生好感。如果股票涨了，舍不得卖。总觉得这只股票非常好，会一直上涨，其实不舍得卖，一方面是贪婪，另一方面是，个人喜爱。下跌时也一样，更多的人看到 5%的亏损，不会立刻出手。他们总是相信自己最初的选择，认为这只股票比其他的强，会莫名其妙的产生好感，不愿意卖出。</p>
-<h1 id="问题-2-假设一个地区正在分配产权，将矿山分给了善于打鱼的渔夫，将渔场分给了擅长采矿的矿工，你觉得他们会怎么做"><a href="#问题-2-假设一个地区正在分配产权，将矿山分给了善于打鱼的渔夫，将渔场分给了擅长采矿的矿工，你觉得他们会怎么做" class="headerlink" title="问题 2. 假设一个地区正在分配产权，将矿山分给了善于打鱼的渔夫，将渔场分给了擅长采矿的矿工，你觉得他们会怎么做"></a>问题 2. 假设一个地区正在分配产权，将矿山分给了善于打鱼的渔夫，将渔场分给了擅长采矿的矿工，你觉得他们会怎么做</h1><p>渔夫和矿工都对自己已分配的资源更加珍视，而且考虑到自己已有资源对对方来说利用率更高，且对方占据的资源状况缺少相关信息。</p>
-<p>两人都会要求对方除了现有资源外还要附加其他条件来交换自己手里占据的资源，即，渔夫要求矿工用渔场+现金（或者其他补偿）来交换自己手里的矿山，矿工则相反，最终两人难以达成平等高效的贸易交换。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1395,7 +1447,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">317</span>
+                  <span class="site-state-item-count">318</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1406,7 +1458,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-count">43</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -1417,7 +1469,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">171</span>
+                  <span class="site-state-item-count">172</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -1552,7 +1604,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">364.5k</span>
+    <span title="Site words total count">370.9k</span>
   
 </div>
 
