@@ -1,6 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[算法与数据结构学习——01背包问题常数优化算法对问题解集的影响]]></title>
+    <url>%2Fpost%2F1590e320.html</url>
+    <content type="text"><![CDATA[再述 01 背包问题本篇博文使用题目及符号的习惯表达方式均来自于《背包问题九讲》。 背包问题相信大家都不陌生，动态规划算法学习过程中不得不提得经典系列问题，而 01 背包问题又是系列问题得基础，在编程实现过程中，我们常会使用空间优化与常数优化来加速程序的执行，在程序设计竞赛中我们关注点在程序的运行结果是否与标程的运行结果是否一致，但对于优化的影响却不甚关心，我记得在自己学习编译原理优化一章时，徐老师常常谈起优化的代价，今天这篇博文主题便是这个经典问题空间优化与常数优化的影响与代价。 对原题目非常熟悉的请直接跳过前面题目和思路以及优化方法介绍，阅览最后两节内容。 题目有$N$件物品和一个容量为$V$的背包。放入第$i$件物品耗费的费用是$C_i^1$，得到的价值是$W_i$。求解将哪些物品装入背包可使价值总和最大。 基本解题思路因为每种物品只有一件，选择只有放（1）、不放（0）两种状态，所以称这类问题为 01 背包问题。 该问题对应的子问题为：前$i$件物品放入背包得到的最大价值。，根据该子问题，我们定义状态$F[i,v]$为前$i$件物品放入限制重量为$v$所能得到的最大价值，然后我们可以想出状态转移方程。 F[i,v] = max \{ F[i-1,v] , F[i-1,v-C_i] + W_i \}其含义为：逐个拾取编号问题过程中，拾取$i$号且背包限制为$v$重量时（$F[i,v]$），其只由两种状态转移而来，不选择该物体（则状态同相同限重量拾取上个物体时的状态 $F[i-1,v]$），选择该物体（则状态由上次选择时，限重为当下限重减去此次拾取物体重量的状态转移而来$F[i-1,v-C_i]+W_i$）。 最优子结构性质与无后向性是可证的，见下一节附加内容。 原文特别强调了上述转移方程的重要性，也做了相应的解释： 这个方程非常重要，基本上所有跟背包象关的问题的方程都是由它衍生出来的。所以有必要将它详细解释一下：“将前$i$件物品放入容量为$v$的背包中”这个子问题，若只考虑第$i$件物品的策略（放或不放），那么就可以转化为一个只和前$i-1$件物品相关的问题。如果不放第$i$件物品，那么问题就转化为“前$i-1$件物品放入容量为$v$的背包中”，价值为$F[i-1,v]$；如果放第$i$件物品，那么问题就转化为“前$i-1$件物品放入剩下的容量为$v-C_i$的背包中”，此时能获得的最大价值就是$F[i-1,v-C_i]$再加上通过放入第$i$件物品获得的价值$W_i$。 伪代码描述： 1234F[0,0..V] ← 0for i ← 1 to n for v ← w[i] to V F[i,v] ← max&#123;F[i-1,v] , F[i-1,v-w[i]]+v[i]&#125; 附加：最优子结构证明学习自博客01 背包存在最优子结构的证明 表述： $n$为背包重量限制，$w[i]$为$i$物体重量，$v[i]$为$i$物体价值，如果$(z_1,z_2 \cdots z_k)$是问题$f_k(n)$的最优解，那么 对于任意$1 \le j \le k$，有$zj = 1$（确定$j$物体状态为取），则有$(z_1,z_2 \cdots z{j1} , z{j+1} , z{j+2} \cdots z_k)$是问题$f{k-1}(n-w[j])+ v[j]$的最优解 对于任意$1 \le j \le k$，有$zj = 0$（确定$j$物体状态为不取），则有$(z_1,z_2 \cdots z{j1} , z{j+1} , z{j+2} \cdots z_k)$是问题$f{k-1}(n)$的最优解。 这里 $i$ 表示子问题的规模，表述为将 $i$ 个物品放入容量为$v$的背包中， 证明（反证法）： 假设子问题不是最优解，对于情况 1，假设存在$(z1’,z_2’ \codts z{j-1}’ , z{j+1}’ ,\cdots z_k’)$是子问题的最优解，那么$f_k(n)$的最优解将会是$(z_1’,z_2’ \cdots z{j-1}’ , zj , z{j+1}’ \cdots z_k’)$，与假设矛盾。 空间复杂度优化由于要使用$dp[n][v]$状态空间，如果储存全部状态，根据伪代码思路，该动态优化算法的时间和空间复杂度均为$O(VN)$，汽中时间复杂度应该已经不能再优化了，但空间复杂度却可以优化到$O(V)$。 我们观察状态转移方程 F[i,v] = max \{ F[i-1,v] , F[i-1,v-C_i] + W_i \}我们每轮计算前$i$个在不同限重背包的最优值时，利用的状态只有$i-1$时的状态，也即上一轮外层循环得到的值，据此我们可以使用一些优化方法。 滚动数组每次都使用固定的几个存储空间，来达到压缩，节省存储空间的作用。起到优化空间，主要应用在递推或动态规划中 代码描述 1234567891011for (i=1 ;i &lt;= n; i++)&#123; for (v = w[i] ; v &lt;= V ; v++) &#123; dp[1][v] = max(dp[0][v],dp[0][v-w[i]]+v[i]); &#125; // 一轮更新结束后统一翻转 for (v = 0; v&lt;=V ; v++)&#123; dp[0][v] = dp[1][v]; &#125;&#125; 当然我们还发现状态转移方程中，只会利用背包限重状态小于等于要更新状态的已知状态，所以我们按逆序（从大到小）遍历内层循环，就可以避免在同一轮外层循环中先更新的影响后更新的值，由此修改滚动数组代码。 123456789for (i=1 ;i &lt;= n; i++)&#123; for (v = V ; v &gt;= w[i] ; v--) &#123; dp[1][v] = max(dp[0][v],dp[0][v-w[i]]+v[i]); dp[0][v] = dp[1][v]; &#125;&#125; 一维数组那既然逆序已经避免同一轮更新中先更新的影响后更新的值，实际上滚动数组也非必要了。我们使用一维数组便可实现状态转移，并且保证计算$dp[v]$时，$dp[v-w[i]]$保存的是对应二维$dp[i-1][v-w[i]]$的值。 12345678for (i=1 ;i &lt;= n; i++)&#123; for (v = V ; v &gt;= w[i] ; v--) &#123; dp[v] = max(dp[v],dp[v-w[i]]+v[i]); &#125;&#125; 时间复杂度常数优化伪代码中 12for i ← 1 to n for v ← V to w[i] 原作者给出可以优化为$V \quad to \quad max(V − \sumi^NW_i, C_i)$。我个人认为可以严格到$V \quad to \quad max(V - \sum{i+1}^N W_i,C_i)$。 12for i ← 1 to n for v ← V to max(w[i],V-(w[i+1]+...+w[n])) 背包九讲中没有对这一优化做阐述，我自己的理解是这样的： 再回过头来看状态转移方程。 F[i,v] = max \{ F[i-1,v] , F[i-1,v-C_i] + W_i \}我们固定某一限重状态随$i$递增的变化，不妨研究与最终答案相关的，$final(i)= F[i][V]$。我们发现在$i$递增一轮过程中。$final$只会变动一次，且只有两个可能的方向，不变（延续$i$上一轮递增后得到的结果），改变（受$F[i-1][V-w[i]]$影响）。 如果我们将，可以影响$final$的所有限重状态，随$i$减小（逆序），画出来，我们能得到一颗重心明显偏移的树。 我们可以发现，能够影响$final$的重量状态是有限的，并且随$i$减小，可影响的状态逐渐扩张，最后一次只有$final=dp[n][V]$单一状态影响最终答案（因为它本身就是最终答案），每一轮可能影响到$final$的边界应是，$max(V - \sum_{i+1}^N W_i,C_i)$，这里可以补充一下，原作者认为是求和下限应为$i$，带入最后$i=N$我们发现在最后一轮除了更新$dp[N]$还更新了其他与最终答案无关的状态，所以我觉得这个更严格的界限是正确的。 反过来想也可以，在计算$dp[v]$时，若某一限重状态最终能够影响$final$，必然要经过几轮$i$递增（理想状态是，$dp[v+w[i+1]$每次都能受到影响），这也提醒我们，某一状态影响最终结果是需要一定时间限制的，在$i$逐渐靠近$n$时，即便我们遇到重量很小但是价值很大的一颗“金子”，我们也不一定需要从它的重量开始更新状态。 举例来讲比如最后三个物体是 12345// n = 10 V = 50// 当前dp[50]=150w[n-2]=2 v[n-2]=100 //金子w[n-1]=5 v[n-1]=40w[n]=3 v[n]=50 此时$w[i] = 2$,$V-sum=42$（按照底为$i+1$的求和）。如果只是为了获得正确的$dp[50]$，我们需要从$v=50$更新到$v=42$就够了呢？还是说要更新到$v=2$，显然，我们更新到$v=42$就够了，即便后面两个物体在最优解中都要取，$dp[42]$会影响下一轮的$dp[47]$，进而影响最终的$dp[50]$。 Special 优化的代价 优化不是无代价的 承上面例子，显然根据常数优化算法，我们最终可以得到正确的$dp[50]$，但我们在想，有没有少些什么？ 很明显啊，在倒数第三轮外层循环我们没有计算新的$dp[2]$（而大概率碰到金子，2 格背包我们应该捡起来啊！），那么不更新的代价是什么呢？ 针对题目，影响最终答案么？ 不影响。 不针对题目，影响答案么？ 影响，因为改变了状态空间解集。 朴素二维动态规划得到的解集$dp[n][V]$储存了（在该遍历序下）任意小于序长度前缀，任意小于最大限制容量的解集。也即在不增删修改物品条件下，后续满足上述条件的任意询问$Q_1$，都可以在$O(1)$的时间给出答案。 一维压缩空间优化得到的解集$dp[V]$储存了长度等于序长，任意小于最大限制容量的解集。同样，不改变物体，对该序询问容量小于限制的背包问题$Q_2$，都可以在$O(1)$的时间给出答案，但是如果想询问前缀问题（而非序长），则不能获得，因为在外层循环迭代中，没有保留这部分结果。 空间优化+常数优化的解集只能保证$dp[i],i=V$单个值是正确的，而其他值均无意义。 这些发现很明显在提醒，如果关注单捷，那么空间+常数优化自然是很好的选择，但是如果数据固定而频繁询问，那么朴素方法或许才是最好的，优化不应该是盲目的，有些优化需要我们理解背后更深的意义及影响，才能更好的应用于我们程序中 本来这篇文章只想讨论这个内容，不过写着写着就补充了许多其他内容（飘了），希望和大家今后继续关注这些不该被忽略的小细节 hh。]]></content>
+      <categories>
+        <category>编程</category>
+        <category>数据结构与算法</category>
+      </categories>
+      <tags>
+        <tag>01背包</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【洛谷-P2430】解题报告（01背包）]]></title>
+    <url>%2Fpost%2Fa65b0def.html</url>
+    <content type="text"><![CDATA[原始题目P2430 严酷的训练 题目大意给定时间限制，每道问题耗费的时间以及奖励，求限制时间内最大奖励。 解题思路将时间限制理解为背包容量，题目耗费的时间与其价值为装入背包物体的重量与价值，裸 01 背包问题。 解题代码123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;typedef pair&lt;int, int&gt; pii;typedef vector&lt;int&gt; vi;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se secondconst int maxn = 1e4 + 5;const int maxm = 200;int a, b;int mark[maxn];int m, n, t;int dp[maxn], v[maxn], w[maxn];int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; a &gt;&gt; b) &#123; int tt = b / a; cin &gt;&gt; m &gt;&gt; t; rep(i, 1, t + 1) &#123; cin &gt;&gt; mark[i]; &#125; int sum = 0; w[0] = 0; rep(i, 1, m + 1) &#123; cin &gt;&gt; w[i] &gt;&gt; v[i]; w[i] = mark[w[i]]; w[0] += w[i]; &#125; cin &gt;&gt; n; n /= tt; // cout &lt;&lt; "n= " &lt;&lt; n &lt;&lt; endl; memset(dp, 0, sizeof(dp)); rep(i, 1, m + 1) &#123; sum += w[i]; per(j, max(w[i], n - w[0] + sum), n + 1) &#123; dp[j] = max(dp[j], dp[j - w[i]] + v[i]); &#125; &#125; cout &lt;&lt; dp[n] &lt;&lt; endl; &#125;&#125; 收获与反思回顾此题目时对 0 1 背包的常数优化的原理及代价在另一篇博文中详细讨论]]></content>
+      <categories>
+        <category>编程</category>
+        <category>ACM</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+        <tag>ACM</tag>
+        <tag>2019春季训练</tag>
+        <tag>洛谷</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[分布式系统学习——Hadoop初试]]></title>
+    <url>%2Fpost%2Fb894091d.html</url>
+    <content type="text"></content>
+  </entry>
+  <entry>
+    <title><![CDATA[多媒体原理与系统——音频wave文件]]></title>
+    <url>%2Fpost%2F32dcdd6d.html</url>
+    <content type="text"><![CDATA[波形音频文件分析波形音频文件概念波形音频文件是存储数字音频样本序列的格式文件，这些样本直接记录了音频的波形，故称为波形音频文件。MIDI、MP3等编码压缩过的音频文件最终都要转化成波形音频文件进行使用播放。 WAVE，使用最广泛，遵循RIFF格式标准。头四个字节是RIFF。WAVE文件由多个chunk组成。 RIFF Wave Chunk部分以RIFF作为开始表示，紧跟着size字段，最后是type字段位‘wave’。size是wav文件减去id和size占用的字节数。File字节-8=size。 Format Chunk部分id补了一个空格，和其他chunk保持一致，都是4字节。 Fact Chunk部分可选字段，当wav文件从一些专用软件转化来时，包含该chunk。包括三部分，id、size、data，都为4字节大小。 Data Chunk部分是真正保存wav数据的地方，以‘data’作为该chunk的标示。然后是数据大小，紧接着就是wav数据。 实操PlaySound函数使用内置，无需调用MF。]]></content>
+      <categories>
+        <category>多媒体</category>
+      </categories>
+      <tags>
+        <tag>多媒体</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[近期整理的一些问题]]></title>
     <url>%2Fpost%2Fc37f0e45.html</url>
     <content type="text"><![CDATA[问题SJTD IPADS Chinasys 见闻 第一天 session2 的第 6 个报告是来自华中科技大学的工作，相关论文 Mitigating Asymmetric Read and Write Costs in Cuckoo Hashing for Storage Systems 发表在 USENIX ATC’19 上。Cuckoo hash 是一种为了有效解决 hash 冲突，提高空间利用率并且能够在$O(1)$时间内能够进行迅速查找的哈希方式。在插入 x 的时候会计算两个哈希函数，找到两个表中的位置，放到任意一个空的位置。如果两个表中相应的位置都满，那么需要把其中一个位置中的值踢到另一张表中的相应位置，如下图所示。 Cuckoo hash 为什么双哈希函数两表可以有效解决哈希冲突？ 近期整理一些值得看的网站 专业知识 李老师的 Thesis LerGAN 论文 CCF 形式化验证——模型检测 Model Checking 视频 吴恩达——机器学习 NN 密码学同态加密论文 触类旁通 西安交通大学的 LaTeX 讲座讲义 Hexo 文章置顶 Pandoc 命令：pandoc —filter pandoc-citeproc —bibliography=testref.bib —csl=chinese-gb7714-2005-numeric.csl Hello-Hexo.m -o Hello.docx]]></content>
@@ -10,6 +53,11 @@
       <tags>
         <tag>随笔</tag>
       </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[分布式系统学习——TensorFlow理解]]></title>
+    <url>%2Fpost%2F5824281a.html</url>
+    <content type="text"></content>
   </entry>
   <entry>
     <title><![CDATA[《文化商人——21世纪的出版业》读后感]]></title>
@@ -26,7 +74,7 @@
   <entry>
     <title><![CDATA[机器学习——复习大纲]]></title>
     <url>%2Fpost%2F9626187a.html</url>
-    <content type="text"><![CDATA[题型 一定会考的：决策树，神经网络，过拟合，集成学习 ppt 提出的问题会以选择题形式考察 不会考数学推导和证明 必须要带计算器！ 12.31（周二）下午 4-5 点半。B206 Chap1 基本概念基本术语：属性，属性值，属性空间，训练样本，测试样本 监督学习与非监督学习 区别，给出一个问题确定是哪种问题类型。分类和回归，分类和聚类。 标签的问题。 李： ！！线性判别分析，两类现行判别分析，内部方差，中心距离！！如何求判别线 Chap2 线性模型归一化 特征尺度归一化（确保特征在相同的尺度） 范围归一化：使得每个特征尽量接近某个范围，如$0 \le x_i \le 1$ 零均值归一化：用$xi - \mu_i$替代$x_i$，即$x_i - \mu_i \rightarrow x_i$，其中$\mu_i = \frac{1}{m} \sum{i=1}^m x_i$ 零均值+范围归一化，如$-0.5 \le x_i \le 0.5$ 零均值单位方差归一化：$\frac{x_i - \mu_i}{\sigma_i} \rightarrow x_i$ 机器学习三要素 模型、策略、算法？ 数据、模型、算法？哪个对 线性模型基本形式f(x) = w^{T}x+b = \theta^T x两种表示，注意前式中带偏秩，但是并不表达在矩阵相乘中。 J(\theta) = \frac{1}{2m} \sum_{i=1}^{m} (h_\theta (x^{(i)}) - y ^{(i)})^2求解损失函数最小值，梯度下降方法为常见方法之一，梯度下降只能达到局部最优，凸函数可以达到全局最优。 什么是线性关系、 一元线性回归，损失函数相关，最小化损失函数。 梯度下降法，梯度的方向。 欠拟合、过拟合。 学习率 怎样确保梯度下降算法正确的执行（收敛性） 自动收敛测试：每次迭代损失函数$J(\theta)$是否减少 收敛条件：定义不再进行迭代的收敛阈值（如$10^{-3}$） 怎样选择学习率$\alpha$ 对于足够小的$\alpha$，$J(\theta)$应该在每一次迭代中减少 如果$\alpha$太小，梯度下降算法则会收敛很慢 如果$\alpha$太大，梯度下降算法则不会收敛：发散或震荡 用户可以以非常低的学习率开始训练模型，在每一次迭代过程中逐渐提高学习率（线性提高或者指数提高都可以），用户可以用这种方法估计出最佳学习率。 改进方法 正规方程（The normal equations） 对于求函数极小值问题，令函数微分为零，然后求解方程（而非每次对梯度递减）可得到解析解 西瓜数 P54 P55 梯度下降的改进方法 现在使用的梯度下降为批量梯度下降（BGD），每次需要计算所有的样本（1-&gt;m），可以采用随机梯度下降（SGD）（随机选取一个样本，伪梯度下降） 梯度下降的改进方法 动量法是一种非常简单的改进方法，已经成功应用数十年。动量法的核心思想是：在梯度方向一致的地方加速，在梯度方向不断改变的地方减速。 在下降初期，使用前一次的大比重下降方向，加速。 在越过函数谷面时，异常的学习率，会使得两次更新方向基本相反，在原地“震荡” 此时，动量因子使得更新幅度减小，协助越过函数谷面。 在下降中后期，函数面局部最小值所在的吸引盆数量较多，一旦陷进吸引盆地当中，梯度趋于零，会导致止步不前，学习无法进行。如果有动量项的话，动量因子使得更新幅度增大，协助跃出吸引盆。 Chap3 logistic 回归分类问题，线性模型可以通过设置阈值来达成判别。阈值选择有一点困难，因为线性模型值域 R 太广，逻辑斯特回归则希望预测函数值限制在[0,1]，$0 \le h_{\theta} (x) \le 1$。 Sigmoid 函数的性质g(z) = \frac{1}{1+ e^{-z}}g'(z) = g(z) (1 - g(z))概率解释P(Y = 1 | x) = h_\theta(x) = g(\theta^{T}x) = \frac{1}{1+e^{-\theta^Tx}}输入 $x$ ，输出 $y=1$ 的可能性 物理含义：对比线性模型的平滑过度，logistic 回归在分界值前后变化剧烈，希望达到理想的二值 Sigmoid 的函数，但由于需要合适的损失函数求解 $\theta$ 参数矩阵，没有使用不连续的二值 Sigmoid 函数 损失函数选择回顾凸函数，线性模型带入$h\theta(x) = \theta^Tx$入平方损失函数$J(\theta) = \frac{1}{2m} \sum{i=1}^{m} (h_\theta (x^{(i)}) - y ^{(i)})^2$，得到的是凸函数，也可解。 凸函数 等价于 $f’’(x) \ge 0 , \forall x$ 若$x$ 为矢量，则对应的条件变为 Hessian 矩阵$H$为半正定矩阵 严格凸（小于） 对于矢量，则对应条件变为 Hessian 矩阵$H$正定 可以通过极大似然估计$\theta$，见西瓜书 P59 交叉熵损失 为什么选择交叉熵而不选择平方损失，平方损失求导中间多两项，在明确分类的两端下降率接近 0， Chap4 过拟合和正则化 过拟合例子 为什么出现过拟合 最小化训练集上的损失（损失错误） 一般而言，模型越复杂（阶数高或特征多），训练得到的模型经验错误越低，但却更容易出现过拟合 选择哪个模型更合适？随机分成两部分：训练集和验证集（Validation Set） 训练误差和验证误差 如何判断是否出现了过拟合或者欠拟合根据曲线判断，bias（偏差）和variance（） 如何解决过拟合或者欠拟合问题 过拟合和正则化（综合其他章，模型选择和过拟合） 选择题！ 诊断各种训练结果图的问题（本章和最后一章） Chap5 神经网络梁: 为什么要引入神经网络 神经网络的结构 会算前向传播和 BP 多分类，softmax，交叉熵 掌握标准激活函数，特点 掌握各种方法更新梯度 为什么不能用 0 初始化权重矩阵 李： 神经网络，损失函数，表达式！ Chap6 SVM梁 ： （不要求掌握优化推导和 SMO） 什么是支持向量，margin，分类面 给数据，算方程、画超平面 kernel，可能会有大题 基本概念： 主问题，对偶问题，惩罚因子（分别对应对应 hard/soft SVM 去掌握） 调节 kernel 参数能够防止 SVM 出现过拟合嘛？ 李: 支持向量、怎样求最优超平面（拉格朗日插值） 核函数相关。 Chap6.5 决策树信息增益 Shannon 1948 年提出的信息论理论 熵：信息量大小的度量，即表示随机变量不确定性的度量 事件$a_i$的信息量$I(a_i)$可如下度量：$I(a_i) = -p(a_i)\log p(a_i)$ 假设$n$个两两不相容事件$a_1,a_2, \cdots ,a_n$，它们中有且仅有一个发生，则平均的信息量（熵）可以如下度量： $I(a_1, \cdots , a_n) = \sum_i I(a_i) = -\sum_i p(a_i) \log p(a_i)$ 假设当前样本集 D 中第$k$类样本的比例为$p_k$，对应的信息熵为 Ent(D) = - \sum_k p_k \log p_k $Ent(D)$越小。表示数据越有序，纯度越高（一类是 0），分类效果越好 假设某离散属性$a$有$V$个可能值，若采用该属性对样本集划分，则会产生 V 个分支，每个分支节点包含的数据记为$D^v$ 用属性$a$对样本集$D$进行划分，获得的信息增益为： Gain(D,a) = Ent(D) - \sum_v \frac{|D^v|}{D} Ent(D^v) 选择具有最大信息增益的属性来划分： $a^* = arg \quad max_aGain(D,a)$ （ID3 算法） 信息增益比 ID3 算法以信息增益为选择属性，对于取值较多的属性有所偏好（带编号的显然不适合） 信息增益比 Gain\_ratio(D,a) = \frac{Gain(D,a) }{ IV(a)}其中 IV 成为属性的固有值（intrinsic value），属性可取值越多，IV 通常越大。 IV(a) = - \sum_{v=1}^V \frac{|D^v|}{|D|} \log \frac{ |D^v| }{|D|} 增益率准则对可取值数目较少的属性有所偏好 C4.5 并不是直接选择增益率最大的候选划分属性，而是使用了一个启发式算法，先从划分属性中找出信息增益高于平均水平的属性，再从中选择信息增益率最高的属性 a。 基尼指数 数据集的纯度用基尼值来衡量 Gini(D) = \sum_{k=1}^{|y|} \sum_{k' \not ={k}} p_k p_k' = 1 - \sum_{k=1}^{|y|} p_k^2 直观来说，基尼值反映了从数据集$D$中随机抽取两个样本，其类别标记不一致的概率，因此基尼值越小，数据集纯度越高 属性 a 的基尼指数定义为 Gini\_index(D,a) = \sum_{v=1}^{V} \frac{D^v}{D}Gini(D^v) CART vs. ID3 二元划分：二叉树不易产生数据碎片，精确度往往也会高于多叉树 属性选择不同 剪枝决策树的剪枝减少决策树的规模（模型复杂度），是处理“过拟合”的主要手段 前剪枝见西瓜书 P81 给出的方法，将数据集划分为训练集、测试集，每一次选出最优划分属性后，对测试集做划分前后比对，划分后精度下降的禁止划分（图 4.5 图 4.6 以及下面的文字表述）。 预剪枝基于贪心禁止分支展开，带来一定欠拟合的风险。 后剪枝生成完整树后做替换检查，见 P83 连续与缺失值处理连续属性处理 离散化，最简单的是二分法 本质是连续的，但是对于有限采样数据是离散的 对于离散区间中取任意值产生的划分结果相同 对于包含$n-1$个元素的候选划分点集合 T_a = \{ \frac{a^i + a^{i+1}}{2} | 1 \le i \le n-1 \} 即把区间$[a^i,a^{i+1}]$的中位点作为候选划分点 处理时对多属性需要多一轮枚举循环，找到划分后纯度更高的划分点 CART 则将这些划分点当成多离散值处理，见后面。 CART 属性取值离散超过两种的处理 组合的方式转化成多个二取值问题（类似 OvR），取其中划分后 Gini_index，最小的二分情况 Chap7 集成学习梁： 所有算法的思想、策略和基本概念 给数据，会计算 会求每一步的弱分类器 李： Boosting 算法?? Chap8 聚类梁： GMM 不考 k-means 一定考 高斯分布和贝叶斯系列（10’） 李： K-means 以及初始类簇中心点的确认 Chap9 降维 （流形学习不考） PCA/LDA 考其一 Chap10 应用 各种评价指标：精度等，一级二级指标 混淆矩阵 ROC 曲线。Kappa 系数，AUC 值 多分类学习多分类学习的拆解：OvO，OvR，MvM。投票机制，拆解原则。 海明距离、欧式距离。 混淆矩阵，一些指标的计算， 欠拟合的改良方法 贝叶斯回顾概率公式，全概率公式，先验概率、后验概率]]></content>
+    <content type="text"><![CDATA[题型 一定会考的：决策树，神经网络，过拟合，集成学习 ppt 提出的问题会以选择题形式考察 不会考数学推导和证明 必须要带计算器！ 12.31（周二）下午 4-5 点半。B206 Chap1 基本概念基本术语：属性，属性值，属性空间，训练样本，测试样本 监督学习与非监督学习 区别，给出一个问题确定是哪种问题类型。分类和回归，分类和聚类。 标签的问题。 李： ！！线性判别分析，两类现行判别分析，内部方差，中心距离！！如何求判别线 Chap2 线性模型归一化 特征尺度归一化（确保特征在相同的尺度） 范围归一化：使得每个特征尽量接近某个范围，如$0 \le x_i \le 1$ 零均值归一化：用$xi - \mu_i$替代$x_i$，即$x_i - \mu_i \rightarrow x_i$，其中$\mu_i = \frac{1}{m} \sum{i=1}^m x_i$ 零均值+范围归一化，如$-0.5 \le x_i \le 0.5$ 零均值单位方差归一化：$\frac{x_i - \mu_i}{\sigma_i} \rightarrow x_i$ 机器学习三要素 模型、策略、算法？ 数据、模型、算法？哪个对 线性模型基本形式f(x) = w^{T}x+b = \theta^T x两种表示，注意前式中带偏秩，但是并不表达在矩阵相乘中。 J(\theta) = \frac{1}{2m} \sum_{i=1}^{m} (h_\theta (x^{(i)}) - y ^{(i)})^2求解损失函数最小值，梯度下降方法为常见方法之一，梯度下降只能达到局部最优，凸函数可以达到全局最优。 什么是线性关系、 一元线性回归，损失函数相关，最小化损失函数。 梯度下降法，梯度的方向。 欠拟合、过拟合。 学习率 怎样确保梯度下降算法正确的执行（收敛性） 自动收敛测试：每次迭代损失函数$J(\theta)$是否减少 收敛条件：定义不再进行迭代的收敛阈值（如$10^{-3}$） 怎样选择学习率$\alpha$ 对于足够小的$\alpha$，$J(\theta)$应该在每一次迭代中减少 如果$\alpha$太小，梯度下降算法则会收敛很慢 如果$\alpha$太大，梯度下降算法则不会收敛：发散或震荡 用户可以以非常低的学习率开始训练模型，在每一次迭代过程中逐渐提高学习率（线性提高或者指数提高都可以），用户可以用这种方法估计出最佳学习率。 改进方法 正规方程（The normal equations） 对于求函数极小值问题，令函数微分为零，然后求解方程（而非每次对梯度递减）可得到解析解 西瓜数 P54 P55 现在使用的梯度下降为批量梯度下降（BGD），每次需要计算所有的样本（1-&gt;m），可以采用随机梯度下降（SGD）（随机选取一个样本，伪梯度下降） 梯度下降的改进方法动量法动量法是一种非常简单的改进方法，已经成功应用数十年。动量法的核心思想是：在梯度方向一致的地方加速，在梯度方向不断改变的地方减速。 在下降初期，使用前一次的大比重下降方向，加速。 在越过函数谷面时，异常的学习率，会使得两次更新方向基本相反，在原地“震荡” 此时，动量因子使得更新幅度减小，协助越过函数谷面。 在下降中后期，函数面局部最小值所在的吸引盆数量较多，一旦陷进吸引盆地当中，梯度趋于零，会导致止步不前，学习无法进行。如果有动量项的话，动量因子使得更新幅度增大，协助跃出吸引盆。 NAM略 Chap3 logistic 回归分类问题，线性模型可以通过设置阈值来达成判别。阈值选择有一点困难，因为线性模型值域 R 太广，逻辑斯特回归则希望预测函数值限制在[0,1]，$0 \le h_{\theta} (x) \le 1$。 Sigmoid 函数的性质g(z) = \frac{1}{1+ e^{-z}}g'(z) = g(z) (1 - g(z))概率解释P(Y = 1 | x) = h_\theta(x) = g(\theta^{T}x) = \frac{1}{1+e^{-\theta^Tx}}输入 $x$ ，输出 $y=1$ 的可能性 物理含义：对比线性模型的平滑过度，logistic 回归在分界值前后变化剧烈，希望达到理想的二值 Sigmoid 的函数，但由于需要合适的损失函数求解 $\theta$ 参数矩阵，没有使用不连续的二值 Sigmoid 函数 损失函数选择回顾凸函数，线性模型带入$h\theta(x) = \theta^Tx$入平方损失函数$J(\theta) = \frac{1}{2m} \sum{i=1}^{m} (h_\theta (x^{(i)}) - y ^{(i)})^2$，得到的是凸函数，也可解。 凸函数 等价于 $f’’(x) \ge 0 , \forall x$ 若$x$ 为矢量，则对应的条件变为 Hessian 矩阵$H$为半正定矩阵 严格凸（小于） 对于矢量，则对应条件变为 Hessian 矩阵$H$正定 可以通过极大似然估计$\theta$，见西瓜书 P59 交叉熵损失 为什么选择交叉熵而不选择平方损失，平方损失求导中间多两项，在明确分类的两端下降率接近 0， Chap4 过拟合和正则化过拟合举例 为什么出现过拟合 最小化训练集上的损失（损失错误） 一般而言，模型越复杂（阶数高或特征多），训练得到的模型经验错误越低，但却更容易出现过拟合 选择哪个模型更合适？随机分成两部分：训练集和验证集（Validation Set） 训练误差和验证误差 如何判断是否出现了过拟合或者欠拟合根据曲线判断，bias（偏差）和 variance（方差），会有 trade off（分界分离），选择靠近该分界点的模型，从而减小整体误差。 如何解决过拟合或者欠拟合问题 欠拟合（Large Bias）：增加模型的附加都 收集新的特征 增加多项式组合特征 过拟合（Large Variance） 增加数据（有效但是实践意义不大） 降低模型的复杂度 减小特征：特征选择 正则化（Regularization）：增加偏差 正则化 $\lambda$：正则化参数 问题：思考正则化参数的取值范围 \lambda \sum_{j=1}^{n} \theta_j^2正则化线性回归 正则化 Logistic 回归 模型性能评估 我们用训练集优化参数$\theta^{*} = arg min \frac{1}{m} \sum{i=1}^{m} l(h{\theta}(x^{(i)}),y^{(i)})$ 用验证集选择模型 但真正关心的是模型在新的测试数据的性能（泛化能力） 训练集：训练参数 验证集（开发集，Development set）：用于调参（正规化参数、多项式阶数等）、特征选择等 测试集：仅仅用于性能评估 Chap5 神经网络引入原因与神经结构 类比人类的学习方式，The “one learning algorithm” hypotheis。人类的学习行为都是通过神经元结构完成。 神经元模型：Logistic unit 神经网络结构 前向传播 梁: 为什么要引入神经网络 神经网络的结构 会算前向传播和 BP 多分类，softmax，交叉熵 掌握标准激活函数，特点 掌握各种方法更新梯度 为什么不能用 0 初始化权重矩阵 李： 神经网络，损失函数，表达式！ Chap6 SVMMargin 对比 Logistic 回归：在测试新样本时，当$\theta^Tx \gg 0$，或者$\ll 0$，我们可以非常自信地给出预测 按实际训练中我们不能很好的找到一个参数矩阵使得$\theta^Tx \gg 0$，当$y^{i} = 1$时以及相反时候。 重新定义符号 （不要求掌握优化推导和 SMO） 什么是支持向量，margin，分类面 给数据，算方程、画超平面 kernel，可能会有大题 基本概念： 主问题，对偶问题，惩罚因子（分别对应对应 hard/soft SVM 去掌握） 调节 kernel 参数能够防止 SVM 出现过拟合嘛？ 李: 支持向量、怎样求最优超平面 核函数相关。 Chap6.5 决策树信息增益 Shannon 1948 年提出的信息论理论 熵：信息量大小的度量，即表示随机变量不确定性的度量 事件$a_i$的信息量$I(a_i)$可如下度量：$I(a_i) = -p(a_i)\log p(a_i)$ 假设$n$个两两不相容事件$a_1,a_2, \cdots ,a_n$，它们中有且仅有一个发生，则平均的信息量（熵）可以如下度量： $I(a_1, \cdots , a_n) = \sum_i I(a_i) = -\sum_i p(a_i) \log p(a_i)$ 假设当前样本集 D 中第$k$类样本的比例为$p_k$，对应的信息熵为 Ent(D) = - \sum_k p_k \log p_k $Ent(D)$越小。表示数据越有序，纯度越高（一类是 0），分类效果越好 假设某离散属性$a$有$V$个可能值，若采用该属性对样本集划分，则会产生 V 个分支，每个分支节点包含的数据记为$D^v$ 用属性$a$对样本集$D$进行划分，获得的信息增益为： Gain(D,a) = Ent(D) - \sum_v \frac{|D^v|}{D} Ent(D^v) 选择具有最大信息增益的属性来划分： $a^* = arg \quad max_aGain(D,a)$ （ID3 算法） 信息增益比 ID3 算法以信息增益为选择属性，对于取值较多的属性有所偏好（带编号的显然不适合） 信息增益比 Gain\_ratio(D,a) = \frac{Gain(D,a) }{ IV(a)}其中 IV 成为属性的固有值（intrinsic value），属性可取值越多，IV 通常越大。 IV(a) = - \sum_{v=1}^V \frac{|D^v|}{|D|} \log \frac{ |D^v| }{|D|} 增益率准则对可取值数目较少的属性有所偏好 C4.5 并不是直接选择增益率最大的候选划分属性，而是使用了一个启发式算法，先从划分属性中找出信息增益高于平均水平的属性，再从中选择信息增益率最高的属性 a。 基尼指数 数据集的纯度用基尼值来衡量 Gini(D) = \sum_{k=1}^{|y|} \sum_{k' \not ={k}} p_k p_k' = 1 - \sum_{k=1}^{|y|} p_k^2 直观来说，基尼值反映了从数据集$D$中随机抽取两个样本，其类别标记不一致的概率，因此基尼值越小，数据集纯度越高 属性 a 的基尼指数定义为 Gini\_index(D,a) = \sum_{v=1}^{V} \frac{D^v}{D}Gini(D^v) CART vs. ID3 二元划分：二叉树不易产生数据碎片，精确度往往也会高于多叉树 属性选择不同 剪枝决策树的剪枝减少决策树的规模（模型复杂度），是处理“过拟合”的主要手段 前剪枝见西瓜书 P81 给出的方法，将数据集划分为训练集、测试集，每一次选出最优划分属性后，对测试集做划分前后比对，划分后精度下降的禁止划分（图 4.5 图 4.6 以及下面的文字表述）。 预剪枝基于贪心禁止分支展开，带来一定欠拟合的风险。 后剪枝生成完整树后做替换检查，见 P83 连续与缺失值处理连续属性处理 离散化，最简单的是二分法 本质是连续的，但是对于有限采样数据是离散的 对于离散区间中取任意值产生的划分结果相同 对于包含$n-1$个元素的候选划分点集合 T_a = \{ \frac{a^i + a^{i+1}}{2} | 1 \le i \le n-1 \} 即把区间$[a^i,a^{i+1}]$的中位点作为候选划分点 处理时对多属性需要多一轮枚举循环，找到划分后纯度更高的划分点 CART 则将这些划分点当成多离散值处理，见后面。 CART 属性取值离散超过两种的处理 组合的方式转化成多个二取值问题（类似 OvR），取其中划分后 Gini_index，最小的二分情况 Chap7 集成学习 构建多个学习器一起来结合来完成具体地学习任务 也成为多分类器系统 学习器可以是同类型地，也可以是不同类型 通过将多个学习器进行结合，常可获得比单一学习器显著优越地泛化性能，对“弱学习器”尤为明显 理论分析指出：假设各分类器地错误率相互独立，则随着集成个体分类器数目增大，集成的错误率将指数级下降 现实中个体学习器是为解决同一个问题训练出来的，不可能相互独立 如何产生并结合“好而不同”的个体学习器是集成学习研究的核心。 集成学习分类 个体学习器间存在强依赖关系，必须串行生成的序列化方法。代表：Boosting（AdaBoost，Gradient Boosting Machine） 个体学习器间不存在强依赖关系，可同时生成的并行化方法。代表：Bagging 和随机森林（Random Forest） AdaBoost李重点 GBDT略 Bagging 随机森林（Random Forest） 决策融合策略 平均法 加权平均法 投票法 绝对大多数投票（Majority Voting）：超过半数，则决策，否则拒绝 少数服从多数（Plurality Voting）：得票最多的标记 学习法 用各学习器的输出生成新的训练数据，再去训练一个学习器（如线性 SVM 等） Chap8 聚类梁： GMM 不考 k-means 一定考 高斯分布和贝叶斯系列（10’） 李： K-means 以及初始类簇中心点的确认 Chap9 降维 （流形学习不考） PCA/LDA 考其一 Chap10 应用 各种评价指标：精度等，一级二级指标 混淆矩阵 ROC 曲线。Kappa 系数，AUC 值 多分类学习多分类学习的拆解：OvO，OvR，MvM。投票机制，拆解原则。 海明距离、欧式距离。 混淆矩阵，一些指标的计算， 欠拟合的改良方法 贝叶斯回顾概率公式，全概率公式，先验概率、后验概率]]></content>
       <categories>
         <category>机器学习</category>
       </categories>
@@ -1471,7 +1519,7 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[【洛谷-P1001】结题报告（水题）]]></title>
+    <title><![CDATA[【洛谷-P1001】解题报告（水题）]]></title>
     <url>%2Fpost%2Fb04c1acf.html</url>
     <content type="text"><![CDATA[原始题目P1001 A+B Problem 题目描述输入两个整数a,b，输出它们的和(|a|,|b|&lt;=10^9)。 注意 pascal使用integer会爆掉哦！ 有负数哦！ c/c++的main函数必须是int类型，而且最后要return 0。这不仅对洛谷其他题目有效，而且也是noip/noi比赛的要求！ 好吧，同志们，我们就从这一题开始，向着大牛的路进发。 任何一个伟大的思想，都有一个微不足道的开始。 输入输出格式输入格式：两个整数以空格分开 输出格式：一个数 输入输出样例输入样例#1：20 30 输出样例#1：50 题目大意如题 解题思路水题 解题代码1234567891011121314#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;ll a, b, c, d;int main()&#123; ios::sync_with_stdio(false); while (cin &gt;&gt; a &gt;&gt; b &gt;&gt; c &gt;&gt; d) &#123; ll sum = (c - a) * 60 + d - b; cout &lt;&lt; sum / 60ll &lt;&lt; " " &lt;&lt; sum % 60 &lt;&lt; endl; &#125; return 0;&#125; 收获与反思无]]></content>
       <categories>
@@ -1635,7 +1683,7 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[数学建模—美赛2019E题]]></title>
+    <title><![CDATA[数学建模——美赛2019E题]]></title>
     <url>%2Fpost%2F4c60a529.html</url>
     <content type="text"><![CDATA[第一天上午定题目E题，环境相关 关键词：环境退化，环境成本，生态经济，适应性模型 下午开始着手搜集相关论文资料，包括但不限于，生态服务功能价值评估模型，水源森林生态资源衡量标准 建模思路，层次分析法，搜集大量数据获可能影响生态成本指标体系的层次结构 预想的指标： 评估指标 1 8 24 60 112层次分析法AHP 113 第二天整理下思路，层次分析法（照着ppt又回顾了下） 搜集数据？不需要细致工程的数据，但是要能衡量大中小型项目的污染标准。]]></content>
       <categories>
@@ -1702,8 +1750,8 @@
         <category>C++</category>
       </categories>
       <tags>
-        <tag>C++</tag>
         <tag>编程</tag>
+        <tag>C++</tag>
         <tag>课程设计</tag>
       </tags>
   </entry>
@@ -1822,8 +1870,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>HDU</tag>
         <tag>并查集</tag>
@@ -1838,8 +1886,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>并查集</tag>
         <tag>待补充</tag>
@@ -1855,8 +1903,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>HDU</tag>
         <tag>并查集</tag>
@@ -1871,8 +1919,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>HDU</tag>
         <tag>并查集</tag>
         <tag>待补充</tag>
@@ -1888,8 +1936,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>并查集</tag>
         <tag>待补充</tag>
@@ -1914,8 +1962,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -1929,8 +1977,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -1944,8 +1992,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -1959,8 +2007,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -1974,8 +2022,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -1989,8 +2037,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -2004,8 +2052,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -2206,8 +2254,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>数据结构</tag>
         <tag>2018秋季训练</tag>
         <tag>UVA</tag>
@@ -2222,8 +2270,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>Imitation</tag>
         <tag>2018秋季训练</tag>
         <tag>UVA</tag>
@@ -2238,8 +2286,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>Imitation</tag>
         <tag>2018秋季训练</tag>
         <tag>UVA</tag>
@@ -2254,8 +2302,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -2270,8 +2318,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -2314,8 +2362,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>HDU</tag>
         <tag>大数</tag>
@@ -2358,8 +2406,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>UVALive</tag>
       </tags>
@@ -2373,8 +2421,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018秋季训练</tag>
         <tag>UVALive</tag>
         <tag>概率</tag>
@@ -2389,8 +2437,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>Imitation</tag>
         <tag>2018秋季训练</tag>
@@ -2405,8 +2453,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>博弈</tag>
         <tag>2018秋季培训</tag>
@@ -2435,8 +2483,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
       </tags>
@@ -2450,8 +2498,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>字典树</tag>
@@ -2466,8 +2514,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
@@ -2482,8 +2530,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
       </tags>
@@ -2497,8 +2545,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>Dijkstra</tag>
@@ -2514,8 +2562,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>字典树</tag>
@@ -2530,8 +2578,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
       </tags>
@@ -2545,8 +2593,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
       </tags>
@@ -2560,8 +2608,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
       </tags>
@@ -2575,8 +2623,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -2591,8 +2639,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -2607,8 +2655,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -2623,8 +2671,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -2639,8 +2687,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>Imitation</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -2655,8 +2703,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>补图</tag>
         <tag>UVA</tag>
@@ -2672,8 +2720,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>补图</tag>
         <tag>UVA</tag>
@@ -2689,8 +2737,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>数论</tag>
         <tag>HDU</tag>
@@ -2705,8 +2753,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
         <tag>补图</tag>
@@ -2723,8 +2771,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>补图</tag>
         <tag>STL</tag>
@@ -2740,8 +2788,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>补图</tag>
         <tag>STL</tag>
@@ -2757,8 +2805,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>补图</tag>
         <tag>STL</tag>
@@ -2773,8 +2821,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>DP</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
@@ -2790,8 +2838,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>数论</tag>
@@ -2806,8 +2854,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>二分</tag>
         <tag>Greedy</tag>
         <tag>UVA</tag>
@@ -2822,8 +2870,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
         <tag>UVA</tag>
@@ -2838,8 +2886,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -2868,8 +2916,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>POJ</tag>
         <tag>Floyd</tag>
@@ -2884,8 +2932,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>BFS</tag>
         <tag>HDU</tag>
@@ -2900,8 +2948,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>CodeForces</tag>
       </tags>
@@ -2915,8 +2963,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>BFS</tag>
         <tag>数论</tag>
@@ -2932,8 +2980,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>AtCoder</tag>
       </tags>
   </entry>
@@ -2946,8 +2994,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>AtCoder</tag>
       </tags>
   </entry>
@@ -2960,8 +3008,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>AtCoder</tag>
         <tag>DP</tag>
       </tags>
@@ -2975,8 +3023,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>AtCoder</tag>
       </tags>
   </entry>
@@ -3023,8 +3071,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
@@ -3039,8 +3087,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
         <tag>HDU</tag>
@@ -3055,8 +3103,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
         <tag>HDU</tag>
@@ -3080,8 +3128,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
         <tag>HDU</tag>
@@ -3096,8 +3144,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
@@ -3112,8 +3160,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
@@ -3128,8 +3176,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
         <tag>2018杭电多校</tag>
@@ -3144,8 +3192,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
         <tag>2018杭电多校</tag>
@@ -3160,8 +3208,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>DP</tag>
         <tag>2018暑假集训</tag>
         <tag>字典树</tag>
@@ -3177,8 +3225,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>字典树</tag>
@@ -3193,8 +3241,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>字典树</tag>
         <tag>HDU</tag>
@@ -3209,8 +3257,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>字典树</tag>
         <tag>HDU</tag>
@@ -3225,8 +3273,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>字符串hash</tag>
         <tag>POJ</tag>
@@ -3241,8 +3289,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
         <tag>HDU</tag>
@@ -3258,8 +3306,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>Dijkstra</tag>
         <tag>HDU</tag>
         <tag>最长路</tag>
@@ -3274,8 +3322,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>Dijkstra</tag>
         <tag>最短路</tag>
@@ -3305,8 +3353,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>区间DP</tag>
@@ -3321,8 +3369,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>区间DP</tag>
         <tag>POJ</tag>
@@ -3337,8 +3385,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>区间DP</tag>
@@ -3353,8 +3401,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>Greedy</tag>
         <tag>HDU</tag>
@@ -3369,8 +3417,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>Greedy</tag>
@@ -3385,8 +3433,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
         <tag>2018杭电多校</tag>
@@ -3402,8 +3450,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>POJ</tag>
         <tag>计算几何</tag>
@@ -3418,8 +3466,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>计算几何</tag>
         <tag>UVA</tag>
@@ -3434,8 +3482,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>POJ</tag>
         <tag>计算几何</tag>
@@ -3450,8 +3498,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>POJ</tag>
         <tag>计算几何</tag>
@@ -3466,8 +3514,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>数论</tag>
         <tag>HDU</tag>
@@ -3499,8 +3547,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>ZOJ</tag>
@@ -3515,8 +3563,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
@@ -3532,8 +3580,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>UVA</tag>
@@ -3548,8 +3596,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>URAL</tag>
@@ -3564,8 +3612,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>水题</tag>
@@ -3581,8 +3629,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>DP</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
@@ -3598,8 +3646,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>几何</tag>
@@ -3616,8 +3664,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>水题</tag>
@@ -3633,8 +3681,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>二分</tag>
         <tag>POJ</tag>
@@ -3649,8 +3697,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>二分</tag>
         <tag>水题</tag>
         <tag>POJ</tag>
@@ -3665,8 +3713,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>二分</tag>
         <tag>水题</tag>
@@ -3682,8 +3730,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>二分</tag>
         <tag>CodeForces</tag>
@@ -3698,8 +3746,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
@@ -3714,8 +3762,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>Greedy</tag>
         <tag>HDU</tag>
@@ -3731,8 +3779,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>Greedy</tag>
         <tag>HDU</tag>
@@ -3748,8 +3796,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>数论</tag>
         <tag>HDU</tag>
@@ -3765,8 +3813,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>BFS</tag>
         <tag>HDU</tag>
@@ -3782,12 +3830,12 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
-        <tag>2017HDU多校</tag>
         <tag>规律</tag>
+        <tag>2017HDU多校</tag>
       </tags>
   </entry>
   <entry>
@@ -3799,13 +3847,13 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>DP</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
-        <tag>正则匹配</tag>
         <tag>2017HDU多校</tag>
+        <tag>正则匹配</tag>
       </tags>
   </entry>
   <entry>
@@ -3817,8 +3865,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>数据结构</tag>
         <tag>2018暑期选拔</tag>
@@ -3833,8 +3881,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>CSU</tag>
         <tag>2018暑期选拔</tag>
         <tag>BFS</tag>
@@ -3890,8 +3938,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>CSU</tag>
         <tag>矩阵快速幂</tag>
@@ -3906,8 +3954,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>CSU</tag>
         <tag>矩阵快速幂</tag>
@@ -3922,8 +3970,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>AtCoder</tag>
         <tag>math</tag>
         <tag>2018春季训练</tag>
@@ -3938,8 +3986,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>二分</tag>
         <tag>CodeForces</tag>
@@ -3954,8 +4002,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>math</tag>
         <tag>2018春季训练</tag>
         <tag>CodeForces</tag>
@@ -3971,8 +4019,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>math</tag>
         <tag>2018春季训练</tag>
         <tag>CodeForces</tag>
@@ -3988,8 +4036,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>水题</tag>
         <tag>CodeForces</tag>
@@ -4005,8 +4053,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>Greedy</tag>
         <tag>CodeForces</tag>
@@ -4022,8 +4070,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>水题</tag>
         <tag>CodeForces</tag>
@@ -4038,8 +4086,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>CSU</tag>
         <tag>二分</tag>
@@ -4054,8 +4102,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>HDU</tag>
         <tag>线段树</tag>
@@ -4070,8 +4118,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>HDU</tag>
         <tag>线段树</tag>
@@ -4086,8 +4134,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>HDU</tag>
         <tag>线段树</tag>
@@ -4102,8 +4150,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018春季训练</tag>
         <tag>CSU</tag>
         <tag>位运算</tag>
@@ -4250,8 +4298,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>DP</tag>
         <tag>2018寒假集训</tag>
         <tag>POJ</tag>
@@ -4266,8 +4314,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>补图</tag>
         <tag>HDU</tag>
@@ -4283,8 +4331,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>DP</tag>
         <tag>2018寒假集训</tag>
         <tag>CodeForces</tag>
@@ -4299,8 +4347,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>AtCoder</tag>
         <tag>DP</tag>
         <tag>2018寒假集训</tag>
@@ -4315,8 +4363,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>DP</tag>
         <tag>2018寒假集训</tag>
         <tag>DFS</tag>
@@ -4332,8 +4380,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>BFS</tag>
         <tag>HDU</tag>
@@ -4348,8 +4396,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>BFS</tag>
         <tag>补图</tag>
@@ -4365,8 +4413,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>BFS</tag>
         <tag>CodeForces</tag>
@@ -4381,8 +4429,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>BFS</tag>
         <tag>ZOJ</tag>
@@ -4397,8 +4445,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>Greedy</tag>
         <tag>CodeForces</tag>
@@ -4414,8 +4462,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>HDU</tag>
         <tag>STL</tag>
@@ -4430,8 +4478,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>Imitation</tag>
         <tag>Graph</tag>
@@ -4447,8 +4495,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>Greedy</tag>
         <tag>POJ</tag>
@@ -4463,8 +4511,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>Imitation</tag>
         <tag>CodeForces</tag>
@@ -4480,8 +4528,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>算法</tag>
         <tag>ACM</tag>
+        <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>补图</tag>
         <tag>HDU</tag>
