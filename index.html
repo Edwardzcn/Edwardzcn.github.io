@@ -476,7 +476,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2,894
+                  2,889
                 </span>
               
 
@@ -517,14 +517,14 @@
           <h1 id="再述-01-背包问题"><a href="#再述-01-背包问题" class="headerlink" title="再述 01 背包问题"></a>再述 01 背包问题</h1><p>本篇博文使用题目及符号的习惯表达方式均来自于《背包问题九讲》。</p>
 <p>背包问题相信大家都不陌生，动态规划算法学习过程中不得不提得经典系列问题，而 01 背包问题又是系列问题得基础，在编程实现过程中，我们常会使用空间优化与常数优化来加速程序的执行，在程序设计竞赛中我们关注点在程序的运行结果是否与标程的运行结果是否一致，但对于优化的影响却不甚关心，我记得在自己学习编译原理优化一章时，徐老师常常谈起优化的代价，今天这篇博文主题便是这个经典问题空间优化与常数优化的影响与代价。</p>
 <p>对原题目非常熟悉的请直接跳过前面题目和思路以及优化方法介绍，阅览最后两节内容。</p>
-<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><p>有$N$件物品和一个容量为$V$的背包。放入第$i$件物品耗费的费用是$C_i^1$，得到的价值是$W_i$。求解将哪些物品装入背包可使价值总和最大。</p>
+<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><p>有$N$件物品和一个容量为$V$的背包。放入第$i$件物品耗费的费用是$C_i^1$，得到的价值是$Value_i$。求解将哪些物品装入背包可使价值总和最大。</p>
 <h1 id="基本解题思路"><a href="#基本解题思路" class="headerlink" title="基本解题思路"></a>基本解题思路</h1><p>因为每种物品只有一件，选择只有放（1）、不放（0）两种状态，所以称这类问题为 01 背包问题。</p>
 <p>该问题对应的子问题为：<strong>前$i$件物品放入背包得到的最大价值。</strong>，根据该子问题，我们定义状态$F[i,v]$为前$i$件物品放入限制重量为$v$所能得到的最大价值，然后我们可以想出状态转移方程。</p>
-<script type="math/tex; mode=display">F[i,v] = max \{ F[i-1,v] , F[i-1,v-C_i] + W_i \}</script><p>其含义为：逐个拾取编号问题过程中，拾取$i$号且背包限制为$v$重量时（$F[i,v]$），其只由两种状态转移而来，不选择该物体（则状态同相同限重量拾取上个物体时的状态 $F[i-1,v]$），选择该物体（则状态由上次选择时，限重为当下限重减去此次拾取物体重量的状态转移而来$F[i-1,v-C_i]+W_i$）。</p>
+<script type="math/tex; mode=display">F[i,v] = max \{ F[i-1,v] , F[i-1,v-C_i] + Value_i \}</script><p>其含义为：逐个拾取编号问题过程中，拾取$i$号且背包限制为$v$重量时（$F[i,v]$），其只由两种状态转移而来，不选择该物体（则状态同相同限重量拾取上个物体时的状态 $F[i-1,v]$），选择该物体（则状态由上次选择时，限重为当下限重减去此次拾取物体重量的状态转移而来$F[i-1,v-C_i]+Value_i$）。</p>
 <p>最优子结构性质与无后向性是可证的，见下一节附加内容。</p>
 <p>原文特别强调了上述转移方程的重要性，也做了相应的解释：</p>
 <blockquote>
-<p>这个方程非常重要，基本上所有跟背包象关的问题的方程都是由它衍生出来的。所以有必要将它详细解释一下：“将前$i$件物品放入容量为$v$的背包中”这个子问题，若只考虑第$i$件物品的策略（放或不放），那么就可以转化为一个只和前$i-1$件物品相关的问题。如果不放第$i$件物品，那么问题就转化为“前$i-1$件物品放入容量为$v$的背包中”，价值为$F[i-1,v]$；如果放第$i$件物品，那么问题就转化为“前$i-1$件物品放入剩下的容量为$v-C_i$的背包中”，此时能获得的最大价值就是$F[i-1,v-C_i]$再加上通过放入第$i$件物品获得的价值$W_i$。</p>
+<p>这个方程非常重要，基本上所有跟背包象关的问题的方程都是由它衍生出来的。所以有必要将它详细解释一下：“将前$i$件物品放入容量为$v$的背包中”这个子问题，若只考虑第$i$件物品的策略（放或不放），那么就可以转化为一个只和前$i-1$件物品相关的问题。如果不放第$i$件物品，那么问题就转化为“前$i-1$件物品放入容量为$v$的背包中”，价值为$F[i-1,v]$；如果放第$i$件物品，那么问题就转化为“前$i-1$件物品放入剩下的容量为$v-C_i$的背包中”，此时能获得的最大价值就是$F[i-1,v-C_i]$再加上通过放入第$i$件物品获得的价值$Value_i$。</p>
 </blockquote>
 <p>伪代码描述：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">F[<span class="number">0</span>,<span class="number">0.</span>.V] ← <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> i ← <span class="number">1</span> to n</span><br><span class="line">    <span class="keyword">for</span> v ← w[i] to V</span><br><span class="line">        F[i,v] ← max&#123;F[i<span class="number">-1</span>,v] , F[i<span class="number">-1</span>,v-w[i]]+v[i]&#125;</span><br></pre></td></tr></table></figure>
@@ -533,13 +533,13 @@
 <blockquote>
 <p>$n$为背包重量限制，$w[i]$为$i$物体重量，$v[i]$为$i$物体价值，如果$(z_1,z_2 \cdots z_k)$是问题$f_k(n)$的最优解，那么</p>
 <ol>
-<li>对于任意$1 \le j \le k$，有$z<em>j = 1$（确定$j$物体状态为取），则有$(z_1,z_2 \cdots z</em>{j<em>1} , z</em>{j+1} , z<em>{j+2} \cdots z_k)$是问题$f</em>{k-1}(n-w[j])+ v[j]$的最优解</li>
-<li>对于任意$1 \le j \le k$，有$z<em>j = 0$（确定$j$物体状态为不取），则有$(z_1,z_2 \cdots z</em>{j<em>1} , z</em>{j+1} , z<em>{j+2} \cdots z_k)$是问题$f</em>{k-1}(n)$的最优解。</li>
+<li>对于任意$1 \le j \le k$，有$z_j = 1$（确定$j$物体状态为取），则有$(z_1,z_2 \cdots z_{j_1} , z_{j+1} , z_{j+2} \cdots z_k)$是问题$f_{k-1}(n-w[j])+ v[j]$的最优解</li>
+<li>对于任意$1 \le j \le k$，有$z_j = 0$（确定$j$物体状态为不取），则有$(z_1,z_2 \cdots z_{j_1} , z_{j+1} , z_{j+2} \cdots z_k)$是问题$f_{k-1}(n)$的最优解。</li>
 </ol>
 <p>这里 $i$ 表示子问题的规模，表述为将 $i$ 个物品放入容量为$v$的背包中，</p>
 </blockquote>
 <p>证明（反证法）：</p>
-<p>假设子问题不是最优解，对于情况 1，假设存在$(z<em>1’,z_2’ \codts z</em>{j-1}’ , z<em>{j+1}’ ,\cdots z_k’)$是子问题的最优解，那么$f_k(n)$的最优解将会是$(z_1’,z_2’ \cdots z</em>{j-1}’ , z<em>j , z</em>{j+1}’ \cdots z_k’)$，与假设矛盾。</p>
+<p>假设子问题不是最优解，对于情况 1，假设存在$(z_1’,z_2’ \cdots z_{j-1}’ , z_{j+1}’ ,\cdots z_k’)$ 是子问题的最优解，那么 $f_k(n)$的最优解将会是$(z_1’,z_2’ \cdots z_{j-1}’ , z_j , z_{j+1}’ \cdots z_k’)$，与假设矛盾。</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/post/1590e320.html#more" rel="contents">
@@ -1751,7 +1751,7 @@
         }
       });
     </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -1759,4 +1759,4 @@
 
   
 
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>

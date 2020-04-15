@@ -539,13 +539,13 @@
 <li>系统必须为同时追加到同一文件的多个客户端有效地实现明确定义的语义含义。我们的文件通常用于生产者 - 消费者队列情形或用于多路合并（many-way merging）。 数百个独立运作在机器上的生产者将并发地向某个文件追加数据。 具有最小同步开销的原子性保证是必不可少的。</li>
 <li>高持续带宽比低延迟更重要。我们的大多数目标应用程序都在处理大量数据时以很高的速度预先完成任务，很少有对单个读或写有严格的响应时间要求的应用程序。</li>
 </ul>
-<h2 id="Interface"><a href="#Interface" class="headerlink" title="Interface"></a>Interface</h2><p>虽然 GFS 没有实现像 POSIX 这样一些标准地 API，但是它提供了一套常见的文件系统接口。文件在目录中按层次结构组织，并由路径名标识。我们提供了对文件的一些常规的操作：<em>create</em>，<em>delete</em>，<em>open</em>，<em>close</em>，<em>read</em>，<em>write</em>。</p>
+<h2 id="Interface"><a href="#Interface" class="headerlink" title="Interface"></a>Interface</h2><p>虽然 GFS 没有实现像 POSIX 这样一些标准地 API，但是它提供了一套常见的文件系统接口。文件在目录中按层次结构组织，并由路径名标识。我们提供了对文件的一些常规的操作：_create_，_delete_，_open_，_close_，_read_，_write_。</p>
 <p>此外 GFS 还提供了<em>snapshot</em>，<em>record append</em>操作。Snapshot 以较低耗费建立一个文件或者是目录树的拷贝。Record append 则允许多个客户端对相同一个文件并发进行追加（append）数据时保证每个追加操作的原子性。这个对于多路合并操作和多个客户端同时操作的生产者/消费者队列的实现非常有用，它不用额外的加锁处理。这种文件对于构造大型分布式应用来说，是不可或缺的。两者将在后面 3.4 和 3.3 节单独讲述。</p>
 <h2 id="Architecture"><a href="#Architecture" class="headerlink" title="Architecture"></a>Architecture</h2><p>一个 GFS 集群由一个 master 和多个 chunkserver 组成，可以被多个 client 访问，如图 1 所示。</p>
 <p>它们都是一个运行着用户级服务进程（user-level process）的商品化 linux 机器。只要机器资源允许以及由于运行可能的片状应用程序代码带来的低可靠性是可以接受的，那么可以很容易的在同一台机器上运行一个 chunkserver 和 client。</p>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_4_1.png" alt="OS_4_1"></p>
 <p>文件被划分成固定大小的 chunk。每个 chunk 是由 chunk 创建时由 master 分配的一个不可变的全局唯一的 64bit 句柄来标识。Chunkserver 将 chunk 作为 linux 文件存储在本地，对于 chunk 数据的读写通过 chunk 的 handle 和字节边界来表示。为了可靠性，每个 chunk 存储在多个 chunkserver 上。尽管用户可以为不同文件名字空间区域指定不同的备份级别，默认地我们存储三个备份（与后续的 MapReduce 对于 GFS 输入文件常为三份备份习惯上是一回事）。</p>
-<p>Master 维护所有的文件系统元数据。包括名字空间（namespace），访问控制信息（access control information），文件与 chunk 的映射信息，chunk 的当前位置（current locations 注意是 chunck 多个备份的位置）。它也控制系统范围内的一些活动，比如 chunk 租赁管理，僵死 chunk 的垃圾回收，chunkserver 间的 chunk 迁移。Master 与 chunkserver 通过心跳信息（<em>Heart Beat</em> messages）进行周期性的通信，以发送指令和收集 chunkserver 的状态。</p>
+<p>Master 维护所有的文件系统元数据。包括名字空间（namespace），访问控制信息（access control information），文件与 chunk 的映射信息，chunk 的当前位置（current locations 注意是 chunck 多个备份的位置）。它也控制系统范围内的一些活动，比如 chunk 租赁管理，僵死 chunk 的垃圾回收，chunkserver 间的 chunk 迁移。Master 与 chunkserver 通过心跳信息（_Heart Beat_ messages）进行周期性的通信，以发送指令和收集 chunkserver 的状态。</p>
 <p>应用程序链接的 GFS 客户端代码，实现了文件系统 API 以及代表应用程序与 master 和 chunkserver 进行通信以读写数据。客户端如果需要操作元数据则需要与 master 通信，但是所有的纯数据通信直接与 chunksever 通信。我们没有提供 POSIX API，因此也就不需要与 linux vnode layer 关联。</p>
 <p>客户端或者 chunkserver 都不会对文件数据进行缓存（cache）。客户端缓存只能得到很少的好处，因为大部分的应用需要直接读取整个大文件或者工作集合太大根本无法缓存。没有 cache 简化了客户端和整个系统，因为不需要考虑缓存一致性问题(实际上客户端会缓存元数据)。Chunkserver 不需要进行文件数据缓存，是因为 chunk 是作为本地文件存储，这样 Linux 自身会将那些经常访问的数据进行缓存（间接利用了操作系统？）。</p>
 <h2 id="Single-Master"><a href="#Single-Master" class="headerlink" title="Single Master"></a>Single Master</h2><p>只有一个 master 大大简化了我们的设计，而且使得 master 可以利用全局信息对 chunk 的放置和备份进行更好（sophisticated 老练的）的判断。然而，我们必须最小化其在读写过程中的参与，以防止其成为运行的瓶颈。Clients 永远不会通过 master 读取数据，它只向 master 询问它该与哪个 chunckserver 联系，并且 client 将这些信息在有限的时间段内进行缓存，直接与 chunksever 交互进行很多后续的操作。（<strong>注意，不缓存文件数据，但是会缓存和那个 chunkserver 交互的信息</strong>）。</p>
@@ -1223,7 +1223,7 @@
         }
       });
     </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -1231,4 +1231,4 @@
 
   
 
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>

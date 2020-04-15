@@ -463,7 +463,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  3,104
+                  3,108
                 </span>
               
 
@@ -507,7 +507,7 @@
 <p>本文首先对粗糙集理论主要内容及其相关数学性质进行回顾，总结前人的相关文献成果，分析了算法低效性的根源 ，解释并实现一种高效的粗糙集基本算法。</p>
 <h2 id="粗糙集的基本概念"><a href="#粗糙集的基本概念" class="headerlink" title="粗糙集的基本概念"></a>粗糙集的基本概念</h2><p>经典粗集理论是基于不可分辨关系的，下面首先介绍粗糙集的基本概念。</p>
 <h3 id="信息表和不可分辨关系"><a href="#信息表和不可分辨关系" class="headerlink" title="信息表和不可分辨关系"></a>信息表和不可分辨关系</h3><p>定义 2.1 一个信息系统可以表示为</p>
-<script type="math/tex; mode=display">S = \langle U,A,V,f \rangle \tag{2-1}</script><p>其中, $U$ 是一非空有限对象集（即论域），$U = { x<em>1,x_2, \cdots , x_n  }$ ，$A$ 是非空有限属性集 ，$A = {  a_1,a_2,a_3 }$，$V_a$表示属性 $a$ 的值域 ，$V = \bigcup</em>{a \in A} V_a$ ，$f : U \times A \rightarrow V$ 是信息函数。它指定 $U$ 中每一个对象 $x$ 的属性值, 即对 $x \in U , a \in A$ ，有 $f(x , a) \in  V_a$。</p>
+<script type="math/tex; mode=display">S = \langle U,A,V,f \rangle \tag{2-1}</script><p>其中, $U$ 是一非空有限对象集（即论域），$U = \{ x_1,x_2, \cdots , x_n  \}$ ，$A$ 是非空有限属性集 ，$A = \{  a_1,a_2,a_3 \}$，$V_a$表示属性 $a$ 的值域 ，$V = \bigcup_{a \in A} V_a$ ，$f : U \times A \rightarrow V$ 是信息函数。它指定 $U$ 中每一个对象 $x$ 的属性值, 即对 $x \in U , a \in A$ ，有 $f(x , a) \in  V_a$。</p>
 <p>在粗集理论中，信息系统也被称为信息表、属性值表、数据表，可简记为$S = \langle U,A\rangle$，或者$S = \langle U,A,V \rangle$。粗集理论利用信息表（决策表）来描述论域对象及其属性，它是一个二维表，每一行表示一个对象，每一列表示对象的一个属性。与数据库的“表”概念不同，粗集理论所研究的表并不要求两个对象可完全区分，即至少存在一个属性列使得两个对象对应的属性值不同。粗糙集关注的是粒度，而非单个元素。</p>
 <a id="more"></a>
 <p>定义 2.2 在信息系统 S 中 ,对于每个属性子集$B \subseteq A$ ,可以定义一个不可分辨关系 $IND(B)$（在不引起歧义的情况下可简写为$I_B$）:</p>
@@ -524,18 +524,18 @@
 <p>下面证明两定义的等价性，即证$U/C$细分$U/D$是$\forall x \in U, \forall d \in D ,|\partial_C (x,d)| = 1$的充要条件</p>
 <p>证明 2.1 充分性</p>
 <p>应用反证法：</p>
-<p>假设$\exists x_0 \in U, \exists d_0 \in D, | \partial_C (x_0,d_0) | \geq 2$。由细分关系$I_C \subseteq I_D$。因为$|\partial_C (x_0,d_0) | \geq 2$，不妨设$\partial_C (x_0,d_0) = {r_0,r_1, \cdots }$，同时我们假设$r_0$表示为$x_0$在属性$d_0$上的值（即信息函数值），$f(x_0,d_0) = r_0$，则由决策归纳函数定义，必然$\exists x_1 \in I_C(X_0), f(x_1,d_0) = r_1$。</p>
+<p>假设$\exists x_0 \in U, \exists d_0 \in D, | \partial_C (x_0,d_0) | \geq 2$。由细分关系$I_C \subseteq I_D$。因为$|\partial_C (x_0,d_0) | \geq 2$，不妨设$\partial_C (x_0,d_0) = \{r_0,r_1, \cdots \}$，同时我们假设$r_0$表示为$x_0$在属性$d_0$上的值（即信息函数值），$f(x_0,d_0) = r_0$，则由决策归纳函数定义，必然$\exists x_1 \in I_C(X_0), f(x_1,d_0) = r_1$。</p>
 <p>因为$f(x_1,d_0)$不等于$f(x_0,d_0)$，所以明显$x_0$不等于$x_1$，即表示两个论域元素。又因为决策归纳函数的限制，$(x_0,x_1)\in I_C$也即（$x_0 I_C x_1$）。而根据定义 2.2，因为$f(x_1,d_0)$不等于$f(x_0,d_0)$，则对于$I_D$，$(x_0,x_1) \notin I_D$，与$I_C \subseteq I_D$相矛盾，充分性得证。</p>
 <p>所以$U/C$细分$U/D$是$\forall x \in U, \forall d \in D ,|\partial_C (x,d)| = 1$的充分条件。</p>
 <p>证明 2.2 必要性</p>
 <p>因为$\forall x \in U, \forall d \in D, |\partial_C(x,d)| = 1$，那么对于$\forall (x_0,x_1) \in I_C$，我们可以得到，$\forall d \in D, |\partial_C(x_0,d)| = |\partial_C(x_1,D)| = 1$。</p>
-<p>对于决策属性族的任意属性$d$，不妨设此时$f(x_0,d) = r, f(x_1,d) = r’$，因为$\partial_C(x_0,d) = { r }$，根据决策归纳函数定义，应有$f(x_1,d) = r$，故$r = r’$。综合前述，即$\forall (x_0,x_1) \in I_C, \forall d \in D, f(x_0,d) = f(x_1,d)$，根据定义 2.2，则$(x_0,x_1) \in I_D$。即退出$I_C \subseteq I_D$，由等价关系性质可得$U/C$细分$U/D$，必要性得证，证毕。</p>
+<p>对于决策属性族的任意属性$d$，不妨设此时$f(x_0,d) = r, f(x_1,d) = r’$，因为$\partial_C(x_0,d) = \{ r \}$，根据决策归纳函数定义，应有$f(x_1,d) = r$，故$r = r’$。综合前述，即$\forall (x_0,x_1) \in I_C, \forall d \in D, f(x_0,d) = f(x_1,d)$，根据定义 2.2，则$(x_0,x_1) \in I_D$。即退出$I_C \subseteq I_D$，由等价关系性质可得$U/C$细分$U/D$，必要性得证，证毕。</p>
 <p>不相容决策表可以通过决策值归纳函数转化为相容决策表$S = \langle U, C\cup (\bigcup_{d \in D} \partial(d))$。</p>
 <h3 id="集合的近似和相关性质"><a href="#集合的近似和相关性质" class="headerlink" title="集合的近似和相关性质"></a>集合的近似和相关性质</h3><p>由于不同文献中所用的习惯表示方法不尽相同，所以这里我们用原作者 Pawlak 在[@Pawlak1982]使用的定义方式来表示集合的近似及其相关性质，并根据原文献补充部分课上未涉及的概念。</p>
 <p>定义 2.5 设$S$未信息表,$X$为$U$的非空子集，属性$A$下$X$包含的最大粒度集合被称为$X$的$A$下近似$\underline{\mathrm{Apr}_A}(X)$，属性$A$下包含$X$的最小粒度集合被称为$X$的$A$上近似$\overline{\mathrm{Apr}_A}(X)$，当$A$均已知的时候可以省略。</p>
-<script type="math/tex; mode=display">\underline{\mathrm{Apr}_A}(X) = \{ x\in U: I_A(x) \subseteq X \} \tag{2-5}</script><script type="math/tex; mode=display">\overline{\mathrm{Apr}_A}(X) = \{ x\in U: I_A(x) \cap X \not ={\emptyset} \tag{2-6}</script><p>在集合近似的基础上，我们可以给出拓展的论域元素与集合近似成员关系的定义，$\underline{\in}<em>{A}$与$\overline{\in}</em>{A}$，具体定义如下：</p>
+<script type="math/tex; mode=display">\underline{\mathrm{Apr}_A}(X) = \{ x\in U: I_A(x) \subseteq X \} \tag{2-5}</script><script type="math/tex; mode=display">\overline{\mathrm{Apr}_A}(X) = \{ x\in U: I_A(x) \cap X \not ={\emptyset} \tag{2-6}</script><p>在集合近似的基础上，我们可以给出拓展的论域元素与集合近似成员关系的定义，$\underline{\in}_{A}$与$\overline{\in}_{A}$，具体定义如下：</p>
 <p>定义 2.6</p>
-<script type="math/tex; mode=display">x \underline{\in}_{A} X \quad \mathrm{iff} \quad x \in \underline{\mathrm{Apr}_A}(X) \tag{2-7}</script><script type="math/tex; mode=display">x \overline{\in}_{A} X \quad \mathrm{iff} \quad x \in \overline{\mathrm{Apr}_A}(X) \tag{2-8}</script><p>如果$x \underline{\in}<em>{A} X$，我们称“在属性$A$下$x$ <strong>必然</strong> 属于$X$”，而如果$x \overline{\in}</em>{A} X$，我们称“在属性$A$下$x$，<strong>可能</strong> 属于$X$”。如此通过模态逻辑中的必然性和可能性来解释近似性。</p>
+<script type="math/tex; mode=display">x \underline{\in}_{A} X \quad \mathrm{iff} \quad x \in \underline{\mathrm{Apr}_A}(X) \tag{2-7}</script><script type="math/tex; mode=display">x \overline{\in}_{A} X \quad \mathrm{iff} \quad x \in \overline{\mathrm{Apr}_A}(X) \tag{2-8}</script><p>如果$x \underline{\in}_{A} X$，我们称“在属性$A$下$x$ <strong>必然</strong> 属于$X$”，而如果$x \overline{\in}_{A} X$，我们称“在属性$A$下$x$，<strong>可能</strong> 属于$X$”。如此通过模态逻辑中的必然性和可能性来解释近似性。</p>
 <p>在集合近似的基础上，我们还可以根据属性$B$，将论域$U$中的所有元素针对给定的集合$X$划分到不同域中。$\underline{\mathrm{Apr}_A}(X)$实际上是由根据已知的属性划分出的知识粒度，判断肯定属于$X$的论域元素所构成的最大集合，所以也被称为$X$的$A$正域，记为$POS_A(X)$。而根据已有知识推断的必然不属于$X$的论域元素称为$X$的$A$负域，记为$NEG_A(X)$，$\overline{\mathrm{Apr}_A}(X)$应为可能属于$X$的论域元素构成的最大集合。根据当前已有知识，既不能推断属于$POS_A(X)$也不能推断属于$NEG_A(X)$的元素则属于边界域（可域）$BND_A(X)$（部分资料上写为$Bn_A(X)$），不能肯定其中的元素是否属于$X$，具体定义如下：</p>
 <p>定义 2.7</p>
 <script type="math/tex; mode=display">POS_A(X) = \underline{\mathrm{Apr}_A}(X) \tag{2-9}</script><script type="math/tex; mode=display">NEG_A(X) = U - \overline{\mathrm{Apr}_A}(X) \tag{2-10}</script><script type="math/tex; mode=display">BND_A(X) =  \overline{\mathrm{Apr}_A}(X) - \underline{\mathrm{Apr}_A}(X) \tag{2-11}</script><p>容易得出在各属性域限制下，论域元素集合$X,Y \subseteq U$，符合下述性质：</p>
@@ -1084,7 +1084,7 @@
         }
       });
     </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -1092,4 +1092,4 @@
 
   
 
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
