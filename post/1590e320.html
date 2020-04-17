@@ -106,7 +106,7 @@
 <meta property="og:site_name" content="Eddy的个人博客">
 <meta property="og:description" content="再述 01 背包问题本篇博文使用题目及符号的习惯表达方式均来自于《背包问题九讲》。 背包问题相信大家都不陌生，动态规划算法学习过程中不得不提得经典系列问题，而 01 背包问题又是系列问题得基础，在编程实现过程中，我们常会使用空间优化与常数优化来加速程序的执行，在程序设计竞赛中我们关注点在程序的运行结果是否与标程的运行结果是否一致，但对于优化的影响却不甚关心，我记得在自己学习编译原理优化一章时，徐老">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-04-15T07:11:36.436Z">
+<meta property="og:updated_time" content="2020-04-17T06:49:08.889Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="算法与数据结构学习——01背包问题常数优化算法对问题解集的影响">
 <meta name="twitter:description" content="再述 01 背包问题本篇博文使用题目及符号的习惯表达方式均来自于《背包问题九讲》。 背包问题相信大家都不陌生，动态规划算法学习过程中不得不提得经典系列问题，而 01 背包问题又是系列问题得基础，在编程实现过程中，我们常会使用空间优化与常数优化来加速程序的执行，在程序设计竞赛中我们关注点在程序的运行结果是否与标程的运行结果是否一致，但对于优化的影响却不甚关心，我记得在自己学习编译原理优化一章时，徐老">
@@ -474,7 +474,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2,889
+                  2,900
                 </span>
               
 
@@ -555,7 +555,7 @@
 <p>背包九讲中没有对这一优化做阐述，我自己的理解是这样的：</p>
 <p>再回过头来看状态转移方程。</p>
 <script type="math/tex; mode=display">F[i,v] = max \{ F[i-1,v] , F[i-1,v-C_i] + Value_i \}</script><p>我们固定某一限重状态随$i$递增的变化，不妨研究与最终答案相关的，$final(i)= F[i][V]$。我们发现在$i$递增一轮过程中。$final$只会变动一次，且只有两个可能的方向，不变（延续$i$上一轮递增后得到的结果），改变（受$F[i-1][V-w[i]]$影响）。</p>
-<p>如果我们将，可以影响$final$的所有限重状态，随$i$减小（逆序），画出来，我们能得到一颗重心明显偏移的树。</p>
+<p>如果我们将，可以影响$final$的所有限重状态，随$i$减小（逆序），画出来，我们可以发现能够影响到答案（最终状态）的边界是逐渐减小的。</p>
 <p>我们可以发现，能够影响$final$的重量状态是有限的，并且随$i$减小，可影响的状态逐渐扩张，最后一次只有$final=dp[n][V]$单一状态影响最终答案（因为它本身就是最终答案），每一轮可能影响到$final$的边界应是，$max(V - \sum_{i+1}^N Value_i,C_i)$，这里可以补充一下，原作者认为是求和下限应为$i$，带入最后$i=N$我们发现在最后一轮除了更新$dp[N]$还更新了其他与最终答案无关的状态，所以我觉得这个更严格的界限是正确的。</p>
 <p>反过来想也可以，在计算$dp[v]$时，若某一限重状态最终能够影响$final$，必然要经过几轮$i$递增（理想状态是，$dp[v+w[i+1]$每次都能受到影响），这也提醒我们，某一状态影响最终结果是需要一定时间限制的，在$i$逐渐靠近$n$时，即便我们遇到重量很小但是价值很大的一颗“金子”，我们也不一定需要从它的重量开始更新状态。</p>
 <p>举例来讲比如最后三个物体是</p>
@@ -614,6 +614,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/post/bc73800d.html" rel="prev" title="算法与数据结构学习——DP背包问题备课提纲">
+                算法与数据结构学习——DP背包问题备课提纲 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -694,7 +698,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">323</span>
+                  <span class="site-state-item-count">324</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -867,7 +871,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">375.1k</span>
+    <span title="Site words total count">378.7k</span>
   
 </div>
 
@@ -1113,7 +1117,7 @@
         }
       });
     </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
   
 
 
@@ -1121,4 +1125,4 @@
 
   
 
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
