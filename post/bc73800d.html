@@ -106,7 +106,7 @@
 <meta property="og:site_name" content="Eddy的个人博客">
 <meta property="og:description" content="动态规划（DP）简介 Those who cannot remember the past are condemned to repeat it.  什么是动态规划算法 Dynamic programming is both a mathematical optimization method and a computer programming method. The method was de">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-04-17T07:14:40.321Z">
+<meta property="og:updated_time" content="2020-04-20T08:35:01.390Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="算法与数据结构学习——DP背包问题备课提纲">
 <meta name="twitter:description" content="动态规划（DP）简介 Those who cannot remember the past are condemned to repeat it.  什么是动态规划算法 Dynamic programming is both a mathematical optimization method and a computer programming method. The method was de">
@@ -474,7 +474,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  3,592
+                  3,700
                 </span>
               
 
@@ -490,7 +490,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  14
+                  15
                 </span>
               
             </div>
@@ -534,16 +534,18 @@
 <p>If a problem can be solved by combining optimal solutions to non-overlapping sub-problems, the strategy is called “divide and conquer” instead.[1] This is why merge sort and quick sort are not classified as dynamic programming problems — Introduction to Algorithms (2nd ed.), MIT Press.</p>
 </blockquote>
 <p>子问题孤立，更适用于分治法，这点出了“Divide and Conquer”与“Dynamic Programming”，两种算法思想的本质不同。此外，求解过程中，分治法倾向于从顶向下递归分解问题然后再递归合成大规模问题的解，而动态规划算法则初始计算小问题的解，根据状态转移方程自底向上计算所求状态的解。</p>
-<h3 id="与贪心算法（Greedy）对比"><a href="#与贪心算法（Greedy）对比" class="headerlink" title="与贪心算法（Greedy）对比"></a>与贪心算法（Greedy）对比</h3><p>贪心算法，对于尚未加入解集的元素按固定策略（最大或最小）选取状态转移，妄图从局部最优达到整体最优，也具有最优子结构性质。</p>
+<h3 id="与贪心算法（Greedy）对比"><a href="#与贪心算法（Greedy）对比" class="headerlink" title="与贪心算法（Greedy）对比"></a>与贪心算法（Greedy）对比</h3><p>贪心算法，对于尚未加入解集的元素按固定策略（最大或最小）选取状态转移，即总是遵循某种规则，做出局部最优的选择，以推导出全局最优解，所解决的问题也具有最优子结构性质。</p>
 <p>以即将要讨论的 01 背包问题为例，贪心想法是在一次选择中选取未选择物体中价值/重量比最高的。这个局部选择是最优的，但不考虑整体背包选择方案是否最优。而动态优化则要求当前拾取物体从之前状态（减去该物体重量的最优态）转移过来，这样就保证了一定的全局性质。</p>
 <h3 id="前向性"><a href="#前向性" class="headerlink" title="前向性"></a>前向性</h3><p>No backwards: depending on the current state.</p>
 <p>下一时刻的状态只与当前状态有关，而和当前状态之前的状态无关，当前的状态是对以往决策的总结，个人理解，这就是<code>Dynamic</code>的体现。</p>
 <a id="more"></a>
-<h1 id="经典-DP-问题：背包问题"><a href="#经典-DP-问题：背包问题" class="headerlink" title="经典 DP 问题：背包问题"></a>经典 DP 问题：背包问题</h1><p>背包问题相信大家都不陌生，动态规划算法学习过程中不得不提得经典系列问题，而 01 背包问题又是系列问题得基础，在编程实现过程中，我们常会使用空间优化与常数优化来加速程序的执行，在程序设计竞赛中我们关注点在程序的运行结果是否与标程的运行结果是否一致，但对于优化的影响却不甚关心，我记得在自己学习编译原理优化一章时，我的老师常常谈起优化的代价，那么今天后面的时间主要内容便是介绍 DP 算法求解 01 背包问题，优化方法及其代价。</p>
-<h2 id="01-背包题目"><a href="#01-背包题目" class="headerlink" title="01 背包题目"></a>01 背包题目</h2><p>有$N$件物品和一个容量为$V$的背包。放入第$i$件物品耗费的费用是$C_i^1$，得到的价值是$Value_i$。求解将哪些物品装入背包可使价值总和最大。</p>
+<h1 id="经典-DP-问题：背包问题"><a href="#经典-DP-问题：背包问题" class="headerlink" title="经典 DP 问题：背包问题"></a>经典 DP 问题：背包问题</h1><p>背包问题相信大家都不陌生，它是动态规划算法学习过程中不得不提的经典系列问题，而 01 背包问题又是该系列问题的基础。</p>
+<p>在编程解决问题的过程中，我们常会使用空间优化与常数优化来加速程序的执行，在程序设计竞赛中，由于时间上的限制，我们的关注点常在程序的运行结果是否与标程的运行结果相一致，对于优化的影响却无暇关心。</p>
+<p>优化问题，也是计算机科学家与专业编程人员常常关注的点，利用本节课的时间，我们会着重讨论求解 01 背包问题的优化方式以及其影响。</p>
+<h2 id="01-背包题目"><a href="#01-背包题目" class="headerlink" title="01 背包题目"></a>01 背包题目</h2><p>有$N$件物品和一个容量为$V$的背包。放入第$i$件物品耗费的费用是$C_i$，得到的价值是$Value_i$。求解将哪些物品装入背包可使价值总和最大。</p>
 <h2 id="基本解题思路"><a href="#基本解题思路" class="headerlink" title="基本解题思路"></a>基本解题思路</h2><p>因为每种物品只有一件，选择只有放（1）、不放（0）两种状态，所以称这类问题为 01 背包问题。</p>
-<p>该问题对应的子问题为：<strong>前$i$件物品放入背包得到的最大价值。</strong>，根据该子问题，我们定义状态$F[i,v]$为前$i$件物品放入限制重量为$v$所能得到的最大价值，然后我们可以想出状态转移方程。</p>
-<script type="math/tex; mode=display">F[i,v] = max \{ F[i-1,v] , F[i-1,v-C_i] + Value_i \}</script><p>其含义为：逐个拾取编号问题过程中，拾取$i$号且背包限制为$v$重量时（$F[i,v]$），其只由两种状态转移而来，不选择该物体（则状态同相同限重量拾取上个物体时的状态 $F[i-1,v]$），选择该物体（则状态由上次选择时，限重为当下限重减去此次拾取物体重量的状态转移而来$F[i-1,v-C_i]+Value_i$）。</p>
+<p>该问题对应的子问题为：<strong>取其中$i$件物品放入背包得到的最大价值</strong>。为了方便，我们给原物体一个序，则对应子问题为：<strong>取前$i$件物品放入背包得到的最大价值</strong>。根据该子问题，我们定义状态$F[i,v]$为前$i$件物品放入限制重量为$v$所能得到的最大价值，然后我们可以想出状态转移方程。</p>
+<script type="math/tex; mode=display">F[i,v] = max \{ F[i-1,v] , F[i-1,v-C_i] + Value_i \}</script><p>该状态转移方程的含义为：按序逐个拾取物体的过程中，拾取$i$号且背包限制为$v$重量状态（$F[i,v]$），其只由两种状态转移而来，不选择该物体（则状态取值同相同限重量拾取上个物体时的状态 $F[i-1,v]$），选择该物体（则状态取值由上次选择时，限重为当下限重减去此次拾取物体重量的状态转移而来$F[i-1,v-C_i]+Value_i$）。</p>
 <p>最优子结构性质与无后向性是可证的，见下一节附加内容。</p>
 <p>原文特别强调了上述转移方程的重要性，也做了相应的解释：</p>
 <blockquote>
@@ -562,11 +564,11 @@
 <p>这里 $i$ 表示子问题的规模，表述为将 $i$ 个物品放入容量为$v$的背包中，</p>
 </blockquote>
 <p>证明（反证法）：</p>
-<p>假设子问题不是最优解，对于情况 1，假设存在$(z_1’,z_2’ \cdots z_{j-1}’ , z_{j+1}’ ,\cdots z_k’)$ 是子问题的最优解，那么 $f_k(n)$的最优解将会是$(z_1’,z_2’ \cdots z_{j-1}’ , z_j , z_{j+1}’ \cdots z_k’)$，与假设矛盾。</p>
-<h1 id="算法优化与代价"><a href="#算法优化与代价" class="headerlink" title="算法优化与代价"></a>算法优化与代价</h1><h2 id="空间复杂度优化"><a href="#空间复杂度优化" class="headerlink" title="空间复杂度优化"></a>空间复杂度优化</h2><p>由于要使用$dp[n][v]$状态空间，如果储存全部状态，根据伪代码思路，该动态优化算法的时间和空间复杂度均为$O(VN)$，汽中时间复杂度应该已经不能再优化了，但空间复杂度却可以优化到$O(V)$。</p>
+<p>假设子问题不是最优解，对于情况 1，假设存在$(z_1’,z_2’ \cdots z_{j-1}’ , z_{j+1}’ ,\cdots z_k’)$ 是子问题的最优解，那么 $f_k(n)$的最优解将会是$(z_1’,z_2’ \cdots z_{j-1}’ , z_j , z_{j+1}’ \cdots z_k’)$，与假设矛盾。情况 2 同理。</p>
+<h1 id="算法优化与代价"><a href="#算法优化与代价" class="headerlink" title="算法优化与代价"></a>算法优化与代价</h1><h2 id="空间复杂度优化"><a href="#空间复杂度优化" class="headerlink" title="空间复杂度优化"></a>空间复杂度优化</h2><p>由于要使用$dp[n][v]$状态空间，如果储存全部状态，根据伪代码思路，该动态优化算法的时间和空间复杂度均为$O(VN)$，其中时间复杂度应该已经不能再优化了，但空间复杂度却可以优化到$O(V)$。</p>
 <p>我们观察状态转移方程</p>
 <script type="math/tex; mode=display">F[i,v] = max \{ F[i-1,v] , F[i-1,v-C_i] + Value_i \}</script><p>我们每轮计算前$i$个在不同限重背包的最优值时，利用的状态只有$i-1$时的状态，也即上一轮外层循环得到的值，据此我们可以使用一些优化方法。</p>
-<h3 id="滚动数组"><a href="#滚动数组" class="headerlink" title="滚动数组"></a>滚动数组</h3><p>每次都使用固定的几个存储空间，来达到压缩\节省存储空间的目的。主要应用在递推或动态规划中。</p>
+<h3 id="滚动数组"><a href="#滚动数组" class="headerlink" title="滚动数组"></a>滚动数组</h3><p>每次都使用固定的几个存储空间，来达到压缩or节省存储空间的目的。主要应用在递推或动态规划中。</p>
 <p>代码描述</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i=<span class="number">1</span> ;i &lt;= n; i++)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">for</span> (v = w[i] ; v &lt;= V ; v++)</span><br><span class="line">    &#123;</span><br><span class="line">        dp[<span class="number">1</span>][v] = max(dp[<span class="number">0</span>][v],dp[<span class="number">0</span>][v-w[i]]+v[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 一轮更新结束后统一翻转</span></span><br><span class="line">    <span class="keyword">for</span> (v = <span class="number">0</span>; v&lt;=V ; v++)&#123;</span><br><span class="line">        dp[<span class="number">0</span>][v] = dp[<span class="number">1</span>][v];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>当然我们还发现状态转移方程中，只会利用背包限重状态小于等于要更新状态的已知状态，所以我们按逆序（从大到小）遍历内层循环，就可以避免在同一轮外层循环中先更新的影响后更新的值，由此修改滚动数组代码。</p>
@@ -597,7 +599,8 @@
 <h3 id="朴素二维动态规划得到的解集"><a href="#朴素二维动态规划得到的解集" class="headerlink" title="朴素二维动态规划得到的解集"></a>朴素二维动态规划得到的解集</h3><p>$dp[n][V]$储存了（在该遍历序下）<strong>任意小于序长度前缀，任意小于最大限制容量</strong>的解集。也即在不增删修改物品条件下，后续满足上述条件的任意询问$Q_1$，都可以在$O(1)$的时间给出答案。</p>
 <h3 id="一维压缩空间优化得到的解集"><a href="#一维压缩空间优化得到的解集" class="headerlink" title="一维压缩空间优化得到的解集"></a>一维压缩空间优化得到的解集</h3><p>$dp[V]$储存了<strong>长度等于序长，任意小于最大限制容量</strong>的解集。同样，不改变物体，对该序询问容量小于限制的背包问题$Q_2$，都可以在$O(1)$的时间给出答案，但是如果想询问前缀问题（而非序长），则不能获得，<strong>因为在外层循环迭代中，没有保留这部分结果</strong>。</p>
 <h3 id="空间优化-常数优化的解集"><a href="#空间优化-常数优化的解集" class="headerlink" title="空间优化+常数优化的解集"></a>空间优化+常数优化的解集</h3><p>只能保证$dp[i],i=V$单个值是正确的，而<strong>其他值均无意义</strong>。</p>
-<p>这些发现很明显在提醒，如果关注单捷，那么空间+常数优化自然是很好的选择，但是如果数据固定而频繁询问，那么朴素方法或许才是最好的，优化不应该是盲目的，有些优化需要我们理解背后更深的意义及影响，才能更好的应用于我们程序中</p>
+<p>根据上述这些“发现”，我们能学到什么？</p>
+<p>对于正在讨论的问题，如果关注单解，那么空间+常数优化自然是很好的选择，但是如果数据固定而频繁询问，不考虑更新算法的话，那么朴素的二维dp或许是最好的。优化不应该是盲目的，有些优化需要我们理解背后更深的意义及影响，才能更好的应用在我们的程序中。</p>
 
       
     </div>
@@ -637,6 +640,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/post/ce028a8.html" rel="prev" title="密码技术学习——Keccak原像破解赛题前置知识点总结">
+                密码技术学习——Keccak原像破解赛题前置知识点总结 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -717,7 +724,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">324</span>
+                  <span class="site-state-item-count">325</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -890,7 +897,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">378.7k</span>
+    <span title="Site words total count">380.0k</span>
   
 </div>
 
@@ -1136,7 +1143,7 @@
         }
       });
     </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -1144,4 +1151,4 @@
 
   
 
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>

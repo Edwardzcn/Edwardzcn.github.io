@@ -379,6 +379,218 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/ce028a8.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/ce028a8.html" itemprop="url">密码技术学习——Keccak原像破解赛题前置知识点总结</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-17T15:38:12+08:00">
+                2020-04-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/密码学/" itemprop="url" rel="index">
+                    <span itemprop="name">密码学</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,132
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  4
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="建议阅读"><a href="#建议阅读" class="headerlink" title="建议阅读"></a>建议阅读</h1><p>《SHA-3 标准 Keccak 算法的安全性分析与实现》西电硕士论文</p>
+<p><a href="https://www.jianshu.com/p/4d244dcf2c7a" target="_blank" rel="noopener">现代密码学：Hash 函数 Keccak</a></p>
+<h1 id="Hash-函数安全性"><a href="#Hash-函数安全性" class="headerlink" title="Hash 函数安全性"></a>Hash 函数安全性</h1><p>通常，在讨论 Hash 函数安全性时，我们常考虑下面三条性质，由于各种资料叫法不尽相同，这里做个总结。</p>
+<h2 id="Collision-Resistacne-扛碰撞性"><a href="#Collision-Resistacne-扛碰撞性" class="headerlink" title="Collision Resistacne 扛碰撞性"></a>Collision Resistacne 扛碰撞性</h2><blockquote>
+<p>It should be difficult to find a pair of different messages $m_1$ and $m_2$ such that $H(m_1) = H(m_2)$</p>
+</blockquote>
+<p>又称为<strong>强扛碰撞性</strong>（Strong Collision Resistance），指已知 Hash 算法，找出两个原像（消息、数据报文）$m_1,m_2$，使得其映像（消息摘要、数据摘要）$H(m_1) = H(m_2)$是困难的（计算不可行）。</p>
+<h2 id="Preimage-Resistance-扛原像攻击"><a href="#Preimage-Resistance-扛原像攻击" class="headerlink" title="Preimage Resistance 扛原像攻击"></a>Preimage Resistance 扛原像攻击</h2><blockquote>
+<p>Given an arbitrary n-bit value $y$, it should be difficult to find any message $m$ such that $H(m) = y$</p>
+</blockquote>
+<p>描述了数学中函数的不可逆性，扛原像攻击也称<strong>单向性</strong>（One-way）。指已知 $y = H(m) , y \in Y$（消息摘要，或者称数据摘要集合），要找出 $m \in M$（数据报文集合），使得 $H(m)=y$ 是困难的。</p>
+<h2 id="抗第二原像攻击-Second-Preimage-Resistance"><a href="#抗第二原像攻击-Second-Preimage-Resistance" class="headerlink" title="抗第二原像攻击(Second Preimage Resistance)"></a>抗第二原像攻击(Second Preimage Resistance)</h2><blockquote>
+<p>Given message $m_1$, it should be difficult to find any different message $m_2$ such that $H(m_1) = H(m_2)$。</p>
+</blockquote>
+<p>与 Collision Resistance 很想，就差在一个确定的原像，所以该性质又被称为<strong>弱扛碰撞性</strong>（Weak Collision Resistance）。已知 $m_1 \in N$， 找出另一个 $m_2 \in M$，使得 $H(m_1)=H(m_2)$是困难的（计算不可行）。</p>
+<h2 id="生日攻击"><a href="#生日攻击" class="headerlink" title="生日攻击"></a>生日攻击</h2><p>与 Hash 安全性放在一起介绍的生日悖论与生日攻击请自行查阅资料理解。</p>
+<h1 id="Keccak-f-理解"><a href="#Keccak-f-理解" class="headerlink" title="Keccak-f 理解"></a>Keccak-f 理解</h1><p>读完赛题可以确定的 Keccak 版本是<code>(b=1600,r=1088,c=512)</code>，也即 SHA3-256（Federal Information Processing Standards），见 Meicheng Liu 那份 PPT 第 7 页表格。</p>
+<p>至于 b,r,c 对应海绵结构示意图位置，我在 ppt 上画了个草稿。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Keccak/Keccak_3.png" alt="Keccak"></p>
+<p>如果觉得太乱，我文字简单解释一下。</p>
+<ul>
+<li>$b$是总运算码长，称为置换宽度，也就是海绵体结构总长度，这个长度被拆成两个部分：$b=r+c$，</li>
+<li>$r$比特率（bit rate），与消息块长度相等</li>
+<li>$c$容量（capacity），表示容量（或者叫冗余长度？）</li>
+<li>这两部分的区别，在每一次$f$置换函数轮转前，需要与原消息进行异或，但是不是整个长度$b$去和消息异或，只有$r$长度部分异或，而$c$部分则直接使用上一次置换计算后的结果。（这是各种利用海绵结构进行 Hash 算法的公共特征）。所以你再去看赛题第二页下方，内层第一个 for 循环只计算了$(s_0,s_1,\cdots,s_{1087})$，长度为$r=1088$。而内层第二个 for 循环则表示$f$（置换函数）的过程，计算$(s_0,s_1,\cdots,s_{1599})$。$(s_{1088},\cdots,s_{1599}$这个长度为$c=512$部分，沿用上一次$f’$置换函数计算后的结果。</li>
+<li>可能你会问怎么保证原消息一定是 1088 啊，当然不是。</li>
+<li>我们通过补位原始至长度为 1088 的整数倍，$k= \frac{size}{r=1088}$，这样就解释了赛题种外层循环和$k$的含义，海绵结构 absorb 过程就是我们把原消息拆分成每 1088 长度为一段，逐段压入过程，压入就是前面说的两个内层循环（1088 长度异或+n 轮置换）</li>
+<li>Keccak-f 算法轮数$n$并不是指最外层 absorb-squeeze 这个过程的次数，实际上，它表示一次$f$（置换函数）使用 5 种运算子整体混淆的次数。这个在上面提到过了，再强调一遍。</li>
+</ul>
+<h1 id="混淆运算子"><a href="#混淆运算子" class="headerlink" title="混淆运算子"></a>混淆运算子</h1><p>这是我自己起的名字，那几个符号不太好打我就截图了。各种 Keccak 算法介绍的资料中描述了这五个运算的实质。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Keccak/Keccak_1.png" alt="Keccak"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Keccak/Keccak_2.png" alt="Keccak"></p>
+<ul>
+<li>把$1600$一维长度理解成$5<em>5</em>64$三维 cube 有助于理解这几个运算子</li>
+<li>上面两个图的描述是完全等价的，$\theta$虽然看起来感觉不太像，你们可以自己证一下（下次问）。</li>
+<li>倒数第二个运算子根据材料讲是唯一的非线性运算子，这里我不大明白，也没想出来它的运算方式，需要你们帮我理解一下。</li>
+<li>RC 值与轮数有关，RC 在 24 轮中的定义如下：（这个也是个常用手段，可以先不理解 RC 值怎么来的）</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">uint64_t</span> RC[nr] = &#123;</span><br><span class="line">    <span class="number">0x0000000000000001</span>, <span class="number">0x0000000000008082</span>,<span class="number">0x800000000000808A</span>, <span class="number">0x8000000080008000</span>,</span><br><span class="line">    <span class="number">0x000000000000808B</span>, <span class="number">0x0000000080000001</span>,<span class="number">0x8000000080008081</span>, <span class="number">0x8000000000008009</span>,</span><br><span class="line">    <span class="number">0x000000000000008A</span>, <span class="number">0x0000000000000088</span>,<span class="number">0x0000000080008009</span>, <span class="number">0x000000008000000A</span>,</span><br><span class="line">    <span class="number">0x000000008000808B</span>, <span class="number">0x800000000000008B</span>,<span class="number">0x8000000000008089</span>, <span class="number">0x8000000000008003</span>,</span><br><span class="line">    <span class="number">0x8000000000008002</span>, <span class="number">0x8000000000000080</span>,<span class="number">0x000000000000800A</span>, <span class="number">0x800000008000000A</span>,</span><br><span class="line">    <span class="number">0x8000000080008081</span>, <span class="number">0x8000000000008080</span>,<span class="number">0x0000000080000001</span>, <span class="number">0x8000000080008008</span>&#125;;</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/bc73800d.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -476,7 +688,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  3,592
+                  3,700
                 </span>
               
 
@@ -492,7 +704,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  14
+                  15
                 </span>
               
             </div>
@@ -537,7 +749,7 @@
 <p>If a problem can be solved by combining optimal solutions to non-overlapping sub-problems, the strategy is called “divide and conquer” instead.[1] This is why merge sort and quick sort are not classified as dynamic programming problems — Introduction to Algorithms (2nd ed.), MIT Press.</p>
 </blockquote>
 <p>子问题孤立，更适用于分治法，这点出了“Divide and Conquer”与“Dynamic Programming”，两种算法思想的本质不同。此外，求解过程中，分治法倾向于从顶向下递归分解问题然后再递归合成大规模问题的解，而动态规划算法则初始计算小问题的解，根据状态转移方程自底向上计算所求状态的解。</p>
-<h3 id="与贪心算法（Greedy）对比"><a href="#与贪心算法（Greedy）对比" class="headerlink" title="与贪心算法（Greedy）对比"></a>与贪心算法（Greedy）对比</h3><p>贪心算法，对于尚未加入解集的元素按固定策略（最大或最小）选取状态转移，妄图从局部最优达到整体最优，也具有最优子结构性质。</p>
+<h3 id="与贪心算法（Greedy）对比"><a href="#与贪心算法（Greedy）对比" class="headerlink" title="与贪心算法（Greedy）对比"></a>与贪心算法（Greedy）对比</h3><p>贪心算法，对于尚未加入解集的元素按固定策略（最大或最小）选取状态转移，即总是遵循某种规则，做出局部最优的选择，以推导出全局最优解，所解决的问题也具有最优子结构性质。</p>
 <p>以即将要讨论的 01 背包问题为例，贪心想法是在一次选择中选取未选择物体中价值/重量比最高的。这个局部选择是最优的，但不考虑整体背包选择方案是否最优。而动态优化则要求当前拾取物体从之前状态（减去该物体重量的最优态）转移过来，这样就保证了一定的全局性质。</p>
 <h3 id="前向性"><a href="#前向性" class="headerlink" title="前向性"></a>前向性</h3><p>No backwards: depending on the current state.</p>
 <p>下一时刻的状态只与当前状态有关，而和当前状态之前的状态无关，当前的状态是对以往决策的总结，个人理解，这就是<code>Dynamic</code>的体现。</p>
@@ -1137,186 +1349,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/32dcdd6d.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/32dcdd6d.html" itemprop="url">多媒体原理与系统——音频wave文件</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-22T09:37:29+08:00">
-                2020-03-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/多媒体/" itemprop="url" rel="index">
-                    <span itemprop="name">多媒体</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  285
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="波形音频文件分析"><a href="#波形音频文件分析" class="headerlink" title="波形音频文件分析"></a>波形音频文件分析</h1><h2 id="波形音频文件概念"><a href="#波形音频文件概念" class="headerlink" title="波形音频文件概念"></a>波形音频文件概念</h2><p>波形音频文件是存储数字音频样本序列的格式文件，这些样本<strong>直接</strong>记录了音频的波形，故称为波形音频文件。MIDI、MP3等编码压缩过的音频文件最终都要转化成波形音频文件进行使用播放。</p>
-<p>WAVE，使用最广泛，遵循RIFF格式标准。头四个字节是RIFF。WAVE文件由多个chunk组成。</p>
-<h3 id="RIFF-Wave-Chunk部分"><a href="#RIFF-Wave-Chunk部分" class="headerlink" title="RIFF Wave Chunk部分"></a>RIFF Wave Chunk部分</h3><p>以RIFF作为开始表示，紧跟着size字段，最后是type字段位‘wave’。size是wav文件减去id和size占用的字节数。File字节-8=size。</p>
-<h3 id="Format-Chunk部分"><a href="#Format-Chunk部分" class="headerlink" title="Format Chunk部分"></a>Format Chunk部分</h3><p>id补了一个空格，和其他chunk保持一致，都是4字节。</p>
-<h3 id="Fact-Chunk部分"><a href="#Fact-Chunk部分" class="headerlink" title="Fact Chunk部分"></a>Fact Chunk部分</h3><p>可选字段，当wav文件从一些专用软件转化来时，包含该chunk。包括三部分，id、size、data，都为4字节大小。</p>
-<h3 id="Data-Chunk部分"><a href="#Data-Chunk部分" class="headerlink" title="Data Chunk部分"></a>Data Chunk部分</h3><p>是真正保存wav数据的地方，以‘data’作为该chunk的标示。然后是数据大小，紧接着就是wav数据。</p>
-<h1 id="实操PlaySound函数"><a href="#实操PlaySound函数" class="headerlink" title="实操PlaySound函数"></a>实操PlaySound函数</h1><p>使用内置，无需调用MF。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1371,7 +1403,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">324</span>
+                  <span class="site-state-item-count">325</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1528,7 +1560,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">378.7k</span>
+    <span title="Site words total count">380.0k</span>
   
 </div>
 
@@ -1770,7 +1802,7 @@
         }
       });
     </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -1778,4 +1810,4 @@
 
   
 
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>

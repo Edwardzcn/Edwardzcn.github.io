@@ -379,6 +379,284 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/b1db88f.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/b1db88f.html" itemprop="url">CCFADL105——大数据系统实践：从MapReduce到融合计算</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-08T13:08:21+08:00">
+                2019-09-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/讲座/" itemprop="url" rel="index">
+                    <span itemprop="name">讲座</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,815
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="大数据系统实践：从-MapReduce-到融合计算"><a href="#大数据系统实践：从-MapReduce-到融合计算" class="headerlink" title="大数据系统实践：从 MapReduce 到融合计算"></a>大数据系统实践：从 MapReduce 到融合计算</h1><p>主讲人：郭振宇（蚂蚁金服分布式计算总监）</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-001.jpg" alt="FirstPage"></p>
+<h1 id="融合计算模型"><a href="#融合计算模型" class="headerlink" title="融合计算模型"></a>融合计算模型</h1><h2 id="观察-趋势"><a href="#观察-趋势" class="headerlink" title="观察/趋势"></a>观察/趋势</h2><p>举一个蚂蚁金融一个常见的应用场景：扫码支付</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-002.jpg" alt="ScanPay"></p>
+<p>审视机器学习（或者大数据分析）产品三个层面的发展：</p>
+<ul>
+<li><strong>计算范畴</strong>：统计-&gt;规则（专家会议沉淀）-&gt;图-&gt;AI-&gt;复杂决策</li>
+<li><strong>计算复杂度</strong>：静态线性工作流-&gt;静态图工作流-&gt;动态工作流-&gt;多流-&gt;多流融合</li>
+<li><strong>质量</strong>：时效、安全/隐私、数据可靠性。</li>
+</ul>
+<p>实际上真正的 Machine Learning Code 只是很小的一部分，图源：《Hidden Technology Google》</p>
+<p>而应用要落地，关键的问题在：</p>
+<ul>
+<li><p>学习/开发/调试的成本</p>
+<ul>
+<li>对接很多独立的引擎/框架</li>
+<li>Ad-hoc/碎片化的集成/联调（多机联调）</li>
+</ul>
+</li>
+<li><p>运行时质量</p>
+<ul>
+<li>破碎的上下游衔接<ul>
+<li>形象点说，就是：上面跑数据不确定，下面就可能接受到不对的结果，</li>
+<li>具体在：<strong>接口</strong>/<strong>时效性</strong>/<strong>一致性</strong>/<strong>故障恢复</strong>/<strong>中间状态管理</strong></li>
+<li>对于中间状态管理的解释：生产者（上游）通过 HDFS 存放中间状态（产品），消费者（下游）不知道什么时候可以删除而不产生危害，导致存储过载、溢出。</li>
+</ul>
+</li>
+<li>盲目调度，存在很多优化的空间<ul>
+<li><strong>资源</strong>/<strong>数据</strong>/<strong>计算</strong>/<strong>服务</strong></li>
+</ul>
+</li>
+<li>冗余/低效的数据传输/拷贝/计算等</li>
+<li>安全隐私</li>
+<li>…</li>
+</ul>
+</li>
+<li><p>运维效率</p>
+<ul>
+<li>多引擎/平台异构运维</li>
+</ul>
+</li>
+</ul>
+<h2 id="胶水"><a href="#胶水" class="headerlink" title="胶水"></a>胶水</h2><p>平台化，将不同工作胶合在一起，常通过 GUIWorkFlow 的形式展示出来，一些公司已经有一些相关的工作。</p>
+<p>e.g. Azure ML Workflow， Google Kubeflow</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>包容性好</li>
+<li>易用</li>
+</ul>
+</li>
+<li><p>局限性</p>
+<ul>
+<li>组件质量/接口参差不齐-&gt;接口难做</li>
+<li>组件对于胶水来说是黑盒-&gt;跨接口优化难做</li>
+</ul>
+</li>
+</ul>
+<p>想法：<strong>胶水</strong>-&gt;<strong>统一的分布式支撑</strong></p>
+<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-005.jpg" alt="Fusion Computing"></p>
+<p><strong>融合计算</strong>：本地编程、自动云化、渐进融合</p>
+<p><strong>核心挑战 1</strong>：统一的通用编程抽象/执行模型是什么</p>
+<p>前面的讲座中已经多次提到了抽象的重要性，抽象就意味着：</p>
+<ul>
+<li>抽取面对不同分布式计算模式下的共同需求</li>
+<li>甚至混合模式下的需求。</li>
+</ul>
+<p><strong>核心挑战 2</strong>：如何解决通用和特定之间的固有矛盾</p>
+<p>通用性和领域专用性常看做是不可调和的矛盾。</p>
+<ul>
+<li>一般情况下，<strong>越通用，解决特定场景</strong>能力越弱。</li>
+<li>抽象是一种通用性的体现，而不同计算模式的不同需求/特定优化则体现了领域专用性</li>
+</ul>
+<h2 id="融合计算编程抽象"><a href="#融合计算编程抽象" class="headerlink" title="融合计算编程抽象"></a>融合计算编程抽象</h2><p>为何需要分布式计算？以 MapReduce 中使用的字符计数问题为例：</p>
+<ul>
+<li>对于单机：存储空间不够、计算能力不构、</li>
+<li>分布式计算目标：提供远超的单机的存储、计算能力，包装成单机的<strong>假象</strong>使上层没有意识到改变</li>
+</ul>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-010.jpg" alt="ComputationChanging"></p>
+<h3 id="状态切分"><a href="#状态切分" class="headerlink" title="状态切分"></a>状态切分</h3><p>MapReduce 的启发，状态切分成 slice，两个子方案，一是不需要代码改动的方案：remote memory，file system。二是需要代码改动的：KV，database</p>
+<h3 id="避免数据共享冲突的方法？调整架构"><a href="#避免数据共享冲突的方法？调整架构" class="headerlink" title="避免数据共享冲突的方法？调整架构"></a>避免数据共享冲突的方法？调整架构</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>控制流架构（冯·诺依曼）</th>
+<th>数据流架构</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>执行由<strong>控制流</strong>驱动</td>
+<td>执行由<strong>数据流</strong>驱动</td>
+</tr>
+<tr>
+<td>控制流导致状态访问冲突</td>
+<td>数据是无消息/无冲突问题</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>改写代码是必要的。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/b1db88f.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/72aa152d.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1282,201 +1560,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/799b8bb4.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/799b8bb4.html" itemprop="url">数论学习——同余式、幂与费马小定理</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-01T19:49:02+08:00">
-                2019-09-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数学/" itemprop="url" rel="index">
-                    <span itemprop="name">数学</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数学/数论/" itemprop="url" rel="index">
-                    <span itemprop="name">数论</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  301
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="费马小定理"><a href="#费马小定理" class="headerlink" title="费马小定理"></a>费马小定理</h1><blockquote>
-<p>设$p$是素数，$a$是任意整数且$a$，则</p>
-<script type="math/tex; mode=display">a^{p-1} \not\equiv 1 \mod p</script></blockquote>
-<h2 id="证明过程"><a href="#证明过程" class="headerlink" title="证明过程"></a>证明过程</h2><p>尝试证明一般性的费马小定理。首先证明如下断言。</p>
-<blockquote>
-<p><strong>引理 9.2</strong> 设$p$是素数，$a$是任何整数且$a \not\equiv 0 \mod p$，则数$a,2a,3a, \cdots , (p-1)a \mod p$与数$1,2,3, \cdots ,(p-1)$相同，尽管他们的次序并不相同。</p>
-</blockquote>
-<p><strong>证明</strong> 反证法，假设存在两个模$p$同余的$ka,ja$，且两个数本身是不同的，做差后在这个假设下反推，若同余，而$p$为素数，素数整除乘积，必定整除乘积的一个因数，而我们从要求中已经得到$p \nmid a$，而又$\vert k-j \vert &lt; p-1$，得到$k-j = 0$，而这与我们假设两者本身不同相违背，得证。</p>
-<p>利用该引理，容易完成费马小定理的证明，引理说明数列$a,2a,3a, \cdots , (p-1)a \mod p$与数列$1,2,3, \cdots ,(p-1) \mod p$相同，构造：</p>
-<script type="math/tex; mode=display">a \cdot (2a) \cdot (3a) \cdots ((p-1)a) \equiv 1 \cdot 2 \cdot 3 \cdots (p-1) \mod p</script><p>从左边提出$p-1$个$a$得：</p>
-<script type="math/tex; mode=display">a^{p-1} \cdot (p-1)!  \equiv  (p-1)!  \mod p</script><p>根据同余式两边消的性质（参加另一篇《同余式、线性同余定理》拓展性质 2），我们便可以得到。</p>
-<script type="math/tex; mode=display">a^{p-1} \equiv 1 \mod p</script>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1531,7 +1614,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">324</span>
+                  <span class="site-state-item-count">325</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1688,7 +1771,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">378.7k</span>
+    <span title="Site words total count">380.0k</span>
   
 </div>
 
@@ -1930,7 +2013,7 @@
         }
       });
     </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -1938,4 +2021,4 @@
 
   
 
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>

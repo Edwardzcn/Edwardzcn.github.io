@@ -379,6 +379,197 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/8809c911.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/8809c911.html" itemprop="url">数字图像处理——图像复原（频率域）</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-30T20:47:24+08:00">
+                2019-10-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数字图像处理/" itemprop="url" rel="index">
+                    <span itemprop="name">数字图像处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,818
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  9
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="频率域滤波图像复原"><a href="#频率域滤波图像复原" class="headerlink" title="频率域滤波图像复原"></a>频率域滤波图像复原</h1><p>在频率域滤波进行图像复原主要在两个方面效果较好，其一是利用频率域滤波消除周期噪声，另一个是利用频率域做退化函数的逆滤波，周期噪声还没有细致研究，这篇文章主要关注其逆滤波相关的问题。</p>
+<p>为什么要在频率域做逆滤波？观察之前退化模型的两个式子，我们不难发现：</p>
+<script type="math/tex; mode=display">g(x,y) = h(x,y) \star f(x,y) + \eta(x,y) \tag 1</script><script type="math/tex; mode=display">g(u,v) = H(u,v) F(u,v) + N(u,v) \tag 2</script><p>对(1)式空间域来说，想要从$g(x,y)$恢复$f(x,y)$，避不开的是“卷积”的逆运算，这在定义和实现的复杂上都比较困难，而转化到频率域，从(2)式我们或许可以通过一个“除法”来实现逆滤波，结合之前噪声模型相关内容，我们尝试在频率域上对仅退化函数影响的图像，和更复杂一些的，退化函数和加性噪声双重影响的图像进行复原。</p>
+<h2 id="估计退化函数"><a href="#估计退化函数" class="headerlink" title="估计退化函数"></a>估计退化函数</h2><p>在图像复原时，主要有 3 种用于估计退化函数的方法：（1）观察法，（2）试验法，（3）数学建模法。这里我们着重讲建模估计。</p>
+<ul>
+<li><p>湍流模糊</p>
+<p>Hufnagel and Stanley[1964]根据大气湍流的物理特性提出了一个退化模型，其通式为：</p>
+<script type="math/tex; mode=display">H(u,v) = e^{-k{(u^2+v^2)}^{5/6}}</script><p>式中，$k$是与湍流性质有关的常熟。除了指数为$5/6$之外，该式与高斯低通极其相似。</p>
+<p>实现：</p>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getVesMask</span><span class="params">(mask_shape,k)</span>:</span></span><br><span class="line">    rows,cols = mask_shape[<span class="number">0</span>],mask_shape[<span class="number">1</span>]</span><br><span class="line">    crow = rows/<span class="number">2</span></span><br><span class="line">    ccol = cols/<span class="number">2</span></span><br><span class="line">    mask = np.zeros((rows,cols))</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(rows):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(cols):</span><br><span class="line">            dis = (i-crow)**<span class="number">2</span> + (j-ccol)**<span class="number">2</span></span><br><span class="line">            mask[i,j] = np.exp(-k*(dis**(<span class="number">5</span>/<span class="number">6</span>)))</span><br><span class="line">    <span class="keyword">return</span> mask</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getVesFilterPassImg</span><span class="params">(input_img : np.array, k  , size = None)</span>:</span></span><br><span class="line">    f_img = np.fft.fft2(input_img , s = size)</span><br><span class="line">    shift_img = np.fft.fftshift(f_img)</span><br><span class="line">    mask_shift_img = getVesMask(f_img.shape,k)</span><br><span class="line">    new_shift_img = mask_shift_img*shift_img</span><br><span class="line">    new_manitude_img = <span class="number">20</span>*np.log(np.abs(new_shift_img+eps))</span><br><span class="line">    new_f_img = np.fft.ifftshift(new_shift_img)</span><br><span class="line">    new_img = np.fft.ifft2(new_f_img)</span><br><span class="line">    new_img = np.abs(new_img)</span><br><span class="line">    <span class="keyword">return</span> new_img</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试</span></span><br><span class="line"><span class="comment"># 参数设置</span></span><br><span class="line">mask_shape = (<span class="number">480</span>,<span class="number">480</span>)</span><br><span class="line">k = [<span class="number">0</span>,<span class="number">0.0025</span>,<span class="number">0.001</span>,<span class="number">0.00025</span>]</span><br><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">12</span>))</span><br><span class="line">ax = [plt.subplot(<span class="number">221</span>,projection = <span class="string">"3d"</span>),plt.subplot(<span class="number">222</span>,projection = <span class="string">"3d"</span>),plt.subplot(<span class="number">223</span>,projection = <span class="string">"3d"</span>),plt.subplot(<span class="number">224</span>,projection = <span class="string">"3d"</span>)]</span><br><span class="line"><span class="comment"># 获得滤波器</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">4</span>):</span><br><span class="line">    <span class="keyword">if</span> i == <span class="number">0</span>:</span><br><span class="line">        drawPerspective(ax[i],np.ones(mask_shape),title =<span class="string">"Original Img"</span>,cmap = <span class="string">"gray"</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        myfilter = getVesMask(mask_shape,k[i])</span><br><span class="line">        drawPerspective(ax[i],myfilter,title = <span class="string">f"Ves Mask with $k=<span class="subst">&#123;k[i]&#125;</span>$"</span>, cmap = <span class="string">"gray"</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line">test_img = cv2.imread(<span class="string">"./5_3Photo/Fig0525(a).tif"</span>,<span class="number">0</span>)</span><br><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">12</span>))</span><br><span class="line">ax = [plt.subplot(<span class="number">221</span>),plt.subplot(<span class="number">222</span>),plt.subplot(<span class="number">223</span>),plt.subplot(<span class="number">224</span>)]</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">4</span>):</span><br><span class="line">    <span class="keyword">if</span> i == <span class="number">0</span>:</span><br><span class="line">        ax[i].imshow(test_img,cmap = <span class="string">"gray"</span>)</span><br><span class="line">        ax[i].set_title(<span class="string">"Original Img"</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        out_img = getVesFilterPassImg(test_img,k[i])</span><br><span class="line">        ax[i].imshow(out_img,cmap = <span class="string">"gray"</span>)</span><br><span class="line">        ax[i].set_title(<span class="string">f"Ves Mask with $k=<span class="subst">&#123;k[i]&#125;</span>$"</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_1.png" alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_2.png" alt="png"></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/8809c911.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/c7192b31.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1258,206 +1449,6 @@ P_b & , &  z = b \\
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/430a4378.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/430a4378.html" itemprop="url">数字图像处理——理想滤波器与振铃特性</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-24T08:34:45+08:00">
-                2019-10-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数字图像处理/" itemprop="url" rel="index">
-                    <span itemprop="name">数字图像处理</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,083
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  4
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="理想滤波器"><a href="#理想滤波器" class="headerlink" title="理想滤波器"></a>理想滤波器</h1><p>频率域平滑锐化常用的几个滤波器的数学表达和实现都已经在<a href="https://www.edwardzcn98yx.com/post/e371c683.html">数字图像处理——频率域平滑锐化图像常用滤波器</a>一文中实现。</p>
-<p>之前我们讨论到了振铃现象，本文中的实验主要是动手实现测试了 ILPF 对图片的模糊效果及其振铃现象，并且跟随课本尝试解释 ILPF 在空间域的振铃特性。</p>
-<h2 id="理想低通滤波器-ILPF"><a href="#理想低通滤波器-ILPF" class="headerlink" title="理想低通滤波器 ILPF"></a>理想低通滤波器 ILPF</h2><p>描述如下</p>
-<script type="math/tex; mode=display">
-H_{ILPF}(u,v) = \left \{
-\begin{aligned}
-1, & D(u,v) \le D_0 \\
-0, & D(u,b) > D_0
-\end{aligned}
-\right.</script><p>其中$D_0$是一个正常数，$D(u,v)$表示频率域中的点$(u,v)$距离频率域中心$(\frac{P}{2},\frac{Q}{2})$的距离。</p>
-<h2 id="理想高通滤波器-IHPF"><a href="#理想高通滤波器-IHPF" class="headerlink" title="理想高通滤波器 IHPF"></a>理想高通滤波器 IHPF</h2><p>描述如下</p>
-<script type="math/tex; mode=display">
-H_{IHPF}(u,v) = \left \{
-\begin{aligned}
-0, & D(u,v) \le D_0 \\
-1, & D(u,b) > D_0
-\end{aligned}
-\right.</script><h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><p>代码实现<code>getIdealMask()</code>也在<a href="https://www.edwardzcn98yx.com/post/e371c683.html">数字图像处理——频率域平滑锐化图像常用滤波器</a>给出，在此不再转述。</p>
-<p>两组测试均为 100x100 大小，截至半径为 20 的低通和高通滤波器实验结果。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/3.png" alt="png"></p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/4.png" alt="png"></p>
-<h2 id="使用一个-ILPF-平滑图像"><a href="#使用一个-ILPF-平滑图像" class="headerlink" title="使用一个 ILPF 平滑图像"></a>使用一个 ILPF 平滑图像</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getIdealFilterPassImg</span><span class="params">(input_img : np.array, filter_type : str , filter_d0, size = None)</span>:</span></span><br><span class="line">    <span class="keyword">assert</span> filter_type <span class="keyword">in</span> (<span class="string">"lpf"</span>,<span class="string">"hpf"</span>)</span><br><span class="line">    <span class="comment"># 内部进行填充 （mask大小与原图相等 进行2K-1的0填充）</span></span><br><span class="line">    pad_img = getPaddingImg(input_img,input_img.shape,<span class="string">"corner"</span>)</span><br><span class="line"></span><br><span class="line">    f_img = np.fft.fft2(input_img , s = size)</span><br><span class="line">    shift_img = np.fft.fftshift(f_img)</span><br><span class="line">    mask_shift_img = getIdealMask(f_img.shape,filter_d0,filter_type)</span><br><span class="line">    new_shift_img = mask_shift_img*shift_img</span><br><span class="line">    new_manitude_img = <span class="number">20</span>*np.log(np.abs(new_shift_img+eps))</span><br><span class="line">    new_f_img = np.fft.ifftshift(new_shift_img)</span><br><span class="line">    new_img = np.fft.ifft2(new_f_img)</span><br><span class="line">    new_img = np.abs(new_img)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 内部进行裁剪</span></span><br><span class="line">    new_img = cutOriginalImg(new_img, input_img.shape, <span class="string">"corner"</span>)</span><br><span class="line">    <span class="keyword">return</span> new_img,new_manitude_img,mask_shift_img</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用书上例子，cv库读取图像</span></span><br><span class="line">original_img = cv2.imread(<span class="string">'./DIP3E_Original_Images_CH04/Fig0441(a)(characters_test_pattern).tif'</span>,<span class="number">0</span>)</span><br><span class="line"><span class="comment"># 设定截止半径</span></span><br><span class="line">d_list = [<span class="number">10</span>,<span class="number">30</span>,<span class="number">60</span>,<span class="number">160</span>,<span class="number">460</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> d <span class="keyword">in</span> d_list:</span><br><span class="line">    smmoth_img,manitude_img,mask_img = getIdealFilterPassImg(original_img, <span class="string">"lpf"</span> , d)</span><br><span class="line">    showTwoImg(smmoth_img,manitude_img,<span class="string">f"Smooth Img with $D_0$ = <span class="subst">&#123;d&#125;</span>"</span>, <span class="string">f"Manitude with $D_0$ = <span class="subst">&#123;d&#125;</span>"</span>)</span><br></pre></td></tr></table></figure>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/IdealFilter/1.png" alt="png"></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/430a4378.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1512,7 +1503,7 @@ H_{IHPF}(u,v) = \left \{
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">324</span>
+                  <span class="site-state-item-count">325</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1669,7 +1660,7 @@ H_{IHPF}(u,v) = \left \{
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">378.7k</span>
+    <span title="Site words total count">380.0k</span>
   
 </div>
 
@@ -1911,7 +1902,7 @@ H_{IHPF}(u,v) = \left \{
         }
       });
     </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -1919,4 +1910,4 @@ H_{IHPF}(u,v) = \left \{
 
   
 
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>

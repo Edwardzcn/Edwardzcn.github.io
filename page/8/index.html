@@ -379,6 +379,230 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/7ac02bb8.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/7ac02bb8.html" itemprop="url">机器学习——支持向量机</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-05T08:02:29+08:00">
+                2019-11-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  759
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  3
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="支持向量机-Support-Vector-Machine"><a href="#支持向量机-Support-Vector-Machine" class="headerlink" title="支持向量机 Support Vector Machine"></a>支持向量机 Support Vector Machine</h1><h2 id="前情提要"><a href="#前情提要" class="headerlink" title="前情提要"></a>前情提要</h2><ul>
+<li>95 年首先提出</li>
+<li>是一种统计识别方法，二分类问题上有很大应用。</li>
+</ul>
+<p>过学习问题</p>
+<p>根据统计学习理论，学习机器的实际风险<strong>由经验风险值和置信风险值</strong>两部分组成。而基于经验风险最小化准则的学习方法<strong>只强调了训练样本的经验风险最小误差，没有最小化置信范围值</strong>，因此其泛化能力较差。</p>
+<p>支持向量机是一种基于统计学习理论的模式识别方法，主要应用于模式识别领域。</p>
+<p>基本思想是在样本空间或特征空间构造出<strong>最优超平面</strong>，使得超平面与不同类样本集之间的距离最大，从而达到最大的泛化能力。</p>
+<h2 id="支持向量机可以做什么"><a href="#支持向量机可以做什么" class="headerlink" title="支持向量机可以做什么"></a>支持向量机可以做什么</h2><p>手写体的识别 LeNe 、多项式 SVM</p>
+<p>性别判断</p>
+<p>（温习机器学习一般流程）</p>
+<p>（温习评价指标：查全率、查重率、ROC 曲线）</p>
+<h2 id="支持向量机基本原理"><a href="#支持向量机基本原理" class="headerlink" title="支持向量机基本原理"></a>支持向量机基本原理</h2><p>SVM 是在两类线性可分情况下，获得<strong>最优分类面</strong>问题中提出的。</p>
+<ul>
+<li>分类间隔：假设$H$表示分类线，$H_1,H_2$使两条平行于分类线$H$的支线，并且他们分别过每类离分类线$H$最近的样本，$H1$和$H2$之间的距离叫<strong>做分类间隔（margin）</strong>。 Margin 越大，对新样本的分类（抗干扰）能力越强。</li>
+</ul>
+<h3 id="线性判别函数和判别面"><a href="#线性判别函数和判别面" class="headerlink" title="线性判别函数和判别面"></a>线性判别函数和判别面</h3><ul>
+<li><p>一个线性判别函数是指由$x$的各个分量的线性组合而成的函数</p>
+<script type="math/tex; mode=display">g(x) = w^T x + w_0</script></li>
+<li><p>两类情况：对于两类问题 的决策规则为：</p>
+<ul>
+<li>$g(x)&gt;0$，判定为$C_1$</li>
+<li>$g(x)&lt;0$，判定为$C_2$</li>
+<li>$g(x)==0$，边界拒绝分类。</li>
+</ul>
+</li>
+<li><p>方程$g(x)= 0$定义了一个判别面，把归类于$C_1$的点与$C_2$的点分开来。</p>
+</li>
+<li>当$g(x)$是线性函数时，这个平面被称为<strong>“超平面”</strong>（hyperplane）</li>
+<li><p>当$x_1,x_2$都在判定面上时</p>
+<script type="math/tex; mode=display">w^Tx_1 = w^Tx_2</script><script type="math/tex; mode=display">w^T(x_1 - x_2) = 0</script><p>说明超平面上任意向量均与法向量正交。</p>
+</li>
+</ul>
+<h3 id="硬间隔和支持向量"><a href="#硬间隔和支持向量" class="headerlink" title="硬间隔和支持向量"></a>硬间隔和支持向量</h3><p>SVM 分类问题大致有三种：线性可分问题、近似线性可分问题、线性不可分问题。</p>
+<p>对应支持向量机包含由简至繁的三种模型：</p>
+<ul>
+<li>线性可分支持向量机：当数据线性可分时，通过硬间隔最大化，学习一个线性的分类器，也称<strong>硬间隔支持向量机</strong></li>
+<li>线性支持向量机：当数据近似线性可分，通过软间隔使</li>
+<li>非线性支持向量机：</li>
+</ul>
+<p>关键点</p>
+<p>$\min \dfrac{1}{2} | w^2 | ,  y^{(i)}(w^T+ b ) \ge 1$</p>
+<h2 id="对偶问题"><a href="#对偶问题" class="headerlink" title="对偶问题"></a>对偶问题</h2><ul>
+<li>函数间隔</li>
+<li>几何间隔</li>
+</ul>
+<p>相差是一个I2范式</p>
+<p>基本想法，找到一个超平面使几何间隔最大化</p>
+<p>几何间隔最大化确定的超平面是唯一的，在此不做证明。</p>
+<p>求法：</p>
+<p>变换几何间隔到函数间隔，最大化转最小化</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/eefcc1d7.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1275,197 +1499,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/8809c911.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/8809c911.html" itemprop="url">数字图像处理——图像复原（频率域）</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-30T20:47:24+08:00">
-                2019-10-30
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数字图像处理/" itemprop="url" rel="index">
-                    <span itemprop="name">数字图像处理</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,818
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  9
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="频率域滤波图像复原"><a href="#频率域滤波图像复原" class="headerlink" title="频率域滤波图像复原"></a>频率域滤波图像复原</h1><p>在频率域滤波进行图像复原主要在两个方面效果较好，其一是利用频率域滤波消除周期噪声，另一个是利用频率域做退化函数的逆滤波，周期噪声还没有细致研究，这篇文章主要关注其逆滤波相关的问题。</p>
-<p>为什么要在频率域做逆滤波？观察之前退化模型的两个式子，我们不难发现：</p>
-<script type="math/tex; mode=display">g(x,y) = h(x,y) \star f(x,y) + \eta(x,y) \tag 1</script><script type="math/tex; mode=display">g(u,v) = H(u,v) F(u,v) + N(u,v) \tag 2</script><p>对(1)式空间域来说，想要从$g(x,y)$恢复$f(x,y)$，避不开的是“卷积”的逆运算，这在定义和实现的复杂上都比较困难，而转化到频率域，从(2)式我们或许可以通过一个“除法”来实现逆滤波，结合之前噪声模型相关内容，我们尝试在频率域上对仅退化函数影响的图像，和更复杂一些的，退化函数和加性噪声双重影响的图像进行复原。</p>
-<h2 id="估计退化函数"><a href="#估计退化函数" class="headerlink" title="估计退化函数"></a>估计退化函数</h2><p>在图像复原时，主要有 3 种用于估计退化函数的方法：（1）观察法，（2）试验法，（3）数学建模法。这里我们着重讲建模估计。</p>
-<ul>
-<li><p>湍流模糊</p>
-<p>Hufnagel and Stanley[1964]根据大气湍流的物理特性提出了一个退化模型，其通式为：</p>
-<script type="math/tex; mode=display">H(u,v) = e^{-k{(u^2+v^2)}^{5/6}}</script><p>式中，$k$是与湍流性质有关的常熟。除了指数为$5/6$之外，该式与高斯低通极其相似。</p>
-<p>实现：</p>
-</li>
-</ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getVesMask</span><span class="params">(mask_shape,k)</span>:</span></span><br><span class="line">    rows,cols = mask_shape[<span class="number">0</span>],mask_shape[<span class="number">1</span>]</span><br><span class="line">    crow = rows/<span class="number">2</span></span><br><span class="line">    ccol = cols/<span class="number">2</span></span><br><span class="line">    mask = np.zeros((rows,cols))</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(rows):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(cols):</span><br><span class="line">            dis = (i-crow)**<span class="number">2</span> + (j-ccol)**<span class="number">2</span></span><br><span class="line">            mask[i,j] = np.exp(-k*(dis**(<span class="number">5</span>/<span class="number">6</span>)))</span><br><span class="line">    <span class="keyword">return</span> mask</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getVesFilterPassImg</span><span class="params">(input_img : np.array, k  , size = None)</span>:</span></span><br><span class="line">    f_img = np.fft.fft2(input_img , s = size)</span><br><span class="line">    shift_img = np.fft.fftshift(f_img)</span><br><span class="line">    mask_shift_img = getVesMask(f_img.shape,k)</span><br><span class="line">    new_shift_img = mask_shift_img*shift_img</span><br><span class="line">    new_manitude_img = <span class="number">20</span>*np.log(np.abs(new_shift_img+eps))</span><br><span class="line">    new_f_img = np.fft.ifftshift(new_shift_img)</span><br><span class="line">    new_img = np.fft.ifft2(new_f_img)</span><br><span class="line">    new_img = np.abs(new_img)</span><br><span class="line">    <span class="keyword">return</span> new_img</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试</span></span><br><span class="line"><span class="comment"># 参数设置</span></span><br><span class="line">mask_shape = (<span class="number">480</span>,<span class="number">480</span>)</span><br><span class="line">k = [<span class="number">0</span>,<span class="number">0.0025</span>,<span class="number">0.001</span>,<span class="number">0.00025</span>]</span><br><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">12</span>))</span><br><span class="line">ax = [plt.subplot(<span class="number">221</span>,projection = <span class="string">"3d"</span>),plt.subplot(<span class="number">222</span>,projection = <span class="string">"3d"</span>),plt.subplot(<span class="number">223</span>,projection = <span class="string">"3d"</span>),plt.subplot(<span class="number">224</span>,projection = <span class="string">"3d"</span>)]</span><br><span class="line"><span class="comment"># 获得滤波器</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">4</span>):</span><br><span class="line">    <span class="keyword">if</span> i == <span class="number">0</span>:</span><br><span class="line">        drawPerspective(ax[i],np.ones(mask_shape),title =<span class="string">"Original Img"</span>,cmap = <span class="string">"gray"</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        myfilter = getVesMask(mask_shape,k[i])</span><br><span class="line">        drawPerspective(ax[i],myfilter,title = <span class="string">f"Ves Mask with $k=<span class="subst">&#123;k[i]&#125;</span>$"</span>, cmap = <span class="string">"gray"</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line">test_img = cv2.imread(<span class="string">"./5_3Photo/Fig0525(a).tif"</span>,<span class="number">0</span>)</span><br><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">12</span>))</span><br><span class="line">ax = [plt.subplot(<span class="number">221</span>),plt.subplot(<span class="number">222</span>),plt.subplot(<span class="number">223</span>),plt.subplot(<span class="number">224</span>)]</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">4</span>):</span><br><span class="line">    <span class="keyword">if</span> i == <span class="number">0</span>:</span><br><span class="line">        ax[i].imshow(test_img,cmap = <span class="string">"gray"</span>)</span><br><span class="line">        ax[i].set_title(<span class="string">"Original Img"</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        out_img = getVesFilterPassImg(test_img,k[i])</span><br><span class="line">        ax[i].imshow(out_img,cmap = <span class="string">"gray"</span>)</span><br><span class="line">        ax[i].set_title(<span class="string">f"Ves Mask with $k=<span class="subst">&#123;k[i]&#125;</span>$"</span>)</span><br></pre></td></tr></table></figure>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_1.png" alt="png"></p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_3_2.png" alt="png"></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/8809c911.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1520,7 +1553,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">324</span>
+                  <span class="site-state-item-count">325</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1677,7 +1710,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">378.7k</span>
+    <span title="Site words total count">380.0k</span>
   
 </div>
 
@@ -1919,7 +1952,7 @@
         }
       });
     </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -1927,4 +1960,4 @@
 
   
 
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
