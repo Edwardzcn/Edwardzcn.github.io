@@ -106,7 +106,7 @@
 <meta property="og:site_name" content="Eddy的个人博客">
 <meta property="og:description" content="动态规划（DP）简介 Those who cannot remember the past are condemned to repeat it.  什么是动态规划算法 Dynamic programming is both a mathematical optimization method and a computer programming method. The method was de">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-04-20T08:35:01.390Z">
+<meta property="og:updated_time" content="2020-04-22T04:12:44.977Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="算法与数据结构学习——DP背包问题备课提纲">
 <meta name="twitter:description" content="动态规划（DP）简介 Those who cannot remember the past are condemned to repeat it.  什么是动态规划算法 Dynamic programming is both a mathematical optimization method and a computer programming method. The method was de">
@@ -128,11 +128,11 @@
       author: '博主'
     },
     algolia: {
-      applicationID: 'I0P7TBILS9',
-      apiKey: '1cbd304cdb7292372541bc8f3d868016',
+      applicationID: '9M2C5ORTA3',
+      apiKey: 'cab906b07b7695815e9a87dda0c83ede',
       indexName: 'EddyBlog',
       hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+      labels: {"input_placeholder":"输入关键字","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
     }
   };
 </script>
@@ -474,7 +474,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  3,700
+                  4,411
                 </span>
               
 
@@ -490,7 +490,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  15
+                  17
                 </span>
               
             </div>
@@ -568,7 +568,7 @@
 <h1 id="算法优化与代价"><a href="#算法优化与代价" class="headerlink" title="算法优化与代价"></a>算法优化与代价</h1><h2 id="空间复杂度优化"><a href="#空间复杂度优化" class="headerlink" title="空间复杂度优化"></a>空间复杂度优化</h2><p>由于要使用$dp[n][v]$状态空间，如果储存全部状态，根据伪代码思路，该动态优化算法的时间和空间复杂度均为$O(VN)$，其中时间复杂度应该已经不能再优化了，但空间复杂度却可以优化到$O(V)$。</p>
 <p>我们观察状态转移方程</p>
 <script type="math/tex; mode=display">F[i,v] = max \{ F[i-1,v] , F[i-1,v-C_i] + Value_i \}</script><p>我们每轮计算前$i$个在不同限重背包的最优值时，利用的状态只有$i-1$时的状态，也即上一轮外层循环得到的值，据此我们可以使用一些优化方法。</p>
-<h3 id="滚动数组"><a href="#滚动数组" class="headerlink" title="滚动数组"></a>滚动数组</h3><p>每次都使用固定的几个存储空间，来达到压缩or节省存储空间的目的。主要应用在递推或动态规划中。</p>
+<h3 id="滚动数组"><a href="#滚动数组" class="headerlink" title="滚动数组"></a>滚动数组</h3><p>每次都使用固定的几个存储空间，来达到压缩 or 节省存储空间的目的。主要应用在递推或动态规划中。</p>
 <p>代码描述</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i=<span class="number">1</span> ;i &lt;= n; i++)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">for</span> (v = w[i] ; v &lt;= V ; v++)</span><br><span class="line">    &#123;</span><br><span class="line">        dp[<span class="number">1</span>][v] = max(dp[<span class="number">0</span>][v],dp[<span class="number">0</span>][v-w[i]]+v[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 一轮更新结束后统一翻转</span></span><br><span class="line">    <span class="keyword">for</span> (v = <span class="number">0</span>; v&lt;=V ; v++)&#123;</span><br><span class="line">        dp[<span class="number">0</span>][v] = dp[<span class="number">1</span>][v];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>当然我们还发现状态转移方程中，只会利用背包限重状态小于等于要更新状态的已知状态，所以我们按逆序（从大到小）遍历内层循环，就可以避免在同一轮外层循环中先更新的影响后更新的值，由此修改滚动数组代码。</p>
@@ -600,8 +600,77 @@
 <h3 id="一维压缩空间优化得到的解集"><a href="#一维压缩空间优化得到的解集" class="headerlink" title="一维压缩空间优化得到的解集"></a>一维压缩空间优化得到的解集</h3><p>$dp[V]$储存了<strong>长度等于序长，任意小于最大限制容量</strong>的解集。同样，不改变物体，对该序询问容量小于限制的背包问题$Q_2$，都可以在$O(1)$的时间给出答案，但是如果想询问前缀问题（而非序长），则不能获得，<strong>因为在外层循环迭代中，没有保留这部分结果</strong>。</p>
 <h3 id="空间优化-常数优化的解集"><a href="#空间优化-常数优化的解集" class="headerlink" title="空间优化+常数优化的解集"></a>空间优化+常数优化的解集</h3><p>只能保证$dp[i],i=V$单个值是正确的，而<strong>其他值均无意义</strong>。</p>
 <p>根据上述这些“发现”，我们能学到什么？</p>
-<p>对于正在讨论的问题，如果关注单解，那么空间+常数优化自然是很好的选择，但是如果数据固定而频繁询问，不考虑更新算法的话，那么朴素的二维dp或许是最好的。优化不应该是盲目的，有些优化需要我们理解背后更深的意义及影响，才能更好的应用在我们的程序中。</p>
+<p>对于正在讨论的问题，如果关注单解，那么空间+常数优化自然是很好的选择，但是如果数据固定而频繁询问，不考虑更新算法的话，那么朴素的二维 dp 或许是最好的。优化不应该是盲目的，有些优化需要我们理解背后更深的意义及影响，才能更好的应用在我们的程序中。</p>
+<h1 id="其他-DP-优化算法"><a href="#其他-DP-优化算法" class="headerlink" title="其他 DP 优化算法"></a>其他 DP 优化算法</h1><p>空间复杂度常与实现方式有关，这里我们考虑通用的时间复杂度优化，影响动态规划时间复杂度的因素：</p>
+<p>时间复杂度=所需计算状态总数*每个状态转移的状态数*每次状态转移的时间</p>
+<p>通常，我们考虑对动态优化算法进行优化时，要从上述三个因素着手。</p>
+<blockquote>
+<p>需要指出的是：这三者之间不是相互独立的，而是相互联系，矛盾而统一的。有时，实现了某个因素的优化，另外两个因素也随之得到了优化；有时，实现某个因素的优化却要以增大另一因素为代价。因此，这就要求我们在优化时，坚持“全局观”，实现三者的平衡。 ——《动态规划算法的优化技巧》毛子青</p>
+</blockquote>
+<p>回顾 01 背包问题时间复杂度常数优化，我们是优化了所需计算状态总数（对应二维数组容易理解）。本节后面内容，将结合其他经典的动态规划问题，介绍另外的优化方法。</p>
+<h2 id="矩阵优化递推"><a href="#矩阵优化递推" class="headerlink" title="矩阵优化递推"></a>矩阵优化递推</h2><p>常用于线性递推式，能以对数优化线性计算。通用模型：</p>
+<script type="math/tex; mode=display">f(n-1) = a f(n-1) + b f(n-2) + c</script><p>矩阵递推式代替原有递推式，将所求转换为矩阵连乘形式。</p>
+<script type="math/tex; mode=display">
+\left[
+ \begin{matrix}
+   f(n) \\
+   f(n-1) \\
+   1
+  \end{matrix}
+\right]
+=
+\left[
+ \begin{matrix}
+    a & b & c \\
+    1 & 0 & 0 \\
+    0 & 0 & 1 \\
+ \end{matrix}
+\right]
 
+\times
+
+\left[
+\begin{matrix}
+    f(n-1) \\
+    f(n-2) \\
+    1\\
+\end{matrix}
+\right]</script><p>这样做有什么好处呢？将系数矩阵设为$base$</p>
+<script type="math/tex; mode=display">
+base = 
+\left[
+    \begin{matrix}
+    a & b & c \\
+    1 & 0 & 0 \\
+    0 & 0 & 1 \\
+    \end{matrix}
+\right]</script><script type="math/tex; mode=display">
+\left[
+ \begin{matrix}
+   f(n) \\
+   f(n-1) \\
+   1
+  \end{matrix}
+\right]
+={base}^{n-2}
+\left[
+\begin{matrix}
+    f(2) \\
+    f(1) \\
+    1\\
+\end{matrix}
+\right]</script><p>${base}^{n-2}$可用快速幂算法加速运算。</p>
+<p>举例题目：【洛谷-P1962 斐波那契数列】【CSU-1895 Apache is late again】</p>
+<p>这里以后者题目为例。</p>
+<p>利用（矩阵）快速幂算法进行运算。</p>
+<h2 id="利用决策单调性进行优化"><a href="#利用决策单调性进行优化" class="headerlink" title="利用决策单调性进行优化"></a>利用决策单调性进行优化</h2><p>学习自毛子青的《动态规划算法的优化技巧》，该优化方法针对每个状态转移数的优化。</p>
+<p>石子合并问题也是经典的DP问题，描述如下： 在一个操场上摆放着一排n（n≤20）堆石子。现要将石子有次序地合并成一堆。规定每次只能选相邻的2堆石子合并成新的一堆，并将新的一堆石子数记为该次合并的得分。</p>
+<p>试编程求出将n堆石子合并成一堆的最小得分和最大得分以及相应的合并方案。</p>
+<p>核心：状态转移方程</p>
+<script type="math/tex; mode=display">m[i,j] = \min_{i<k≤j} \{m[i, k-1]+m[k,j] + \sum_{l=i}^jd[l] \}  \quad i＜j</script><h3 id="四边形不等式"><a href="#四边形不等式" class="headerlink" title="四边形不等式"></a>四边形不等式</h3><p>当函数$w[i,j]$满足$w[i,j]+w[i’,j’]  \le w[i’,j] + w[i,j’] , \quad i \le i’ \le j \le j’$。</p>
+<p>当函数$w[i,j]$满足$w[i’,j]≤w[i,j’]  \quad i \le i’ \le j \le j’$时称$w$关于区间包含关系单调。</p>
+<p>在石子归并问题中，我们可以依次证明$\sum_{l=i}^j𝑑[l]$、$𝑚[𝑖,𝑗]$、$𝑠[𝑖,𝑗]$满足四边形不等式。所以优化状态转移数，状态转移方程为：</p>
+<script type="math/tex; mode=display">m[i,j] = \min_{s[i,j-1]<k≤s[i+1,j]} \{m[i, k-1]+m[k,j] + \sum_{l=i}^jd[l] \}  \quad i＜j</script>
       
     </div>
     
@@ -724,7 +793,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">325</span>
+                  <span class="site-state-item-count">326</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -862,7 +931,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#动态规划（DP）简介"><span class="nav-number">1.</span> <span class="nav-text">动态规划（DP）简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是动态规划算法"><span class="nav-number">1.1.</span> <span class="nav-text">什么是动态规划算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#核心思想"><span class="nav-number">1.2.</span> <span class="nav-text">核心思想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#适用条件"><span class="nav-number">1.3.</span> <span class="nav-text">适用条件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#最优子结构（Optimal-structure）"><span class="nav-number">1.3.1.</span> <span class="nav-text">最优子结构（Optimal structure）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#子问题重叠（Overlapping-sub-problems）"><span class="nav-number">1.3.2.</span> <span class="nav-text">子问题重叠（Overlapping sub-problems）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#随便谈谈"><span class="nav-number">1.4.</span> <span class="nav-text">随便谈谈</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#与分治法（Divide-and-Conquer）对比"><span class="nav-number">1.4.1.</span> <span class="nav-text">与分治法（Divide and Conquer）对比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#与贪心算法（Greedy）对比"><span class="nav-number">1.4.2.</span> <span class="nav-text">与贪心算法（Greedy）对比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#前向性"><span class="nav-number">1.4.3.</span> <span class="nav-text">前向性</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#经典-DP-问题：背包问题"><span class="nav-number">2.</span> <span class="nav-text">经典 DP 问题：背包问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#01-背包题目"><span class="nav-number">2.1.</span> <span class="nav-text">01 背包题目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基本解题思路"><span class="nav-number">2.2.</span> <span class="nav-text">基本解题思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#附加：最优子结构证明"><span class="nav-number">2.3.</span> <span class="nav-text">附加：最优子结构证明</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#算法优化与代价"><span class="nav-number">3.</span> <span class="nav-text">算法优化与代价</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#空间复杂度优化"><span class="nav-number">3.1.</span> <span class="nav-text">空间复杂度优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#滚动数组"><span class="nav-number">3.1.1.</span> <span class="nav-text">滚动数组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#压缩至一维数组"><span class="nav-number">3.1.2.</span> <span class="nav-text">压缩至一维数组</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#时间复杂度常数优化"><span class="nav-number">3.2.</span> <span class="nav-text">时间复杂度常数优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#优化的代价"><span class="nav-number">3.3.</span> <span class="nav-text">优化的代价</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#朴素二维动态规划得到的解集"><span class="nav-number">3.3.1.</span> <span class="nav-text">朴素二维动态规划得到的解集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一维压缩空间优化得到的解集"><span class="nav-number">3.3.2.</span> <span class="nav-text">一维压缩空间优化得到的解集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#空间优化-常数优化的解集"><span class="nav-number">3.3.3.</span> <span class="nav-text">空间优化+常数优化的解集</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#动态规划（DP）简介"><span class="nav-number">1.</span> <span class="nav-text">动态规划（DP）简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是动态规划算法"><span class="nav-number">1.1.</span> <span class="nav-text">什么是动态规划算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#核心思想"><span class="nav-number">1.2.</span> <span class="nav-text">核心思想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#适用条件"><span class="nav-number">1.3.</span> <span class="nav-text">适用条件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#最优子结构（Optimal-structure）"><span class="nav-number">1.3.1.</span> <span class="nav-text">最优子结构（Optimal structure）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#子问题重叠（Overlapping-sub-problems）"><span class="nav-number">1.3.2.</span> <span class="nav-text">子问题重叠（Overlapping sub-problems）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#随便谈谈"><span class="nav-number">1.4.</span> <span class="nav-text">随便谈谈</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#与分治法（Divide-and-Conquer）对比"><span class="nav-number">1.4.1.</span> <span class="nav-text">与分治法（Divide and Conquer）对比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#与贪心算法（Greedy）对比"><span class="nav-number">1.4.2.</span> <span class="nav-text">与贪心算法（Greedy）对比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#前向性"><span class="nav-number">1.4.3.</span> <span class="nav-text">前向性</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#经典-DP-问题：背包问题"><span class="nav-number">2.</span> <span class="nav-text">经典 DP 问题：背包问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#01-背包题目"><span class="nav-number">2.1.</span> <span class="nav-text">01 背包题目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基本解题思路"><span class="nav-number">2.2.</span> <span class="nav-text">基本解题思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#附加：最优子结构证明"><span class="nav-number">2.3.</span> <span class="nav-text">附加：最优子结构证明</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#算法优化与代价"><span class="nav-number">3.</span> <span class="nav-text">算法优化与代价</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#空间复杂度优化"><span class="nav-number">3.1.</span> <span class="nav-text">空间复杂度优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#滚动数组"><span class="nav-number">3.1.1.</span> <span class="nav-text">滚动数组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#压缩至一维数组"><span class="nav-number">3.1.2.</span> <span class="nav-text">压缩至一维数组</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#时间复杂度常数优化"><span class="nav-number">3.2.</span> <span class="nav-text">时间复杂度常数优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#优化的代价"><span class="nav-number">3.3.</span> <span class="nav-text">优化的代价</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#朴素二维动态规划得到的解集"><span class="nav-number">3.3.1.</span> <span class="nav-text">朴素二维动态规划得到的解集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一维压缩空间优化得到的解集"><span class="nav-number">3.3.2.</span> <span class="nav-text">一维压缩空间优化得到的解集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#空间优化-常数优化的解集"><span class="nav-number">3.3.3.</span> <span class="nav-text">空间优化+常数优化的解集</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他-DP-优化算法"><span class="nav-number">4.</span> <span class="nav-text">其他 DP 优化算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#矩阵优化递推"><span class="nav-number">4.1.</span> <span class="nav-text">矩阵优化递推</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#利用决策单调性进行优化"><span class="nav-number">4.2.</span> <span class="nav-text">利用决策单调性进行优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#四边形不等式"><span class="nav-number">4.2.1.</span> <span class="nav-text">四边形不等式</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -897,7 +966,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">380.0k</span>
+    <span title="Site words total count">380.7k</span>
   
 </div>
 
@@ -1143,7 +1212,7 @@
         }
       });
     </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
   
 
 
@@ -1151,4 +1220,4 @@
 
   
 
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>

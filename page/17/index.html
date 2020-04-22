@@ -127,11 +127,11 @@
       author: '博主'
     },
     algolia: {
-      applicationID: 'I0P7TBILS9',
-      apiKey: '1cbd304cdb7292372541bc8f3d868016',
+      applicationID: '9M2C5ORTA3',
+      apiKey: 'cab906b07b7695815e9a87dda0c83ede',
       indexName: 'EddyBlog',
       hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+      labels: {"input_placeholder":"输入关键字","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
     }
   };
 </script>
@@ -365,6 +365,203 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/cbabc18d.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/cbabc18d.html" itemprop="url">分布式系统学习——MapReduce方法Paper翻译</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-24T08:20:58+08:00">
+                2019-08-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/" itemprop="url" rel="index">
+                    <span itemprop="name">操作系统</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/分布式系统/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  10,315
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  37
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="读书笔记——MapReduce-Simplified-Data-Processing-on-Large-Clusters"><a href="#读书笔记——MapReduce-Simplified-Data-Processing-on-Large-Clusters" class="headerlink" title="读书笔记——MapReduce: Simplified Data Processing on Large Clusters"></a>读书笔记——MapReduce: Simplified Data Processing on Large Clusters</h1><p>大型集群上的简化处理：MapReduce（两个主要操作）</p>
+<p><a href="https://www.cnblogs.com/YaoDD/p/6017397.html" target="_blank" rel="noopener">原始翻译版本网址：《MapReduce: Simplified Data Processing on Large Cluster 》翻译</a></p>
+<h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>MapReduce 是一种编程模型和一种用来处理和产生大数据集的相关实现。用户定义 map 函数（map function）来处理 key/value 键值对来产生一系列的中间的 key/value 键值对。还要定义一个 reduce 函数(reduce function)用来合并有着相同中间 key 值的中间 value。许多现实世界中的任务都可以用这种模型来表达，就像下文所展示的那样。</p>
+<p>用这个风格（函数式）编写的程序可以自动并行地在大规模集群上工作。运行时系统会自动处理例如切割输入数据，在机器之间调度程序的执行，处理机器故障以及管理必要的机器间通信等细节问题。这可以让那些对于并行分布式系统<strong>没有任何经验</strong>的程序员也能<strong>很简单</strong>地利用起一个大的分布式系统的资源。</p>
+<p>我们的 MapReduce 的实现运行在一个由大的商业机构成的集群当中并且是高度可扩展的：一个典型的 MapReduce 计算要在上千台机器中处理 TB 数量级的数据。程序员会觉得这个系统非常好用：已经有成千上万的 MapReduce 程序被实现出来并且每天有上千个 MapReduce 任务运行在 Google 的集群上。</p>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>在过去五年中，作者和许多 Google 的其他人已经实现了成百上千个用于特殊目的的计算程序用于处理大量的 raw data（如抓取文件，Web 请求日志等），用于计算产生各种各样的 derived data（如倒排索引、Web 文件结构的图片展示、每个 host 抓取的文件数量总结、指定日期最频繁的访问请求等）。许多这种计算程序在概念上都是非常直接的。然而输入的数据量往往很大，并且计算需要分布在成百上千台机器中为了在一个可接受的时间内完成任务。但是除了简单的计算模型以外，我们需要大量复杂的代码用来处理例如如何并行化计算、分发数据、处理故障等等问题。</p>
+<p>为了解决这样的复杂性，我们设计了一种新的抽象，它让我们只需要表示出我们想要执行的计算模型，而将背后复杂的并行化，容错，数据分发，负载平衡等等技术的实现细节隐藏在了库中。我们这种新的抽象是受 Lisp 以及其他一些函数式编程语言中的 map 和 reduce 原语影响而来的。我们意识到为了计算出一系列的中间键值对，许多的计算都需要对于输入中的每个逻辑“记录”进行 map 操作。然后还需要对所有共享同一个 key 的 value 进行 reduce 操作，从而能够对派生的数据进行适当的组合。我们这种让用户自定义 map 和 reduce 操作的编程模型能够让我们简单地对大量数据实现并行化，并且使用重新执行（re-execution）作为主要的容错机制。</p>
+<p>我们这项工作的主要共享是提供了一个简单并且强大的接口能够让我们实现自动的并行化并且分布处理大规模的计算，同时该接口的实现能在大型的商用 PC 集群上获得非常高的性能。</p>
+<p>Section 2 描述了基本的编程模型以及一些简单的例子。Section 3 描述了为我们的基于集群的计算环境量身定做的 MapReduce 接口。Section 4 描述了一些我们认为有用的对于编程模型的改进。Section 5 是对我们的实现在不同任务下的性能测试。Section 6 包含了 MapReduce 在 Google 内的使用情况，包括我们以它为基础重写我们的产品索引系统的经验。Section 7 讨论了相关的工作以及未来的发展。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/cbabc18d.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -1252,185 +1449,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/8886f58d.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/8886f58d.html" itemprop="url">2019-07-08广东省游记</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-08T11:18:05+08:00">
-                2019-07-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/旅行/" itemprop="url" rel="index">
-                    <span itemprop="name">旅行</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  44
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="抵达"><a href="#抵达" class="headerlink" title="抵达"></a>抵达</h1><p>出发前两天在长沙定了住宿火车票和机票，预计在广州市停留两天、深圳停留三天、香港一天之后返程。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/16/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><span class="page-number current">17</span><a class="page-number" href="/page/18/">18</a><span class="space">&hellip;</span><a class="page-number" href="/page/65/">65</a><a class="extend next" rel="next" href="/page/18/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/16/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><span class="page-number current">17</span><a class="page-number" href="/page/18/">18</a><span class="space">&hellip;</span><a class="page-number" href="/page/66/">66</a><a class="extend next" rel="next" href="/page/18/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1480,7 +1503,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">325</span>
+                  <span class="site-state-item-count">326</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1637,7 +1660,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">380.0k</span>
+    <span title="Site words total count">380.7k</span>
   
 </div>
 
@@ -1879,7 +1902,7 @@
         }
       });
     </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
   
 
 
@@ -1887,4 +1910,4 @@
 
   
 
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":75,"height":150},"mobile":{"show":true,"scale":0.2},"log":false});</script><!-- hexo-inject:begin --><!-- hexo-inject:end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>
