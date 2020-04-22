@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title><![CDATA[【LeetCode-955】解题报告（暴力、贪心）]]></title>
-    <url>%2Fpost%2Faa780325.html</url>
+    <title><![CDATA[【LeetCode-16.22】解题报告（模拟，集合）]]></title>
+    <url>%2Fpost%2F85a76ac.html</url>
     <content type="text"></content>
+  </entry>
+  <entry>
+    <title><![CDATA[【LeetCode-955】解题报告（暴力，贪心）]]></title>
+    <url>%2Fpost%2F78fc1ccf.html</url>
+    <content type="text"><![CDATA[原始题目给定由 N 个小写字母字符串组成的数组 A，其中每个字符串长度相等。 选取一个删除索引序列，对于 A 中的每个字符串，删除对应每个索引处的字符。 比如，有 A = [“abcdef”, “uvwxyz”]，删除索引序列 {0, 2, 3}，删除后 A 为[“bef”, “vyz”]。 假设，我们选择了一组删除索引 D，那么在执行删除操作之后，最终得到的数组的元素是按 字典序（A[0] &lt;= A[1] &lt;= A[2] … &lt;= A[A.length - 1]）排列的，然后请你返回 D.length 的最小可能值。 解题思路 裸枚举 对于每个位置，判断整体是否符合字典序，复杂度$O(WN^{2})$ 贪心 对于每个间隔位置，用一个 vis 数组保存前面序列是否出现$A[i-1][j] &lt; A[i][j]$。 遍历每个位置，不用判断整体字符串，只需考虑新加入的列，结合 vis 数组，如何结合？ 若$vis[i] = 0$，表明之前间隔两边合法字符总是相同字符（反序字符列可以证明被删除），对于当前新加入的列，分三种情况，若出现正序，则更新为$vis[i]=1$；若相等，保持$vis[i]=0$；若出现反序，删除列，保持$vis[i]=0$。 若$vis[i]=1$，表明之前间隔两边出现至少一次正序，那该间隔无需再考虑，间隔将题目要求分割到不同段的子要求。 解题代码 裸枚举 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;typedef pair&lt;int, int&gt; pii;typedef pair&lt;string, string&gt; pss;typedef vector&lt;int&gt; vi;typedef vector&lt;string&gt; vs;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define all(x) x.begin(), x.end()#define mp make_pair#define pb push_back#define np next_permutation#define fi first#define se secondbool compare(vector&lt;string&gt;&amp; A)&#123; rep(i, 1, A.size()) &#123; if (A[i - 1] &gt; A[i]) &#123; return false; &#125; &#125; return true;&#125;class Solution &#123;public: int minDeletionSize(vector&lt;string&gt;&amp; A) &#123; vector&lt;string&gt; test(A.size(), ""); int ans = 0; rep(i, 0, A.front().size()) &#123; rep(j, 0, A.size()) &#123; test[j].pb(A[j][i]); &#125; if (!compare(test)) &#123; ans++; rep(j, 0, A.size()) &#123; test[j].pop_back(); &#125; &#125; &#125; return ans; &#125;&#125;; 贪心 1234567891011121314151617181920212223242526272829class Solution &#123;public: int minDeletionSize(vector&lt;string&gt;&amp; A) &#123; int ans = 0; vi pos(A.size(), 0); rep(i, 0, A.front().size()) &#123; int flag = 0; rep(j, 1, A.size()) &#123; if (!pos[j] &amp;&amp; A[j][i] &lt; A[j - 1][i]) &#123; ans++; flag = 1; break; &#125; &#125; if (flag) continue; rep(j, 1, A.size()) &#123; if (A[j - 1][i] &lt; A[j][i]) &#123; pos[j] = 1; &#125; &#125; &#125; return ans; &#125;&#125;; 收获与反思暂无]]></content>
+      <categories>
+        <category>编程</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+        <tag>贪心</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[密码技术学习——Keccak原像破解赛题前置知识点总结]]></title>
@@ -992,8 +1004,8 @@
         <category>Linux</category>
       </categories>
       <tags>
-        <tag>操作系统</tag>
         <tag>Linux</tag>
+        <tag>操作系统</tag>
       </tags>
   </entry>
   <entry>
@@ -1017,8 +1029,8 @@
       </categories>
       <tags>
         <tag>待补充</tag>
-        <tag>操作系统</tag>
         <tag>Linux</tag>
+        <tag>操作系统</tag>
       </tags>
   </entry>
   <entry>
@@ -1030,8 +1042,8 @@
         <category>Linux</category>
       </categories>
       <tags>
-        <tag>操作系统</tag>
         <tag>Linux</tag>
+        <tag>操作系统</tag>
       </tags>
   </entry>
   <entry>
@@ -1778,8 +1790,8 @@
         <category>C++</category>
       </categories>
       <tags>
-        <tag>编程</tag>
         <tag>C++</tag>
+        <tag>编程</tag>
         <tag>课程设计</tag>
       </tags>
   </entry>
@@ -2545,8 +2557,8 @@
         <tag>ACM</tag>
         <tag>算法</tag>
         <tag>CSU</tag>
-        <tag>2018暑假集训</tag>
         <tag>Imitation</tag>
+        <tag>2018暑假集训</tag>
       </tags>
   </entry>
   <entry>
@@ -2783,8 +2795,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>2018暑假集训</tag>
         <tag>Imitation</tag>
+        <tag>2018暑假集训</tag>
         <tag>补图</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -2900,8 +2912,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>2018暑假集训</tag>
         <tag>Imitation</tag>
+        <tag>2018暑假集训</tag>
         <tag>UVA</tag>
       </tags>
   </entry>
@@ -3711,8 +3723,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>二分</tag>
         <tag>2018暑假集训</tag>
+        <tag>二分</tag>
         <tag>POJ</tag>
       </tags>
   </entry>
@@ -3743,8 +3755,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>二分</tag>
         <tag>2018暑假集训</tag>
+        <tag>二分</tag>
         <tag>水题</tag>
         <tag>CodeForces</tag>
       </tags>
@@ -3760,8 +3772,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>二分</tag>
         <tag>2018暑假集训</tag>
+        <tag>二分</tag>
         <tag>CodeForces</tag>
       </tags>
   </entry>
@@ -3777,14 +3789,14 @@
         <tag>ACM</tag>
         <tag>算法</tag>
         <tag>CSU</tag>
-        <tag>2018暑假集训</tag>
         <tag>Imitation</tag>
+        <tag>2018暑假集训</tag>
       </tags>
   </entry>
   <entry>
     <title><![CDATA[【HDU-6301】解题报告（贪心，预处理）]]></title>
     <url>%2Fpost%2Fc293d2b3.html</url>
-    <content type="text"><![CDATA[原始题目Distinct Values Time Limit: 4000/2000 MS (Java/Others) Memory Limit: 32768/32768 K (Java/Others) Total Submission(s): 3168 Accepted Submission(s): 1017 Problem DescriptionChiaki has an array of $n$ positive integers. You are told some facts about the array: for every two elements $a_i$ and $a_j$ in the subarray $a_{l \cdots r} (l≤i&lt;j≤r)$, $a_i≠a_j$ holds. Chiaki would like to find a lexicographically minimal array which meets the facts. InputThere are multiple test cases. The first line of input contains an integer $T$, indicating the number of test cases. For each test case: The first line contains two integers $n$ and $m (1≤n,m≤105)$ — the length of the array and the number of facts. Each of the next $m$ lines contains two integers $l_i$ and $r_i$ $(1≤li≤ri≤n)$. It is guaranteed that neither the sum of all $n$ nor the sum of all $m$ exceeds 106. OutputFor each test case, output $n$ integers denoting the lexicographically minimal array. Integers should be separated by a single space, and no extra spaces are allowed at the end of lines. Sample Input3 2 1 1 2 4 2 1 2 3 4 5 2 1 3 2 4 Sample Output1 2 1 2 1 2 1 2 3 1 1 Source2018 Multi-University Training Contest 1 Recommendliuyiding 题目大意对于一个数列，已知其m个子区间，每个子区间内数列的项两两不同，求复合条件的字典序最小的数列。 解题思路 要求字典序最小，算法就是从前贪心的让每一位都是当前可使用数的最小值（从1开始）。 那么如何处理出第i位可用数字的最小值？ 预处理出$pre[i]$（包含第i位线段的最小左端点，即与第i位不相同的最早位置） 用set维护当前可使用的数，$pt$指向当前可用最小数的位置， 求每一位的$ans[i]$时，先检查，当$pt&lt;pre[i]$时，说明$pt$到$pre[i]$位置间使用过的数可以再次使用，所以开始向set容器里补充$pt$位置的数，直至$pt=pre[i]$，再取set容器中的最小值付给$ans[i]$ 如何与处理出$pre[i]$（见下图） 解题代码123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657#include &lt;bits/stdc++.h&gt;using namespace std;#define rep(i,a,n) for (int i=a;i&lt;n;i++)#define per(i,a,n) for (int i=n-1;i&gt;=a;i--)#define pb push_back#define mp make_pair#define np next_permutation#define all(x) x.begin(),x.end()#define fi first#define se second#define SZ(x) ((int)(x).size()) typedef vector&lt;int&gt; vi;typedef long long ll;typedef pair&lt;int,int&gt; pii;const int mod=1e9+7;const int maxn=2e5+5;set &lt;int&gt; s;int pre[maxn],n,m,ans[maxn]; //预处理出不可相同的区间前端点。 int main()&#123; int t; scanf("%d",&amp;t); while(t--)&#123; s.clear(); scanf("%d%d",&amp;n,&amp;m); rep(i,1,n+1)&#123; pre[i]=i; //没有限制条件，前端点都是自身 s.insert(i); &#125; rep(i,1,m+1)&#123; int l,r; scanf("%d%d",&amp;l,&amp;r); pre[r]=min(l,pre[r]); //有可能多个区间右端点相同。 //易错写成 pre[r]=l;忘记更新 &#125; per(i,1,n) pre[i]=min(pre[i],pre[i+1]); //易错写成n+1 //处理完毕 //初始set均可用 int pt=1; //pt记录当前不可用线段开头 rep(i,1,n+1)&#123; //开头更替，则往set里补充可用最小值 // cout&lt;&lt;"pt="&lt;&lt;pt&lt;&lt;" pre[i]="&lt;&lt;pre[i]&lt;&lt;endl; while(pt&lt;pre[i])&#123; s.insert(ans[pt++]); &#125; ans[i]=*s.begin(); s.erase(*s.begin()); &#125; rep(i,1,n+1)&#123; if(i==1) printf("%d",ans[i]); else printf(" %d",ans[i]); &#125; printf("\n"); &#125;&#125; 收获与反思 预处理出线段的左端点。 贪心的考虑每一位的最小值。]]></content>
+    <content type="text"><![CDATA[原始题目Distinct Values Time Limit: 4000/2000 MS (Java/Others) Memory Limit: 32768/32768 K (Java/Others) Total Submission(s): 3168 Accepted Submission(s): 1017 Problem DescriptionChiaki has an array of $n$ positive integers. You are told some facts about the array: for every two elements $a_i$ and $a_j$ in the subarray $a_{l \cdots r} (l≤i&lt;j≤r)$, $a_i≠a_j$ holds. Chiaki would like to find a lexicographically minimal array which meets the facts. InputThere are multiple test cases. The first line of input contains an integer $T$, indicating the number of test cases. For each test case: The first line contains two integers $n$ and $m (1≤n,m≤105)$ — the length of the array and the number of facts. Each of the next $m$ lines contains two integers $l_i$ and $r_i$ $(1≤li≤ri≤n)$. It is guaranteed that neither the sum of all $n$ nor the sum of all $m$ exceeds 106. OutputFor each test case, output $n$ integers denoting the lexicographically minimal array. Integers should be separated by a single space, and no extra spaces are allowed at the end of lines. Sample Input3 2 1 1 2 4 2 1 2 3 4 5 2 1 3 2 4 Sample Output1 2 1 2 1 2 1 2 3 1 1 Source2018 Multi-University Training Contest 1 Recommendliuyiding 题目大意对于一个数列，已知其 m 个子区间，每个子区间内数列的项两两不同，求复合条件的字典序最小的数列。 解题思路 要求字典序最小，算法就是从前贪心的让每一位都是当前可使用数的最小值（从 1 开始）。 那么如何处理出第 i 位可用数字的最小值？ 预处理出$pre[i]$（包含第 i 位线段的最小左端点，即与第 i 位不相同的最早位置） 用 set 维护当前可使用的数，$pt$指向当前可用最小数的位置， 求每一位的$ans[i]$时，先检查，当$pt&lt;pre[i]$时，说明$pt$到$pre[i]$位置间使用过的数可以再次使用，所以开始向 set 容器里补充$pt$位置的数，直至$pt=pre[i]$，再取 set 容器中的最小值付给$ans[i]$ 如何与处理出$pre[i]$（见下图） 解题代码123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657#include &lt;bits/stdc++.h&gt;using namespace std;#define rep(i,a,n) for (int i=a;i&lt;n;i++)#define per(i,a,n) for (int i=n-1;i&gt;=a;i--)#define pb push_back#define mp make_pair#define np next_permutation#define all(x) x.begin(),x.end()#define fi first#define se second#define SZ(x) ((int)(x).size())typedef vector&lt;int&gt; vi;typedef long long ll;typedef pair&lt;int,int&gt; pii;const int mod=1e9+7;const int maxn=2e5+5;set &lt;int&gt; s;int pre[maxn],n,m,ans[maxn]; //预处理出不可相同的区间前端点。int main()&#123; int t; scanf("%d",&amp;t); while(t--)&#123; s.clear(); scanf("%d%d",&amp;n,&amp;m); rep(i,1,n+1)&#123; pre[i]=i; //没有限制条件，前端点都是自身 s.insert(i); &#125; rep(i,1,m+1)&#123; int l,r; scanf("%d%d",&amp;l,&amp;r); pre[r]=min(l,pre[r]); //有可能多个区间右端点相同。 //易错写成 pre[r]=l;忘记更新 &#125; per(i,1,n) pre[i]=min(pre[i],pre[i+1]); //易错写成n+1 //处理完毕 //初始set均可用 int pt=1; //pt记录当前不可用线段开头 rep(i,1,n+1)&#123; //开头更替，则往set里补充可用最小值// cout&lt;&lt;"pt="&lt;&lt;pt&lt;&lt;" pre[i]="&lt;&lt;pre[i]&lt;&lt;endl; while(pt&lt;pre[i])&#123; s.insert(ans[pt++]); &#125; ans[i]=*s.begin(); s.erase(*s.begin()); &#125; rep(i,1,n+1)&#123; if(i==1) printf("%d",ans[i]); else printf(" %d",ans[i]); &#125; printf("\n"); &#125;&#125; 收获与反思 预处理出线段的左端点。 贪心的考虑每一位的最小值。]]></content>
       <categories>
         <category>编程</category>
         <category>ACM</category>
