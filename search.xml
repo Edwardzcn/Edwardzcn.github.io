@@ -1,9 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title><![CDATA[【LeetCode-16.22】解题报告（模拟，集合）]]></title>
+    <title><![CDATA[分布式系统学习——Hadoop安装与单机模式调试]]></title>
+    <url>%2Fpost%2Fb894091d.html</url>
+    <content type="text"><![CDATA[系列文章主要记录自己在阿里云 ECS 配置安装 Hadoop，搭建伪分布式环境，学习 Hadoop、HDFS、Hbase 相关内容的过程。 系统安装采取什么方式安装 Hadoop实际上我们有很多方式来安装 Hadoop，比如通过 Cloudera 图形化界面（就像 Anaconda Navigator 那样），不过网上许多教程都是通过命令行形式进行安装的（包括 Apache 官方网站），鉴于以后要进行服务器管理，分布式搭建，我们也按照官网推荐的方式通过命令行安装 Hadoop。 建立 Hadoop 用户并配置免密钥 SSH 登录从安全角度触发，不要始终用 root 用户进行操作，我们一般会建立hadoop或者hduser等用户（日后很多时候网管也不会给你 root 权限）。 建立用户过程简述 12345678910111213141516$ user add -m hadoop# -m参数添加用户根目录$ passwd hadoop# 为hadoop用户设置密码$ chsh -s /bin/zsh hadoop# zsh为本人常使用shell 所以做一下更换# 接下来进行的是把hadoop添加到sudoers$ chmod u+w /etc/sudoers$ vim /etc/sudoers# 在里面增添 hadoop ALL=NOPASSWD:ALL$ chmod u-w /etc/sudoers# 测试$ su hadoop$ sudo whoami# 出现Root即ok 配置免密登录，检查/home/hadoop/.ssh 文件查看是否有公钥，没有的话通过ssh-gen进行生成。若可以直接免密登录本机ssh localhost则可以直接跳过本过程。 如果不行的话需要将公钥加入授权 1cat id_rsa.pub &gt;&gt; authorized_keys Hadoop 网页显示 Hadoop 节点存储节点为空看它的报错信息好像是节点没有启动，但是我的节点都启动起来了，使用 jps 也能查看到节点信息。使用 hadoop dfsadmin -report 命令查看磁盘使用情况，发现出现以下问题： 123456789101112131415161718Configured Capacity: 0 (0 B)Present Capacity: 0 (0 B)DFS Remaining: 0 (0 B)DFS Used: 0 (0 B)DFS Used%: 0.00%Replicated Blocks: Under replicated blocks: 0 Blocks with corrupt replicas: 0 Missing blocks: 0 Missing blocks (with replication factor 1): 0 Low redundancy blocks with highest priority to recover: 0 Pending deletion blocks: 0Erasure Coded Block Groups: Low redundancy block groups: 0 Block groups with corrupt internal blocks: 0 Missing block groups: 0 Low redundancy blocks with highest priority to recover: 0 Pending deletion blocks: 0 解决方法 停止集群（切换到/sbin 目录下） 1$ HADOOP_HOME/sbin/stop-all.sh 删除在 hdfs 中配置的 data 目录（即在 core-site.xml 中配置的 hadoop.tmp.dir 对应文件件）下面的所有数据 1$ rm -rf /home/hadoop/hdpdata/ 参考hdfs 默认数据存放路径，在 core-site.xml 没有编辑 data 存放路径时，默认存放到{hadoop.tmp.dir}:/tmp/hadoop-{user.name}。删除以后更换 tmp 数据存储位置。 3、重新格式化 namenode(切换到 hadoop 目录下的 bin 目录下) 1$ hadoop namenode -format 4、重新启动 hadoop 集群（切换到 hadoop 目录下的 sbin 目录下） 1$ $HADOOP_HOME/sbin/start-all.sh 单机测试流程 格式化 namenode 1$ hdfs namenode -format 启动 NameNode 的守护进程和 DataNode 的守护进程 1$ $HADOOP_HOME/sbin/start-dfs.sh 通过 Web 浏览，若配置不出问题，应为 https://ip地址:50070 建立 HDFS 的文件目录并启动 MapReduce 任务 12hdfs dfs -mkdir /userhdfs dfs -mkdir /user/&lt;username&gt; 根据自己的用户名填充，我的是user/hadoop 拷贝文件到分布式文件系统的 input 目录 12hdfs dfs -mkdir inputhdfs dfs -put etc/hadoop/*.xml input 如果出现节点未启动但是 jps 中进程存在的故障，注意查一下是不是上一点，然后再进行修复。 用一些样例程序进行测试 1234# 正则$ hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.2.1.jar grep input output_regex 'dfs[a-z.]+'# 或者 wordcount$ hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.2.1.jar wordcount input output_wordcount 计算完成后还需要通过 -get指令把文件从 HDFS 下载到本地。 最终结果见下图，证明测试成功。 完成全部任务后，停止进程 1$ sbin/stop-dfs.sh]]></content>
+      <categories>
+        <category>系统</category>
+        <category>分布式系统</category>
+      </categories>
+      <tags>
+        <tag>系统</tag>
+        <tag>Hadoop</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[分布式系统学习——分布式存储与文件系统]]></title>
+    <url>%2Fpost%2Ffcfa77c8.html</url>
+    <content type="text"><![CDATA[NoSQL类型 列存储 Hbase、Cassandra、Hypertable 文档存储 MongoDB、CoutTree 调研： 什么是 NoSQL 生态圈 分布式存储系统的定义与实现问题 数据分布：分布均匀？跨服务器读写 一致性：如何复制多个数据副本并保证不同副本之间的一致性 容错 负载均衡 事务与并发控制 易用性 压缩/解压缩 分布式存储系统分类 分布式文件系统：存储 Blob 对象、定长块以及大文件 Facebook Haystack GFS Amazon EBS 分布式键值存储系统 调研学习：DAS、SAN、NAS 存储引擎 哈希存储引擎 哈希表的持久化实现 支持增删改和随机读取，不支持顺序扫描 对应键值存储系统 B 树存储引擎 B 树的持久化实现 支持增删读改，支持顺序扫描 对应关系数据库 LSM 树存储引擎 支持增删读改，支持顺序扫描 互联网后台存储系统 数据模型 文件模型 以目录树的形式组织文件 对象模型与文件模型类似 关系模型 键值模型 表格模型 支持插入删除更新读取扫描 不支持多表关联 思考：单点登录（有状态服务器、无状服务器）]]></content>
+      <categories>
+        <category>操作系统</category>
+        <category>分布式</category>
+      </categories>
+      <tags>
+        <tag>分布式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[分布式系统学习——动态调度与负载平衡]]></title>
+    <url>%2Fpost%2F5824281a.html</url>
+    <content type="text"><![CDATA[动态调度集中 分散 开环 不参考过去决策 闭环 参考 负载平衡 负载（系统相关）举例： CPU 队列的长度（进程数目） 某时段 CPU 队列的平均长度 可用内存的大小 上下文切换的速率 系统调用的速率 负载描述系统的负担状态 负载平衡算法构成方式 选取发出者 选取任务 任务应该足够大，值得耗费额外的资源（转移操作）来处理它 选出目标 集中式：收取信息协调者分配 非集中式：轮询（轮寻？） 信息策略：决定系统中其他站点的状态信息如何收集信息的（懒惰 or 积极） 发送者主动算法超载发送给轻载站点 转移策略：阈值 选择策略：选择新任务 定位策略：阈值 信息策略： 接收者主动算法负载不足时从重载站点获取额外任务 双向主动算法接收者主动的渗透算法基本思想： 预约策略一个轻载站点按一定方式查询系统状态，请求某个重载站点 投标策略 重载站点向系统广播消息 接收到这一请求消息的站点根据自己的状态决定是否参与 广播策略智能型任务调度算法 最佳任务调度是$NP$完全问题，传统研究的寻优，存在一些问题 分布式站点自治性和冬天变化的远程对象状态，使局部调度算法具有的全局状态信息是不确定的 系统观点来看 从而引出 智能型任务调度算法 任务调度中的知识及其表示 调度知识：设计任务调度算法的一些经验、原理、规则、就近调度原则、不要调度运行中的任务等。 对象知识：构成任务调度算法的一些基本知识，一个对象知识主要是由对象提、作用在其上的操作和相关知识三部分组成。 任务调度程序结构（图） 任务调度算法的实现 分层实现 核心层：观察处理器的状态。一行成统计数据；将任务分配到指定的处理器；常驻内存 决策层：完成调度任务决策，包裹状态管理和决策管理 用户界面层：良好的 HCI。 自学 基于 DNS 的 基于反向代理 基于 CDN 轮寻算法 Hash 散列算法 思考题 目前经常用到的负载均衡技术有哪些，都用在什么地方？ 目前 memcached 集群用到的负载均衡技术有哪些 调研 JBoss 服务器中的负载平衡机制 分布式系统范型？]]></content>
+      <categories>
+        <category>操作系统</category>
+        <category>分布式</category>
+      </categories>
+      <tags>
+        <tag>分布式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[密码技术学习——Keccak一轮破解论文整理]]></title>
+    <url>%2Fpost%2Fe72dd1e0.html</url>
+    <content type="text"><![CDATA[一轮 Keccak 密码分析遵循对$\theta,\chi$的观察。5 位输入，5 位输出。 Observation 1在$\chi$运算中，对于已知密文序列，可以直接逆运算明文序列。 Observation 2在$\chi$运算中，任意非相邻三位置 bits 已知，所有输出可以写成输入的线性组合形式。 Observation 3对于$a_3=1$，可给出$a_0,a_1,a_2$的线性构造式，带入 Observation 1，正确。 Observation 4没懂 跟$\theta$， 零和区分器后面几轮的方式 $\rho$运算的含义表示]]></content>
+      <categories>
+        <category>密码学</category>
+      </categories>
+      <tags>
+        <tag>密码学</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[分布式系统学习——ATC19USTC文章（三步法）]]></title>
+    <url>%2Fpost%2F6d7ef99f.html</url>
+    <content type="text"><![CDATA[First Step摘要段技术背景：针对 LSM 树 IO 负担问题（频繁检查 SSTable 造成的读增加），通常会在 KV stores 中部署 Bloom 过滤器。Bloom 自身也存在误报，内存开销等问题。 文章贡献：利用 SSTable 的 access skewness 性质的普遍性，根据数据热点动态调整的异构 Bloom 过滤器——ElasticBF。且 ElasticBF 与 LSM 树的优化可整合到一起共同优化读取性能。性能提升均在 2x 以上。 前置知识 LSM-Tree SSTables Bloom 过滤器 NoSQL 类型数据库 标题和段落开头第四段主要是 ElasticBF 应用于各 DB 的效果验证。 First Step Conclustion 系统-LSM 优化 没有读过相关的文章，前置知识都还不了解 文献调研 NoSQL 数据库——MonoDB、Cassandra、Dynamo LSM-Tree、B-Tree、B+-Tree]]></content>
+      <categories>
+        <category>操作系统</category>
+        <category>分布式系统</category>
+      </categories>
+      <tags>
+        <tag>论文</tag>
+        <tag>操作系统</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[中科大在线宣讲会]]></title>
+    <url>%2Fpost%2Fe263c8ae.html</url>
+    <content type="text"><![CDATA[学科科研介绍一流学生培养培养目标：国家需求，社会满意，个人发展 师资力量（此处缺少图片） 就读相关重点信息：没有直博指标，只有硕士 2/3 转博。 优秀营员比例：10%]]></content>
+      <tags>
+        <tag>研究生</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[【LeetCode-16-22】解题报告（模拟，集合）]]></title>
     <url>%2Fpost%2F85a76ac.html</url>
-    <content type="text"></content>
+    <content type="text"><![CDATA[原始题目一只蚂蚁坐在由白色和黑色方格构成的无限网格上。开始时，网格全白，蚂蚁面向右侧。每行走一步，蚂蚁执行以下操作。 (1) 如果在白色方格上，则翻转方格的颜色，向右(顺时针)转 90 度，并向前移动一个单位。(2) 如果在黑色方格上，则翻转方格的颜色，向左(逆时针方向)转 90 度，并向前移动一个单位。 编写程序来模拟蚂蚁执行的前 K 个动作，并返回最终的网格。 网格由数组表示，每个元素是一个字符串，代表网格中的一行，黑色方格由 ‘X’ 表示，白色方格由 ‘_‘ 表示，蚂蚁所在的位置由 ‘L’, ‘U’, ‘R’, ‘D’ 表示，分别表示蚂蚁 左、上、右、下 的朝向。只需要返回能够包含蚂蚁走过的所有方格的最小矩形。 解题思路无需维护整个地图状态，用一个点集合来维护黑色方格，绘图时确定边界为$[min{now,p (p \in S)}, max{now, p (p \in S)}$。 需要特别注意的是 C++构造输出答案时应用了 vector&lt;string&gt; ans(rows,temp)构造方式，否则超时（逐个 push_back）。 解题代码12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667#include &lt;bits/stdc++.h&gt;using namespace std;typedef long long ll;typedef unsigned long long ull;typedef pair&lt;int, int&gt; pii;#define rep(i, a, n) for (int i = a; i &lt; n; ++i)#define per(i, a, n) for (int i = n - 1; i &gt;= a; --i)#define fi first#define se second#define pb push_back#define np next_permutation#define mp make_pair#define all(x) x.begin(), x.end()class Solution &#123;public: vector&lt;string&gt; printKMoves(int K) &#123; int ax, ay; int dir[4][2] = &#123; &#123; -1, 0 &#125;, &#123; 0, -1 &#125;, &#123; 1, 0 &#125;, &#123; 0, 1 &#125; &#125;; int dirid; char mmp[4] = &#123; 'L', 'U', 'R', 'D' &#125;; set&lt;pii&gt; pos; ax = ay = 0; pos.clear(); dirid = 2; rep(i, 0, K) &#123; if (pos.count(mp(ax, ay)) == 0) &#123; // bai dirid = (dirid + 1) % 4; pos.insert(mp(ax, ay)); &#125; else &#123; dirid = (dirid + 3) % 4; pos.erase(mp(ax, ay)); &#125; ax = ax + dir[dirid][0]; ay = ay + dir[dirid][1]; &#125; int vx_max = ax; int vx_min = ax; int vy_max = ay; int vy_min = ay; for (auto i : pos) &#123; vx_max = max(i.first, vx_max); vx_min = min(i.first, vx_min); vy_max = max(i.second, vy_max); vy_min = min(i.second, vy_min); &#125; int rows = vy_max - vy_min + 1; int cols = vx_max - vx_min + 1; string temp; for (int i = 0; i &lt; cols; i++) temp.push_back('_'); vector&lt;string&gt; ans(rows, temp); for (auto it = pos.begin(); it != pos.end(); it++) &#123; ans[it-&gt;second - vy_min][it-&gt;first - vx_min] = 'X'; &#125; ans[ay - vy_min][ax - vx_min] = mmp[dirid]; return ans; &#125;&#125;;]]></content>
+      <categories>
+        <category>编程</category>
+      </categories>
+      <tags>
+        <tag>LeetCode</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[【LeetCode-955】解题报告（暴力，贪心）]]></title>
@@ -20,7 +95,7 @@
   <entry>
     <title><![CDATA[密码技术学习——Keccak原像破解赛题前置知识点总结]]></title>
     <url>%2Fpost%2Fce028a8.html</url>
-    <content type="text"><![CDATA[建议阅读《SHA-3 标准 Keccak 算法的安全性分析与实现》西电硕士论文 现代密码学：Hash 函数 Keccak Hash 函数安全性通常，在讨论 Hash 函数安全性时，我们常考虑下面三条性质，由于各种资料叫法不尽相同，这里做个总结。 Collision Resistacne 扛碰撞性 It should be difficult to find a pair of different messages $m_1$ and $m_2$ such that $H(m_1) = H(m_2)$ 又称为强扛碰撞性（Strong Collision Resistance），指已知 Hash 算法，找出两个原像（消息、数据报文）$m_1,m_2$，使得其映像（消息摘要、数据摘要）$H(m_1) = H(m_2)$是困难的（计算不可行）。 Preimage Resistance 扛原像攻击 Given an arbitrary n-bit value $y$, it should be difficult to find any message $m$ such that $H(m) = y$ 描述了数学中函数的不可逆性，扛原像攻击也称单向性（One-way）。指已知 $y = H(m) , y \in Y$（消息摘要，或者称数据摘要集合），要找出 $m \in M$（数据报文集合），使得 $H(m)=y$ 是困难的。 抗第二原像攻击(Second Preimage Resistance) Given message $m_1$, it should be difficult to find any different message $m_2$ such that $H(m_1) = H(m_2)$。 与 Collision Resistance 很想，就差在一个确定的原像，所以该性质又被称为弱扛碰撞性（Weak Collision Resistance）。已知 $m_1 \in N$， 找出另一个 $m_2 \in M$，使得 $H(m_1)=H(m_2)$是困难的（计算不可行）。 生日攻击与 Hash 安全性放在一起介绍的生日悖论与生日攻击请自行查阅资料理解。 Keccak-f 理解读完赛题可以确定的 Keccak 版本是(b=1600,r=1088,c=512)，也即 SHA3-256（Federal Information Processing Standards），见 Meicheng Liu 那份 PPT 第 7 页表格。 至于 b,r,c 对应海绵结构示意图位置，我在 ppt 上画了个草稿。 如果觉得太乱，我文字简单解释一下。 $b$是总运算码长，称为置换宽度，也就是海绵体结构总长度，这个长度被拆成两个部分：$b=r+c$， $r$比特率（bit rate），与消息块长度相等 $c$容量（capacity），表示容量（或者叫冗余长度？） 这两部分的区别，在每一次$f$置换函数轮转前，需要与原消息进行异或，但是不是整个长度$b$去和消息异或，只有$r$长度部分异或，而$c$部分则直接使用上一次置换计算后的结果。（这是各种利用海绵结构进行 Hash 算法的公共特征）。所以你再去看赛题第二页下方，内层第一个 for 循环只计算了$(s_0,s_1,\cdots,s_{1087})$，长度为$r=1088$。而内层第二个 for 循环则表示$f$（置换函数）的过程，计算$(s_0,s_1,\cdots,s_{1599})$。$(s_{1088},\cdots,s_{1599}$这个长度为$c=512$部分，沿用上一次$f’$置换函数计算后的结果。 可能你会问怎么保证原消息一定是 1088 啊，当然不是。 我们通过补位原始至长度为 1088 的整数倍，$k= \frac{size}{r=1088}$，这样就解释了赛题种外层循环和$k$的含义，海绵结构 absorb 过程就是我们把原消息拆分成每 1088 长度为一段，逐段压入过程，压入就是前面说的两个内层循环（1088 长度异或+n 轮置换） Keccak-f 算法轮数$n$并不是指最外层 absorb-squeeze 这个过程的次数，实际上，它表示一次$f$（置换函数）使用 5 种运算子整体混淆的次数。这个在上面提到过了，再强调一遍。 混淆运算子这是我自己起的名字，那几个符号不太好打我就截图了。各种 Keccak 算法介绍的资料中描述了这五个运算的实质。 把$1600$一维长度理解成$5564$三维 cube 有助于理解这几个运算子 上面两个图的描述是完全等价的，$\theta$虽然看起来感觉不太像，你们可以自己证一下（下次问）。 倒数第二个运算子根据材料讲是唯一的非线性运算子，这里我不大明白，也没想出来它的运算方式，需要你们帮我理解一下。 RC 值与轮数有关，RC 在 24 轮中的定义如下：（这个也是个常用手段，可以先不理解 RC 值怎么来的） 1234567const uint64_t RC[nr] = &#123; 0x0000000000000001, 0x0000000000008082,0x800000000000808A, 0x8000000080008000, 0x000000000000808B, 0x0000000080000001,0x8000000080008081, 0x8000000000008009, 0x000000000000008A, 0x0000000000000088,0x0000000080008009, 0x000000008000000A, 0x000000008000808B, 0x800000000000008B,0x8000000000008089, 0x8000000000008003, 0x8000000000008002, 0x8000000000000080,0x000000000000800A, 0x800000008000000A, 0x8000000080008081, 0x8000000000008080,0x0000000080000001, 0x8000000080008008&#125;;]]></content>
+    <content type="text"><![CDATA[建议阅读《SHA-3 标准 Keccak 算法的安全性分析与实现》西电硕士论文 现代密码学：Hash 函数 Keccak Hash 函数安全性通常，在讨论 Hash 函数安全性时，我们常考虑下面三条性质，由于各种资料叫法不尽相同，这里做个总结。 Collision Resistacne 扛碰撞性 It should be difficult to find a pair of different messages $m_1$ and $m_2$ such that $H(m_1) = H(m_2)$ 又称为强扛碰撞性（Strong Collision Resistance），指已知 Hash 算法，找出两个原像（消息、数据报文）$m_1,m_2$，使得其映像（消息摘要、数据摘要）$H(m_1) = H(m_2)$是困难的（计算不可行）。 Preimage Resistance 扛原像攻击 Given an arbitrary n-bit value $y$, it should be difficult to find any message $m$ such that $H(m) = y$ 描述了数学中函数的不可逆性，扛原像攻击也称单向性（One-way）。指已知 $y = H(m) , y \in Y$（消息摘要，或者称数据摘要集合），要找出 $m \in M$（数据报文集合），使得 $H(m)=y$ 是困难的。 抗第二原像攻击(Second Preimage Resistance) Given message $m_1$, it should be difficult to find any different message $m_2$ such that $H(m_1) = H(m_2)$。 与 Collision Resistance 很想，就差在一个确定的原像，所以该性质又被称为弱扛碰撞性（Weak Collision Resistance）。已知 $m_1 \in N$， 找出另一个 $m_2 \in M$，使得 $H(m_1)=H(m_2)$是困难的（计算不可行）。 生日攻击与 Hash 安全性放在一起介绍的生日悖论与生日攻击请自行查阅资料理解。 Keccak-f 理解读完赛题可以确定的 Keccak 版本是(b=1600,r=1088,c=512)，也即 SHA3-256（Federal Information Processing Standards），见 Meicheng Liu 那份 PPT 第 7 页表格。 至于 b,r,c 对应海绵结构示意图位置，我在 ppt 上画了个草稿。 如果觉得太乱，我文字简单解释一下。 $b$是总运算码长，称为置换宽度，也就是海绵体结构总长度，这个长度被拆成两个部分：$b=r+c$， $r$比特率（bit rate），与消息块长度相等 $c$容量（capacity），表示容量（或者叫冗余长度？） 这两部分的区别，在每一次$f$置换函数轮转前，需要与原消息进行异或，但是不是整个长度$b$去和消息异或，只有$r$长度部分异或，而$c$部分则直接使用上一次置换计算后的结果。（这是各种利用海绵结构进行 Hash 算法的公共特征）。所以你再去看赛题第二页下方，内层第一个 for 循环只计算了$(s_0,s_1,\cdots,s_{1087})$，长度为$r=1088$。而内层第二个 for 循环则表示$f$（置换函数）的过程，计算$(s_0,s_1,\cdots,s_{1599})$。$(s_{1088},\cdots,s_{1599}$这个长度为$c=512$部分，沿用上一次$f’$置换函数计算后的结果。 可能你会问怎么保证原消息一定是 1088 啊，当然不是。 我们通过补位原始至长度为 1088 的整数倍，$k= \frac{size}{r=1088}$，这样就解释了赛题种外层循环和$k$的含义，海绵结构 absorb 过程就是我们把原消息拆分成每 1088 长度为一段，逐段压入过程，压入就是前面说的两个内层循环（1088 长度异或+n 轮置换） Keccak-f 算法轮数$n$并不是指最外层 absorb-squeeze 这个过程的次数，实际上，它表示一次$ f$（置换函数）使用 5 种运算子整体混淆的次数。这个在上面提到过了，再强调一遍。 混淆运算子这是我自己起的名字，那几个符号不太好打我就截图了。各种 Keccak 算法介绍的资料中描述了这五个运算的实质。 把$1600$一维长度理解成$5564$三维 cube 有助于理解这几个运算子 上面两个图的描述是完全等价的，$\theta$虽然看起来感觉不太像，你们可以自己证一下（下次问）。 倒数第二个运算子根据材料讲是唯一的非线性运算子，这里我不大明白，也没想出来它的运算方式，需要你们帮我理解一下。 RC 值与轮数有关，RC 在 24 轮中的定义如下：（这个也是个常用手段，可以先不理解 RC 值怎么来的） 1234567const uint64_t RC[nr] = &#123; 0x0000000000000001, 0x0000000000008082,0x800000000000808A, 0x8000000080008000, 0x000000000000808B, 0x0000000080000001,0x8000000080008081, 0x8000000000008009, 0x000000000000008A, 0x0000000000000088,0x0000000080008009, 0x000000008000000A, 0x000000008000808B, 0x800000000000008B,0x8000000000008089, 0x8000000000008003, 0x8000000000008002, 0x8000000000000080,0x000000000000800A, 0x800000008000000A, 0x8000000080008081, 0x8000000000008080,0x0000000080000001, 0x8000000080008008&#125;;]]></content>
       <categories>
         <category>密码学</category>
       </categories>
@@ -68,11 +143,6 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[分布式系统学习——Hadoop初试]]></title>
-    <url>%2Fpost%2Fb894091d.html</url>
-    <content type="text"></content>
-  </entry>
-  <entry>
     <title><![CDATA[多媒体原理与系统——音频wave文件]]></title>
     <url>%2Fpost%2F32dcdd6d.html</url>
     <content type="text"><![CDATA[波形音频文件分析波形音频文件概念波形音频文件是存储数字音频样本序列的格式文件，这些样本直接记录了音频的波形，故称为波形音频文件。MIDI、MP3等编码压缩过的音频文件最终都要转化成波形音频文件进行使用播放。 WAVE，使用最广泛，遵循RIFF格式标准。头四个字节是RIFF。WAVE文件由多个chunk组成。 RIFF Wave Chunk部分以RIFF作为开始表示，紧跟着size字段，最后是type字段位‘wave’。size是wav文件减去id和size占用的字节数。File字节-8=size。 Format Chunk部分id补了一个空格，和其他chunk保持一致，都是4字节。 Fact Chunk部分可选字段，当wav文件从一些专用软件转化来时，包含该chunk。包括三部分，id、size、data，都为4字节大小。 Data Chunk部分是真正保存wav数据的地方，以‘data’作为该chunk的标示。然后是数据大小，紧接着就是wav数据。 实操PlaySound函数使用内置，无需调用MF。]]></content>
@@ -93,11 +163,6 @@
       <tags>
         <tag>随笔</tag>
       </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[分布式系统学习——TensorFlow理解]]></title>
-    <url>%2Fpost%2F5824281a.html</url>
-    <content type="text"></content>
   </entry>
   <entry>
     <title><![CDATA[《文化商人——21世纪的出版业》读后感]]></title>
@@ -1004,8 +1069,8 @@
         <category>Linux</category>
       </categories>
       <tags>
-        <tag>Linux</tag>
         <tag>操作系统</tag>
+        <tag>Linux</tag>
       </tags>
   </entry>
   <entry>
@@ -1029,8 +1094,8 @@
       </categories>
       <tags>
         <tag>待补充</tag>
-        <tag>Linux</tag>
         <tag>操作系统</tag>
+        <tag>Linux</tag>
       </tags>
   </entry>
   <entry>
@@ -1042,8 +1107,8 @@
         <category>Linux</category>
       </categories>
       <tags>
-        <tag>Linux</tag>
         <tag>操作系统</tag>
+        <tag>Linux</tag>
       </tags>
   </entry>
   <entry>
@@ -3380,8 +3445,8 @@
       <tags>
         <tag>阅读</tag>
         <tag>小说</tag>
-        <tag>刺杀骑士团长</tag>
         <tag>村上春树</tag>
+        <tag>刺杀骑士团长</tag>
       </tags>
   </entry>
   <entry>
@@ -3723,8 +3788,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>二分</tag>
         <tag>2018暑假集训</tag>
+        <tag>二分</tag>
         <tag>POJ</tag>
       </tags>
   </entry>
@@ -3755,8 +3820,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>二分</tag>
         <tag>2018暑假集训</tag>
+        <tag>二分</tag>
         <tag>水题</tag>
         <tag>CodeForces</tag>
       </tags>
@@ -3772,8 +3837,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>二分</tag>
         <tag>2018暑假集训</tag>
+        <tag>二分</tag>
         <tag>CodeForces</tag>
       </tags>
   </entry>
@@ -4231,8 +4296,8 @@
       </categories>
       <tags>
         <tag>阅读</tag>
-        <tag>书信</tag>
         <tag>龙应台</tag>
+        <tag>书信</tag>
         <tag>安德烈</tag>
         <tag>亲爱的安德烈</tag>
       </tags>
@@ -4284,8 +4349,8 @@
       </categories>
       <tags>
         <tag>随笔</tag>
-        <tag>龙应台</tag>
         <tag>读后感</tag>
+        <tag>龙应台</tag>
       </tags>
   </entry>
   <entry>
@@ -4422,8 +4487,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>2018寒假集训</tag>
         <tag>BFS</tag>
+        <tag>2018寒假集训</tag>
         <tag>HDU</tag>
       </tags>
   </entry>
@@ -4438,8 +4503,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>2018寒假集训</tag>
         <tag>BFS</tag>
+        <tag>2018寒假集训</tag>
         <tag>补图</tag>
         <tag>素数筛</tag>
       </tags>
@@ -4455,8 +4520,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>2018寒假集训</tag>
         <tag>BFS</tag>
+        <tag>2018寒假集训</tag>
         <tag>CodeForces</tag>
       </tags>
   </entry>
@@ -4471,8 +4536,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>2018寒假集训</tag>
         <tag>BFS</tag>
+        <tag>2018寒假集训</tag>
         <tag>ZOJ</tag>
       </tags>
   </entry>
@@ -4487,8 +4552,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>2018寒假集训</tag>
         <tag>Greedy</tag>
+        <tag>2018寒假集训</tag>
         <tag>CodeForces</tag>
         <tag>字符串</tag>
       </tags>
@@ -4505,8 +4570,8 @@
         <tag>ACM</tag>
         <tag>算法</tag>
         <tag>2018寒假集训</tag>
-        <tag>STL</tag>
         <tag>HDU</tag>
+        <tag>STL</tag>
       </tags>
   </entry>
   <entry>
@@ -4520,8 +4585,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>2018寒假集训</tag>
         <tag>Imitation</tag>
+        <tag>2018寒假集训</tag>
         <tag>Graph</tag>
         <tag>POJ</tag>
       </tags>
@@ -4537,8 +4602,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>2018寒假集训</tag>
         <tag>Greedy</tag>
+        <tag>2018寒假集训</tag>
         <tag>POJ</tag>
       </tags>
   </entry>
@@ -4553,8 +4618,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>2018寒假集训</tag>
         <tag>Imitation</tag>
+        <tag>2018寒假集训</tag>
         <tag>CodeForces</tag>
         <tag>Graph</tag>
       </tags>
@@ -4572,8 +4637,8 @@
         <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>补图</tag>
-        <tag>STL</tag>
         <tag>HDU</tag>
+        <tag>STL</tag>
       </tags>
   </entry>
   <entry>

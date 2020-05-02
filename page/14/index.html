@@ -364,6 +364,762 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/973eccf1.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/973eccf1.html" itemprop="url">数字图像处理——直方图匹配</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-22T00:32:45+08:00">
+                2019-09-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数字图像处理/" itemprop="url" rel="index">
+                    <span itemprop="name">数字图像处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,101
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  10
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><p>上一篇文章讲了<a href="https://www.edwardzcn98yx.com/post/b44049c5.html">直方图均衡</a>相关内容，从实际应用中我们发现，只能对直方图做均衡操作并不能完全满足我们的需要，有时我们更希望调整概率分布（直方图）为<strong>指定形状</strong>，这就是<strong>直方图匹配</strong>。</p>
+<p>比如下图图一猫咪的直方图较为集中在中间，我们希望它的分布贴近第二幅文字图的分布（集中在暗区域）</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/HistogramMatch/output_2_0.png" alt="im1"></p>
+<h1 id="数学基础"><a href="#数学基础" class="headerlink" title="数学基础"></a>数学基础</h1><p>从上一篇文章的介绍中我们发现，对于<strong>任何图像</strong>（$r$的概率密度分布），我们都可以通过其累积分布函数将其函数变换到随机变量$s$，而$s$是均匀分布的。那我们反过来想，能否将均匀分布的随机变量逆变换到某个特定的分布呢？</p>
+<h2 id="公式推导"><a href="#公式推导" class="headerlink" title="公式推导"></a>公式推导</h2><p>设$r$为随机变量值域为$[0,255]$，其概率密度函数为$p_r(r)$。一函数（变换为）：</p>
+<script type="math/tex; mode=display">s = T(r) = (L-1) \int_{0}^{r} p_r(m) \mathrm{d}m</script><p>由上一篇文章我们易知$s$服从均匀分布，我们寻找一个$z$随机变量符合另一特殊分布$p_z(z)$，易知存在一函数（变换）：</p>
+<script type="math/tex; mode=display">s = G(z) = (L-1) \int_{0}^{z} p_z(m) \mathrm{d}m</script><p>由于$G(z)$为累积分布函数，单调，故存在反函数$G^{-1}(z)$，则有新变换 $N = G^{-1} \cdot T$，使得$r$随机变量经$N$变换后符合$z$的分布特征。</p>
+<script type="math/tex; mode=display">z = G^{-1}(s) = G^{-1}(T(r)) = N(r)</script><p>由此，我们找到了某值域内求从<strong>某一分布</strong>随机变量$r$变换到<strong>指定分布</strong>随机变量$z$的方法。</p>
+<h2 id="个人理解"><a href="#个人理解" class="headerlink" title="个人理解"></a>个人理解</h2><p>直方图均衡，均匀分布，实际上在中间做了桥接。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/973eccf1.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/b44049c5.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/b44049c5.html" itemprop="url">数字图像处理——直方图均衡</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-21T18:17:49+08:00">
+                2019-09-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数字图像处理/" itemprop="url" rel="index">
+                    <span itemprop="name">数字图像处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3,880
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  18
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><p>对于一张$8$位灰度图像，像素灰度值$r \in [0,256), r \in Z$，必然满足一特定的概率分布$p(x)$，直方图可理解为分块显示的概率密度函数。</p>
+<p>以下面几图为例（彩色图取 R 通道）</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/HistogramEqualization/output_6_0.png" alt="Sample0"></p>
+<p>(代码见附录)</p>
+<p>由图片可以看出来，图一小猫亮度高的地方更多，所以直方图上显示出在灰度级高端分布更密集，而图二的风景图相反，图三的阿童木则明显亮暗区分较为明显，所以在直方图上体现为两极化。</p>
+<p>在某些情况下，我们希望通过某种函数变换$s = T(r)$，使变换后的函数概率分布均匀化（或贴近均匀），这就是<strong>直方图均衡</strong></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/b44049c5.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/460fad29.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/460fad29.html" itemprop="url">数论学习——黄金分割率</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-17T07:46:43+08:00">
+                2019-09-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数学/" itemprop="url" rel="index">
+                    <span itemprop="name">数学</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数学/数论/" itemprop="url" rel="index">
+                    <span itemprop="name">数论</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  317
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>黄金分割是指将整体一分为二，较大部分与整体部分的比值等于较小部分与较大部分的比值，其比值<strong>约</strong>为 $0.618$。这个比例被公认为是最能引起美感的比例，因此被称为<strong>黄金分割</strong>。</p>
+<h1 id="传说"><a href="#传说" class="headerlink" title="传说"></a>传说</h1><p>在古希腊时期，有一天毕达哥拉斯走在街上，在经过铁匠铺前他听到铁匠打铁的声音非常好听，于是驻足倾听。他发现铁匠打铁节奏很有规律，这个声音的比例被毕达哥拉斯用数学的方式表达出来</p>
+<h1 id="数学公式"><a href="#数学公式" class="headerlink" title="数学公式"></a>数学公式</h1><h2 id="直接解"><a href="#直接解" class="headerlink" title="直接解"></a>直接解</h2><p>设$x$为黄金比，便有：</p>
+<script type="math/tex; mode=display">\frac{1}{x} = \frac{x}{1-x}</script><script type="math/tex; mode=display">x^2 = 1-x</script><script type="math/tex; mode=display">x^2 + x - 1 = 0</script><script type="math/tex; mode=display">x_1 = \frac{-1-\sqrt{5}}{2}(舍),x_2 = \frac{-1+\sqrt{5}}{2}</script><p>上述即为数值解，$0.618$只是一个近似，从数值表述易知该数为一个<strong>无理数</strong>，给出前 32 位是：<br>$0.6180339887 4989484820458683436565$</p>
+<h2 id="无穷连分数"><a href="#无穷连分数" class="headerlink" title="无穷连分数"></a>无穷连分数</h2><p>对刚才的数学公式做变形可以得到</p>
+<script type="math/tex; mode=display">x= \frac{1}{x+1}</script><script type="math/tex; mode=display">x = \frac{1}{ 1 + \frac{1}{x+1} }</script><script type="math/tex; mode=display">x = \frac{1}{ 1 + \frac{1}{ 1+ \frac{1}{x+1}}}</script><h2 id="数列逼近"><a href="#数列逼近" class="headerlink" title="数列逼近"></a>数列逼近</h2><p>经计算发现相邻两个斐波那契数的比值是随序号的增加而逐渐逼近黄金分割比。由于斐波那契数都是整数，两个整数相除之商是有理数，而黄金分割是无理数，所以只是不断逼近黄金分割。</p>
+<p>Python 验证:</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/e5459685.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/e5459685.html" itemprop="url">计算机图形学——OpenGL编程基础</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-10T08:04:00+08:00">
+                2019-09-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/计算机图形学/" itemprop="url" rel="index">
+                    <span itemprop="name">计算机图形学</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  209
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="什么是-OpenGL"><a href="#什么是-OpenGL" class="headerlink" title="什么是 OpenGL"></a>什么是 OpenGL</h1><p>一个图形学库，用来绘制，但是不负责 IO 输出，需要搭配 GLUT，GLUI，MFC，QT。</p>
+<p>除了 OpenGL 外，业界常用还有 DirectX，微软专用的一个图形学库。</p>
+<h1 id="编程环境配置"><a href="#编程环境配置" class="headerlink" title="编程环境配置"></a>编程环境配置</h1><p>图形库</p>
+<ul>
+<li>OpenGL<ul>
+<li>工业</li>
+</ul>
+</li>
+<li>GLUT</li>
+<li>GLUI</li>
+</ul>
+<h1 id="动态链接库-静态链接库的区别-查"><a href="#动态链接库-静态链接库的区别-查" class="headerlink" title="动态链接库/静态链接库的区别 查"></a>动态链接库/静态链接库的区别 查</h1><h1 id="向量"><a href="#向量" class="headerlink" title="向量"></a>向量</h1><h2 id="向量的代数表达"><a href="#向量的代数表达" class="headerlink" title="向量的代数表达"></a>向量的代数表达</h2><ul>
+<li>图形表示不方便</li>
+</ul>
+<h2 id="向量操作"><a href="#向量操作" class="headerlink" title="向量操作"></a>向量操作</h2><ul>
+<li>标量乘法</li>
+<li>点乘</li>
+<li>叉乘</li>
+</ul>
+<h1 id="坐标系统"><a href="#坐标系统" class="headerlink" title="坐标系统"></a>坐标系统</h1><ul>
+<li>在二维平面上，给定两个基向量，可以表示整个空间（基向量，空间由这两个向量张成）</li>
+</ul>
+<h1 id="给定一个二维的多边形，判断它是否是凸多边形"><a href="#给定一个二维的多边形，判断它是否是凸多边形" class="headerlink" title="给定一个二维的多边形，判断它是否是凸多边形"></a>给定一个二维的多边形，判断它是否是凸多边形</h1><p>凸包算法，逆时针遍历点，计算新向量与原向量的叉积，方向一致的应为凸多边形，方向改变的是凹多边形。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/ac8faa8e.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -549,728 +1305,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/2fd84083.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/2fd84083.html" itemprop="url">CCFADL105——智能计算系统课程</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-09T18:58:40+08:00">
-                2019-09-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  0
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/e4eb9281.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/e4eb9281.html" itemprop="url">CCFADL105——面向下一代计算的开源芯片与敏捷开发方法</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-09T18:57:54+08:00">
-                2019-09-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/讲座/" itemprop="url" rel="index">
-                    <span itemprop="name">讲座</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2,779
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  10
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="面向下一代计算的开源芯片与敏捷开发方法"><a href="#面向下一代计算的开源芯片与敏捷开发方法" class="headerlink" title="面向下一代计算的开源芯片与敏捷开发方法"></a>面向下一代计算的开源芯片与敏捷开发方法</h1><p>主讲人：包云岗老师（中科院计算所， 先进计算机系统研究中心）</p>
-<h1 id="Memory-Wall"><a href="#Memory-Wall" class="headerlink" title="Memory Wall"></a>Memory Wall</h1><h2 id="提出背景：System-Architecture"><a href="#提出背景：System-Architecture" class="headerlink" title="提出背景：System Architecture"></a>提出背景：System Architecture</h2><p>1995 年提出，成为体系结构研究的最重要问题之一</p>
-<ul>
-<li>多核处理器的流行</li>
-<li>延迟与带宽显得更为重要</li>
-</ul>
-<h2 id="应对思路"><a href="#应对思路" class="headerlink" title="应对思路"></a>应对思路</h2><ul>
-<li>工具模型：HMTT、C-MAT</li>
-<li>预取技术：Memory Hierarchy</li>
-<li>新型存储：3D Stack、HBM、NVM</li>
-<li>新架构： Process-in-Memory、Domain-Specific Architecture</li>
-</ul>
-<h2 id="HMTT-访存监控仪器"><a href="#HMTT-访存监控仪器" class="headerlink" title="HMTT 访存监控仪器"></a>HMTT 访存监控仪器</h2><p>包老师博士期间的工作，现在已经迭代了几个版本。</p>
-<ul>
-<li>需求<ul>
-<li>安捷伦等逻辑分析仪：<strong>无法检测</strong>到云计算环境下<strong>多应用混合</strong>后的数据通路中的应用访存行为（不具备对应用进行带语义的监控）</li>
-<li>提出<strong>软硬件协同</strong>监测新方法，研制<strong>HMTT 访存监控仪</strong></li>
-</ul>
-</li>
-<li>工作流程<ul>
-<li>物理地址追踪（Physical Address Trace）：作为硬件，不影响其性能，直插在内存槽获取其物理地址</li>
-<li>虚拟地址追踪（Virtual Address Trace）：转换成虚拟地址以了解进程相关的信息</li>
-<li>访问对象（Object Access Pattern）：通过对虚拟地址的再分析，与变量关联起来</li>
-</ul>
-</li>
-</ul>
-<p>工作示意图如下</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0007.jpg" alt="HMTT1"></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/e4eb9281.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/7d8289ba.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/7d8289ba.html" itemprop="url">CCFADL105——大数据场景下的持久性内存存储系统构建探讨</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-09T18:57:05+08:00">
-                2019-09-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/讲座/" itemprop="url" rel="index">
-                    <span itemprop="name">讲座</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  0
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/f82955ec.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/f82955ec.html" itemprop="url">CCFADL105——面向非易失性存储介质的文件系统设计、实现与形式化验证</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-09T18:55:55+08:00">
-                2019-09-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/讲座/" itemprop="url" rel="index">
-                    <span itemprop="name">讲座</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2,329
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  9
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="面向非易失性存储介质的文件系统设计、实现与形式化验证"><a href="#面向非易失性存储介质的文件系统设计、实现与形式化验证" class="headerlink" title="面向非易失性存储介质的文件系统设计、实现与形式化验证"></a>面向非易失性存储介质的文件系统设计、实现与形式化验证</h1><p>主讲人：陈海波老师（上海交通大学教授， IPAD 小组导师，华为鸿蒙系统研发）</p>
-<h1 id="Background：How-to-Climb-Up-the-Memory-Hierarchy"><a href="#Background：How-to-Climb-Up-the-Memory-Hierarchy" class="headerlink" title="Background：How to Climb Up the Memory Hierarchy"></a>Background：How to Climb Up the Memory Hierarchy</h1><p>Jim Gray 对于存储层次（Memory Hierarchy）演进的经典论断：<strong>Tape is Dead, Disk is Tape, Flash is Disk, RAM Locality is King.</strong></p>
-<p>JG 论断提出的背景是 06 年 SSD 刚刚出来，那么随着硬件技术的发展，JG 的论断也该有新的诠释。</p>
-<h1 id="Non-volatile-Memory-NVM-Revolution"><a href="#Non-volatile-Memory-NVM-Revolution" class="headerlink" title="Non-volatile Memory(NVM) Revolution"></a>Non-volatile Memory(NVM) Revolution</h1><h2 id="产品化元年"><a href="#产品化元年" class="headerlink" title="产品化元年"></a>产品化元年</h2><p>非易失性存储硬件的出现，Non-volatile Memory（NVM），带来的数据可持久化是颠覆性的改变。从体系结构的角度，CPU 内部整合内存虽然还没有实际上发生，但是今年发生的一件事是，放了许多年鸽子的 NVM Memory 终于产品化了，今年三月份 Intel 开始对外出售，中文名傲腾系列。<a href="https://zh.wikipedia.org/wiki/3D_XPoint" target="_blank" rel="noopener">3D XPoint 维基百科</a></p>
-<p>先前为了实现 Persistence（持久化），NVDIM 技术是附加电容，在断电时通过电容，将 RAM 的数据刷到硬盘中，从而达到持久化的效果。</p>
-<p>抉择：Performance vs. Persistence，以传统结构来说，选择 Performance，我们减少写回磁盘的次数，而主要在 RAM 上操作，但是这就面临掉电丢失数据的风险，难以持久化，而若选择 Persistence，频繁写入磁盘，则在 IO 上就要耗费更多的时间，效率降低。</p>
-<p>Intel Optane DC Persistent Memory 性能表现</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0006.jpg" alt="NVM1"></p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0007.jpg" alt="NVM2"></p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0008.jpg" alt="NVM3"></p>
-<p>在 NVM 产品化元年，真正的 Persistent Memory 到来时，如果针对其特性构建系统？</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/f82955ec.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/13/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/page/15/">15</a><span class="space">&hellip;</span><a class="page-number" href="/page/66/">66</a><a class="extend next" rel="next" href="/page/15/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/13/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/page/15/">15</a><span class="space">&hellip;</span><a class="page-number" href="/page/67/">67</a><a class="extend next" rel="next" href="/page/15/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1320,7 +1359,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">327</span>
+                  <span class="site-state-item-count">331</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1331,7 +1370,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-count">47</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -1342,7 +1381,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">176</span>
+                  <span class="site-state-item-count">180</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -1477,7 +1516,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">381.4k</span>
+    <span title="Site words total count">384.6k</span>
   
 </div>
 
