@@ -3,7 +3,7 @@
   <entry>
     <title><![CDATA[分布式系统学习——Hadoop安装与单机模式调试]]></title>
     <url>%2Fpost%2Fb894091d.html</url>
-    <content type="text"><![CDATA[系列文章主要记录自己在阿里云 ECS 配置安装 Hadoop，搭建伪分布式环境，学习 Hadoop、HDFS、Hbase 相关内容的过程。 系统安装采取什么方式安装 Hadoop实际上我们有很多方式来安装 Hadoop，比如通过 Cloudera 图形化界面（就像 Anaconda Navigator 那样），不过网上许多教程都是通过命令行形式进行安装的（包括 Apache 官方网站），鉴于以后要进行服务器管理，分布式搭建，我们也按照官网推荐的方式通过命令行安装 Hadoop。 建立 Hadoop 用户并配置免密钥 SSH 登录从安全角度触发，不要始终用 root 用户进行操作，我们一般会建立hadoop或者hduser等用户（日后很多时候网管也不会给你 root 权限）。 建立用户过程简述 12345678910111213141516$ user add -m hadoop# -m参数添加用户根目录$ passwd hadoop# 为hadoop用户设置密码$ chsh -s /bin/zsh hadoop# zsh为本人常使用shell 所以做一下更换# 接下来进行的是把hadoop添加到sudoers$ chmod u+w /etc/sudoers$ vim /etc/sudoers# 在里面增添 hadoop ALL=NOPASSWD:ALL$ chmod u-w /etc/sudoers# 测试$ su hadoop$ sudo whoami# 出现Root即ok 配置免密登录，检查/home/hadoop/.ssh 文件查看是否有公钥，没有的话通过ssh-gen进行生成。若可以直接免密登录本机ssh localhost则可以直接跳过本过程。 如果不行的话需要将公钥加入授权 1cat id_rsa.pub &gt;&gt; authorized_keys Hadoop 网页显示 Hadoop 节点存储节点为空看它的报错信息好像是节点没有启动，但是我的节点都启动起来了，使用 jps 也能查看到节点信息。使用 hadoop dfsadmin -report 命令查看磁盘使用情况，发现出现以下问题： 123456789101112131415161718Configured Capacity: 0 (0 B)Present Capacity: 0 (0 B)DFS Remaining: 0 (0 B)DFS Used: 0 (0 B)DFS Used%: 0.00%Replicated Blocks: Under replicated blocks: 0 Blocks with corrupt replicas: 0 Missing blocks: 0 Missing blocks (with replication factor 1): 0 Low redundancy blocks with highest priority to recover: 0 Pending deletion blocks: 0Erasure Coded Block Groups: Low redundancy block groups: 0 Block groups with corrupt internal blocks: 0 Missing block groups: 0 Low redundancy blocks with highest priority to recover: 0 Pending deletion blocks: 0 解决方法 停止集群（切换到/sbin 目录下） 1$ HADOOP_HOME/sbin/stop-all.sh 删除在 hdfs 中配置的 data 目录（即在 core-site.xml 中配置的 hadoop.tmp.dir 对应文件件）下面的所有数据 1$ rm -rf /home/hadoop/hdpdata/ 参考hdfs 默认数据存放路径，在 core-site.xml 没有编辑 data 存放路径时，默认存放到{hadoop.tmp.dir}:/tmp/hadoop-{user.name}。删除以后更换 tmp 数据存储位置。 3、重新格式化 namenode(切换到 hadoop 目录下的 bin 目录下) 1$ hadoop namenode -format 4、重新启动 hadoop 集群（切换到 hadoop 目录下的 sbin 目录下） 1$ $HADOOP_HOME/sbin/start-all.sh 单机测试流程 格式化 namenode 1$ hdfs namenode -format 启动 NameNode 的守护进程和 DataNode 的守护进程 1$ $HADOOP_HOME/sbin/start-dfs.sh 通过 Web 浏览，若配置不出问题，应为 https://ip地址:50070 建立 HDFS 的文件目录并启动 MapReduce 任务 12hdfs dfs -mkdir /userhdfs dfs -mkdir /user/&lt;username&gt; 根据自己的用户名填充，我的是user/hadoop 拷贝文件到分布式文件系统的 input 目录 12hdfs dfs -mkdir inputhdfs dfs -put etc/hadoop/*.xml input 如果出现节点未启动但是 jps 中进程存在的故障，注意查一下是不是上一点，然后再进行修复。 用一些样例程序进行测试 1234# 正则$ hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.2.1.jar grep input output_regex 'dfs[a-z.]+'# 或者 wordcount$ hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.2.1.jar wordcount input output_wordcount 计算完成后还需要通过 -get指令把文件从 HDFS 下载到本地。 最终结果见下图，证明测试成功。 完成全部任务后，停止进程 1$ sbin/stop-dfs.sh]]></content>
+    <content type="text"><![CDATA[系列文章主要记录自己在阿里云 ECS 配置安装 Hadoop，搭建伪分布式环境，学习 Hadoop、HDFS、Hbase 相关内容的过程。 系统安装采取什么方式安装 Hadoop实际上我们有很多方式来安装 Hadoop，比如通过 Cloudera 图形化界面（就像 Anaconda Navigator 那样），不过网上许多教程都是通过命令行形式进行安装的（包括 Apache 官方网站），鉴于以后要进行服务器管理，分布式搭建，我们也按照官网推荐的方式通过命令行安装 Hadoop。 建立 Hadoop 用户并配置免密钥 SSH 登录从安全角度触发，不要始终用 root 用户进行操作，我们一般会建立hadoop或者hduser等用户（日后很多时候网管也不会给你 root 权限）。 建立用户过程简述 12345678910111213141516$ user add -m hadoop# -m参数添加用户根目录$ passwd hadoop# 为hadoop用户设置密码$ chsh -s /bin/zsh hadoop# zsh为本人常使用shell 所以做一下更换# 接下来进行的是把hadoop添加到sudoers$ chmod u+w /etc/sudoers$ vim /etc/sudoers# 在里面增添 hadoop ALL=NOPASSWD:ALL$ chmod u-w /etc/sudoers# 测试$ su hadoop$ sudo whoami# 出现Root即ok 配置免密登录，检查/home/hadoop/.ssh 文件查看是否有公钥，没有的话通过ssh-gen进行生成。若可以直接免密登录本机ssh localhost则可以直接跳过本过程。 如果不行的话需要将公钥加入授权 1cat id_rsa.pub &gt;&gt; authorized_keys Hadoop 节点存储节点为空看它的报错信息好像是节点没有启动，但是我的节点都启动起来了，使用 jps 也能查看到节点信息。使用 hadoop dfsadmin -report 命令查看磁盘使用情况，发现出现以下问题： 123456789101112131415161718Configured Capacity: 0 (0 B)Present Capacity: 0 (0 B)DFS Remaining: 0 (0 B)DFS Used: 0 (0 B)DFS Used%: 0.00%Replicated Blocks: Under replicated blocks: 0 Blocks with corrupt replicas: 0 Missing blocks: 0 Missing blocks (with replication factor 1): 0 Low redundancy blocks with highest priority to recover: 0 Pending deletion blocks: 0Erasure Coded Block Groups: Low redundancy block groups: 0 Block groups with corrupt internal blocks: 0 Missing block groups: 0 Low redundancy blocks with highest priority to recover: 0 Pending deletion blocks: 0 解决方法 停止集群（切换到/sbin 目录下） 1$ HADOOP_HOME/sbin/stop-all.sh 删除在 hdfs 中配置的 data 目录（即在 core-site.xml 中配置的 hadoop.tmp.dir 对应文件件）下面的所有数据 1$ rm -rf /home/hadoop/hdpdata/ 参考hdfs 默认数据存放路径，在 core-site.xml 没有编辑 data 存放路径时，默认存放到{hadoop.tmp.dir}:/tmp/hadoop-{user.name}。删除以后更换 tmp 数据存储位置。 3、重新格式化 namenode(切换到 hadoop 目录下的 bin 目录下)hadoop namenode -format 4、重新启动 hadoop 集群（切换到 hadoop 目录下的 sbin 目录下）$HADOOP_HOME/sbin/start-all.sh 单机测试流程 格式化 namenode 1$ hdfs namenode -format 启动 NameNode 的守护进程和 DataNode 的守护进程 1$ $HADOOP_HOME/sbin/start-dfs.sh 通过 Web 浏览，若配置不出问题，应为 https://ip地址:50070 建立 HDFS 的文件目录并启动 MapReduce 任务 12hdfs dfs -mkdir /userhdfs dfs -mkdir /user/&lt;username&gt; 根据自己的用户名填充，我的是user/hadoop 拷贝文件到分布式文件系统的 input 目录 12hdfs dfs -mkdir inputhdfs dfs -put etc/hadoop/*.xml input 如果出现节点未启动但是 jps 中进程存在的故障，注意查一下是不是上一点，然后再进行修复。 用一些样例程序进行测试 1234# 正则$ hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.2.1.jar grep input output_regex 'dfs[a-z.]+'# 或者 wordcount$ hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.2.1.jar wordcount input output_wordcount 计算完成后还需要通过 -get指令把文件从 HDFS 下载到本地。 最终结果见下图，证明测试成功。 完成全部任务后，停止进程 1$ $HADOOP_HOME/sbin/stop-dfs.sh Hadoop Web 配置 bug启动后无法 list 文件系统原因是 WebHDFS 没有完全启动，由于 Aliyun 防火墙的原因，需要自己开放 50070 与 50075 端口。 访问 namenode 的 hdfs 使用 50070 端口，访问 datanode 的 webhdfs 使用 50075 端口。访问文件、文件夹信息使用 namenode 的 IP 和 50070 端口，访问文件内容或者进行打开、上传、修改、下载等操作使用 datanode 的 IP 和 50075 端口。要想不区分端口，直接使用 namenode 的 IP 和端口进行所有的 webhdfs 操作，就需要在所有的 datanode 上都设置 hefs-site.xml 中的 dfs.webhdfs.enabled 为 true。 装了 jdk11 的锅 Hadoop/HDFS 3.1.1 (on Java 11) Web UI crash when loading the file explorer? [duplicate] Java 9 deprecated the java.activation module. Java 11 removed it completely. Java 9 and Java 10 users could add the module back on Hadoop’s classpath. Put this in $HADOOP_CONF_DIR/hadoop-env.sh(not tested): export HADOOP_OPTS=”${HADOOP_OPTS} —add-modules java.activation “Java 11 users must first download the jar dependency and make it available on the classpath. But were does it go? I found that putting the jar in any one of these locations will make Hadoop automagically pick it up with the effect that the online file explorer start working: 1234$HADOOP_HOME/share/hadoop/common$HADOOP_HOME/share/hadoop/common/lib$HADOOP_HOME/share/hadoop/mapreduce$HADOOP_HOME/share/hadoop/mapreduce/lib Not sure what exactly the consequences are putting the file in one or the other folder. But, I like to confine my hacks as much as possible and since I already have a separate configuration directory (i.e., not $HADOOP_HOME/etc/hadoop) I’d like to put it there. Having the jar file in any other location also requires of us to add this path to the HADOOP_CLASSPATH variable. So, copy-paste into your terminal: 123URL=https://jcenter.bintray.com/javax/activation/javax.activation-api/1.2.0/javax.activation-api-1.2.0.jarwget $URL -P $HADOOP_CONF_DIR/libecho 'export HADOOP_CLASSPATH+=" $HADOOP_CONF_DIR/lib/*.jar"' &gt;&gt; $HADOOP_CONF_DIR/hadoop-env.sh As a final note, I think it’s safe to say that one can not expect Hadoop to work well on anything but really old Java versions. Googling reveals that still open tickets exist for Java 9, 10 and 11. So essentially, this is a Hadoop problem. Having that said, although we solved one problem of getting the online file explorer to work, there will for sure be many other issues down the line. Browse Directory 但是无法上传下载文件上个问题解决完成，尝试上传/下载文件， 实际上是服务器端与客户端 ip 地址与名称映射的问题 审查 WebUI，发现数据节点 Datanod 的地址是localhost开头而非以主机名nn01开头。修改服务器端 hosts 文件。 修改主机端 hosts 文件，添加 nn01与其 ip 地址的映射。 但是修改完成 hosts 文件，50070 端口都不能访问了，哭了。 查阅资料 这个问题花费了我将近两天的时间，经过多次试错和尝试，现在想分享给大家来解决此问题避免大家入坑，以前都是在局域网上搭建的 hadoop 集群，并且是局域网访问的，没遇见此问题。 因为阿里云上搭建的 hadoop 集群，需要配置映射集群经过内网访问，也就是局域网的 ip 地址。如果配置为公网 IP 地址，就会出现集群启动不了，namenode 和 secondarynamenode 启动不了，如果将主机的映射文件配置为内网 IP 集群就可以正常启动了。但通过 eclipse 开发工具访问 会出错，显示了阿里云内网的 ip 地址来访问 datanode，这肯定访问不了啊，这问题真实醉了，就这样想了找了好久一致没有思路。最终发现需要在 hdfs-site.xml 中修改配置项dfs.client.use.datanode.hostname设置为 true，就是说客户端访问 datanode 的时候是通过主机域名访问，就不会出现通过内网 IP 来访问了 上面这个也不管用 在 vi /etc/hosts 里面配置公网和内网的 ip 内网 IP 地址 你的 hostname公网 IP 地址 别的 hostname 但是对于单机/伪分布式 Hadoop 搭建，怎么解决，没有找到方法。 换用阿里云内网 ip 地址，可以在 WebUI 中浏览 HDFS 文件目录，并下载、预览内容（不能上传）。 伪分布式配置 ClusterID 不匹配导致 DataNode 无法启动hadoop 的升级功能需要 data-node 在它的版本文件里存储一个永久性的 clusterID，当 datanode 启动时会检查并匹配 namenode 的版本文件里的 clusterID，如果两者不匹配，就会出现”Incompatible clusterIDs”的异常。 每次格式化 namenode 都会生成一个新的 clusterID, 如果只格式化了 namenode，没有格式化此 datanode， 就会出现”java.io.IOException: Incompatible namespaceIDs“异常。 伪分布式运行时提示类缺失执行hadoop classpath，copy 到yarn-site.xml配置文件yarn.capplication.clathpath字段]]></content>
       <categories>
         <category>系统</category>
         <category>分布式系统</category>
@@ -3788,8 +3788,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>2018暑假集训</tag>
         <tag>二分</tag>
+        <tag>2018暑假集训</tag>
         <tag>POJ</tag>
       </tags>
   </entry>
@@ -3820,8 +3820,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>2018暑假集训</tag>
         <tag>二分</tag>
+        <tag>2018暑假集训</tag>
         <tag>水题</tag>
         <tag>CodeForces</tag>
       </tags>
@@ -3837,8 +3837,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>2018暑假集训</tag>
         <tag>二分</tag>
+        <tag>2018暑假集训</tag>
         <tag>CodeForces</tag>
       </tags>
   </entry>
@@ -3939,8 +3939,8 @@
         <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
-        <tag>2017HDU多校</tag>
         <tag>规律</tag>
+        <tag>2017HDU多校</tag>
       </tags>
   </entry>
   <entry>
@@ -4487,8 +4487,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>BFS</tag>
         <tag>2018寒假集训</tag>
+        <tag>BFS</tag>
         <tag>HDU</tag>
       </tags>
   </entry>
@@ -4503,8 +4503,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>BFS</tag>
         <tag>2018寒假集训</tag>
+        <tag>BFS</tag>
         <tag>补图</tag>
         <tag>素数筛</tag>
       </tags>
@@ -4520,8 +4520,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>BFS</tag>
         <tag>2018寒假集训</tag>
+        <tag>BFS</tag>
         <tag>CodeForces</tag>
       </tags>
   </entry>
@@ -4536,8 +4536,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>BFS</tag>
         <tag>2018寒假集训</tag>
+        <tag>BFS</tag>
         <tag>ZOJ</tag>
       </tags>
   </entry>
@@ -4552,8 +4552,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>Greedy</tag>
         <tag>2018寒假集训</tag>
+        <tag>Greedy</tag>
         <tag>CodeForces</tag>
         <tag>字符串</tag>
       </tags>
@@ -4570,8 +4570,8 @@
         <tag>ACM</tag>
         <tag>算法</tag>
         <tag>2018寒假集训</tag>
-        <tag>HDU</tag>
         <tag>STL</tag>
+        <tag>HDU</tag>
       </tags>
   </entry>
   <entry>
@@ -4585,8 +4585,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>Imitation</tag>
         <tag>2018寒假集训</tag>
+        <tag>Imitation</tag>
         <tag>Graph</tag>
         <tag>POJ</tag>
       </tags>
@@ -4602,8 +4602,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>Greedy</tag>
         <tag>2018寒假集训</tag>
+        <tag>Greedy</tag>
         <tag>POJ</tag>
       </tags>
   </entry>
@@ -4618,8 +4618,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>Imitation</tag>
         <tag>2018寒假集训</tag>
+        <tag>Imitation</tag>
         <tag>CodeForces</tag>
         <tag>Graph</tag>
       </tags>
@@ -4637,8 +4637,8 @@
         <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>补图</tag>
-        <tag>HDU</tag>
         <tag>STL</tag>
+        <tag>HDU</tag>
       </tags>
   </entry>
   <entry>
