@@ -364,6 +364,257 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/eba34497.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/eba34497.html" itemprop="url">分布式系统学习——阶段性总结1</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-03T12:25:28+08:00">
+                2019-09-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/" itemprop="url" rel="index">
+                    <span itemprop="name">操作系统</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/分布式系统/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,005
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="感受"><a href="#感受" class="headerlink" title="感受"></a>感受</h1><p>主要回顾分布式学习前两篇 Paper 阅读感受。</p>
+<h1 id="Paper1——Time-Clocks-and-the-Ordering-of-Events-in-a-Distributed-System"><a href="#Paper1——Time-Clocks-and-the-Ordering-of-Events-in-a-Distributed-System" class="headerlink" title="Paper1——Time, Clocks, and the Ordering of Events in a Distributed System"></a>Paper1——Time, Clocks, and the Ordering of Events in a Distributed System</h1><p>回忆梳理关键词：<strong>Happen Before 关系</strong>、<strong>偏序全序（局部序全局序）</strong>、<strong>逻辑时钟</strong>、<strong>物理时钟</strong>。</p>
+<h2 id="主体内容总结"><a href="#主体内容总结" class="headerlink" title="主体内容总结"></a>主体内容总结</h2><p>本文以分布式中系统中涉及时间概念的一个很困惑的问题作为引子—<br>—在分布式系统的架构中，当消息传输的时间不可忽略（如同广义相对论中时间的相对性），我们该如何定义分布式系统中时间发生的<strong>顺序</strong>，Lamport 向读者介绍了以下内容。</p>
+<ul>
+<li>分布式系统中事件发生先后的概念（happen before）。</li>
+<li>基于 happen before 的逻辑时钟（偏序/局部）</li>
+<li>逻辑时钟在给定条件后的全局化（全局序），并给出了一个基于全局序的<strong>解决资源争夺问题</strong>方法。</li>
+<li>物理时钟及其他相关问题</li>
+</ul>
+<h3 id="Happen-Before"><a href="#Happen-Before" class="headerlink" title="Happen Before"></a>Happen Before</h3><p>这一段主要是用了离散数学里学到的关系，线序、偏序、全序的概念。</p>
+<p>Lamport 不依赖物理时钟定义了事件 happen before（后面简写为 HB）的关系，基于以下的设想：</p>
+<ul>
+<li>分布的各进程内的事件是线序，在先发生的对在后发生的具备 HB 关系</li>
+<li>跨进程（进程间消息通信作为收/发两个事件）的事件，发出对接收有 HB 关系。</li>
+</ul>
+<p>根据实际情况我们很容易总结出来，HB 关系应该是<strong>反自反、反对称、传递</strong>的。</p>
+<p>整个分布式系统由于消息的通信构成一个从系统 start 开始的偏序集合。</p>
+<h3 id="Logical-Clocks"><a href="#Logical-Clocks" class="headerlink" title="Logical Clocks"></a>Logical Clocks</h3><p>基于 HB 关系，Lamport 给出了一个给事件赋值的函数（逻辑时钟）及其计算方法，先后可通过函数值（逻辑时钟值）大小反映出来（<strong>但反过来不行</strong>）。</p>
+<p>分布式算法概括：</p>
+<ol>
+<li>每个 Process 对本进程的线序事件，计数值递增。</li>
+<li>每个 Process 的事件发送消息时，附带时间戳。</li>
+<li>每个 Process 接受到其他事件的消息时（HB 关系箭头的弧头），更新其计数器值为消息时间戳和本地计数器值 Max（+1）。</li>
+</ol>
+<h3 id="Order-Totally"><a href="#Order-Totally" class="headerlink" title="Order Totally"></a>Order Totally</h3><p>将偏序全局化，需要人工定义一个 Process 的优先值（Process 顺序）。</p>
+<p>人工定义的 Process 顺序不同会导致全序的不同，所以对于一个确定的（消息发送等确定）分布式系统，<strong>偏序集是确定的（唯一的），而全局序是不唯一的</strong>。</p>
+<p>托这个全局序（全局的时间戳值）的福，Lamport 给出了一个解决单资源互斥问题的分布式算法。</p>
+<p>算法细节及证明见翻译 doc，直观理解，没有这个全局序我们就不能依靠全局序的时间戳来比较从而进行对应操作。</p>
+<h3 id="Physical-Clocks"><a href="#Physical-Clocks" class="headerlink" title="Physical Clocks"></a>Physical Clocks</h3><p>对于异常情况：存在外部的限制要求。Lamport 给出的解决方法。</p>
+<ol>
+<li>外部要求内部化</li>
+<li>引入实际物理时钟</li>
+</ol>
+<p>对物理时钟的要求是：增速逼近单位 1，以及分布式物理时钟的一致性（数学证明还没有看懂）。</p>
+<h2 id="读完感受"><a href="#读完感受" class="headerlink" title="读完感受"></a>读完感受</h2><p>虽然是 1970+的文章了，但是分布式的核心问题（我以为的）已然提及，Lamport 对分布式中事件顺序的认识像极了相对论世界中事件/时间的观点，着实让我 get 了分布式不同于我现在所用所看所学的单机系统最大的不同。</p>
+<p>对于问题解决的思路也是极为清晰，从关系的定义，到不依赖实际时间的逻辑大小、到全局化、再到实际时钟，结合实际问题的分布式算法，可以从最初的构想到最终的实现有一个流水线似的认识。</p>
+<p>自己最喜欢的离散数学也在这里面发挥了很大的作用，见识到了数学——这种基础学科作为科学发展地基般的作用，我反复读了四到五遍文章，也看了 Lamport 本人对他自己这篇文章的评价和网络上其他人的评价，对于文章中可推的公式和可证明的地方都尝试自己推导了一下，着实让人着迷，作为自己尝试科研的启蒙文章，真的非常开心。</p>
+<h1 id="Paper2——Implementing-Fault-Tolerant-Services-Using-the-State-Machine-Approach-A-Tutorial"><a href="#Paper2——Implementing-Fault-Tolerant-Services-Using-the-State-Machine-Approach-A-Tutorial" class="headerlink" title="Paper2——Implementing Fault-Tolerant Services Using the State Machine Approach: A Tutorial"></a>Paper2——Implementing Fault-Tolerant Services Using the State Machine Approach: A Tutorial</h1><p>回忆梳理关键词：<strong>状态机</strong>，<strong>容错（Fault Tolerance）</strong>、<strong>两种故障</strong></p>
+<h2 id="主体内容总结-1"><a href="#主体内容总结-1" class="headerlink" title="主体内容总结"></a>主体内容总结</h2><p>看论文标题就知道，是一篇“Tutorial”，讲了用状态机模型来达到容错服务。</p>
+<p>包括后面所看到的 GFS，自己学习的 LVM，都存在这样的问题：<strong>出错、出错、出错</strong>，由多台分布式机器构成的系统中难免会碰到这样那样的错误，防止出错此时显得太过较真，采用合适的策略（状态机、备份、心跳线热启动等）将出错导致的系统整体性能下降掩盖过去，达到高可用、用户层透明才是更“分布式”的思考方式。</p>
+<h3 id="State-Machine"><a href="#State-Machine" class="headerlink" title="State Machine"></a>State Machine</h3><p>接触了算法中涉及的自动机（AC 自动机、后缀自动机）以及编译原理中的自动机（DFA，PDA），对于状态机的概念已经比较熟悉了，这里用文章中的定义再从另一个角度强调一下：<strong>状态机的输出完全由它处理的请求序列决定</strong>。</p>
+<h3 id="Fault-Tolerance"><a href="#Fault-Tolerance" class="headerlink" title="Fault Tolerance"></a>Fault Tolerance</h3><p>两种计算机系统中常见错误：</p>
+<ul>
+<li>Byzantine Failures（拜占庭故障）：该组件可能表现出任意和恶意的行为，可能涉及与其他故障组件的勾结（个人理解是会反馈假结果，无法有效监测且可能影响周围组件）</li>
+<li>Fail-stop Failures. （异常终止错误）：允许其他组件检测到错误并停止。</li>
+</ul>
+<p>考虑最坏情况下的 t tolerance</p>
+<p>拜占庭故障所需组件数：2t+1（保证多数）<br>异常终止所需组件数：t+1（保证存在一个返回正确结果即可）</p>
+<p>某些特殊条件下还可以弱化条件。</p>
+<p>实现的条件是保证备份（副本）的协调（Replica Coordination）：所有备份（副本）都可以接收到且接收到顺序相同的请求序列。</p>
+<p>拆分成两个子要求：</p>
+<ol>
+<li>Agreement：每个非故障状态机都会接收到每个请求。</li>
+<li>Order：每个非故障状态机都会以相同的顺序处理这些请求。</li>
+</ol>
+<p>文章后续解释了个子要求的实现方式。</p>
+<p>Agreement: 通过设置 transmitter 来使所有非故障状态机达到相同值。</p>
+<h3 id="Order"><a href="#Order" class="headerlink" title="Order"></a>Order</h3><p>Order 条件极其稳定性测试，稳定的请求可以传递给后面的状态机副本。个人对稳定的理解：具备相对优先顺序、不会改变、可被执行。</p>
+<p>文章介绍了几种实现方法：</p>
+<ul>
+<li>使用逻辑时钟（Lamport 的方法）赋值</li>
+<li>同步的物理时钟方法</li>
+</ul>
+<p>对应的稳定性检测在文章翻译部分分析过了，逻辑时钟是基于 FIFO 假设以及错误信息告知假设，使得当收到其他机器发来了更晚时间戳请求时，则先前的请求就是稳定的。而物理时钟是满足在$\tau - \delta$时间之前的即为稳定的。</p>
+<h2 id="读完感受-1"><a href="#读完感受-1" class="headerlink" title="读完感受"></a>读完感受</h2><p>应用了上一篇 Lamport 的时钟来解决 Order 的问题，感觉思路上是联通的。</p>
+<p>状态机模型的应用有点感觉是执行状态的重复（但是说实话没有找到确切的状态描述，可能是论文看的还不够仔细）。</p>
+<p>重新认识了两种类型，然后突然发现拜占庭问题还是 Lamport 等人最先提出来的，我想有机会去了解一下原论文，毕竟这个问题在网络/安全/系统中出现多次了。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/ce543259.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1155,204 +1406,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/7c86d8e8.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/7c86d8e8.html" itemprop="url">分布式系统学习——GFS谷歌文件系统Paper翻译</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-25T23:32:28+08:00">
-                2019-08-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作系统/" itemprop="url" rel="index">
-                    <span itemprop="name">操作系统</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作系统/分布式系统/" itemprop="url" rel="index">
-                    <span itemprop="name">分布式系统</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  11,684
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  41
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="读书笔记——The-Google-File-System"><a href="#读书笔记——The-Google-File-System" class="headerlink" title="读书笔记——The Google File System"></a>读书笔记——The Google File System</h1><p><a href="https://www.cnblogs.com/finalboss1987/p/5169559.html" target="_blank" rel="noopener">参考翻译版本：Google File System 翻译（转）</a></p>
-<p>加粗和笔者注是重点关注的部分。</p>
-<h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>我们已经设计和实现了 Google File System，一个适用于大规模分布式数据处理相关应用的，可扩展的分布式文件系统。它基于普通的不算昂贵的硬件设备，<strong>实现了容错的设计，并且为大量客户端提供极高的整体处理性能</strong>。</p>
-<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>我们已经为 Google 迅速增长的数据处理需求而设计和实现了 Google File System(GFS)。GFS 和上一个分布式文件系统有着很多相同的设计目的，比如性能，扩展性，可靠性，以及可用性。不过，包括现在和未来预期下，它的设计是基于我们应用的工作量和技术环境驱动的，因而 GFS 都有一些和上一个版本明显不同的地方。这就要求我们重新审视传统的设计选择，并探索完全不同的设计要点。</p>
-<ul>
-<li>首先，<strong>节点失效将被看成是正常情况，而不再视为异常情况</strong>。整个文件系统包含了几百个或者几千个由廉价的普通机器组成的存储机器，而且这些机器是被与之匹配数量的客户端机器访问。这些节点的质量和数量都实际上都导致总会出现一些失效情况，并且某一部分机器并不会从当前失效中恢复回来。原因是多样的，比如程序的 bug，操作系统的 bug，人工操作 error，以及硬盘坏掉，内存，网络，插板的损坏，电源的坏掉等等。因此，<strong>持续监视，错误检测，容错处理，自动恢复</strong>必须集成到这个文件系统的设计中来。</li>
-<li>第二，<strong>大型数据文件的规模出现导致文件观念的改变</strong>。当我们通常操作迅速增长的，由很多 TB 组成的，包含数十亿对象的数据集，我们可不希望管理数十亿个 KB 大小的文件（无论文件系统是否有如此能理）。所以，设计约定和设计参数比如 I/O 操作以及 blocksize（块大小），都需要重新审查。</li>
-<li>第三，<strong>文件的改变常为追加（append）而非覆盖（overwrite），对一个文件的随机写操作（random write）实际上是几乎不存在的</strong>。当一旦写完，文件就是只读的，并且一般都是顺序读取。许多 data 都具备这样的特性：仅供应用扫描数据的超大数据库、应用不断产生的数据流、归档的数据、机器交互的中间数据生成和处理。对于这些巨型文件的访问模式来说，“追加（append）”是最重要的，所以我们首要在性能上优化并保证原子性操作的就是它，而缓存客户端中的数据块则失去吸引力（不是 GFS 重点关注的对象）。</li>
-<li>第四，结合应用与文件系统 API 一同设计对于增加整个系统的弹性有很大的好处。例如我们放宽 GFS 一致性模型后可以在避免给应用增加负担的同时简化文件系统。我们也引入了原子的追加（append）操作，这样可以让多个客户端并发对同一文件进行追加操作，而不需要额外的同步。这些在本论文的后边章节有描述。</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/7c86d8e8.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1407,7 +1460,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">331</span>
+                  <span class="site-state-item-count">332</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1564,7 +1617,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">385.7k</span>
+    <span title="Site words total count">386.4k</span>
   
 </div>
 
