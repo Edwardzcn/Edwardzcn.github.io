@@ -364,6 +364,213 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/401bef38.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/401bef38.html" itemprop="url">GroupReading——20200508-How-to-Copy-Files</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-08T14:30:05+08:00">
+                2020-05-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,696
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  10
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <!--->
+
+文章由 3step 模板生成
+三步法阅读文献笔记记录
+<---->
+<h1 id="Step-1"><a href="#Step-1" class="headerlink" title="Step 1"></a>Step 1</h1><h2 id="题目摘要引言"><a href="#题目摘要引言" class="headerlink" title="题目摘要引言"></a>题目摘要引言</h2><p><code>Copy-on-Write</code>写时拷贝技术，查阅资料发现，有两个应用运用<code>CoW</code>较为成功</p>
+<ol>
+<li><p>进程的写时拷贝技术（Linux）</p>
+<p>进行<code>fork()</code>时，操作系统不会拷贝父进程的“正文段”、“数据段”、“堆”、“栈”并分配物理块给子进程，而是为<strong>新生成的子进程创建虚拟空间结构，它们来复制于父进程的虚拟究竟结构，但是不为这些段分配物理内存，它们共享父进程的物理空间</strong>。当父进程有更改段的行为发生时（“Write”发生），再为子进程相应段分配物理空间。<a href="https://www.cnblogs.com/biyeymyhjob/archive/2012/07/20/2601655.html" target="_blank" rel="noopener">原文</a>博主援引 LKD《Linux Kernel Development》：</p>
+<blockquote>
+<p>传统的 fork()系统调用直接把所有的资源复制给新创建的进程。这种实现过于简单并且效率低下，因为它拷贝的数据也许并不共享，更糟的情况是，如果新进程打算立即执行一个新的映像，那么所有的拷贝都将前功尽弃。Linux 的 fork()使用写时拷贝（copy-on-write）页实现。写时拷贝是一种可以推迟甚至免除拷贝数据的技术。内核此时并不复制整个进程地址空间，而是让父进程和子进程共享同一个拷贝。只有在需要写入的时候，数据才会被复制，从而使各个进程拥有各自的拷贝。也就是说，资源的复制只有在需要写入的时候才进行，在此之前，只是以只读方式共享。这种技术使地址空间上的页的拷贝被推迟到实际发生写入的时候。在页根本不会被写入的情况下—举例来说，fork()后立即调用 exec()—它们就无需复制了。fork()的实际开销就是复制父进程的页表以及给子进程创建惟一的进程描述符。在一般情况下，进程创建后都会马上运行一个可执行的文件，这种优化可以避免拷贝大量根本就不会被使用的数据（地址空间里常常包含数十兆的数据）。由于 Unix 强调进程快速执行的能力，所以这个优化是很重要的。这里补充一点：Linux COW 与 exec 没有必然联系</p>
+</blockquote>
+</li>
+<li><p>文件系统的写时拷贝技术</p>
+<p>Copy-on-write 在对数据进行修改的时候，不会直接在原来的数据位置上进行操作，而是重新找个位置修改，这样的好处其一是一旦系统突然断电，重启之后不需要做 Fsck。好处就是能保证数据的完整性，掉电的话容易恢复。再者就是和本文内容相关，Cow 常常也作为减少文件物理复制的优化手段。比如很多逻辑卷 manager 支持 block-level 的 Cow 快照。一些文件系统直接支持 Cow 文件或目录。</p>
+</li>
+</ol>
+<h2 id="基本理论概况"><a href="#基本理论概况" class="headerlink" title="基本理论概况"></a>基本理论概况</h2><p>write-optimization 来实现 Copy（复制）与 Write（写）的分离。</p>
+<p>没有出现数学公式，图示过程后是复杂度分析。</p>
+<h2 id="结论部分"><a href="#结论部分" class="headerlink" title="结论部分"></a>结论部分</h2><!--->确定作者的成过以及点出的经验、问题、改进方式。<--->
+<p>文章展示了如何利用写优化来实现<strong>Decouple writes from copies</strong>，并实现<code>nimble performance</code>的性质。且这种优化不干扰非相关操作的性能。如在 LXC container 体现出 3-4 倍的拷贝性能提升。</p>
+<p>推广：数据结构批量更新。不仅能够应用于文件系统，还可用在数据库等，比如（在 B-DAG 的实现可用于 KV store）。</p>
+<h2 id="回答基本问题"><a href="#回答基本问题" class="headerlink" title="回答基本问题"></a>回答基本问题</h2><ol>
+<li><p>类别</p>
+<!-->这篇论文是什么类型？测试类？对现有系统进行分析的？对原型系统进行描述的？<--->
+<p>对现有系统的优化，提出一种新模式。</p>
+</li>
+<li><p>内容</p>
+<!-->你读过的其他论文有没有与之相关的？相关性与区别最直接体现在哪里？文章中分析问题用的什么理论基础（通过瞥一眼数学概况与核心证明可以得到）。<!-->
+<p>暂无，文章中提到的 COW 技术没有学习过。</p>
+</li>
+<li><p>正确性</p>
+</li>
+</ol>
+<!-->结论是否看起来真实有效？<--->
+<ol>
+<li><p>创新点</p>
+<!-->论文的主要创新点是什么？总结提到的经验、问题和改进方法是什么？<--->
+<p>不同于传统的 COW 技术，通过写优化将 C 与 W 分开达到性能上的进一步提升。</p>
+</li>
+<li><p>清晰度</p>
+</li>
+</ol>
+<!-->这篇论文是否写的条理清晰<--->
+<h2 id="阅读选择"><a href="#阅读选择" class="headerlink" title="阅读选择"></a>阅读选择</h2><!-->
+
+1. 继续阅读：论文有价值担保，研究领域非常切合，对当前进行工作有极大帮助，圈内爆火文章
+2. 不继续阅读：论文不吸引自己，论文价值/正确性存疑，论文作者给出了不适当的假设。
+3. 库存保留并标记：当前不处于自己的研究领域，但不久的日后相关论文会有用。
+
+<--->
+<p>继续阅读</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/401bef38.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/b0d5859e.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -661,7 +868,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  810
+                  851
                 </span>
               
 
@@ -1066,7 +1273,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  362
+                  1,243
                 </span>
               
 
@@ -1082,7 +1289,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  1
+                  4
                 </span>
               
             </div>
@@ -1164,224 +1371,120 @@
 </li>
 </ol>
 <p>思考：单点登录（有状态服务器、无状服务器）</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/5824281a.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/5824281a.html" itemprop="url">分布式系统学习——动态调度与负载平衡</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-29T11:04:19+08:00">
-                2020-04-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作系统/" itemprop="url" rel="index">
-                    <span itemprop="name">操作系统</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作系统/分布式/" itemprop="url" rel="index">
-                    <span itemprop="name">分布式</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  744
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  3
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="动态调度"><a href="#动态调度" class="headerlink" title="动态调度"></a>动态调度</h2><p>集中 分散</p>
-<p>开环 不参考过去决策</p>
-<p>闭环 参考</p>
-<h2 id="负载平衡"><a href="#负载平衡" class="headerlink" title="负载平衡"></a>负载平衡</h2><ol>
-<li><p>负载（系统相关）举例：</p>
+<h2 id="文件服务体系结构"><a href="#文件服务体系结构" class="headerlink" title="文件服务体系结构"></a>文件服务体系结构</h2><h3 id="层次文件-XX"><a href="#层次文件-XX" class="headerlink" title="层次文件 XX"></a>层次文件 XX</h3><ol>
+<li>树形结构目录——目录树</li>
+<li>每个目录包含文件和其他可以从此目录访问的目录的名字</li>
+<li>可以使用路径名来访问任一文件或目录<ol>
+<li>NOTE： UNIX 文件系统不完全是树形的—一个文件可以在一个或多个目录中</li>
+</ol>
+</li>
+<li>目录图一说</li>
+</ol>
+<h3 id="目录图"><a href="#目录图" class="headerlink" title="目录图"></a>目录图</h3><p>目录的维护：目录树中目录位空时，才能删除指向该目录。</p>
+<h3 id="文件组"><a href="#文件组" class="headerlink" title="文件组"></a>文件组</h3><ul>
+<li>位于给定服务器上的文件集合</li>
+<li>一个服务器可以包含数个文件组</li>
+<li>与 UNIX 中的文件集系统，一个存储设备或者分区拥有的文件的集合类似</li>
+<li>分布式系统中</li>
+</ul>
+<h3 id="分布式文件系统中的命名方法"><a href="#分布式文件系统中的命名方法" class="headerlink" title="分布式文件系统中的命名方法"></a>分布式文件系统中的命名方法</h3><p>思考题</p>
+<p>讨论：</p>
 <ol>
-<li>CPU 队列的长度（进程数目）</li>
-<li>某时段 CPU 队列的平均长度</li>
-<li>可用内存的大小</li>
-<li>上下文切换的速率</li>
-<li>系统调用的速率</li>
+<li>把主机名和文件的本地名字结合起来给文件明明</li>
+<li>把远程文件目录附加到本地名字空间中</li>
+<li>把所有各部分文件系统全部集成组成单一的全局名字结构</li>
 </ol>
-<p>负载描述系统的负担状态</p>
-</li>
+<h3 id="名字的结构"><a href="#名字的结构" class="headerlink" title="名字的结构"></a>名字的结构</h3><ol>
+<li>绝对名字/相对名字</li>
+<li>单层（平面）地址/分层地址</li>
 </ol>
-<h3 id="负载平衡算法构成方式"><a href="#负载平衡算法构成方式" class="headerlink" title="负载平衡算法构成方式"></a>负载平衡算法构成方式</h3><ol>
-<li>选取发出者</li>
-<li><p>选取任务</p>
-<p>任务应该足够大，值得耗费额外的资源（转移操作）来处理它</p>
+<h2 id="查找与解析"><a href="#查找与解析" class="headerlink" title="查找与解析"></a>查找与解析</h2><p>迭代名称解析</p>
+<ul>
+<li>解析程序将完整名称（dir，name1，namek）发给 server0</li>
+<li>Server0</li>
+</ul>
+<p>连接：<a href="https://blog.csdn.net/lycb_gz/article/details/11720247" target="_blank" rel="noopener">例解 DNS 递归/迭代名称解析原理</a></p>
+<h1 id="同步机制"><a href="#同步机制" class="headerlink" title="同步机制"></a>同步机制</h1><p>DFS 锁机制例</p>
+<ul>
+<li>分布式锁机制：GFS、GPFS、Lustre</li>
+<li>租赁方式：NFS v4 提出，StorageTank 采用类似机制</li>
+<li>基于时间的机制：NFS v3 提出，SANergy 等采用</li>
+</ul>
+<h2 id="文件的远程访问方法"><a href="#文件的远程访问方法" class="headerlink" title="文件的远程访问方法"></a>文件的远程访问方法</h2><ul>
+<li>远程服务和缓存是实现客户进程对远程文件进行访问的两个互相补充的方法</li>
+<li>常规文件缓存-&gt;减少磁盘读写，而分布式缓存-&gt;减少网络通信量</li>
+<li>分布式文件系统中缓存方案设计<ul>
+<li>被缓存的数据的粒度</li>
+<li>客户缓存器的地点，即使用主存进行缓存，还是使用磁盘</li>
+<li>如何传播被缓存的副本的修改</li>
+<li>如何确定各个客户缓存中的数据是否一致</li>
+</ul>
 </li>
-<li><p>选出目标</p>
+</ul>
+<h2 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h2><h3 id="高速缓存"><a href="#高速缓存" class="headerlink" title="高速缓存"></a>高速缓存</h3><ul>
+<li>写直达</li>
+<li>写回</li>
+<li>关闭时写</li>
+<li>集中控制</li>
+</ul>
 <ol>
-<li>集中式：收取信息协调者分配</li>
-<li>非集中式：轮询（轮寻？）</li>
+<li><p>复制</p>
+<ol>
+<li>通过对每个文件的独立备份来增加系统的可靠性</li>
+<li>当一个文件服务器出现问题时，仍允许文件访问</li>
+<li>把工作量分配到多个服务器上</li>
+</ol>
+</li>
+<li><p>更新协议</p>
+<ol>
+<li>主拷贝复制</li>
+<li>表决（voting）</li>
 </ol>
 </li>
 </ol>
-<p>信息策略：决定系统中其他站点的状态信息如何收集信息的（懒惰 or 积极）</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/5824281a.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+<h1 id="分布式文件系统举例"><a href="#分布式文件系统举例" class="headerlink" title="分布式文件系统举例"></a>分布式文件系统举例</h1><ol>
+<li><p>NAS</p>
+</li>
+<li><p>VFS</p>
+<p>在定义网络文件系统 NFS 时创造的</p>
+</li>
+<li><p>AFS</p>
+</li>
+<li>Lusture</li>
+<li>GFS<ol>
+<li>继承理念，HDFS 开源</li>
+</ol>
+</li>
+<li>MogileFS</li>
+<li>Fast DFS</li>
+<li>Windows DFS</li>
+<li>Hadoop HDFS</li>
+<li>TFS<ol>
+<li>淘宝提供海量小文件存储系统</li>
+</ol>
+</li>
+</ol>
+<h1 id="分布式数据库系统"><a href="#分布式数据库系统" class="headerlink" title="分布式数据库系统"></a>分布式数据库系统</h1><p>什么是分布式数据库，分布在计算机网络上逻辑相互关联的</p>
+<p>DDBS，</p>
+<p>分布式</p>
+<p>数据特性，</p>
+<p>文件的操作，如何做索引，大数据排序。数据库的实现上还是经常用到了底层文件</p>
+<p>自己查！！！</p>
+<h2 id="分布式数据库系统的特点"><a href="#分布式数据库系统的特点" class="headerlink" title="分布式数据库系统的特点"></a>分布式数据库系统的特点</h2><p>集中和自治相结合</p>
+<ol>
+<li>适当增加数据冗余度<ol>
+<li>提高系统的可靠性、可用性</li>
+<li>提高系统性能</li>
+</ol>
+</li>
+<li>全局的一致性、可串行性<br>5.</li>
+</ol>
+<h2 id="分布式数据库系统的体系结构"><a href="#分布式数据库系统的体系结构" class="headerlink" title="分布式数据库系统的体系结构"></a>分布式数据库系统的体系结构</h2><p>数据分片</p>
+<p>分布透明性</p>
+<p>分布式数据库管理系统</p>
+<p>全局概念模式<br>   |<br>分片模式<br>   |<br>分布模式</p>
+
+          
         
       
     </div>
@@ -1469,7 +1572,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">332</span>
+                  <span class="site-state-item-count">333</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1491,7 +1594,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">181</span>
+                  <span class="site-state-item-count">182</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -1626,7 +1729,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">389.0k</span>
+    <span title="Site words total count">392.7k</span>
   
 </div>
 

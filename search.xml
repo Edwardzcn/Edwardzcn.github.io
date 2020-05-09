@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[GroupReading——20200508-How-to-Copy-Files]]></title>
+    <url>%2Fpost%2F401bef38.html</url>
+    <content type="text"><![CDATA[文章由 3step 模板生成 三步法阅读文献笔记记录 Step 1题目摘要引言Copy-on-Write写时拷贝技术，查阅资料发现，有两个应用运用CoW较为成功 进程的写时拷贝技术（Linux） 进行fork()时，操作系统不会拷贝父进程的“正文段”、“数据段”、“堆”、“栈”并分配物理块给子进程，而是为新生成的子进程创建虚拟空间结构，它们来复制于父进程的虚拟究竟结构，但是不为这些段分配物理内存，它们共享父进程的物理空间。当父进程有更改段的行为发生时（“Write”发生），再为子进程相应段分配物理空间。原文博主援引 LKD《Linux Kernel Development》： 传统的 fork()系统调用直接把所有的资源复制给新创建的进程。这种实现过于简单并且效率低下，因为它拷贝的数据也许并不共享，更糟的情况是，如果新进程打算立即执行一个新的映像，那么所有的拷贝都将前功尽弃。Linux 的 fork()使用写时拷贝（copy-on-write）页实现。写时拷贝是一种可以推迟甚至免除拷贝数据的技术。内核此时并不复制整个进程地址空间，而是让父进程和子进程共享同一个拷贝。只有在需要写入的时候，数据才会被复制，从而使各个进程拥有各自的拷贝。也就是说，资源的复制只有在需要写入的时候才进行，在此之前，只是以只读方式共享。这种技术使地址空间上的页的拷贝被推迟到实际发生写入的时候。在页根本不会被写入的情况下—举例来说，fork()后立即调用 exec()—它们就无需复制了。fork()的实际开销就是复制父进程的页表以及给子进程创建惟一的进程描述符。在一般情况下，进程创建后都会马上运行一个可执行的文件，这种优化可以避免拷贝大量根本就不会被使用的数据（地址空间里常常包含数十兆的数据）。由于 Unix 强调进程快速执行的能力，所以这个优化是很重要的。这里补充一点：Linux COW 与 exec 没有必然联系 文件系统的写时拷贝技术 Copy-on-write 在对数据进行修改的时候，不会直接在原来的数据位置上进行操作，而是重新找个位置修改，这样的好处其一是一旦系统突然断电，重启之后不需要做 Fsck。好处就是能保证数据的完整性，掉电的话容易恢复。再者就是和本文内容相关，Cow 常常也作为减少文件物理复制的优化手段。比如很多逻辑卷 manager 支持 block-level 的 Cow 快照。一些文件系统直接支持 Cow 文件或目录。 基本理论概况write-optimization 来实现 Copy（复制）与 Write（写）的分离。 没有出现数学公式，图示过程后是复杂度分析。 结论部分确定作者的成过以及点出的经验、问题、改进方式。 文章展示了如何利用写优化来实现Decouple writes from copies，并实现nimble performance的性质。且这种优化不干扰非相关操作的性能。如在 LXC container 体现出 3-4 倍的拷贝性能提升。 推广：数据结构批量更新。不仅能够应用于文件系统，还可用在数据库等，比如（在 B-DAG 的实现可用于 KV store）。 回答基本问题 类别 这篇论文是什么类型？测试类？对现有系统进行分析的？对原型系统进行描述的？ 对现有系统的优化，提出一种新模式。 内容 你读过的其他论文有没有与之相关的？相关性与区别最直接体现在哪里？文章中分析问题用的什么理论基础（通过瞥一眼数学概况与核心证明可以得到）。 暂无，文章中提到的 COW 技术没有学习过。 正确性 结论是否看起来真实有效？ 创新点 论文的主要创新点是什么？总结提到的经验、问题和改进方法是什么？ 不同于传统的 COW 技术，通过写优化将 C 与 W 分开达到性能上的进一步提升。 清晰度 这篇论文是否写的条理清晰 阅读选择 1. 继续阅读：论文有价值担保，研究领域非常切合，对当前进行工作有极大帮助，圈内爆火文章 2. 不继续阅读：论文不吸引自己，论文价值/正确性存疑，论文作者给出了不适当的假设。 3. 库存保留并标记：当前不处于自己的研究领域，但不久的日后相关论文会有用。 继续阅读 Step 2细读笔记要仔细阅读论文，但是诸如证明等信息要忽略掉 IntroductionCow 技术的核心调节参数是 Copy 的粒度： 粒度大 比如文件级 小改动的代价会被放大 会增大更新延时 相关的 Copy 会丧失 share 能力，可能造成大的空间浪费（如只有很小修改） 粒度小 更新很快但是碎片花 按序读代价变大 Nible clones: be fast to create have excellent read locality, so that logically related files can be read at near disk bandwidth, even after modifination. have fast writes, both the original and the clone conserve space（节省空间）, the write amplification and disk footprint are as small as possible, even after updates to the original or to the clone. 现有的 CoW 技术实现都不是 Nible 复制。 文章 Contribution（详细见第二页右下）: 提出一个逻辑复制 specifiction（说明？） nimble clone 必须满足的一组（性能）条件 实现了一个符合上述要求的文件系统设计 CAW（Copy-on-Abundant-Write）：应用于 BetrFS 0.5’s clone 实现，buffer 累计小的修改，直至衡量其维持 delta 的代价超过 copy，如此则重新复制。 BetrFS BackgroundB$^\epsilon$-treeBetrFS 由 KV-store 的数据结构（B$^{\epsilon}$-tree）来命名，同 B 树变体，B$^\epsilon$-tree 将 kv 对储存在叶子结点中， 关键特征：B$^\epsilon$-tree 的内部结点（interior nodes）缓冲了叶子内容将要发生的改变，名为 message。逐曾 flush message 直到达到叶子结点。 B$^\epsilon$-tree 在每个结点 log 更改，而向下的更新是按批次的，所以 IO 的节省空间遂批次增多而增大。 Range OperationBetrFS 对连续键值范围操作的优化，设计用来优化文件系统 namespace 的子树操作。 full-path keys 带来的遍历，读文件、搜索都是一个 range 操作（相同 prefix） 问题记录未读（且值得读）文献记录在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 [25]the log-structured merge-tree (lsm-tree) （太多相关内容都是基于 LSM-tree 的了，一定要补一下）。 Step 3试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。 思路复现推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ 证明与推理复现分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源 实验验证复现Rework 会议内容记录What is logical Copy? cp -r “Not changed” ln “will change” ln -s “will change” 硬软连接 cp --reflink 本文内容，逻辑拷贝 过程描述 改变之前两个文件指向相同的 Data Block 组，假设对 1 位进行改变，会使 Copy 一个新的 Data Block，产生两大问题： 一点修改就要改 Data Block 碎片化，把排排坐有序的 Data Block，变为无序访问了。 测试过程描述（图示） 写放大：每个 block（4KB）都做个小修改， 碎片导致时间开销：越碎片，时间越长？ 当前存在的问题物理 Copy、逻辑 Copy 的三个问题，其中还包含一个 Trade Off。 ContributionImplementation 什么是 BetrFS？ BetrFSL an in-kernel， local file system built on a KV-store substrate(B$^\epsilon$-tree) 特征：1. 更小的关键字 fewer pivots. 2. buffer B$^\epsilon$-tree左边 piviot b 树中的关键字，右边是 buffer Cloning Operation Semanticswrite amplification 对于 Trade Off，根据已知的 B$^\epsilon$-tree 数据结构的特征，在保证块很大的情况下，写也不慢（减小写放大影响）。 Postpone：树到 DAG，树的叶子节点是要保证唯一性的。 GOTO messagesGOTO messages： Prefix /b/0, goto /a。举例子，Docker 逻辑复制，通过 GOTO message 就可以占据一个名称空间，还用原来的物理空间，不扩。 A GOTO message maps: keyrange(a,b)-&gt;a node 把一个范围的 key 映射到一个 node。(The target node should be the Lowest-Common Ancestor(LCA)). 为什么是公共祖先，我个人理解，再下一层就不饿能保证下次对应相同的 data block。 由于加了边（Goto 指向边），变成了个有向无环图。 有向无环图带来的问题，直接指向的位置如果不是最新的（上一层有 buffer），则有过去更改没有刷下来。解决方案，加 Ref 标记，并强制上层路径 flush Handling Fringe NodesImplementation and OptimizationPreferential splitting 分割 leafnodes 的选择 11 Background cleaning BetrFS 的影响写放大和碎片控制都有效，克隆的 Latency 最低的。 结论：相比于剩下三个文件系统，达到的效果：Low space amplification, Low fragmentation, Low clone latency 通常的文件系统 顺序 IO 和随机 IO Li 老师点评Slides 比文章更好，可以再关注下。 Research，小而美的问题，比如这个，How to copy files。 大的Scope]]></content>
+      <tags>
+        <tag>三步法</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[文献学习方法——如何高效的阅读学术论文（简）]]></title>
     <url>%2Fpost%2Fb0d5859e.html</url>
     <content type="text"><![CDATA[引言阐述“三步法”在论文阅读和文献调研中的应用。 另：不要全篇翻译！不要全篇翻译！不要全篇翻译！ 三步法主要思想就是应该在三步内读完论文，而不是从开始“耕耘”到最后，每一步要基于之前的阅读完成一个明确的目标： 第一步要弄清一篇论法。 第二步要抓住论文的主要内容，但不是细节。 第三步要帮助你深度理解整篇论文。 第一步快速浏览整篇论文，大致了解，当文献阅读到达一定程度需要进行阅读筛选时，我们可以在这一步做出决定是否需要进一步阅读，当然对于初学者或者有“引路人”存在的情况下，文章价值有担保，所以可以大胆接受，进行进一步阅读。 第一步由以下几个小部分组成 认真阅读题目、摘要、引言 阅读标题和段落开头，除此之外一概不看 瞥一眼数学部分（如果有的话），以确定其基本理论概况 阅读结论部分，确定作者的成果以及点出的经验、问题、改进方式。 瞥一眼引用，找一下是否有自己读过的论文。 完成第一步后，应该能回答以下几个问题： 类别：这篇论文是什么类型？测试类？对现有系统进行分析的？对原型系统进行描述的？ 内容：你读过的其他论文有没有与之相关的？相关性与区别最直接体现在哪里？文章中分析问题用的什么理论基础（通过瞥一眼数学概况与核心证明可以得到）。 正确性：结论是否看起来真实有效？ 创新点：论文的主要创新点是什么？总结中提到的经验、问题和改进方法是什么？ 清晰度：这篇论文是否写的条理清晰？ 做出选择 继续阅读：论文有价值担保，研究领域非常切合，对当前进行工作有极大帮助，圈内爆火文章 不继续阅读：论文不吸引自己，论文价值/正确性存疑，论文作者给出了不适当的假设。 库存保留并标记：当前不处于自己的研究领域，但不久的日后相关论文会有用。 顺带提一下，当你写一篇论文时，你可以设想大部分的审稿人（或读者）只对你的论文使用第一步。小心地选择标题和子段落开头部分，摘要应该精确而且易理解。如果一个审稿人在第一步过后还不能理解你论文的主旨，那么很可能你的论文就不过关了。如果一个读者在五分钟内不能理解论文的突出部分，那么很可能以后这篇论文再也不会被捡起。正是由于这些原因，用一个“图示摘要”及一个精心选择的图形总结一篇论文是很棒的想法，以后会在科学杂志中越来越多。 第二步在第二步中，要仔细阅读论文，但是诸如证明等信息要忽略掉。在阅读时你应该草记下重点，或者在论文空白处写点标注。来自奥格斯堡（Augsburg）的 Dominik Grusemann 建议： “记录下那些你不懂的部分，或者那些你想问作者的问题”。 如果你是一名论文评审员，以上那些记录在你写评审意见时很有用，也可以在开论文研讨会时帮助你记录你当时的想法。 仔细论文中阅读图片、表格和其他说明。要特别注意图表：坐标轴标记是否合适？标示的结果是否有误差线？这类常见错误可以区分那些粗制滥造的论文和真正出色的论文。 为了进一步阅读相关论文，记得要标注相关的未读引用文献（这是进一步了解论文相关背景的好方法）。 第二步对于有经验的读者来说，应该需要一小时左右的时间。经过以上步骤，你应该就了解了论文的整体内容。此时你应该能把论文的主要思想和相关论据讲给其他人听了。对于你感兴趣的论文，读到这个程度就可以了，但是对于那些在你研究领域内的论文来时，还远远不够。 有些论文，你甚至可能在第二步结束的时候还不能理解。这有可能是因为论文中的主旨对你来说是全新的，论文里的术语和缩写词你都陌生，也可能是因为作者用了你不理解的论据和试验技术，所以导致论文中大部分的内容都不好理解。有些论文有可能写的很差，充斥着未经证实的断言和大量前向引用（forward references）。不过也可能你是在夜里很累的情况下阅读的，因此感觉不太好懂，如果是这样，你可以选择： 把论文放到一边，期望着在你走向事业成功的路上不需要理解它 在了解了相关背景知识后，过段时间再回头读，或者 坚持不懈继续阅读 第三步为了彻底理解一篇论文，尤其是当你是审稿人时，必须要走到第三步。第三部的核心思想是，试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。 这一步需要耗费你很多精力去细化，完成这一步，你就可以验证论文中的每一个假设是否真实。而且，同时要思考下，如果你是作者，会如何呈现并介绍自己的想法。这种虚拟和现实的对比，可以让你对论文中的论据和表达技巧有深刻的理解，当然就可以把这种表达技巧和论据“据为己有”。在完成第三步过程中，你应该时刻不忘记下对于未来研究工作的新想法。 这一步有可能需要耗费初学者很多小时，对于有经验的研究人员也要至少一两个小时。当完成这一步后，你应该可以在脑海中重现构造论文的整个架构，同时能确定论文中哪些是好的，哪些是一般的论点。特别地，你也应该能明确指出论文中不清晰的假设、漏掉引用的相关工作以及论文中试验和分析的手段潜在的缺点。 如何完成文献调研做文献调研就是考验你读论文技巧的时候了，调研工作有可能需要你阅读几十篇论文，同时也可能是你不熟悉的领域。什么样的论文值得一读？以下就是如何使用“三步法”帮你调研文献。 首先，使用学术搜索引擎例如 Google Scholar 或者 CiteSeer，并且精心选择搜索词，找出三到五篇领域中“最近最多被引用”的论文。对于以上搜到的论文，使用三步法中的第一步，可以使自己对于相关工作有点感觉，然后阅读它们的相关工作章节。你会对于最近的相关工作有缩略图似的总结，如果你足够幸运的话，有可能在以上相关工作中找到近期发表的调研论文。如果你能找到类似的调研论文，调研工作就完成了！认真阅读那篇调研文献，庆祝自己的运气吧。 不然，在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 第三步就是访问那些顶级会议的网站，查看一下他们最近的活动。快速扫描一眼就能找到最近的高质量相关论文，这些论文和上面提到暂时放到一边的论文，会对你文献调研工作的第一版本有所帮助。对于这些论文，使用“三步法”中的第二步，如果它们都引用了一篇重要文献，恰巧是你没有搜到的，果断下载并阅读。如果需要，重复以上工作。 相关工作如果你是为了审稿而读论文，Timothy Roscoe 的论文《Writing reviews for systems conferences》可以参考。如果你的计划是写一篇技术性论文，Henning Schulzrinne 的综合网页和 George Whitesides 的过程概述可以参考。最后，Simon Peyton Jones 有一个网页涵盖了所有实验技巧。 心理学领域的 Iain H. McLean 打包发布了一个可下载的“评审矩阵”，介绍了如何用“三步法”简化在实验心理学领域进行论文评审（你有可能用到），以及对于其他领域的论文如何使用“微调三步法”。 致谢本文第一版由我的学生 Hossein Falaki、 Earl Oliver 和 Sumair Ur Rahman 起草，感谢他们。同时感谢 Christophe Diot 犀利的评论和目光锐利的 Nicole Keshav 的校稿。 我想把这篇文章做成在线版，在我收到评论后就做出修改更新。如果您有任何评论或者改进建议，请给我发邮件。感谢诸多通讯员多年来的鼓舞人心的反馈。 引用文献[1]literature review matrix [2]s. peyton jones, \research skills [3]t. roscoe, \writing reviews for systems conferences [4]h. schulzrinne, \writing technical articles [5] G.M. Whitesides, \Whitesides’ Group: Writing a Paper]]></content>
@@ -14,7 +22,7 @@
   <entry>
     <title><![CDATA[密码技术学习——Keccak一轮破解论文整理]]></title>
     <url>%2Fpost%2Fe72dd1e0.html</url>
-    <content type="text"><![CDATA[概述文章给出一种对 Keccak-512 进行原像攻击的方法，该方法仅需要解 384 个线性方程组。该方法基于散列值和消息位之间方程的自由度？？（原文是：degree of freedom in threequations between hash values and message bits）。使用此方法，我们可以以恒定复杂度解位长度小于 1024 的消息对应的散列值。 Keccak 结构Pass 注意表示方法： row: 行，长度为 5，表示 yz 确定的沿 x 轴的 5 位块。 column: 列，长度 5，表示 xz 确定的沿 y 轴 5 位块。 lane: 道，长度 64，表示 xy 确定的沿 z 轴 64 位块。 一轮 Keccak 密码分析遵循对$\theta,\chi$的观察。5 位输入，5 位输出。 预先结论发现Observation 1在$\chi$运算中，对于已知密文序列，可以直接逆运算明文序列。 a_i = b_i \oplus (b_{i+1} \oplus 1) \cdot (b_{i+2} \oplus (b_{i+3} \oplus 1) \cdot b_{i+4})Observation 2在$\chi$运算中，任意非相邻三位置 bits 已知，所有输出可以写成输入的线性组合形式。 Observation 3对于$a_3=1$，可给出$a_0,a_1,a_2$的线性构造式，带入 Observation 1，正确。 Observation 4由$d_0,d_1,d_2,d_3,d_4$表示一个 column 上的四个数，那么$CP$值（parity of column，主要应用于$\theta$运算）可由$d_i$异或和表示。 主要跟$\theta$运算子有关。 简述攻击过程 关注哈希值前 8 lane 由于$\iota$运算实际参与的只有(0,0) lane，${\iota}^{-1}$只需要再跟 $RC$进行 $XOR$ 将上述结果进行$\chi^{-1}$运算（根据 Observation，逆运算为代数 3 次），记为状态$I$。 根据 Observation 对 message block 进行处理试图达到状态$I$。 根据限制条件列出线性方程，如果方程独立，可解。 单消息块原像攻击分析$d_i$含义改变这里首先要注意的是，$d_i[k]$与之前 Observation 4 中的$d_i$含义不一样！！ 这里$d_i[k]$表示的是$\theta$运算中$A[x][y][z]$要异或的整体部分，其中指代关系为$i \rightarrow x$，$k \rightarrow z$。（Observation 中$d_i$的$i$表示 column 中第几个）。我们再写一下公式（以英文文献中的符号为准）。 d_i[k] = CP[i-1][k] + CP[i+1][k-1] \tag{1}其中$CP$表示 column parity，公式表示为。 CP[x][z] = A[x][0][z] \oplus A[x][1][z] \oplus A[x][2][z] \oplus A[x][3][z] \oplus A[x][4][z]CP[x][z] = \sum_{j=0}^{j=4} A[x][j][z] \tag{2}而$\theta$运算实际为 \theta: A'[x][y][z] = A[x][y][z] \oplus \sum_{y'=0}^{y'=4} {A[x-1][y'][z]} \oplus \sum_{y'=0}^{y'=4} {A[x+1][y'][z-1]} \tag{3}将 2 式带入 3 式得到 \theta: A'[x][y][z] = A[x][y][z] \oplus CP[x-1][z] \oplus CP[x+1][z-1] \tag{4}将 1 式带入 4 式（改变一下 d 的表示）得到 \theta: A'[x][y][z] = A[x][y][z] \oplus d[x][z] \tag{5}显然，根据含义$d[x][z]$至于$x,z$有关，同 column 下不同位置对应的值相同，这就解释了为什么后文 Fig.3 Fig.4 等配图中同一列异或相同$d_i$，这里的$i$表示 x 轴的偏移距离。So，我们可以理解作者给出的运算结果表示，如下图。 单消息原像攻击可行性分析核心方程组略，见原文 3.3 节 结论，对于某些哈希值，仅用一个消息块不能获取所有可能的 Keccak-512 哈希值。 正式原像攻击$I$状态限制Dependence：增加限制条件，或者说，进行额外操作（necessary operations），要求逆过程$I = (\chi^{-1} \circ \iota^{-1}) ( H )$得到的$I$满足$lane (3,1)$ 与$lane(4,1)$保证全 $0$。 零和区分器后面几轮的方式 $\rho$运算的含义表示]]></content>
+    <content type="text"><![CDATA[概述文章给出一种对 Keccak-512 进行原像攻击的方法，该方法仅需要解 384 个线性方程组。该方法基于散列值和消息位之间方程的自由度？？（原文是：degree of freedom in threequations between hash values and message bits）。使用此方法，我们可以以恒定复杂度解位长度小于 1024 的消息对应的散列值。 Keccak 结构Pass 注意表示方法： row: 行，长度为 5，表示 yz 确定的沿 x 轴的 5 位块。 column: 列，长度 5，表示 xz 确定的沿 y 轴 5 位块。 lane: 道，长度 64，表示 xy 确定的沿 z 轴 64 位块。 一轮 Keccak 密码分析遵循对$\theta,\chi$的观察。5 位输入，5 位输出。 预先结论发现Observation 1在$\chi$运算中，对于已知密文序列，可以直接逆运算明文序列。 a_i = b_i \oplus (b_{i+1} \oplus 1) \cdot (b_{i+2} \oplus (b_{i+3} \oplus 1) \cdot b_{i+4})Observation 2在$\chi$运算中，任意非相邻三位置 bits 已知，所有输出可以写成输入的线性组合形式。 Observation 3对于$a_3=1$，可给出$a_0,a_1,a_2$的线性构造式，带入 Observation 1，正确。 Observation 4由$d_0,d_1,d_2,d_3,d_4$表示一个 column 上的四个数，那么$CP$值（parity of column，主要应用于$\theta$运算）可由$d_i$异或和表示。 主要跟$\theta$运算子有关。 简述攻击过程 关注哈希值前 8 lane 由于$\iota$运算实际参与的只有(0,0) lane，${\iota}^{-1}$只需要再跟 $RC$进行 $XOR$ 将上述结果进行$\chi^{-1}$运算（根据 Observation，逆运算为代数 3 次），记为状态$I$。 根据 Observation 对 message block 进行处理试图达到状态$I$。 根据限制条件列出线性方程，如果方程独立，可解。 单消息块原像攻击分析$d_i$含义改变这里首先要注意的是，$d_i[k]$与之前 Observation 4 中的$d_i$含义不一样！！ 这里$d_i[k]$表示的是$\theta$运算中$A[x][y][z]$要异或的整体部分，其中指代关系为$i \rightarrow x$，$k \rightarrow z$。（Observation 中$d_i$的$i$表示 column 中第几个）。我们再写一下公式（以英文文献中的符号为准）。 d_i[k] = CP[i-1][k] + CP[i+1][k-1] \tag{1}其中$CP$表示 column parity，公式表示为。 CP[x][z] = A[x][0][z] \oplus A[x][1][z] \oplus A[x][2][z] \oplus A[x][3][z] \oplus A[x][4][z]CP[x][z] = \sum_{j=0}^{j=4} A[x][j][z] \tag{2}而$\theta$运算实际为 \theta: A'[x][y][z] = A[x][y][z] \oplus \sum_{y'=0}^{y'=4} {A[x-1][y'][z]} \oplus \sum_{y'=0}^{y'=4} {A[x+1][y'][z-1]} \tag{3}将 2 式带入 3 式得到 \theta: A'[x][y][z] = A[x][y][z] \oplus CP[x-1][z] \oplus CP[x+1][z-1] \tag{4}将 1 式带入 4 式（改变一下 d 的表示）得到 \theta: A'[x][y][z] = A[x][y][z] \oplus d[x][z] \tag{5}显然，根据含义$d[x][z]$至于$x,z$有关，同 column 下不同位置对应的值相同，这就解释了为什么后文 Fig.3 Fig.4 等配图中同一列异或相同$d_i$，这里的$i$表示 x 轴的偏移距离。So，我们可以理解作者给出的运算结果表示，如下图。 单消息原像攻击可行性分析核心方程组略，见原文 3.3 节 结论，对于某些哈希值，仅用一个消息块不能获取所有可能的 Keccak-512 哈希值。 正式原像攻击存疑问题 Keccak-512 和 Keccak-256 挤出状态的区别。 $\theta$运算的限制，为什么$D = d_0,d_1,d_2,d_3,0,d_0,d_1,d_2,d_3$; padding 运算 $I$状态限制Dependence：增加限制条件，或者说，进行额外操作（necessary operations），要求逆过程$I = (\chi^{-1} \circ \iota^{-1}) ( H )$得到的$I$满足$lane (3,1)$ 与$lane(4,1)$保证全 $0$。 零和区分器后面几轮的方式 $\rho$运算的含义表示]]></content>
       <categories>
         <category>密码学</category>
       </categories>
@@ -38,7 +46,7 @@
   <entry>
     <title><![CDATA[分布式系统学习——分布式存储与文件系统]]></title>
     <url>%2Fpost%2Ffcfa77c8.html</url>
-    <content type="text"><![CDATA[NoSQL类型 列存储 Hbase、Cassandra、Hypertable 文档存储 MongoDB、CoutTree 调研： 什么是 NoSQL 生态圈 分布式存储系统的定义与实现问题 数据分布：分布均匀？跨服务器读写 一致性：如何复制多个数据副本并保证不同副本之间的一致性 容错 负载均衡 事务与并发控制 易用性 压缩/解压缩 分布式存储系统分类 分布式文件系统：存储 Blob 对象、定长块以及大文件 Facebook Haystack GFS Amazon EBS 分布式键值存储系统 调研学习：DAS、SAN、NAS 存储引擎 哈希存储引擎 哈希表的持久化实现 支持增删改和随机读取，不支持顺序扫描 对应键值存储系统 B 树存储引擎 B 树的持久化实现 支持增删读改，支持顺序扫描 对应关系数据库 LSM 树存储引擎 支持增删读改，支持顺序扫描 互联网后台存储系统 数据模型 文件模型 以目录树的形式组织文件 对象模型与文件模型类似 关系模型 键值模型 表格模型 支持插入删除更新读取扫描 不支持多表关联 思考：单点登录（有状态服务器、无状服务器）]]></content>
+    <content type="text"><![CDATA[NoSQL类型 列存储 Hbase、Cassandra、Hypertable 文档存储 MongoDB、CoutTree 调研： 什么是 NoSQL 生态圈 分布式存储系统的定义与实现问题 数据分布：分布均匀？跨服务器读写 一致性：如何复制多个数据副本并保证不同副本之间的一致性 容错 负载均衡 事务与并发控制 易用性 压缩/解压缩 分布式存储系统分类 分布式文件系统：存储 Blob 对象、定长块以及大文件 Facebook Haystack GFS Amazon EBS 分布式键值存储系统 调研学习：DAS、SAN、NAS 存储引擎 哈希存储引擎 哈希表的持久化实现 支持增删改和随机读取，不支持顺序扫描 对应键值存储系统 B 树存储引擎 B 树的持久化实现 支持增删读改，支持顺序扫描 对应关系数据库 LSM 树存储引擎 支持增删读改，支持顺序扫描 互联网后台存储系统 数据模型 文件模型 以目录树的形式组织文件 对象模型与文件模型类似 关系模型 键值模型 表格模型 支持插入删除更新读取扫描 不支持多表关联 思考：单点登录（有状态服务器、无状服务器） 文件服务体系结构层次文件 XX 树形结构目录——目录树 每个目录包含文件和其他可以从此目录访问的目录的名字 可以使用路径名来访问任一文件或目录 NOTE： UNIX 文件系统不完全是树形的—一个文件可以在一个或多个目录中 目录图一说 目录图目录的维护：目录树中目录位空时，才能删除指向该目录。 文件组 位于给定服务器上的文件集合 一个服务器可以包含数个文件组 与 UNIX 中的文件集系统，一个存储设备或者分区拥有的文件的集合类似 分布式系统中 分布式文件系统中的命名方法思考题 讨论： 把主机名和文件的本地名字结合起来给文件明明 把远程文件目录附加到本地名字空间中 把所有各部分文件系统全部集成组成单一的全局名字结构 名字的结构 绝对名字/相对名字 单层（平面）地址/分层地址 查找与解析迭代名称解析 解析程序将完整名称（dir，name1，namek）发给 server0 Server0 连接：例解 DNS 递归/迭代名称解析原理 同步机制DFS 锁机制例 分布式锁机制：GFS、GPFS、Lustre 租赁方式：NFS v4 提出，StorageTank 采用类似机制 基于时间的机制：NFS v3 提出，SANergy 等采用 文件的远程访问方法 远程服务和缓存是实现客户进程对远程文件进行访问的两个互相补充的方法 常规文件缓存-&gt;减少磁盘读写，而分布式缓存-&gt;减少网络通信量 分布式文件系统中缓存方案设计 被缓存的数据的粒度 客户缓存器的地点，即使用主存进行缓存，还是使用磁盘 如何传播被缓存的副本的修改 如何确定各个客户缓存中的数据是否一致 缓存高速缓存 写直达 写回 关闭时写 集中控制 复制 通过对每个文件的独立备份来增加系统的可靠性 当一个文件服务器出现问题时，仍允许文件访问 把工作量分配到多个服务器上 更新协议 主拷贝复制 表决（voting） 分布式文件系统举例 NAS VFS 在定义网络文件系统 NFS 时创造的 AFS Lusture GFS 继承理念，HDFS 开源 MogileFS Fast DFS Windows DFS Hadoop HDFS TFS 淘宝提供海量小文件存储系统 分布式数据库系统什么是分布式数据库，分布在计算机网络上逻辑相互关联的 DDBS， 分布式 数据特性， 文件的操作，如何做索引，大数据排序。数据库的实现上还是经常用到了底层文件 自己查！！！ 分布式数据库系统的特点集中和自治相结合 适当增加数据冗余度 提高系统的可靠性、可用性 提高系统性能 全局的一致性、可串行性5. 分布式数据库系统的体系结构数据分片 分布透明性 分布式数据库管理系统 全局概念模式 |分片模式 |分布模式]]></content>
       <categories>
         <category>操作系统</category>
         <category>分布式</category>
@@ -2633,8 +2641,8 @@
         <tag>ACM</tag>
         <tag>算法</tag>
         <tag>CSU</tag>
-        <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
+        <tag>Imitation</tag>
       </tags>
   </entry>
   <entry>
@@ -2871,8 +2879,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
+        <tag>Imitation</tag>
         <tag>补图</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -2988,8 +2996,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
+        <tag>Imitation</tag>
         <tag>UVA</tag>
       </tags>
   </entry>
@@ -3799,8 +3807,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>二分</tag>
         <tag>2018暑假集训</tag>
+        <tag>二分</tag>
         <tag>POJ</tag>
       </tags>
   </entry>
@@ -3831,8 +3839,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>二分</tag>
         <tag>2018暑假集训</tag>
+        <tag>二分</tag>
         <tag>水题</tag>
         <tag>CodeForces</tag>
       </tags>
@@ -3848,8 +3856,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>二分</tag>
         <tag>2018暑假集训</tag>
+        <tag>二分</tag>
         <tag>CodeForces</tag>
       </tags>
   </entry>
@@ -3865,8 +3873,8 @@
         <tag>ACM</tag>
         <tag>算法</tag>
         <tag>CSU</tag>
-        <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
+        <tag>Imitation</tag>
       </tags>
   </entry>
   <entry>
@@ -3950,8 +3958,8 @@
         <tag>算法</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
-        <tag>2017HDU多校</tag>
         <tag>规律</tag>
+        <tag>2017HDU多校</tag>
       </tags>
   </entry>
   <entry>
@@ -4581,8 +4589,8 @@
         <tag>ACM</tag>
         <tag>算法</tag>
         <tag>2018寒假集训</tag>
-        <tag>STL</tag>
         <tag>HDU</tag>
+        <tag>STL</tag>
       </tags>
   </entry>
   <entry>
@@ -4648,8 +4656,8 @@
         <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>补图</tag>
-        <tag>STL</tag>
         <tag>HDU</tag>
+        <tag>STL</tag>
       </tags>
   </entry>
   <entry>

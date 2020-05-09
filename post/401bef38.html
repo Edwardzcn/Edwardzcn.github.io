@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+<meta name="baidu-site-verification" content="ZzhwBFUe1V" />
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="三步法," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="Eddy的个人博客" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="文章由 3step 模板生成 三步法阅读文献笔记记录  Step 1题目摘要引言Copy-on-Write写时拷贝技术，查阅资料发现，有两个应用运用CoW较为成功  进程的写时拷贝技术（Linux） 进行fork()时，操作系统不会拷贝父进程的“正文段”、“数据段”、“堆”、“栈”并分配物理块给子进程，而是为新生成的子进程创建虚拟空间结构，它们来复制于父进程的虚拟究竟结构，但是不为这些段分配物">
+<meta name="keywords" content="三步法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GroupReading——20200508-How-to-Copy-Files">
+<meta property="og:url" content="http://www.edwardzcn98yx.com/post/401bef38.html">
+<meta property="og:site_name" content="Eddy的个人博客">
+<meta property="og:description" content="文章由 3step 模板生成 三步法阅读文献笔记记录  Step 1题目摘要引言Copy-on-Write写时拷贝技术，查阅资料发现，有两个应用运用CoW较为成功  进程的写时拷贝技术（Linux） 进行fork()时，操作系统不会拷贝父进程的“正文段”、“数据段”、“堆”、“栈”并分配物理块给子进程，而是为新生成的子进程创建虚拟空间结构，它们来复制于父进程的虚拟究竟结构，但是不为这些段分配物">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-05-08T14:05:31.469Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GroupReading——20200508-How-to-Copy-Files">
+<meta name="twitter:description" content="文章由 3step 模板生成 三步法阅读文献笔记记录  Step 1题目摘要引言Copy-on-Write写时拷贝技术，查阅资料发现，有两个应用运用CoW较为成功  进程的写时拷贝技术（Linux） 进行fork()时，操作系统不会拷贝父进程的“正文段”、“数据段”、“堆”、“栈”并分配物理块给子进程，而是为新生成的子进程创建虚拟空间结构，它们来复制于父进程的虚拟究竟结构，但是不为这些段分配物">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '9M2C5ORTA3',
+      apiKey: 'cab906b07b7695815e9a87dda0c83ede',
+      indexName: 'EddyBlog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"输入关键字","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.edwardzcn98yx.com/post/401bef38.html"/>
+
+
+
+
+
+  <title>GroupReading——20200508-How-to-Copy-Files | Eddy的个人博客</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/Edwardzcn" class="github-corner" aria-label="View source on Github">
+    <svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true">
+    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+    <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+    <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path>
+    </svg>
+    </a>
+    <style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Eddy的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">相知相遇，即是幸运</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            我的首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于我
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            目录总览
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-reading">
+          <a href="/categories/阅读" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            阅读
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-travelling">
+          <a href="/categories/旅行" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            旅行
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-programming">
+          <a href="/categories/编程" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            编程
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-essay">
+          <a href="/categories/随笔" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            随笔
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            时间线
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-schedule">
+          <a href="/schedule/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />
+            
+            日程表
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/401bef38.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">GroupReading——20200508-How-to-Copy-Files</h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-08T14:30:05+08:00">
+                2020-05-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,696
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  10
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <!--->
+
+文章由 3step 模板生成
+三步法阅读文献笔记记录
+<---->
+<h1 id="Step-1"><a href="#Step-1" class="headerlink" title="Step 1"></a>Step 1</h1><h2 id="题目摘要引言"><a href="#题目摘要引言" class="headerlink" title="题目摘要引言"></a>题目摘要引言</h2><p><code>Copy-on-Write</code>写时拷贝技术，查阅资料发现，有两个应用运用<code>CoW</code>较为成功</p>
+<ol>
+<li><p>进程的写时拷贝技术（Linux）</p>
+<p>进行<code>fork()</code>时，操作系统不会拷贝父进程的“正文段”、“数据段”、“堆”、“栈”并分配物理块给子进程，而是为<strong>新生成的子进程创建虚拟空间结构，它们来复制于父进程的虚拟究竟结构，但是不为这些段分配物理内存，它们共享父进程的物理空间</strong>。当父进程有更改段的行为发生时（“Write”发生），再为子进程相应段分配物理空间。<a href="https://www.cnblogs.com/biyeymyhjob/archive/2012/07/20/2601655.html" target="_blank" rel="noopener">原文</a>博主援引 LKD《Linux Kernel Development》：</p>
+<blockquote>
+<p>传统的 fork()系统调用直接把所有的资源复制给新创建的进程。这种实现过于简单并且效率低下，因为它拷贝的数据也许并不共享，更糟的情况是，如果新进程打算立即执行一个新的映像，那么所有的拷贝都将前功尽弃。Linux 的 fork()使用写时拷贝（copy-on-write）页实现。写时拷贝是一种可以推迟甚至免除拷贝数据的技术。内核此时并不复制整个进程地址空间，而是让父进程和子进程共享同一个拷贝。只有在需要写入的时候，数据才会被复制，从而使各个进程拥有各自的拷贝。也就是说，资源的复制只有在需要写入的时候才进行，在此之前，只是以只读方式共享。这种技术使地址空间上的页的拷贝被推迟到实际发生写入的时候。在页根本不会被写入的情况下—举例来说，fork()后立即调用 exec()—它们就无需复制了。fork()的实际开销就是复制父进程的页表以及给子进程创建惟一的进程描述符。在一般情况下，进程创建后都会马上运行一个可执行的文件，这种优化可以避免拷贝大量根本就不会被使用的数据（地址空间里常常包含数十兆的数据）。由于 Unix 强调进程快速执行的能力，所以这个优化是很重要的。这里补充一点：Linux COW 与 exec 没有必然联系</p>
+</blockquote>
+</li>
+<li><p>文件系统的写时拷贝技术</p>
+<p>Copy-on-write 在对数据进行修改的时候，不会直接在原来的数据位置上进行操作，而是重新找个位置修改，这样的好处其一是一旦系统突然断电，重启之后不需要做 Fsck。好处就是能保证数据的完整性，掉电的话容易恢复。再者就是和本文内容相关，Cow 常常也作为减少文件物理复制的优化手段。比如很多逻辑卷 manager 支持 block-level 的 Cow 快照。一些文件系统直接支持 Cow 文件或目录。</p>
+</li>
+</ol>
+<h2 id="基本理论概况"><a href="#基本理论概况" class="headerlink" title="基本理论概况"></a>基本理论概况</h2><p>write-optimization 来实现 Copy（复制）与 Write（写）的分离。</p>
+<p>没有出现数学公式，图示过程后是复杂度分析。</p>
+<h2 id="结论部分"><a href="#结论部分" class="headerlink" title="结论部分"></a>结论部分</h2><!--->确定作者的成过以及点出的经验、问题、改进方式。<--->
+<p>文章展示了如何利用写优化来实现<strong>Decouple writes from copies</strong>，并实现<code>nimble performance</code>的性质。且这种优化不干扰非相关操作的性能。如在 LXC container 体现出 3-4 倍的拷贝性能提升。</p>
+<p>推广：数据结构批量更新。不仅能够应用于文件系统，还可用在数据库等，比如（在 B-DAG 的实现可用于 KV store）。</p>
+<h2 id="回答基本问题"><a href="#回答基本问题" class="headerlink" title="回答基本问题"></a>回答基本问题</h2><ol>
+<li><p>类别</p>
+<!-->这篇论文是什么类型？测试类？对现有系统进行分析的？对原型系统进行描述的？<--->
+<p>对现有系统的优化，提出一种新模式。</p>
+</li>
+<li><p>内容</p>
+<!-->你读过的其他论文有没有与之相关的？相关性与区别最直接体现在哪里？文章中分析问题用的什么理论基础（通过瞥一眼数学概况与核心证明可以得到）。<!-->
+<p>暂无，文章中提到的 COW 技术没有学习过。</p>
+</li>
+<li><p>正确性</p>
+</li>
+</ol>
+<!-->结论是否看起来真实有效？<--->
+<ol>
+<li><p>创新点</p>
+<!-->论文的主要创新点是什么？总结提到的经验、问题和改进方法是什么？<--->
+<p>不同于传统的 COW 技术，通过写优化将 C 与 W 分开达到性能上的进一步提升。</p>
+</li>
+<li><p>清晰度</p>
+</li>
+</ol>
+<!-->这篇论文是否写的条理清晰<--->
+<h2 id="阅读选择"><a href="#阅读选择" class="headerlink" title="阅读选择"></a>阅读选择</h2><!-->
+
+1. 继续阅读：论文有价值担保，研究领域非常切合，对当前进行工作有极大帮助，圈内爆火文章
+2. 不继续阅读：论文不吸引自己，论文价值/正确性存疑，论文作者给出了不适当的假设。
+3. 库存保留并标记：当前不处于自己的研究领域，但不久的日后相关论文会有用。
+
+<--->
+<p>继续阅读</p>
+<a id="more"></a>
+<h1 id="Step-2"><a href="#Step-2" class="headerlink" title="Step 2"></a>Step 2</h1><h2 id="细读笔记"><a href="#细读笔记" class="headerlink" title="细读笔记"></a>细读笔记</h2><!-->要仔细阅读论文，但是诸如证明等信息要忽略掉<--->
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><p>Cow 技术的核心调节参数是 Copy 的粒度：</p>
+<ul>
+<li>粒度大<ul>
+<li>比如文件级</li>
+<li>小改动的代价会被放大</li>
+<li>会增大更新延时</li>
+<li>相关的 Copy 会丧失 share 能力，可能造成大的空间浪费（如只有很小修改）</li>
+</ul>
+</li>
+<li>粒度小<ul>
+<li>更新很快但是碎片花</li>
+<li>按序读代价变大</li>
+</ul>
+</li>
+</ul>
+<p>Nible clones:</p>
+<ul>
+<li><strong>be fast to create</strong></li>
+<li><strong>have excellent read locality</strong>, so that logically related files can be read at near disk bandwidth, even after modifination.</li>
+<li><strong>have fast writes</strong>, both the original and the clone</li>
+<li><strong>conserve space</strong>（节省空间）, the write amplification and disk footprint are as small as possible, even after updates to the original or to the clone.</li>
+</ul>
+<p>现有的 CoW 技术实现都不是 Nible 复制。</p>
+<p>文章 Contribution（详细见第二页右下）:</p>
+<ul>
+<li>提出一个逻辑复制 specifiction（说明？）</li>
+<li>nimble clone 必须满足的一组（性能）条件</li>
+<li>实现了一个符合上述要求的文件系统设计</li>
+</ul>
+<p>CAW（Copy-on-Abundant-Write）：应用于 BetrFS 0.5’s clone 实现，buffer 累计小的修改，直至衡量其维持 delta 的代价超过 copy，如此则重新复制。</p>
+<h3 id="BetrFS-Background"><a href="#BetrFS-Background" class="headerlink" title="BetrFS Background"></a>BetrFS Background</h3><h4 id="B-epsilon-tree"><a href="#B-epsilon-tree" class="headerlink" title="B$^\epsilon$-tree"></a>B$^\epsilon$-tree</h4><p>BetrFS 由 KV-store 的数据结构（B$^{\epsilon}$-tree）来命名，同 B 树变体，B$^\epsilon$-tree 将 kv 对储存在叶子结点中，</p>
+<p><strong>关键特征</strong>：B$^\epsilon$-tree 的内部结点（interior nodes）缓冲了叶子内容将要发生的改变，名为 message。逐曾 flush message 直到达到叶子结点。</p>
+<p>B$^\epsilon$-tree 在每个结点 log 更改，而向下的更新是按批次的，所以 IO 的节省空间遂批次增多而增大。</p>
+<h4 id="Range-Operation"><a href="#Range-Operation" class="headerlink" title="Range Operation"></a>Range Operation</h4><p>BetrFS 对连续键值范围操作的优化，设计用来优化文件系统 namespace 的子树操作。</p>
+<p>full-path keys 带来的遍历，读文件、搜索都是一个 range 操作（相同 prefix）</p>
+<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><h2 id="未读（且值得读）文献记录"><a href="#未读（且值得读）文献记录" class="headerlink" title="未读（且值得读）文献记录"></a>未读（且值得读）文献记录</h2><!-->在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。<--->
+<p>[25]<a href="">the log-structured merge-tree (lsm-tree)</a> （太多相关内容都是基于 LSM-tree 的了，一定要补一下）。</p>
+<h1 id="Step-3"><a href="#Step-3" class="headerlink" title="Step 3"></a>Step 3</h1><!-->试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。<--->
+<h2 id="思路复现"><a href="#思路复现" class="headerlink" title="思路复现"></a>思路复现</h2><!-->推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？<--->
+<h2 id="证明与推理复现"><a href="#证明与推理复现" class="headerlink" title="证明与推理复现"></a>证明与推理复现</h2><!-->分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源<--->
+<h2 id="实验验证复现"><a href="#实验验证复现" class="headerlink" title="实验验证复现"></a>实验验证复现</h2><!-->Rework<--->
+<h1 id="会议内容记录"><a href="#会议内容记录" class="headerlink" title="会议内容记录"></a>会议内容记录</h1><h2 id="What-is-logical-Copy"><a href="#What-is-logical-Copy" class="headerlink" title="What is logical Copy?"></a>What is logical Copy?</h2><ul>
+<li><code>cp -r</code> “Not changed”</li>
+<li><code>ln</code> “will change”</li>
+<li><code>ln -s</code> “will change” 硬软连接</li>
+<li><code>cp --reflink</code> 本文内容，逻辑拷贝</li>
+</ul>
+<p>过程描述</p>
+<p>改变之前两个文件指向相同的 Data Block 组，假设对 1 位进行改变，会使 Copy 一个新的 Data Block，产生两大问题：</p>
+<ol>
+<li>一点修改就要改 Data Block</li>
+<li>碎片化，把排排坐有序的 Data Block，变为无序访问了。</li>
+</ol>
+<p>测试过程描述（图示）</p>
+<p>写放大：每个 block（4KB）都做个小修改，</p>
+<p>碎片导致时间开销：越碎片，时间越长？</p>
+<h2 id="当前存在的问题"><a href="#当前存在的问题" class="headerlink" title="当前存在的问题"></a>当前存在的问题</h2><p>物理 Copy、逻辑 Copy 的三个问题，其中还包含一个 Trade Off。</p>
+<h2 id="Contribution"><a href="#Contribution" class="headerlink" title="Contribution"></a>Contribution</h2><p>Implementation</p>
+<h2 id="什么是-BetrFS？"><a href="#什么是-BetrFS？" class="headerlink" title="什么是 BetrFS？"></a>什么是 BetrFS？</h2><ul>
+<li><p>BetrFSL</p>
+<ul>
+<li>an in-kernel， local file system</li>
+<li>built on a KV-store substrate(B$^\epsilon$-tree)</li>
+</ul>
+<p>特征：1. 更小的关键字 fewer pivots. 2. buffer</p>
+</li>
+</ul>
+<h3 id="B-epsilon-tree-1"><a href="#B-epsilon-tree-1" class="headerlink" title="B$^\epsilon$-tree"></a>B$^\epsilon$-tree</h3><p>左边 piviot b 树中的关键字，右边是 buffer</p>
+<h3 id="Cloning-Operation-Semantics"><a href="#Cloning-Operation-Semantics" class="headerlink" title="Cloning Operation Semantics"></a>Cloning Operation Semantics</h3><p>write amplification</p>
+<p>对于 Trade Off，根据已知的 B$^\epsilon$-tree 数据结构的特征，在保证块很大的情况下，写也不慢（减小写放大影响）。</p>
+<p>Postpone：树到 DAG，树的叶子节点是要保证唯一性的。</p>
+<h3 id="GOTO-messages"><a href="#GOTO-messages" class="headerlink" title="GOTO messages"></a>GOTO messages</h3><p>GOTO messages： <code>Prefix /b/0, goto /a</code>。举例子，Docker 逻辑复制，通过 GOTO message 就可以占据一个名称空间，还用原来的物理空间，不扩。</p>
+<p>A GOTO message maps: keyrange(a,b)-&gt;a node 把一个范围的 key 映射到一个 node。(The target node should be the Lowest-Common Ancestor(LCA)). 为什么是公共祖先，我个人理解，再下一层就不饿能保证下次对应相同的 data block。</p>
+<p>由于加了边（Goto 指向边），变成了个有向无环图。</p>
+<p>有向无环图带来的问题，直接指向的位置如果不是最新的（上一层有 buffer），则有过去更改没有刷下来。解决方案，加 Ref 标记，并强制上层路径 flush</p>
+<h3 id="Handling-Fringe-Nodes"><a href="#Handling-Fringe-Nodes" class="headerlink" title="Handling Fringe Nodes"></a>Handling Fringe Nodes</h3><h2 id="Implementation-and-Optimization"><a href="#Implementation-and-Optimization" class="headerlink" title="Implementation and Optimization"></a>Implementation and Optimization</h2><p>Preferential splitting</p>
+<ul>
+<li>分割 leafnodes 的选择</li>
+<li>11</li>
+</ul>
+<p>Background cleaning</p>
+<h2 id="BetrFS-的影响"><a href="#BetrFS-的影响" class="headerlink" title="BetrFS 的影响"></a>BetrFS 的影响</h2><p>写放大和碎片控制都有效，克隆的 Latency 最低的。</p>
+<p>结论：相比于剩下三个文件系统，达到的效果：Low space amplification, Low fragmentation, Low clone latency</p>
+<p>通常的文件系统</p>
+<p>顺序 IO 和随机 IO</p>
+<h2 id="Li-老师点评"><a href="#Li-老师点评" class="headerlink" title="Li 老师点评"></a>Li 老师点评</h2><p>Slides 比文章更好，可以再关注下。</p>
+<p>Research，小而美的问题，比如这个，How to copy files。</p>
+<p>大的Scope</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tag/三步法/" rel="tag"> <i class="fa fa-tag"></i> 三步法</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/post/b0d5859e.html" rel="next" title="文献学习方法——如何高效的阅读学术论文（简）">
+                <i class="fa fa-chevron-left"></i> 文献学习方法——如何高效的阅读学术论文（简）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Edwardzcn" />
+            
+              <p class="site-author-name" itemprop="name">Edwardzcn</p>
+              <p class="site-description motion-element" itemprop="description">这是一个利用（可爱的）Hexo搭建的博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">333</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">48</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+            
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">182</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/rss2.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Edwardzcn" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:edwardzcn98@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.google.com" target="_blank" title="Google">
+                      
+                        <i class="fa fa-fw fa-google"></i>Google</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.zhihu.com/people/decades-42/activities" target="_blank" title="Zhihu">
+                      
+                        <i class="fa fa-fw fa-globe"></i>Zhihu</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.instagram.com/edwardz98" target="_blank" title="Instagram">
+                      
+                        <i class="fa fa-fw fa-instagram"></i>Instagram</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.github.com" title="Github" target="_blank">Github</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://yangyangyang.cc" title="yyy的博客" target="_blank">yyy的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://blog.mrcactus.cn" title="syx的博客" target="_blank">syx的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/wawcac-blog" title="SHer_zfc的博客" target="_blank">SHer_zfc的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://csuwangj.github.io/" title="DJ的博客" target="_blank">DJ的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://blog.csdn.net/SSS_Benjamin" title="cx的博客" target="_blank">cx的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.cnblogs.com/csu-lmw" title="吕少的博客" target="_blank">吕少的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://ipads.se.sjtu.edu.cn/zh/index.html" title="SJTU_IPAD梦想" target="_blank">SJTU_IPAD梦想</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Step-1"><span class="nav-number">1.</span> <span class="nav-text">Step 1</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#题目摘要引言"><span class="nav-number">1.1.</span> <span class="nav-text">题目摘要引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基本理论概况"><span class="nav-number">1.2.</span> <span class="nav-text">基本理论概况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结论部分"><span class="nav-number">1.3.</span> <span class="nav-text">结论部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#回答基本问题"><span class="nav-number">1.4.</span> <span class="nav-text">回答基本问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#阅读选择"><span class="nav-number">1.5.</span> <span class="nav-text">阅读选择</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Step-2"><span class="nav-number">2.</span> <span class="nav-text">Step 2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#细读笔记"><span class="nav-number">2.1.</span> <span class="nav-text">细读笔记</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction"><span class="nav-number">2.1.1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BetrFS-Background"><span class="nav-number">2.1.2.</span> <span class="nav-text">BetrFS Background</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#B-epsilon-tree"><span class="nav-number">2.1.2.1.</span> <span class="nav-text">B$^\epsilon$-tree</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Range-Operation"><span class="nav-number">2.1.2.2.</span> <span class="nav-text">Range Operation</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题记录"><span class="nav-number">2.2.</span> <span class="nav-text">问题记录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#未读（且值得读）文献记录"><span class="nav-number">2.3.</span> <span class="nav-text">未读（且值得读）文献记录</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Step-3"><span class="nav-number">3.</span> <span class="nav-text">Step 3</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#思路复现"><span class="nav-number">3.1.</span> <span class="nav-text">思路复现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#证明与推理复现"><span class="nav-number">3.2.</span> <span class="nav-text">证明与推理复现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实验验证复现"><span class="nav-number">3.3.</span> <span class="nav-text">实验验证复现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#会议内容记录"><span class="nav-number">4.</span> <span class="nav-text">会议内容记录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#What-is-logical-Copy"><span class="nav-number">4.1.</span> <span class="nav-text">What is logical Copy?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#当前存在的问题"><span class="nav-number">4.2.</span> <span class="nav-text">当前存在的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Contribution"><span class="nav-number">4.3.</span> <span class="nav-text">Contribution</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是-BetrFS？"><span class="nav-number">4.4.</span> <span class="nav-text">什么是 BetrFS？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#B-epsilon-tree-1"><span class="nav-number">4.4.1.</span> <span class="nav-text">B$^\epsilon$-tree</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cloning-Operation-Semantics"><span class="nav-number">4.4.2.</span> <span class="nav-text">Cloning Operation Semantics</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GOTO-messages"><span class="nav-number">4.4.3.</span> <span class="nav-text">GOTO messages</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Handling-Fringe-Nodes"><span class="nav-number">4.4.4.</span> <span class="nav-text">Handling Fringe Nodes</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Implementation-and-Optimization"><span class="nav-number">4.5.</span> <span class="nav-text">Implementation and Optimization</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BetrFS-的影响"><span class="nav-number">4.6.</span> <span class="nav-text">BetrFS 的影响</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Li-老师点评"><span class="nav-number">4.7.</span> <span class="nav-text">Li 老师点评</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Edwardzcn</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">392.7k</span>
+  
+</div>
+
+<div class="copyright">
+<span id="busuanzi_container_site_uv"><a class="theme-link" href="http://www.miitbeian.gov.cn">冀ICP备18024730号</a></span>
+<span id="bei_an"> <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641" ><img src="https://www.edwardzcn98yx.com/batb.png" />湘公网安备 43010402000641号</a></span>
+</div>
+
+<div class="powered-by">
+<i class ="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+    本站访客数：<span id="busuanzi_value_site_uv"></span></spam></div>
+
+<!--
+
+   <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+-->
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>
