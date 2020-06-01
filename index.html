@@ -364,6 +364,389 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/6b2b2581.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/6b2b2581.html" itemprop="url">分布式系统学习——MIT6.824-Lecture2课堂笔记</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-31T17:29:31+08:00">
+                2020-05-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/分布式系统/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,383
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  5
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>课堂笔记</p>
+<h1 id="Go-语言"><a href="#Go-语言" class="headerlink" title="Go 语言"></a>Go 语言</h1><h2 id="Why-use-Go"><a href="#Why-use-Go" class="headerlink" title="Why use Go"></a>Why use Go</h2><p>很多系统风格的语言可以选择，比如 Java、C#、Python、C++。Go 像其它语言一样，提供了很多许多 features，比如 thread 线程、locking、synchronization，尤其是 RPC（remote procedure call）包，非常方便实用。</p>
+<p>与 C++不同，Go Type safe and memory safe，编程内存问题会少很多，垃圾回收机制也会帮助我们进行内存管理避免错误。<strong>Combination of threads and garbage collection is particularly important</strong>。没有如此特性的 C++，需要找出最后一个线程利用完对象后再 free，但这很困难，也很麻烦。</p>
+<p>Go 还很简单，比起 C++更难出错，编译器给出的错误提示也更有帮助，C++还要去想 error message 实际表示哪里出错了。</p>
+<h1 id="Threads"><a href="#Threads" class="headerlink" title="Threads"></a>Threads</h1><p>多线程，我们进行并发编程最常用到的。并发性是分布式程序中非常重要的特性。需要一种更简单的方式进行一对多的交流。<code>go routines</code>和<code>threads</code>一码事。</p>
+<p>一个 Box 表示的 Address space 地址空间。</p>
+<ul>
+<li>串行程序：1 个 pc、1 组寄存器、1 个栈</li>
+<li>并行程序：每一个程序都有一个 separate pc、寄存器和栈。</li>
+</ul>
+<p>实际上串行程序的栈等都集中在一个地址空间。</p>
+<p>使用 Threads 的主要原因</p>
+<h2 id="IO-concurrency"><a href="#IO-concurrency" class="headerlink" title="IO concurrency"></a>IO concurrency</h2><p>使用这个称呼是来源于单机的并发（同时等待或操作 IO），在分布式中，用来描述处理请求（launched or removed RPCs）的同时等待着其他机器的回复（waiting for many replies）。使用 Threads，可以让其中一部分等待，一部分执行。</p>
+<h2 id="Multi-core-parallelism"><a href="#Multi-core-parallelism" class="headerlink" title="Multi-core parallelism"></a>Multi-core parallelism</h2><p>多核机器，在不同核上进行计算会提供 Threads 物理上真正的并行运行。</p>
+<h2 id="Convenience"><a href="#Convenience" class="headerlink" title="Convenience"></a>Convenience</h2><p>A little bit less important</p>
+<p>一些工作不需要始终 running，只是阶段性的进行，比如 Master Server 检查其他 Workers 是否 alive，间隔固定实践发送某些消息。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/6b2b2581.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/a2116e6d.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/a2116e6d.html" itemprop="url">ReadingGroup——Supporting-Very-Large-Models</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-26T19:31:57+08:00">
+                2020-05-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  809
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  3
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <!--->
+
+文章由 3step 模板生成
+三步法阅读文献笔记记录
+<---->
+<h1 id="Step-1"><a href="#Step-1" class="headerlink" title="Step 1"></a>Step 1</h1><h2 id="题目摘要引言"><a href="#题目摘要引言" class="headerlink" title="题目摘要引言"></a>题目摘要引言</h2><h3 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h3><p>使用自动数据流图分割支持超大模型</p>
+<h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>介绍新的模型——Tofu，用于在多个 GPU 上划分超大的 DNN 模型，从而减少单个 GPU 的内存占用。</p>
+<h2 id="基本理论概况"><a href="#基本理论概况" class="headerlink" title="基本理论概况"></a>基本理论概况</h2><h2 id="结论部分"><a href="#结论部分" class="headerlink" title="结论部分"></a>结论部分</h2><!--->确定作者的成过以及点出的经验、问题、改进方式。<--->
+<h2 id="回答基本问题"><a href="#回答基本问题" class="headerlink" title="回答基本问题"></a>回答基本问题</h2><ol>
+<li>类别</li>
+</ol>
+<!-->这篇论文是什么类型？测试类？对现有系统进行分析的？对原型系统进行描述的？<--->
+<ol>
+<li>内容</li>
+</ol>
+<!-->你读过的其他论文有没有与之相关的？相关性与区别最直接体现在哪里？文章中分析问题用的什么理论基础（通过瞥一眼数学概况与核心证明可以得到）。<!-->
+<ol>
+<li>正确性</li>
+</ol>
+<!-->结论是否看起来真实有效？<--->
+<ol>
+<li>创新点</li>
+</ol>
+<!-->论文的主要创新点是什么？总结提到的经验、问题和改进方法是什么？<--->
+<ol>
+<li>清晰度</li>
+</ol>
+<!-->这篇论文是否写的条理清晰<--->
+<h2 id="阅读选择"><a href="#阅读选择" class="headerlink" title="阅读选择"></a>阅读选择</h2><!-->
+
+1. 继续阅读：论文有价值担保，研究领域非常切合，对当前进行工作有极大帮助，圈内爆火文章
+2. 不继续阅读：论文不吸引自己，论文价值/正确性存疑，论文作者给出了不适当的假设。
+3. 库存保留并标记：当前不处于自己的研究领域，但不久的日后相关论文会有用。
+
+<--->
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/a2116e6d.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/d6eb1130.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -450,7 +833,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  865
+                  1,192
                 </span>
               
 
@@ -466,7 +849,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  3
+                  4
                 </span>
               
             </div>
@@ -582,7 +965,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/post/7450893e.html" itemprop="url">GroupReading——On-the-Optimal-Repair-Scaling-Trade-off-in-Locally-Repairable-Codes</a></h1>
+                <a class="post-title-link" href="/post/7450893e.html" itemprop="url">ReadingGroup——On-the-Optimal-Repair-Scaling-Trade-off-in-Locally-Repairable-Codes</a></h1>
         
 
         <div class="post-meta">
@@ -887,7 +1270,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  817
+                  1,526
                 </span>
               
 
@@ -903,7 +1286,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  3
+                  5
                 </span>
               
             </div>
@@ -984,434 +1367,79 @@
 <p>ERP: 企业资源计划即 ERP (Enterprise Resource Planning)</p>
 <p>OA: 办公自动化系统</p>
 <p>思考题、调研：VDISK software defined AOP</p>
+<h2 id="云计算业务模式"><a href="#云计算业务模式" class="headerlink" title="云计算业务模式"></a>云计算业务模式</h2><h2 id="云计算发展现状与趋势"><a href="#云计算发展现状与趋势" class="headerlink" title="云计算发展现状与趋势"></a>云计算发展现状与趋势</h2><ul>
+<li>云计算提供一种新的计算模式和服务模式</li>
+<li>通过云计算人们能获得前所未有的强大计算能力，并能按需分配，按需付费</li>
+<li>通过云计算平台强大的计算和存储能力，人们将能完成更难的问题。</li>
+</ul>
+<p>趋势</p>
+<ul>
+<li>云计算与管道、业务软件捆绑</li>
+<li>整合行业软件构建 SaaS 解决方案（微软，IBM，Amazon marketplace）</li>
+<li>PaaS 称为云计算热点<ul>
+<li>中小企业客户需要 PaaS 服务</li>
+</ul>
+</li>
+</ul>
+<p>个性化定制和应用集成（思考题、调研：EAI 企业应用集成，持续集成）</p>
+<p>关注的需求点</p>
+<h2 id="云计算解决的主要问题"><a href="#云计算解决的主要问题" class="headerlink" title="云计算解决的主要问题"></a>云计算解决的主要问题</h2><p>用一个集中管理的巨大化的计算资源池，提供巨大的计算资源和能力</p>
+<ul>
+<li>为小粒度应用体哦概念股资源共享</li>
+<li>为大粒度应用提供大规模计算能力</li>
+<li>（自己补充）对特定计算逻辑以服务形式提供（方便客户）</li>
+</ul>
+<h2 id="云计算关键技术"><a href="#云计算关键技术" class="headerlink" title="云计算关键技术"></a>云计算关键技术</h2><p>举几个典型的来说</p>
+<h3 id="快速部署"><a href="#快速部署" class="headerlink" title="快速部署"></a>快速部署</h3><ul>
+<li>并行部署技术<ul>
+<li>讲传统顺序部署方式改位并行执行，执行多个部署任务</li>
+<li>将虚拟机同时部署到多个物理机上</li>
+</ul>
+</li>
+<li>协同部署技术</li>
+</ul>
+<h3 id="资源调度"><a href="#资源调度" class="headerlink" title="资源调度"></a>资源调度</h3><p>在不同的资源使用者之间进行资源调整的过程</p>
+<ul>
+<li>调整计算任务的资源使用量</li>
+<li>转移计算任务</li>
+</ul>
+<p>云计算新的挑战</p>
+<ul>
+<li>海量规模</li>
+<li>满足服务级别协定</li>
+</ul>
+<p>个人理解：某种角度来看资源调度可以作为负载均衡能力的基础设施</p>
+<h3 id="多租户技术"><a href="#多租户技术" class="headerlink" title="多租户技术"></a>多租户技术</h3><ul>
+<li>大量用户共享同一堆栈的软、硬件资源</li>
+<li>技术难点<ul>
+<li>数据隔离 blabla</li>
+</ul>
+</li>
+</ul>
+<h3 id="大规模数据通信"><a href="#大规模数据通信" class="headerlink" title="大规模数据通信"></a>大规模数据通信</h3><h3 id="大规模分布式存储"><a href="#大规模分布式存储" class="headerlink" title="大规模分布式存储"></a>大规模分布式存储</h3><h3 id="许可证管理与计费"><a href="#许可证管理与计费" class="headerlink" title="许可证管理与计费"></a>许可证管理与计费</h3><h3 id="怎样算是云计算系统"><a href="#怎样算是云计算系统" class="headerlink" title="怎样算是云计算系统"></a>怎样算是云计算系统</h3><p>两个最主要的特征</p>
+<h2 id="云计算的技术挑战"><a href="#云计算的技术挑战" class="headerlink" title="云计算的技术挑战"></a>云计算的技术挑战</h2><h3 id="安全性"><a href="#安全性" class="headerlink" title="安全性"></a>安全性</h3><p>所有云节点都有可能被攻击，现有软件系统该如何调整。</p>
+<h3 id="可用性"><a href="#可用性" class="headerlink" title="可用性"></a>可用性</h3><ul>
+<li>软件系统在一定时间内正常工作的时间占总时间的比重，通常用百分比衡量</li>
+<li>云计算环境能够</li>
+</ul>
+<h3 id="可伸缩性"><a href="#可伸缩性" class="headerlink" title="可伸缩性"></a>可伸缩性</h3><ul>
+<li>通过资源的增加或减少来应对负载的变换，并保持一致的性能<ul>
+<li>垂直伸缩 Scale in： 在现有的服务节点上增加或者减少资源</li>
+<li>水平伸缩 ： 在现有的服务节点上增加或减少服务节点</li>
+</ul>
+</li>
+</ul>
+<h3 id="信息保密"><a href="#信息保密" class="headerlink" title="信息保密"></a>信息保密</h3><ul>
+<li>信息的内容不应该被未授权的人得到</li>
+<li>非法用户访问难度较大</li>
+<li>根本方法上<ul>
+<li>逻辑/物理进行数据隔离</li>
+</ul>
+</li>
+</ul>
+<h3 id="高性能"><a href="#高性能" class="headerlink" title="高性能"></a>高性能</h3><h3 id="标准化"><a href="#标准化" class="headerlink" title="标准化"></a>标准化</h3><p>维护多个云之间的数据</p>
 
           
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/36f994e1.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/36f994e1.html" itemprop="url">多媒体原理与系统——视频应用系统程序设计</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-17T11:14:49+08:00">
-                2020-05-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/多媒体/" itemprop="url" rel="index">
-                    <span itemprop="name">多媒体</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  431
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  2
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="错误整理区分"><a href="#错误整理区分" class="headerlink" title="错误整理区分"></a>错误整理区分</h1><h2 id="YUV-采样格式与存储样式差异"><a href="#YUV-采样格式与存储样式差异" class="headerlink" title="YUV 采样格式与存储样式差异"></a>YUV 采样格式与存储样式差异</h2><p>采样格式（描述采样频率比例）</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:left">采样比例</th>
-<th style="text-align:left">含义</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left">4:4:4</td>
-<td style="text-align:left">表示色度频道没有下采样。</td>
-</tr>
-<tr>
-<td style="text-align:left">4:2:2</td>
-<td style="text-align:left">表示 2:1 的水平下采样，没有垂直下采样。对于每两个 U 样例或 V 样例，每个扫描行都包含四个 Y 样例。</td>
-</tr>
-<tr>
-<td style="text-align:left">4:2:0</td>
-<td style="text-align:left">表示 2:1 的水平下采样，2:1 的垂直下采样。</td>
-</tr>
-<tr>
-<td style="text-align:left">4:1:1</td>
-<td style="text-align:left">表示 4:1 的水平下采样，没有垂直下采样。对于每个 U 样例或 V 样例，每个扫描行都包含四个 Y 样例。与其他格式相比，4:1:1 采样不太常用，本文不对其进行详细讨论。</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h2 id="存储样式"><a href="#存储样式" class="headerlink" title="存储样式"></a>存储样式</h2><p><code>YU12格式</code>：不是交错存储的</p>
-<blockquote>
-<p>在 android 平台下也叫作 I420 格式，首先是所有 Y 值，然后是所有 U 值，最后是所有 V 值。</p>
-</blockquote>
-<p><code>YV12格式</code>：YV12 格式与 YU12 基本相同，首先是所有 Y 值，然后是所有 V 值，最后是所有 U 值。只要注意从适当的位置提取 U 和 V 值，YU12 和 YV12 都可以使用相同的算法进行处理。</p>
-<p><code>NV21格式</code>：android 手机从摄像头采集的预览数据一般都是 NV21，存储顺序是先存 Y，再 VU 交替存储，NV21 存储顺序是先存 Y 值，再 VU 交替存储：YYYYVUVUVU，以 4 X 4 图片为例子，占用内存为 4 X 4 X 3 / 2 = 24 个字节</p>
-<p><code>NV12格式</code>：NV12 与 NV21 类似，也属于 YUV420SP 格式，NV12 存储顺序是先存 Y 值，再 UV 交替存储：YYYYUVUVUV，以 4 X 4 图片为例子，占用内存为 4 X 4 X 3 / 2 = 24 个字节</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/36f994e1.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/a6b62976.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/a6b62976.html" itemprop="url">GroupReading——Raft-an-Understandable-Consensus-Algorithm</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-15T17:13:31+08:00">
-                2020-05-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Paper/" itemprop="url" rel="index">
-                    <span itemprop="name">Paper</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  779
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  3
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <!--->
-
-文章由 3step 模板生成
-三步法阅读文献笔记记录
-<---->
-<h1 id="Step-1"><a href="#Step-1" class="headerlink" title="Step 1"></a>Step 1</h1><h2 id="题目摘要引言"><a href="#题目摘要引言" class="headerlink" title="题目摘要引言"></a>题目摘要引言</h2><h3 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h3><p>寻找一种<strong>容易理解</strong>的（分布式）一致性算法——Raft。</p>
-<h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>Raft 是解决 log replication management 的分布式共识算法，相当于(multi-)Paxos 效果，且比 Paxos 高效、易懂，为构建实际系统提供了更好的基础。用多数投票保证了安全性。</p>
-<p>w</p>
-<h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><h2 id="基本理论概况"><a href="#基本理论概况" class="headerlink" title="基本理论概况"></a>基本理论概况</h2><h2 id="结论部分"><a href="#结论部分" class="headerlink" title="结论部分"></a>结论部分</h2><!--->确定作者的成过以及点出的经验、问题、改进方式。<--->
-<h2 id="回答基本问题"><a href="#回答基本问题" class="headerlink" title="回答基本问题"></a>回答基本问题</h2><ol>
-<li>类别</li>
-</ol>
-<!-->这篇论文是什么类型？测试类？对现有系统进行分析的？对原型系统进行描述的？<--->
-<ol>
-<li>内容</li>
-</ol>
-<!-->你读过的其他论文有没有与之相关的？相关性与区别最直接体现在哪里？文章中分析问题用的什么理论基础（通过瞥一眼数学概况与核心证明可以得到）。<!-->
-<ol>
-<li>正确性</li>
-</ol>
-<!-->结论是否看起来真实有效？<--->
-<ol>
-<li>创新点</li>
-</ol>
-<!-->论文的主要创新点是什么？总结提到的经验、问题和改进方法是什么？<--->
-<ol>
-<li>清晰度</li>
-</ol>
-<!-->这篇论文是否写的条理清晰<--->
-<h2 id="阅读选择"><a href="#阅读选择" class="headerlink" title="阅读选择"></a>阅读选择</h2><!-->
-
-1. 继续阅读：论文有价值担保，研究领域非常切合，对当前进行工作有极大帮助，圈内爆火文章
-2. 不继续阅读：论文不吸引自己，论文价值/正确性存疑，论文作者给出了不适当的假设。
-3. 库存保留并标记：当前不处于自己的研究领域，但不久的日后相关论文会有用。
-
-<--->
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/a6b62976.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
         
       
     </div>
@@ -1499,7 +1527,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">341</span>
+                  <span class="site-state-item-count">343</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1656,7 +1684,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">399.7k</span>
+    <span title="Site words total count">405.2k</span>
   
 </div>
 

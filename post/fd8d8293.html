@@ -92,7 +92,7 @@
 <meta property="og:description" content="本章对分布式应用中各种范型进行分类，介绍基于这些范型的典型工具和协议。 范型和抽象抽象抽象-&amp;gt;理论-&amp;gt;设计，计算机科学研究的三种形态，对应学科问题求解中三个典型过程。 抽象：源于实验学科，抽象的结果是概念、符号、模型。 理论：源于数理，主要为定义、定理、公理、证明与结果解释，研究内容跟的基本特征是构造性数学特征。 设计：源于工程学，用来开发求解给定问题的系统和设备主要是需求说明。 范型">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/DistributeSystemLearning/DistributeParadigms/distribute_paradigms_1.png">
-<meta property="og:updated_time" content="2020-05-13T10:49:12.152Z">
+<meta property="og:updated_time" content="2020-05-27T11:05:38.805Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="分布式系统学习——分布式计算范型">
 <meta name="twitter:description" content="本章对分布式应用中各种范型进行分类，介绍基于这些范型的典型工具和协议。 范型和抽象抽象抽象-&amp;gt;理论-&amp;gt;设计，计算机科学研究的三种形态，对应学科问题求解中三个典型过程。 抽象：源于实验学科，抽象的结果是概念、符号、模型。 理论：源于数理，主要为定义、定理、公理、证明与结果解释，研究内容跟的基本特征是构造性数学特征。 设计：源于工程学，用来开发求解给定问题的系统和设备主要是需求说明。 范型">
@@ -461,7 +461,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1,798
+                  4,046
                 </span>
               
 
@@ -477,7 +477,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  6
+                  14
                 </span>
               
             </div>
@@ -664,16 +664,153 @@
 </ul>
 </li>
 </ul>
-<h3 id="消息传递"><a href="#消息传递" class="headerlink" title="消息传递"></a>消息传递</h3><ul>
+<h4 id="消息传递"><a href="#消息传递" class="headerlink" title="消息传递"></a>消息传递</h4><ul>
 <li>发送与接收原语</li>
 <li>阻塞/非阻塞：同步型/异步</li>
 <li>有缓冲/无缓冲（Buffer）</li>
 </ul>
-<h3 id="超时和线程"><a href="#超时和线程" class="headerlink" title="超时和线程"></a>超时和线程</h3><p>阻塞机制导致的无限挂起问题，解决方案</p>
+<h4 id="超时和线程"><a href="#超时和线程" class="headerlink" title="超时和线程"></a>超时和线程</h4><p>阻塞机制为 IPC 提供了必要的同步，但导致的无限挂起问题通常不能被接受，解决方案</p>
 <ul>
 <li>超时机制（Timeout）设置最大阻塞期限</li>
 <li>子进程、线程提供组赛操作，主线程 or 父进程可继续其他储里（挂起子进程或子线程）。</li>
-<li>解决死锁</li>
+<li>解决死锁（协议误解或者程序错误）</li>
+</ul>
+<h4 id="IPC-数据表示引例"><a href="#IPC-数据表示引例" class="headerlink" title="IPC 数据表示引例"></a>IPC 数据表示引例</h4><p>在网络体系的物理层中，数据被表示成二进制流，并作为模拟信号进行传输。在应用层中，为支持编程语言提供的数据类型和数据结构，需要用更为复杂的数据表示方法来表示待传输的数据。（如 big endian 与 little endian 的问题）</p>
+<p>一些更优的分布式解决方案</p>
+<h4 id="数据编码"><a href="#数据编码" class="headerlink" title="数据编码"></a>数据编码</h4><p>尽管可以用专门定制的程序，采用双方认同的任意一种数据组装方案执行 IPC（IPC 前的额外程序接口），通用分布式应用要求为交换数据编码提供通用的、独立于平台的方案。因此一些有关网络数据编码的标准应运而生。</p>
+<p>外部数据表示和编码</p>
+<p>三种外部数据表示和编码方法</p>
+<ul>
+<li>CORBA 的公共数据表示</li>
+<li>Java 的对象序列化</li>
+<li>XML（可扩展标记语言）</li>
+</ul>
+<p>此外 Goggle 采用协议缓冲区（protocol buffer），JSON（JavaScript Object Notation）也是近年来常用的外部数据表示方法。</p>
+<ul>
+<li>序列化：将一个对象或者一组关联对象打平成适合于磁盘存储或消息传送的串行格式</li>
+<li>解序列化： 从串行格式中恢复对象或一组对象的状态</li>
+</ul>
+<p>Java 反射的应用</p>
+<ul>
+<li>实现了根据类名创建类的能力，以及为给定的类创建具有给定参数类型的构造函数</li>
+<li>反射使得以完成通用的方式进行序列化和反序列化成为可能</li>
+<li>Java 对象序列化使用反射找到要序列化的对象的类名，以及该类的实例变量的名字、类型和值</li>
+</ul>
+<p>（解序列化有时候像一个动态生成类的过程）</p>
+<h4 id="组播通信"><a href="#组播通信" class="headerlink" title="组播通信"></a>组播通信</h4><ul>
+<li>单个消息从一个进程发送到译组进程的每个成员的操作</li>
+<li>组的成员对发送方常是透明的</li>
+<li>组播的行为有很多种情况，最简单的组播不提供消息传递保证或排序保证</li>
+</ul>
+<p>组播消息为构造具有下列特征的分布式系统提供了基础设施：</p>
+<ul>
+<li><strong>基于复制服务的容错</strong>（比如 Raft 协议，Leader Election 过程都是基于组播通信）</li>
+<li>在自发网络中发现服务</li>
+<li>通过复制的数据获得更好的性能（找寻恢复？）</li>
+<li>事件通知的传播（包括内网穿透等）</li>
+</ul>
+<h4 id="网络虚拟化"><a href="#网络虚拟化" class="headerlink" title="网络虚拟化"></a>网络虚拟化</h4><p>网络虚拟化涉及在一个已有的网络之上构造多个不同的虚拟网络</p>
+<p>每个虚拟网络被设计成支持一个特定的分布式应用</p>
+<ul>
+<li>多媒体数据流</li>
+<li>多人在线游戏</li>
+</ul>
+<p>面向特定应用的虚拟网络构建在一个已有的网络上并为特定的应用进行优化，而不改变底层网络的特征。</p>
+<h5 id="覆盖网络"><a href="#覆盖网络" class="headerlink" title="覆盖网络"></a>覆盖网络</h5><p>积淀和虚拟链接组成的虚拟网络，位于一个底层网络之上</p>
+<ul>
+<li>满足一类应用需求的服务器胡总一个特别高层的服务，例如多媒体内容分发</li>
+<li>在一个给定的联网环境中的更有效的操作</li>
+<li>额外特色，例如：组播或安全通道</li>
+</ul>
+<p>好处</p>
+<ul>
+<li>不改变底层网络就能定义新的网络服务<ul>
+<li>取决于该领域标准化的水平和修补底层路由功能的困难</li>
+</ul>
+</li>
+<li>鼓励对网络服务进行实验和对服务进行面向特定应用的定制</li>
+<li>能定义多个覆盖王，它们能同时存在，从而行成更开放和拓展的网络体系结构</li>
+</ul>
+<p>不足</p>
+<ul>
+<li>引入了额外的间接层</li>
+</ul>
+<p>与属虚的分层概念相关</p>
+<ul>
+<li>一个覆盖网是一层，TCP/IP 结构外存在的一层</li>
+<li>DIY 该层核心元素：寻址模式、要采用的协议、路由方法等。</li>
+</ul>
+<h3 id="客户-服务器范型"><a href="#客户-服务器范型" class="headerlink" title="客户-服务器范型"></a>客户-服务器范型</h3><p>注意说的是<strong>通信范型还是体系结构</strong></p>
+<p>CS 范型服务器扮演服务提供者决策，被动地等待请求的到达。</p>
+<h4 id="寻址"><a href="#寻址" class="headerlink" title="寻址"></a>寻址</h4><ul>
+<li>为了发消息给服务器，客户必须知道服务器的地址</li>
+<li>进程编址方法<ul>
+<li>客户机代码中指明机器/进程号（machine，process number）：文件服务器不透明（类似于绝对地址）</li>
+<li>给每个进程分配唯一地址-&gt;中央服务器（单点故障）</li>
+<li>让进程选择随机地址，用广播定位进程：额外的系统负担</li>
+<li>在客户机中存放 ASCII 服务器名字，运行时寻找它：需要命名服务器（有点像 DNS）</li>
+</ul>
+</li>
+</ul>
+<h4 id="阻塞与非阻塞原语"><a href="#阻塞与非阻塞原语" class="headerlink" title="阻塞与非阻塞原语"></a>阻塞与非阻塞原语</h4><ul>
+<li>有一个要求？？消息要是不可修改的（WHY？）</li>
+</ul>
+<h4 id="有缓冲和无缓冲原语"><a href="#有缓冲和无缓冲原语" class="headerlink" title="有缓冲和无缓冲原语"></a>有缓冲和无缓冲原语</h4><ul>
+<li>无缓冲的形式，当多 C 访问 S 时可能会造成消息丢失的问题</li>
+<li>解决：缓冲，邮箱 blablabla</li>
+</ul>
+<h4 id="可靠的和非可靠原语"><a href="#可靠的和非可靠原语" class="headerlink" title="可靠的和非可靠原语"></a>可靠的和非可靠原语</h4><ul>
+<li>可靠：请求后多一个 ACK（内核到内核的确认）</li>
+</ul>
+<h3 id="P2P-范型"><a href="#P2P-范型" class="headerlink" title="P2P 范型"></a>P2P 范型</h3><h4 id="集中目录式结构"><a href="#集中目录式结构" class="headerlink" title="集中目录式结构"></a>集中目录式结构</h4><p>用户注册与文件检索过程类似于传统的 C/S 模式<br>，区别在于<strong>所有资料并非储存在服务器上，而是储存在各个节点中</strong>。查询选择合适的节点建立直接连接。</p>
+<p>这种结构简单，显示系统信息量的巨大优势和吸引力，同时也揭示了 P2P 系统本质上所不可避免的两个问题：法律版权和资源浪费的问题。</p>
+<h4 id="纯-P2P-网络模型"><a href="#纯-P2P-网络模型" class="headerlink" title="纯 P2P 网络模型"></a>纯 P2P 网络模型</h4><p>广播式 P2P，取消集中的中央服务器。现在应用最广泛的纯 P2P 非结构化拓扑模型——Gnutella 模型。</p>
+<p>明显的问题：易受垃圾信息和病毒的恶意攻击，搜索算法是泛洪方式，低效性。</p>
+<h4 id="混合式网络模型"><a href="#混合式网络模型" class="headerlink" title="混合式网络模型"></a>混合式网络模型</h4><p>Kazza 模型是代表，引入超级节点的概念。根据节点能力不同（计算能力、内存大小 blabla）</p>
+<h4 id="结构化网络模型"><a href="#结构化网络模型" class="headerlink" title="结构化网络模型"></a>结构化网络模型</h4><p>结构化/非结构化根本区别：每个节点所维护的邻居是否能够按照某种全局方式组织起来以利于快速查找。</p>
+<p>目前的主流方式：分布式哈希技术（DHT）。目前扩展性最好的 P2P 路由方式质以。借助 DHT 的优势，取消泛洪算法，又可有效达到目标节点。</p>
+<h3 id="远程过程调用范型"><a href="#远程过程调用范型" class="headerlink" title="远程过程调用范型"></a>远程过程调用范型</h3><p>范型简介补充，自行了解</p>
+<ul>
+<li>请求应答协议</li>
+<li>远程过程调用（RPC），将传统的过程调用模型<strong>扩展</strong>到分布式系统中，允许客户程序透明地调用在服务程序中的过程。</li>
+<li>远程方法调用（RMI），基于对象的编程模型的扩展，允许不用进程运行的对象通过其彼此通信。是对本地方法调用的扩展。（数据库操作中，ODBC）</li>
+</ul>
+<h4 id="RPC-主要步骤"><a href="#RPC-主要步骤" class="headerlink" title="RPC 主要步骤"></a>RPC 主要步骤</h4><p>略</p>
+<h4 id="RPC-的设计问题"><a href="#RPC-的设计问题" class="headerlink" title="RPC 的设计问题"></a>RPC 的设计问题</h4><ul>
+<li>RPC 编程风格——接口编程</li>
+<li>RPC 关联的调用语义</li>
+<li>透明性的关键问题和它如何与远程过程调用相关联</li>
+</ul>
+<h4 id="接口编程"><a href="#接口编程" class="headerlink" title="接口编程"></a>接口编程</h4><ul>
+<li>一些编程语言提供了把程序组织成很多个模块+彼此通信的方法。（面向对象编程典型）</li>
+<li>模块间通信依靠模块间过程调用/访问变量</li>
+<li>通过模块定义显示接口，接口访问过程和变量。</li>
+<li>实现的接口可以隐藏除接口外的所有信息，只要模块接口保持相同，模块的实现就可以随意改变而不影响模块的使用。</li>
+</ul>
+<h4 id="分布式系统的接口"><a href="#分布式系统的接口" class="headerlink" title="分布式系统的接口"></a>分布式系统的接口</h4><ul>
+<li>分布式程序中，模块能够运行在不同的进程中</li>
+<li>服务接口，涉及服务器提供过程的说明、定义和每个过程参数的格式</li>
+<li>分布式编程中使用接口的好处<ul>
+<li>对于任何形式的模块化编程，只需要关系服务接口提供的抽象而不需要关注它们的实现细节（比如 Map、Reduce）</li>
+<li>程序员无需知道实现服务的语言和底层平台</li>
+<li>只要接口保持不变，实现可以改变，自然的支持软件的演化。</li>
+</ul>
+</li>
+<li>接口定义受到分布式底层基础设施的影响<ul>
+<li>某进程访问另一个进程中模块的变量是不可能的</li>
+<li>本地过程调用使用参数传递机制，不适用于调用者和过程在不同进程中的情况<ul>
+<li>不支持引用的传递</li>
+<li>某个参数同时作为输入/输出时，请求和应答必须传值</li>
+<li>内存地址无效化，不能作为调用结果返回（没有意义）</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>接口定义语言（IDL）<ul>
+<li>RPC 可以集成在编程语言中</li>
+<li>接口定义语言，跨语言，以不同语言实现过程以便相互调用</li>
+</ul>
+</li>
 </ul>
 
       
@@ -798,7 +935,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">341</span>
+                  <span class="site-state-item-count">343</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -936,7 +1073,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#范型和抽象"><span class="nav-number">1.</span> <span class="nav-text">范型和抽象</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#抽象"><span class="nav-number">1.1.</span> <span class="nav-text">抽象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#范型"><span class="nav-number">1.2.</span> <span class="nav-text">范型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#系统模型分类"><span class="nav-number">1.3.</span> <span class="nav-text">系统模型分类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#物理模型"><span class="nav-number">1.3.1.</span> <span class="nav-text">物理模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#体系结构模型"><span class="nav-number">1.3.2.</span> <span class="nav-text">体系结构模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#体系结构元素——通信实体"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">体系结构元素——通信实体</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#体系结构元素——中间件内容补充"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">体系结构元素——中间件内容补充</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#体系结构模型——分布式系统结构的设计需求"><span class="nav-number">1.3.2.3.</span> <span class="nav-text">体系结构模型——分布式系统结构的设计需求</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#体系结构模型——客户-服务器模式"><span class="nav-number">1.3.2.4.</span> <span class="nav-text">体系结构模型——客户-服务器模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#体系结构模型——层次化体系化结构"><span class="nav-number">1.3.2.5.</span> <span class="nav-text">体系结构模型——层次化体系化结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#体系结构模型——P2P-体系化结构"><span class="nav-number">1.3.2.6.</span> <span class="nav-text">体系结构模型——P2P 体系化结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#体系结构模型变体"><span class="nav-number">1.3.2.7.</span> <span class="nav-text">体系结构模型变体</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式通信范型"><span class="nav-number">1.4.</span> <span class="nav-text">分布式通信范型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#进程间通信"><span class="nav-number">1.4.1.</span> <span class="nav-text">进程间通信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#消息传递"><span class="nav-number">1.4.2.</span> <span class="nav-text">消息传递</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#超时和线程"><span class="nav-number">1.4.3.</span> <span class="nav-text">超时和线程</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#范型和抽象"><span class="nav-number">1.</span> <span class="nav-text">范型和抽象</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#抽象"><span class="nav-number">1.1.</span> <span class="nav-text">抽象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#范型"><span class="nav-number">1.2.</span> <span class="nav-text">范型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#系统模型分类"><span class="nav-number">1.3.</span> <span class="nav-text">系统模型分类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#物理模型"><span class="nav-number">1.3.1.</span> <span class="nav-text">物理模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#体系结构模型"><span class="nav-number">1.3.2.</span> <span class="nav-text">体系结构模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#体系结构元素——通信实体"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">体系结构元素——通信实体</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#体系结构元素——中间件内容补充"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">体系结构元素——中间件内容补充</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#体系结构模型——分布式系统结构的设计需求"><span class="nav-number">1.3.2.3.</span> <span class="nav-text">体系结构模型——分布式系统结构的设计需求</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#体系结构模型——客户-服务器模式"><span class="nav-number">1.3.2.4.</span> <span class="nav-text">体系结构模型——客户-服务器模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#体系结构模型——层次化体系化结构"><span class="nav-number">1.3.2.5.</span> <span class="nav-text">体系结构模型——层次化体系化结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#体系结构模型——P2P-体系化结构"><span class="nav-number">1.3.2.6.</span> <span class="nav-text">体系结构模型——P2P 体系化结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#体系结构模型变体"><span class="nav-number">1.3.2.7.</span> <span class="nav-text">体系结构模型变体</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式通信范型"><span class="nav-number">1.4.</span> <span class="nav-text">分布式通信范型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#进程间通信"><span class="nav-number">1.4.1.</span> <span class="nav-text">进程间通信</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#消息传递"><span class="nav-number">1.4.1.1.</span> <span class="nav-text">消息传递</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#超时和线程"><span class="nav-number">1.4.1.2.</span> <span class="nav-text">超时和线程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#IPC-数据表示引例"><span class="nav-number">1.4.1.3.</span> <span class="nav-text">IPC 数据表示引例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据编码"><span class="nav-number">1.4.1.4.</span> <span class="nav-text">数据编码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#组播通信"><span class="nav-number">1.4.1.5.</span> <span class="nav-text">组播通信</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#网络虚拟化"><span class="nav-number">1.4.1.6.</span> <span class="nav-text">网络虚拟化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#覆盖网络"><span class="nav-number">1.4.1.6.1.</span> <span class="nav-text">覆盖网络</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#客户-服务器范型"><span class="nav-number">1.4.2.</span> <span class="nav-text">客户-服务器范型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#寻址"><span class="nav-number">1.4.2.1.</span> <span class="nav-text">寻址</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#阻塞与非阻塞原语"><span class="nav-number">1.4.2.2.</span> <span class="nav-text">阻塞与非阻塞原语</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#有缓冲和无缓冲原语"><span class="nav-number">1.4.2.3.</span> <span class="nav-text">有缓冲和无缓冲原语</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#可靠的和非可靠原语"><span class="nav-number">1.4.2.4.</span> <span class="nav-text">可靠的和非可靠原语</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#P2P-范型"><span class="nav-number">1.4.3.</span> <span class="nav-text">P2P 范型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#集中目录式结构"><span class="nav-number">1.4.3.1.</span> <span class="nav-text">集中目录式结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#纯-P2P-网络模型"><span class="nav-number">1.4.3.2.</span> <span class="nav-text">纯 P2P 网络模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#混合式网络模型"><span class="nav-number">1.4.3.3.</span> <span class="nav-text">混合式网络模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#结构化网络模型"><span class="nav-number">1.4.3.4.</span> <span class="nav-text">结构化网络模型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#远程过程调用范型"><span class="nav-number">1.4.4.</span> <span class="nav-text">远程过程调用范型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#RPC-主要步骤"><span class="nav-number">1.4.4.1.</span> <span class="nav-text">RPC 主要步骤</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RPC-的设计问题"><span class="nav-number">1.4.4.2.</span> <span class="nav-text">RPC 的设计问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#接口编程"><span class="nav-number">1.4.4.3.</span> <span class="nav-text">接口编程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#分布式系统的接口"><span class="nav-number">1.4.4.4.</span> <span class="nav-text">分布式系统的接口</span></a></li></ol></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -971,7 +1108,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">399.7k</span>
+    <span title="Site words total count">405.2k</span>
   
 </div>
 
