@@ -91,7 +91,7 @@
 <meta property="og:site_name" content="Eddy的个人博客">
 <meta property="og:description" content="课堂笔记 Go 语言Why use Go很多系统风格的语言可以选择，比如 Java、C#、Python、C++。Go 像其它语言一样，提供了很多许多 features，比如 thread 线程、locking、synchronization，尤其是 RPC（remote procedure call）包，非常方便实用。 与 C++不同，Go Type safe and memory safe，编程">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-06-01T07:39:42.801Z">
+<meta property="og:updated_time" content="2020-06-01T08:32:28.194Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="分布式系统学习——MIT6.824-Lecture2课堂笔记">
 <meta name="twitter:description" content="课堂笔记 Go 语言Why use Go很多系统风格的语言可以选择，比如 Java、C#、Python、C++。Go 像其它语言一样，提供了很多许多 features，比如 thread 线程、locking、synchronization，尤其是 RPC（remote procedure call）包，非常方便实用。 与 C++不同，Go Type safe and memory safe，编程">
@@ -448,7 +448,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1,383
+                  1,760
                 </span>
               
 
@@ -464,7 +464,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  5
+                  7
                 </span>
               
             </div>
@@ -520,7 +520,21 @@
 <h2 id="例子：Web-Crawler"><a href="#例子：Web-Crawler" class="headerlink" title="例子：Web Crawler"></a>例子：Web Crawler</h2><p>爬虫会启动很多个线程进行 URLs 的爬取，希望知道爬取的 URLs 是刚刚 fetch for 还是已经完成，爬虫希望避免重复爬取。Serial fetch 时间很长，我们希望 Parallel fetch，一个最终的问题，如何确定爬虫停止，获取全部的爬虫信息。</p>
 <p>提供的 serial fetch，采取 DFS 爬取树形网页结构，并且用 map、set 储存状态。只有一个 fetch map，递归的 fetch 通过传递该 map 的引用（copy 代价太大了）来确定状态。</p>
 <h3 id="Serial-Crawler"><a href="#Serial-Crawler" class="headerlink" title="Serial Crawler"></a>Serial Crawler</h3><p>迅速建立一批 go routines 就停止了。</p>
-<h3 id="Concurrent-Crawler-1"><a href="#Concurrent-Crawler-1" class="headerlink" title="Concurrent Crawler 1"></a>Concurrent Crawler 1</h3><p>加入了 mutex 和 wait group，可以保证 routines 不会 fetch 相同的 url， 如果不加入 42-45 行锁，当两个线程同时尝试两个 url 时候，会同时设定为 true，从而导致重复 fetch。所以读共享 table 操作要加入锁。</p>
+<h3 id="Concurrent-Crawler"><a href="#Concurrent-Crawler" class="headerlink" title="Concurrent Crawler"></a>Concurrent Crawler</h3><p>（<strong>感觉 wait group 实现用到了整型信号量的思路</strong>）加入了 mutex 和 wait group，可以保证 routines 不会 fetch 相同的 url， 如果不加入 42-45 行锁，当两个线程同时尝试两个 url 时候，会同时设定为 true，从而导致重复 fetch。所以读共享 table 操作要加入锁。</p>
+<p>！的确应该用<code>defer done.Done()</code>，否则不能保证函数调用执行完后再释放。</p>
+<p>Q：如何保证 done.Done 操作不会产生 Race 问题？<br>A：有内部锁保证。（可以理解成 sync.WaitGroup 操作都是线程安全的）。</p>
+<p>关于变量 u 的解释没太听懂。</p>
+<p>Q：如果 inner function，作为 go routine 启动并且 refer 了 surrounding function 的变量，那当 surrounding function 返回时，refer 的变量怎么办？<br>A：答案时 Go 的实现会意识外部的 closure 并会分析，编译器会分配<code>heat memory</code>（热内存）来 hold 住这些变量的值，从栈中转移到堆中，这样 inner function 仍能到他们，最后垃圾处理机制会处理这些变量。</p>
+<p>编程中 race 问题是常见的</p>
+<p>Go 提供了优秀的工具，race 检测工具<code>go run -race</code>，检测不同 routines 先读后写又无锁的情况。</p>
+<p>Q：静态分析？<br>A：并不是，race editor 并不是静态分析，是对 run 过程中进行的检测。</p>
+<p>一共多少并发线程可以同时运行</p>
+<p>样例中看起来 5，实际工程中并没有 limit</p>
+<h3 id="Concurrent-Channel"><a href="#Concurrent-Channel" class="headerlink" title="Concurrent Channel"></a>Concurrent Channel</h3><p>使用 Channel 而不是共享变量的形式，channel 是线程安全的（Q&amp;A 里顺便提了一下）。感觉这种形式有点像事件驱动？</p>
+<ul>
+<li>worker 控制 channel 压入（urls 或者 strings 切片）</li>
+<li>master 是个 loop 对 channel 弹出，根据弹出内容执行新建 worker，还是其他。</li>
+</ul>
 
       
     </div>
@@ -560,6 +574,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/post/b6bdfc04.html" rel="prev" title="分布式系统学习——MIT6.824-Lecture3课堂笔记">
+                分布式系统学习——MIT6.824-Lecture3课堂笔记 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -640,7 +658,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">343</span>
+                  <span class="site-state-item-count">344</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -778,7 +796,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Go-语言"><span class="nav-number">1.</span> <span class="nav-text">Go 语言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Why-use-Go"><span class="nav-number">1.1.</span> <span class="nav-text">Why use Go</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Threads"><span class="nav-number">2.</span> <span class="nav-text">Threads</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#IO-concurrency"><span class="nav-number">2.1.</span> <span class="nav-text">IO concurrency</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Multi-core-parallelism"><span class="nav-number">2.2.</span> <span class="nav-text">Multi-core parallelism</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Convenience"><span class="nav-number">2.3.</span> <span class="nav-text">Convenience</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Q-amp-A"><span class="nav-number">2.4.</span> <span class="nav-text">Q&amp;A</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Race-问题"><span class="nav-number">2.5.</span> <span class="nav-text">Race 问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Coordination-问题"><span class="nav-number">2.6.</span> <span class="nav-text">Coordination 问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Deadlock-问题"><span class="nav-number">2.7.</span> <span class="nav-text">Deadlock 问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#例子：Web-Crawler"><span class="nav-number">2.8.</span> <span class="nav-text">例子：Web Crawler</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Serial-Crawler"><span class="nav-number">2.8.1.</span> <span class="nav-text">Serial Crawler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Concurrent-Crawler-1"><span class="nav-number">2.8.2.</span> <span class="nav-text">Concurrent Crawler 1</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Go-语言"><span class="nav-number">1.</span> <span class="nav-text">Go 语言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Why-use-Go"><span class="nav-number">1.1.</span> <span class="nav-text">Why use Go</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Threads"><span class="nav-number">2.</span> <span class="nav-text">Threads</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#IO-concurrency"><span class="nav-number">2.1.</span> <span class="nav-text">IO concurrency</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Multi-core-parallelism"><span class="nav-number">2.2.</span> <span class="nav-text">Multi-core parallelism</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Convenience"><span class="nav-number">2.3.</span> <span class="nav-text">Convenience</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Q-amp-A"><span class="nav-number">2.4.</span> <span class="nav-text">Q&amp;A</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Race-问题"><span class="nav-number">2.5.</span> <span class="nav-text">Race 问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Coordination-问题"><span class="nav-number">2.6.</span> <span class="nav-text">Coordination 问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Deadlock-问题"><span class="nav-number">2.7.</span> <span class="nav-text">Deadlock 问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#例子：Web-Crawler"><span class="nav-number">2.8.</span> <span class="nav-text">例子：Web Crawler</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Serial-Crawler"><span class="nav-number">2.8.1.</span> <span class="nav-text">Serial Crawler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Concurrent-Crawler"><span class="nav-number">2.8.2.</span> <span class="nav-text">Concurrent Crawler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Concurrent-Channel"><span class="nav-number">2.8.3.</span> <span class="nav-text">Concurrent Channel</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -813,7 +831,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">405.2k</span>
+    <span title="Site words total count">409.8k</span>
   
 </div>
 

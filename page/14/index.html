@@ -364,6 +364,219 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/d140a694.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/d140a694.html" itemprop="url">数字图像处理——高斯滤波器与零填充避免DFT固有周期性影响</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-23T21:25:53+08:00">
+                2019-10-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数字图像处理/" itemprop="url" rel="index">
+                    <span itemprop="name">数字图像处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,508
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  8
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>2019.10.24 更新，与<a href="https://www.edwardzcn98yx.com/post/e371c683.html">数字图像处理——频率域平滑锐化图像常用滤波器</a>中滤波器公式保持一致，并更新填充函数的写法。</p>
+<h1 id="高斯滤波"><a href="#高斯滤波" class="headerlink" title="高斯滤波"></a>高斯滤波</h1><h2 id="高斯高通滤波-GaussianHPF"><a href="#高斯高通滤波-GaussianHPF" class="headerlink" title="高斯高通滤波 GaussianHPF"></a>高斯高通滤波 GaussianHPF</h2><p>频率域高斯高通滤波公式如下，注意公式$D$和$D_0$的区别</p>
+<script type="math/tex; mode=display">H(u,v) = 1-e^{\dfrac{-D^2(u,v)}{2D_0^2}}</script><h2 id="高斯低通滤波-GaussianLPF"><a href="#高斯低通滤波-GaussianLPF" class="headerlink" title="高斯低通滤波 GaussianLPF"></a>高斯低通滤波 GaussianLPF</h2><p>频率域高斯低通滤波公式如下</p>
+<script type="math/tex; mode=display">H(u,v) = e^{\dfrac{-D^2(u,v)}{2D_0^2}}</script><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getGaussianMask</span><span class="params">(mask_shape,filter_d0,hl_type)</span>:</span></span><br><span class="line">    <span class="keyword">assert</span> hl_type <span class="keyword">in</span> (<span class="string">"lpf"</span>,<span class="string">"hpf"</span>)</span><br><span class="line">    rows,cols = mask_shape[<span class="number">0</span>],mask_shape[<span class="number">1</span>]</span><br><span class="line">    crow = rows/<span class="number">2</span></span><br><span class="line">    ccol = cols/<span class="number">2</span></span><br><span class="line">    mask = np.zeros((rows,cols))</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(rows):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(cols):</span><br><span class="line">            dis = sqrt((i-crow)**<span class="number">2</span> + (j-ccol)**<span class="number">2</span>)</span><br><span class="line">            <span class="keyword">if</span> hl_type == <span class="string">"hpf"</span>:</span><br><span class="line">                mask[i,j] = <span class="number">1</span>-np.exp(-(dis**<span class="number">2</span>) / (<span class="number">2</span>*(filter_d0**<span class="number">2</span>)))</span><br><span class="line">            <span class="keyword">elif</span> hl_type == <span class="string">"lpf"</span>:</span><br><span class="line">                mask[i,j] = np.exp(-(dis**<span class="number">2</span>)/(<span class="number">2</span>*(filter_d0**<span class="number">2</span>)))</span><br><span class="line">    <span class="keyword">return</span> mask</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getGaussianFilterPassImg</span><span class="params">(input_img : np.array, filter_type : str , filter_d0  , size = None)</span>:</span></span><br><span class="line">    <span class="keyword">assert</span> filter_type <span class="keyword">in</span> (<span class="string">"lpf"</span>,<span class="string">"hpf"</span>)</span><br><span class="line">    f_img = np.fft.fft2(input_img , s = size)</span><br><span class="line">    shift_img = np.fft.fftshift(f_img)</span><br><span class="line">    mask_shift_img = getGaussianMask(f_img.shape,filter_d0,filter_type)</span><br><span class="line">    new_shift_img = mask_shift_img*shift_img</span><br><span class="line">    new_manitude_img = <span class="number">20</span>*np.log(np.abs(new_shift_img+eps))</span><br><span class="line">    new_f_img = np.fft.ifftshift(new_shift_img)</span><br><span class="line">    new_img = np.fft.ifft2(new_f_img)</span><br><span class="line">    new_img = np.abs(new_img)</span><br><span class="line">    <span class="keyword">return</span> new_img,new_manitude_img,mask_shift_img</span><br></pre></td></tr></table></figure>
+<h1 id="DFT-固有周期影响"><a href="#DFT-固有周期影响" class="headerlink" title="DFT 固有周期影响"></a>DFT 固有周期影响</h1><p>实现方法，由于 numpy.fft.fft2 方法参数中可以指定输出图像的大小，官方描述如下：</p>
+<blockquote>
+<p>s : sequence of ints, optional</p>
+<p>_Shape (length of each transformed axis) of the output (s[0] refers to axis 0, s[1] to axis 1, etc.). This corresponds to n for fft(x, n). Along each axis, if the given shape is smaller than that of the input, the input is cropped. If it is larger, the input is padded with zeros. if s is not given, the shape of the input along the axes specified by axes is used._</p>
+</blockquote>
+<p>该参数默认为 DFT 变换后大小为原图大小，若指定输出大小大于原图大小，则进行 0 填充，我们可以利用该参数实现我们的测试。</p>
+<h2 id="不经填充裁剪"><a href="#不经填充裁剪" class="headerlink" title="不经填充裁剪"></a>不经填充裁剪</h2><p>直接以 s 的默认值（None）调用 numpy.fft.fft2 实际上就是进行的非 0 填充</p>
+<p>调用我之前写的方法，实现如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lpf_cycle_img, manitude_cycle_img,mask_img = getGaussianFilterPassImg(cycle_img , <span class="string">"lpf"</span> , <span class="number">5</span> )</span><br></pre></td></tr></table></figure>
+<p>或者如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lpf_cycle_img, manitude_cycle_img,mask_img = getGaussianFilterPassImg(cycle_img , <span class="string">"lpf"</span> , <span class="number">5</span> ,size = <span class="keyword">None</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="进行填充裁剪"><a href="#进行填充裁剪" class="headerlink" title="进行填充裁剪"></a>进行填充裁剪</h2><p>根据教材 P157 解释以及 P159、P163 页，二维零填充避免缠绕错误的结论与一维相同，令$f(x)$和$h(x)$分别是大小为$A \times B$和$C \times D$像素的图像阵列。循环卷积中的缠绕错误可以通过下面函数进行零填充来避免，方法如下：</p>
+<script type="math/tex; mode=display">
+f_p(x,y)=\left \{
+\begin{aligned}
+f(x,y)  & , &  0 \le x \le A-1 和  0 \le y\le B-1 \\
+0 & , & A \le x \le P 或 B \le y \le Q
+\end{aligned}
+\right.</script><p>和</p>
+<script type="math/tex; mode=display">
+h_p(x,y)=\left \{
+\begin{aligned}
+h(x,y) & , & 0 \le x \le C-1 和 0 \le y\le D-1 \\
+0 & , & C \le x \le P 或 D \le y \le Q
+\end{aligned}
+\right.</script><p>其中，</p>
+<script type="math/tex; mode=display">P \ge A+C -1</script><p>和</p>
+<script type="math/tex; mode=display">Q \ge B+D-1</script><p>那么实现方法就有两种：</p>
+<ol>
+<li>通过其他方法进行补 0 后调用 s 为 None 的 DFT</li>
+<li>通过调整 s 为(P,Q)大小调用 DFT</li>
+</ol>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/d140a694.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/e371c683.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1181,195 +1394,6 @@ H_{IHPF}(u,v) = \left \{
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/e3de1605.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/e3de1605.html" itemprop="url">计算机图形学——曲面表达</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-15T08:06:46+08:00">
-                2019-10-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/计算机图形学/" itemprop="url" rel="index">
-                    <span itemprop="name">计算机图形学</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  123
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="曲面造型发展背景"><a href="#曲面造型发展背景" class="headerlink" title="曲面造型发展背景"></a>曲面造型发展背景</h1><h1 id="插值与逼近"><a href="#插值与逼近" class="headerlink" title="插值与逼近"></a>插值与逼近</h1><h1 id="使用参数曲面的优势"><a href="#使用参数曲面的优势" class="headerlink" title="使用参数曲面的优势"></a>使用参数曲面的优势</h1><ol>
-<li>基于满足集合不变性（指他们不依赖于）</li>
-</ol>
-<h1 id="曲线曲面的一般参数样条表达"><a href="#曲线曲面的一般参数样条表达" class="headerlink" title="曲线曲面的一般参数样条表达"></a>曲线曲面的一般参数样条表达</h1><p>位置矢量、切矢。。</p>
-<p>我们如何有效、快速地设计、表达和绘制自由曲线？</p>
-<ul>
-<li>灵活的模型</li>
-</ul>
-<p>Bezier 曲线</p>
-<h1 id="连续与光滑"><a href="#连续与光滑" class="headerlink" title="连续与光滑"></a>连续与光滑</h1><p>C1 连续、几何连续（只要求方向，不要求大小值相同）</p>
-<p>B 样条曲线</p>
-<p>k 取值 2 到 n+1</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/e3de1605.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1424,7 +1448,7 @@ H_{IHPF}(u,v) = \left \{
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">343</span>
+                  <span class="site-state-item-count">344</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1581,7 +1605,7 @@ H_{IHPF}(u,v) = \left \{
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">405.2k</span>
+    <span title="Site words total count">409.8k</span>
   
 </div>
 
