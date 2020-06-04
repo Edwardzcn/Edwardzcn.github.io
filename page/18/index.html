@@ -25,6 +25,8 @@
 <meta http-equiv="Cache-Control" content="no-transform" />
 <meta http-equiv="Cache-Control" content="no-siteapp" />
 
+<meta http-equiv="Cache-Control" content="max-age=600" />
+
 
 
 
@@ -350,6 +352,560 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/ac8faa8e.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/ac8faa8e.html" itemprop="url">数论学习——Stirling数</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-09T19:38:54+08:00">
+                2019-09-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数学/" itemprop="url" rel="index">
+                    <span itemprop="name">数学</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数学/数论/" itemprop="url" rel="index">
+                    <span itemprop="name">数论</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  523
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  2
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="问题引出"><a href="#问题引出" class="headerlink" title="问题引出"></a>问题引出</h1><p>用矩阵来表示样本属于哪类划分类别的过程中，老师提出的一个问题：从$N$个样本中分出$C$类，不同的分法一共有多少种？</p>
+<p>抽象：$N$个数划分为$C$个集合，要求集合不能为空，方案数为？</p>
+<p><strong>就是第二类斯特林数</strong>。</p>
+<h1 id="解答"><a href="#解答" class="headerlink" title="解答"></a>解答</h1><h2 id="递推"><a href="#递推" class="headerlink" title="递推"></a>递推</h2><p>其实是个数学的问题，和组合数的公式有些类似，所以我们尝试求其递推式，从$N$个数划分为$C$个非空集合，如果前面各数都已经划分好到所属集合，剩下最后一个数未划分，考虑最后一个数，则有以下两种情况：</p>
+<ol>
+<li>前面$N-1$个数划分的集合数为$C-1$，则最后一个数必须单独属于一个新集合。</li>
+<li>前面$N-1$个数划分的集合数为$C$，则最后一个数可以属于先前$C$个集合中的任意一个。</li>
+</ol>
+<p>用更数学的方式表达，$S(n,c)$表示我们所求，则有以下转移方程。</p>
+<script type="math/tex; mode=display">S(n,c) = S(n-1,c-1)+n*S(n-1,c)</script><h2 id="容斥原理（通项公式）"><a href="#容斥原理（通项公式）" class="headerlink" title="容斥原理（通项公式）"></a>容斥原理（通项公式）</h2><p>考虑容斥的话思路尝尝是从一个大数减起，对于这个计算直觉应该是从这个大数：$c^n$（把$n$个球放进$c$个可空的不同集合的总方案数，另一个角度就是$n$位$c$进制数可表达的数的范围）</p>
+<p>那我们应该如何计算得到我们想要的$S(n,c)$呢？（容斥思想）</p>
+<p>考虑$c^n$中包含着可空的情况，又考虑到直接求<strong>恰</strong>有$x$个集合满的情况，我们采取曲线救国的方式（也是容斥原理中常用的），我们可以求出<strong>至少</strong>$x$个集合满的情况，实际上就是$(c-k)^{n}$。</p>
+<p>那我们就可以容斥了，枚举空集的情况数然后求个 Sum 就行，给出公式：</p>
+<script type="math/tex; mode=display">S(n,c) = \frac{1}{m!} \sum_{k=0}^{m} (-1)^kC(m,k)(m-k)^n</script><p>再一言以蔽之：就是枚举空集合的数目，剩下的随意放置，容斥以下就可以得到最终的答案了。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/2fd84083.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/2fd84083.html" itemprop="url">CCFADL105——智能计算系统课程</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-09T18:58:40+08:00">
+                2019-09-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  0
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/e4eb9281.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/e4eb9281.html" itemprop="url">CCFADL105——面向下一代计算的开源芯片与敏捷开发方法</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-09T18:57:54+08:00">
+                2019-09-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/讲座/" itemprop="url" rel="index">
+                    <span itemprop="name">讲座</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,779
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  10
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="面向下一代计算的开源芯片与敏捷开发方法"><a href="#面向下一代计算的开源芯片与敏捷开发方法" class="headerlink" title="面向下一代计算的开源芯片与敏捷开发方法"></a>面向下一代计算的开源芯片与敏捷开发方法</h1><p>主讲人：包云岗老师（中科院计算所， 先进计算机系统研究中心）</p>
+<h1 id="Memory-Wall"><a href="#Memory-Wall" class="headerlink" title="Memory Wall"></a>Memory Wall</h1><h2 id="提出背景：System-Architecture"><a href="#提出背景：System-Architecture" class="headerlink" title="提出背景：System Architecture"></a>提出背景：System Architecture</h2><p>1995 年提出，成为体系结构研究的最重要问题之一</p>
+<ul>
+<li>多核处理器的流行</li>
+<li>延迟与带宽显得更为重要</li>
+</ul>
+<h2 id="应对思路"><a href="#应对思路" class="headerlink" title="应对思路"></a>应对思路</h2><ul>
+<li>工具模型：HMTT、C-MAT</li>
+<li>预取技术：Memory Hierarchy</li>
+<li>新型存储：3D Stack、HBM、NVM</li>
+<li>新架构： Process-in-Memory、Domain-Specific Architecture</li>
+</ul>
+<h2 id="HMTT-访存监控仪器"><a href="#HMTT-访存监控仪器" class="headerlink" title="HMTT 访存监控仪器"></a>HMTT 访存监控仪器</h2><p>包老师博士期间的工作，现在已经迭代了几个版本。</p>
+<ul>
+<li>需求<ul>
+<li>安捷伦等逻辑分析仪：<strong>无法检测</strong>到云计算环境下<strong>多应用混合</strong>后的数据通路中的应用访存行为（不具备对应用进行带语义的监控）</li>
+<li>提出<strong>软硬件协同</strong>监测新方法，研制<strong>HMTT 访存监控仪</strong></li>
+</ul>
+</li>
+<li>工作流程<ul>
+<li>物理地址追踪（Physical Address Trace）：作为硬件，不影响其性能，直插在内存槽获取其物理地址</li>
+<li>虚拟地址追踪（Virtual Address Trace）：转换成虚拟地址以了解进程相关的信息</li>
+<li>访问对象（Object Access Pattern）：通过对虚拟地址的再分析，与变量关联起来</li>
+</ul>
+</li>
+</ul>
+<p>工作示意图如下</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0007.jpg" alt="HMTT1"></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/e4eb9281.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -712,677 +1268,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/f74c511d.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/f74c511d.html" itemprop="url">CCFADL105——“智能在网计算”应用智能网卡技术加速数据中心</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-09T18:54:19+08:00">
-                2019-09-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/讲座/" itemprop="url" rel="index">
-                    <span itemprop="name">讲座</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,187
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  5
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="“智能在网计算”应用智能网卡技术加速数据中心"><a href="#“智能在网计算”应用智能网卡技术加速数据中心" class="headerlink" title="“智能在网计算”应用智能网卡技术加速数据中心"></a>“智能在网计算”应用智能网卡技术加速数据中心</h1><p>主讲人：谭焜（Phd，华为）</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/KunTan/KunTan_page-0001.jpg" alt="FirstPage"></p>
-<h1 id="总览"><a href="#总览" class="headerlink" title="总览"></a>总览</h1><h2 id="network-stack"><a href="#network-stack" class="headerlink" title="network stack"></a>network stack</h2><p>IP 层往上，栈（协议栈）更贴近软件，IP 层往下，更贴近硬件。从软硬件均实现了 Network 的服务需求。</p>
-<h2 id="Bottleneck-的改变"><a href="#Bottleneck-的改变" class="headerlink" title="Bottleneck 的改变"></a>Bottleneck 的改变</h2><div class="table-container">
-<table>
-<thead>
-<tr>
-<th>过去</th>
-<th>现在</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>IP 层作为网络协议栈处在中心的位置，网络通讯速度相较于 CPU 和内存的速度来说要慢很多</td>
-<td>网络速度以 200 倍到 2000 倍速度增长，而 CPU 计算增速却放缓，摩尔定律放缓</td>
-</tr>
-<tr>
-<td>eg: at 1990, Intel 80486 32bit@33MHz vs. ETH 10Mbps</td>
-<td>eg: CPU 10~100GHz vs. ETN 400 Gbps</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>内存增长也遇到瓶颈</p>
-<p>完全吃下 40G ETH， 8 TCP conns 网络数据至少需要 5 核。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/f74c511d.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/3f0572b0.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/3f0572b0.html" itemprop="url">CCFADL105——大数据系统的演化：理论、实践和愿望</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-09T18:52:23+08:00">
-                2019-09-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/讲座/" itemprop="url" rel="index">
-                    <span itemprop="name">讲座</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2,307
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  8
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="大数据系统的演化：理论、实践和展望"><a href="#大数据系统的演化：理论、实践和展望" class="headerlink" title="大数据系统的演化：理论、实践和展望"></a>大数据系统的演化：理论、实践和展望</h1><p>主讲人：周礼栋老师（微软亚洲研究院副院长，MSRA 被称为系统方向的黄埔军校，肇国老师评价其为非常 Perspective 的一位老师）</p>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>作为第一个 Talker，先做一个比较宏观的演讲，整个分为两部分。<br>除了必要的知识点以外，我们更需要以系统的视角，关注方法学（重新思考）。</p>
-<h1 id="回顾大数据系统的发展历程：Big-Data-Systems"><a href="#回顾大数据系统的发展历程：Big-Data-Systems" class="headerlink" title="回顾大数据系统的发展历程：Big Data Systems"></a>回顾大数据系统的发展历程：Big Data Systems</h1><p>强调了抽象的重要性，一个好的抽象，可以将要进行的任务很好的表达出来，同时还要具备高效性，可以被高效的实现。</p>
-<h2 id="2010-年以前的工作：Foudation"><a href="#2010-年以前的工作：Foudation" class="headerlink" title="2010 年以前的工作：Foudation"></a>2010 年以前的工作：Foudation</h2><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0003.jpg" alt="初期 Fundation"></p>
-<p>对于 MapReduce 的横空出现，学界对于 MapReduce 存在一些争论，一些数据库的巨擘认为 MapReduce 是对数据库已经建立起来的一些规则也好，基石工作也好的破坏，技术上是一种倒退，而微软则在 Google MapReduce 的基础上尝试填补上述争论，微软认为数据库和 MapReduce 是存在结合点的，可以向上提供原有的 SQL relation algebra</p>
-<ul>
-<li>谷歌： MapReduce -&gt; 并行/分布式/优化 -&gt; 高效执行</li>
-<li>微软：数据流 -&gt; 原有数据库接口 -&gt; MapReduce -&gt; 并行/分布式/优化 -&gt; 高效执行</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/3f0572b0.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/b1db88f.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/b1db88f.html" itemprop="url">CCFADL105——大数据系统实践：从MapReduce到融合计算</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-08T13:08:21+08:00">
-                2019-09-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/讲座/" itemprop="url" rel="index">
-                    <span itemprop="name">讲座</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,815
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  7
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="大数据系统实践：从-MapReduce-到融合计算"><a href="#大数据系统实践：从-MapReduce-到融合计算" class="headerlink" title="大数据系统实践：从 MapReduce 到融合计算"></a>大数据系统实践：从 MapReduce 到融合计算</h1><p>主讲人：郭振宇（蚂蚁金服分布式计算总监）</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-001.jpg" alt="FirstPage"></p>
-<h1 id="融合计算模型"><a href="#融合计算模型" class="headerlink" title="融合计算模型"></a>融合计算模型</h1><h2 id="观察-趋势"><a href="#观察-趋势" class="headerlink" title="观察/趋势"></a>观察/趋势</h2><p>举一个蚂蚁金融一个常见的应用场景：扫码支付</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-002.jpg" alt="ScanPay"></p>
-<p>审视机器学习（或者大数据分析）产品三个层面的发展：</p>
-<ul>
-<li><strong>计算范畴</strong>：统计-&gt;规则（专家会议沉淀）-&gt;图-&gt;AI-&gt;复杂决策</li>
-<li><strong>计算复杂度</strong>：静态线性工作流-&gt;静态图工作流-&gt;动态工作流-&gt;多流-&gt;多流融合</li>
-<li><strong>质量</strong>：时效、安全/隐私、数据可靠性。</li>
-</ul>
-<p>实际上真正的 Machine Learning Code 只是很小的一部分，图源：《Hidden Technology Google》</p>
-<p>而应用要落地，关键的问题在：</p>
-<ul>
-<li><p>学习/开发/调试的成本</p>
-<ul>
-<li>对接很多独立的引擎/框架</li>
-<li>Ad-hoc/碎片化的集成/联调（多机联调）</li>
-</ul>
-</li>
-<li><p>运行时质量</p>
-<ul>
-<li>破碎的上下游衔接<ul>
-<li>形象点说，就是：上面跑数据不确定，下面就可能接受到不对的结果，</li>
-<li>具体在：<strong>接口</strong>/<strong>时效性</strong>/<strong>一致性</strong>/<strong>故障恢复</strong>/<strong>中间状态管理</strong></li>
-<li>对于中间状态管理的解释：生产者（上游）通过 HDFS 存放中间状态（产品），消费者（下游）不知道什么时候可以删除而不产生危害，导致存储过载、溢出。</li>
-</ul>
-</li>
-<li>盲目调度，存在很多优化的空间<ul>
-<li><strong>资源</strong>/<strong>数据</strong>/<strong>计算</strong>/<strong>服务</strong></li>
-</ul>
-</li>
-<li>冗余/低效的数据传输/拷贝/计算等</li>
-<li>安全隐私</li>
-<li>…</li>
-</ul>
-</li>
-<li><p>运维效率</p>
-<ul>
-<li>多引擎/平台异构运维</li>
-</ul>
-</li>
-</ul>
-<h2 id="胶水"><a href="#胶水" class="headerlink" title="胶水"></a>胶水</h2><p>平台化，将不同工作胶合在一起，常通过 GUIWorkFlow 的形式展示出来，一些公司已经有一些相关的工作。</p>
-<p>e.g. Azure ML Workflow， Google Kubeflow</p>
-<ul>
-<li><p>优点</p>
-<ul>
-<li>包容性好</li>
-<li>易用</li>
-</ul>
-</li>
-<li><p>局限性</p>
-<ul>
-<li>组件质量/接口参差不齐-&gt;接口难做</li>
-<li>组件对于胶水来说是黑盒-&gt;跨接口优化难做</li>
-</ul>
-</li>
-</ul>
-<p>想法：<strong>胶水</strong>-&gt;<strong>统一的分布式支撑</strong></p>
-<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-005.jpg" alt="Fusion Computing"></p>
-<p><strong>融合计算</strong>：本地编程、自动云化、渐进融合</p>
-<p><strong>核心挑战 1</strong>：统一的通用编程抽象/执行模型是什么</p>
-<p>前面的讲座中已经多次提到了抽象的重要性，抽象就意味着：</p>
-<ul>
-<li>抽取面对不同分布式计算模式下的共同需求</li>
-<li>甚至混合模式下的需求。</li>
-</ul>
-<p><strong>核心挑战 2</strong>：如何解决通用和特定之间的固有矛盾</p>
-<p>通用性和领域专用性常看做是不可调和的矛盾。</p>
-<ul>
-<li>一般情况下，<strong>越通用，解决特定场景</strong>能力越弱。</li>
-<li>抽象是一种通用性的体现，而不同计算模式的不同需求/特定优化则体现了领域专用性</li>
-</ul>
-<h2 id="融合计算编程抽象"><a href="#融合计算编程抽象" class="headerlink" title="融合计算编程抽象"></a>融合计算编程抽象</h2><p>为何需要分布式计算？以 MapReduce 中使用的字符计数问题为例：</p>
-<ul>
-<li>对于单机：存储空间不够、计算能力不构、</li>
-<li>分布式计算目标：提供远超的单机的存储、计算能力，包装成单机的<strong>假象</strong>使上层没有意识到改变</li>
-</ul>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/ZhenyuGuo/ZhenyuGuo-010.jpg" alt="ComputationChanging"></p>
-<h3 id="状态切分"><a href="#状态切分" class="headerlink" title="状态切分"></a>状态切分</h3><p>MapReduce 的启发，状态切分成 slice，两个子方案，一是不需要代码改动的方案：remote memory，file system。二是需要代码改动的：KV，database</p>
-<h3 id="避免数据共享冲突的方法？调整架构"><a href="#避免数据共享冲突的方法？调整架构" class="headerlink" title="避免数据共享冲突的方法？调整架构"></a>避免数据共享冲突的方法？调整架构</h3><div class="table-container">
-<table>
-<thead>
-<tr>
-<th>控制流架构（冯·诺依曼）</th>
-<th>数据流架构</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>执行由<strong>控制流</strong>驱动</td>
-<td>执行由<strong>数据流</strong>驱动</td>
-</tr>
-<tr>
-<td>控制流导致状态访问冲突</td>
-<td>数据是无消息/无冲突问题</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>改写代码是必要的。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/b1db88f.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/17/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><span class="page-number current">18</span><a class="page-number" href="/page/19/">19</a><span class="space">&hellip;</span><a class="page-number" href="/page/69/">69</a><a class="extend next" rel="next" href="/page/19/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/17/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><span class="page-number current">18</span><a class="page-number" href="/page/19/">19</a><span class="space">&hellip;</span><a class="page-number" href="/page/70/">70</a><a class="extend next" rel="next" href="/page/19/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1432,7 +1322,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">344</span>
+                  <span class="site-state-item-count">347</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1443,7 +1333,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">49</span>
+                  <span class="site-state-item-count">48</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -1589,7 +1479,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">409.8k</span>
+    <span title="Site words total count">413.2k</span>
   
 </div>
 
