@@ -85,15 +85,18 @@
 
 
 
+<meta name="description" content="Replication -&amp;gt; Fault ToleranceFailures Fail-stop faults 更通用称呼， 他并不会计算出错误的答案，Just Stop（可能原因太多了，踢到机子，网络拥塞，CPU 过热）。备份设计对于 Bugs 没有帮助，更多情况下我们只能应对 Fail Stop。 需要保证物理机器的独立性，否则再大数量的机群和备份策略都不能帮助我们，因为一旦出现相关性（">
 <meta name="keywords" content="分布式系统">
 <meta property="og:type" content="article">
 <meta property="og:title" content="分布式系统学习——MIT6.824-Lecture4课程笔记">
 <meta property="og:url" content="http://www.edwardzcn98yx.com/post/a3458cbc.html">
 <meta property="og:site_name" content="Eddy的个人博客">
+<meta property="og:description" content="Replication -&amp;gt; Fault ToleranceFailures Fail-stop faults 更通用称呼， 他并不会计算出错误的答案，Just Stop（可能原因太多了，踢到机子，网络拥塞，CPU 过热）。备份设计对于 Bugs 没有帮助，更多情况下我们只能应对 Fail Stop。 需要保证物理机器的独立性，否则再大数量的机群和备份策略都不能帮助我们，因为一旦出现相关性（">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-06-04T08:01:13.201Z">
+<meta property="og:updated_time" content="2020-06-06T08:12:47.918Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="分布式系统学习——MIT6.824-Lecture4课程笔记">
+<meta name="twitter:description" content="Replication -&amp;gt; Fault ToleranceFailures Fail-stop faults 更通用称呼， 他并不会计算出错误的答案，Just Stop（可能原因太多了，踢到机子，网络拥塞，CPU 过热）。备份设计对于 Bugs 没有帮助，更多情况下我们只能应对 Fail Stop。 需要保证物理机器的独立性，否则再大数量的机群和备份策略都不能帮助我们，因为一旦出现相关性（">
 
 
 
@@ -458,7 +461,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  0
+                  1,054
                 </span>
               
 
@@ -474,7 +477,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  1
+                  4
                 </span>
               
             </div>
@@ -495,7 +498,58 @@
       
 
       
-        <a id="more"></a>
+        <h1 id="Replication-gt-Fault-Tolerance"><a href="#Replication-gt-Fault-Tolerance" class="headerlink" title="Replication -&gt; Fault Tolerance"></a>Replication -&gt; Fault Tolerance</h1><h2 id="Failures"><a href="#Failures" class="headerlink" title="Failures"></a>Failures</h2><ul>
+<li><p>Fail-stop faults</p>
+<p>更通用称呼， 他并不会计算出错误的答案，Just Stop（可能原因太多了，踢到机子，网络拥塞，CPU 过热）。备份设计对于 Bugs 没有帮助，更多情况下我们只能应对 Fail Stop。</p>
+<p>需要保证物理机器的独立性，否则再大数量的机群和备份策略都不能帮助我们，因为一旦出现相关性（co-related）错误，机器会一同挂掉。</p>
+</li>
+</ul>
+<h2 id="Worth-it"><a href="#Worth-it" class="headerlink" title="Worth it"></a>Worth it</h2><p>在 GFS 的设计中，需要三倍资源（三份 Replication），是否值得？严格意义上说，我们不能从技术上解释这个问题，它同时也是个经济问题，关系很多其他因素，比如备份策略所应用的 service 价值如何？</p>
+<h2 id="Approaches-to-Replication-（Replication-Scheme）"><a href="#Approaches-to-Replication-（Replication-Scheme）" class="headerlink" title="Approaches to Replication （Replication Scheme）"></a>Approaches to Replication （Replication Scheme）</h2><p>达成备份的方法。</p>
+<ul>
+<li><p>State transfer</p>
+<p>-&gt; send memory</p>
+<p>primary 传递它的状态（比如全部 RAM 内容）给备份，备份储存状态。考虑到效率，更想传递改变的那部分。</p>
+</li>
+<li><p>State machine replication</p>
+<p>-&gt; send operations</p>
+<p>我们主要讨论的 scheme。</p>
+<p>思路来源，发现很多机器可以拆分成内部确定的事件，和外部影响事件，仅受到内部运行事件影响（internal events）的状态机是确定的直到其受到外来信息的影响。</p>
+<p>状态机复制策略，不复制完整状态，而仅发送那些状态机会被影响的外部事件（external events）。</p>
+<p>所以状态机从同一状态起始，各自进行状态运转，和消息传递，仍能保持状态的一致性，这就达成了备份。</p>
+<p>想起来之前学习的那篇论文：<a href="https://www.edwardzcn98yx.com/post/86b562df.html">状态机容错模型</a></p>
+<p>人们喜欢 State machine 的原因，small，状态整体太大了，而操作往往很小。</p>
+</li>
+</ul>
+<h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><p>Q：如果 backup 和 primary 没有做到 identical，scheme 出错了，怎么办？</p>
+<p>A：以 GFS master 给两个 chunk 发 primary lease 为例。</p>
+<p>Q：如何保证状态机复制 Scheme 中，内部状态的运行结果的确是一致的。</p>
+<p>A：很多 internal instruction 看起来是确定的，不过也存在你指出的那一小部分，比如获取当前本地时间、获取 PID 等。一个标准答案（参考答案）是，根据指令，backup 并不是完全独立运行？还在听 primary 的指令（正确答案）？</p>
+<a id="more"></a>
+<h1 id="VMware-Shceme"><a href="#VMware-Shceme" class="headerlink" title="VMware Shceme"></a>VMware Shceme</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>我们注意到刚刚所提的状态机复制斌没有考虑到多核机器形式，状态机复制可以被推广到多核机器，不同核的内核指令交互是不确定的，so 不能简单的分发 primary 并在后台执行任务。</p>
+<p>VMware 设计一种可以跑在多核机器上的状态机复制模型。</p>
+<p>要解决的一系列问题</p>
+<ul>
+<li><p>What State</p>
+</li>
+<li><p>P/B Sync</p>
+<p>primary 和备份需要多接近（为实现一致性最大能容纳的差别？），一步一锁保证 backup 和 primary 始终同步的代价是昂贵的。</p>
+</li>
+<li><p>Cut over (switch over?)</p>
+</li>
+<li><p>Anomalies</p>
+<p>异常现象</p>
+</li>
+<li><p>New replicas</p>
+</li>
+</ul>
+<p>逐个解决问题</p>
+<h2 id="What-State"><a href="#What-State" class="headerlink" title="What State"></a>What State</h2><p>所有的内存和所有的寄存器。Replication schema 很少会 replica 特别底层，比如 GFS 的 Replica 是 chunk，属于应用级，考虑 chunk identifiers，机器的其他状态都不储存。</p>
+<p>大部分 Replication 走的路线都是 GFS 这样的，今天这篇文章不使用应用级别的 replication，更底层，更效率。并且不用保证应用 interrupt 在特定点。本文不考虑上面跑的什么软件，在 VMware 虚拟中运行任何类型的小程序，都能达到 Fault Tolerance。</p>
+<h3 id="VMware-FT"><a href="#VMware-FT" class="headerlink" title="VMware FT"></a>VMware FT</h3><p>两台物理机中运行 VMM，建立多个虚拟机（OS+APP），网络连接（LAN）。</p>
+<p>网络同时连接多个 Client 和 Server，在这个 Scheme 中，数据储存在网络上 Disk Server 中。</p>
+<p>过程简述：当 Client 向一台物理机发送包请求时，该物理机会将 hot package 传递给另一台物理机（另一台伪造一个包请求）。处理完成后，primary 物理机将包传递给 VMM 中的模拟 NIC（网卡），并发送回给 client，那 backup 的包也会相同的传递到模拟 NIC 中，但 VMM 会意识到这个是 backup 的包，丢弃掉。</p>
+<p>这就保证了只有 Primary 生成回复包。</p>
 
       
     </div>
@@ -535,6 +589,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/post/510c7d2f.html" rel="prev" title="容器技术学习——非root用户管理Docker">
+                容器技术学习——非root用户管理Docker <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -586,8 +644,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -606,7 +673,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">347</span>
+                  <span class="site-state-item-count">351</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -617,7 +684,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">48</span>
+                  <span class="site-state-item-count">51</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -628,7 +695,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">183</span>
+                  <span class="site-state-item-count">185</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -735,6 +802,22 @@
       </section>
 
       
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Replication-gt-Fault-Tolerance"><span class="nav-number">1.</span> <span class="nav-text">Replication -&gt; Fault Tolerance</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Failures"><span class="nav-number">1.1.</span> <span class="nav-text">Failures</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Worth-it"><span class="nav-number">1.2.</span> <span class="nav-text">Worth it</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Approaches-to-Replication-（Replication-Scheme）"><span class="nav-number">1.3.</span> <span class="nav-text">Approaches to Replication （Replication Scheme）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Q-amp-A"><span class="nav-number">1.4.</span> <span class="nav-text">Q&amp;A</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#VMware-Shceme"><span class="nav-number">2.</span> <span class="nav-text">VMware Shceme</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction"><span class="nav-number">2.1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#What-State"><span class="nav-number">2.2.</span> <span class="nav-text">What State</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#VMware-FT"><span class="nav-number">2.2.1.</span> <span class="nav-text">VMware FT</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
 
       
 
@@ -763,7 +846,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">413.2k</span>
+    <span title="Site words total count">418.4k</span>
   
 </div>
 
