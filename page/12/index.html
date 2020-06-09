@@ -366,6 +366,204 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/9e963558.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/9e963558.html" itemprop="url">Go学习——《Go语言程序设计》Chap4</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-10T12:58:14+08:00">
+                2019-11-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/编程/" itemprop="url" rel="index">
+                    <span itemprop="name">编程</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/编程/Go/" itemprop="url" rel="index">
+                    <span itemprop="name">Go</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3,011
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  13
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="集合类型"><a href="#集合类型" class="headerlink" title="集合类型"></a>集合类型</h1><p>Go 语言的指针与 C/C++中的之后怎类似，无论是语法上还是语意上。但是 Go 语言的指针不支持指针运算，这样就消除了在 C/C++程序中一类潜在的 bug。Go 语言也不用 free()函数或者 delete 操作符号，因为 Go 语言有垃圾回收器，并且自动管理内存。</p>
+<h2 id="值、指针和引用类型"><a href="#值、指针和引用类型" class="headerlink" title="值、指针和引用类型"></a>值、指针和引用类型</h2><p>通常情况下 Go 语言的变量持有相应的值。也就是说，我们可以将一个变量想象成它所持有的值来使用。其中有些例外是对于通道、函数、方法、映射以及切片的引用变量。它们持有的都是<strong>引用</strong>，也即<strong>保存指针的变量</strong>。</p>
+<p>对于字符串，如果修改一个传入的字符串（例如，使用<code>+=</code>操作符），Go 语言必须创建一个新的字符串，并且复制原始的字符串，并将其加到该字符串之后，这对于大字符串来说很可能代价非常大。（实际上，如<a href="https://www.edwardzcn98yx.com/post/f2a0fb.html">Chap3</a>里面讲的，更多时候我们会准备一个字符切片<code>[]string</code>,或者用<code>bytes.Buffer</code>对应方法实现）</p>
+<p>剩下的指针与 C/C++及其类似，在此不再赘述，需要特别了解的是，虽然 Go 编译器可能在内部将栈和堆的内存区分对待，但是 Go 程序员从不需要担心这些，因为 Go 语言自己会在内部处理好内存管理的事情。</p>
+<p>我的测试</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">z := <span class="number">37</span></span><br><span class="line">pi := &amp;z</span><br><span class="line">ppi := &amp;pi</span><br><span class="line">fmt.Println(z, *pi, **ppi)</span><br><span class="line">**ppi++</span><br><span class="line">fmt.Println(z, *pi, **ppi)</span><br><span class="line">fmt.Println(reflect.TypeOf(pi))</span><br><span class="line">fmt.Println(reflect.TypeOf(ppi))</span><br></pre></td></tr></table></figure>
+<p>测试结果</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">37</span> <span class="number">37</span> <span class="number">37</span></span><br><span class="line"><span class="number">38</span> <span class="number">38</span> <span class="number">38</span></span><br><span class="line">*<span class="keyword">int</span></span><br><span class="line">**<span class="keyword">int</span></span><br></pre></td></tr></table></figure>
+<p>对于 swap 等操作（需要对变量本身而非变量的副本进行操作），C/C++的常见思路是将需要操作的原始变量的指针以参数形式传入函数并进行修改，而 Go 提供了一个更人性化的方法，一般而言，对于少量这样的变量，我们仍采用按值传递的方式，然后通过<strong>多返回值</strong>的设计完成需要，或者，对于大量的，我们会传入一个切片来达到效果。</p>
+<p>表示成功与失败，C/C++中习惯传入一个布尔类型指针，Go 语言中直接以最后一个返回值的形式返回一个布尔型的成功标志（或者最好是一个 error 值）的写法更好用。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/9e963558.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/a5919c23.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1154,211 +1352,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/c8194796.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/c8194796.html" itemprop="url">UbuntuToGo——Ubuntu系统便捷设置</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-07T14:08:34+08:00">
-                2019-11-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作系统/" itemprop="url" rel="index">
-                    <span itemprop="name">操作系统</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作系统/UbuntuToGo/" itemprop="url" rel="index">
-                    <span itemprop="name">UbuntuToGo</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  464
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  2
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="合盖休眠更改"><a href="#合盖休眠更改" class="headerlink" title="合盖休眠更改"></a>合盖休眠更改</h1><p>由于笔者经常中午带着🎧趴在电脑上睡觉，Windows上面电源设置可以更改合盖休眠的默认设定，所以想在Ubuntu上也作相同设置（不然一合上盖子就休眠了），方法如下：</p>
-<ul>
-<li>root账户编辑<code>/etc/systemd/logind.conf</code>，修改<code>HandleLidSwitch=suspend</code>为<code>HandleLidSwitch=ignore</code></li>
-<li>保存修改后<code>systemctl restart systemd-logind</code>，重启服务生效。（我的机子卡住了，要不就重启好了。。）</li>
-</ul>
-<p>输入 sudo vim /etc/systemd/logind.conf , 摁 i 编辑 去掉如下的行前面的 “#”，最后一个”HandleLidSwitch” 的值改为Lock ，如下图：</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/UbuntuToGo/Convinience_1.png" alt="png"></p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/UbuntuToGo/Convinience_2.png" alt="png"></p>
-<p>这样关上盖子就不会休眠了。（享受音乐，午休～）</p>
-<h1 id="截屏快捷键"><a href="#截屏快捷键" class="headerlink" title="截屏快捷键"></a>截屏快捷键</h1><p><code>Screenshot</code>是个很好的工具，截图用来插图片或者分享给朋友都很好用。不过<strong>每次</strong>都要通过功能键找应用未免太麻烦了。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/UbuntuToGo/Convinience_3.png" alt="png"></p>
-<p>虽然也可以命令行<code>gnome-screenshot -a</code>，不过好像更麻烦了？搜索了一下发现可以自定义<code>快捷键+命令</code>，如此便可一键截图，还可以自定义方式，方法如下：</p>
-<ul>
-<li><code>Settings</code>-&gt;<code>Keyboard</code>找到<code>Keyboard Shortcuts</code>，点击最下方”+”，增加快捷键设置。</li>
-<li>编辑快捷键名，快捷键命令，以及按键</li>
-<li>保存测试即可</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/c8194796.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1413,7 +1406,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">351</span>
+                  <span class="site-state-item-count">352</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1424,7 +1417,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">52</span>
+                  <span class="site-state-item-count">54</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -1435,7 +1428,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">185</span>
+                  <span class="site-state-item-count">186</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -1570,7 +1563,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">424.3k</span>
+    <span title="Site words total count">426.1k</span>
   
 </div>
 
