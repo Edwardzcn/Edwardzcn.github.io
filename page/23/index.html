@@ -366,6 +366,658 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/86b562df.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/86b562df.html" itemprop="url">分布式系统学习——状态机容错模型Paper翻译</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-15T21:11:30+08:00">
+                2019-08-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/" itemprop="url" rel="index">
+                    <span itemprop="name">操作系统</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/分布式系统/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3,009
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  11
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>学习笔记参考：</p>
+<p><a href="https://www.jianshu.com/p/542262237d55" target="_blank" rel="noopener">分布式系统基础-State Machine</a></p>
+<h1 id="读书笔记——Implementing-Fault-Tolerant-Services-Using-the-State-Machine-Approach-A-Tutorial"><a href="#读书笔记——Implementing-Fault-Tolerant-Services-Using-the-State-Machine-Approach-A-Tutorial" class="headerlink" title="读书笔记——Implementing Fault-Tolerant Services Using the State Machine Approach: A Tutorial"></a>读书笔记——Implementing Fault-Tolerant Services Using the State Machine Approach: A Tutorial</h1><p>利用状态机实现容错服务的一个教程</p>
+<h2 id="摘要部分"><a href="#摘要部分" class="headerlink" title="摘要部分"></a>摘要部分</h2><p>状态机方法是在分布式系统中实现容错服务的一般方法。 本文回顾了该方法并描述了两种不同故障模型的协议 - 拜占庭和故障停止。 还讨论了用于移除故障组件和集成修复组件的系统重新配置技术。</p>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>分布式软件常由客户端（clients）和服务端（services）构成。</p>
+<p>集中式的服务端虽然是最简单的架构方式，但也导致了其容错性只能与执行该服务的处理器相同，换言之，依旧是单机的容错性能。</p>
+<p>如果这样级别的容错不可接受，那就应该在分布系统的独立容错的不同处理器上运行原始服务的副本，协议用于这些副本的交互。分布式系统的物理电气隔离确保了故障的独立性。</p>
+<blockquote>
+<p>The state machine approcah is a general method for implementing a fault-tolerant service by replicating servers and coordinating client interactions with sever replicas.</p>
+</blockquote>
+<p>状态机方法是同过复制服务器（设置代理/备份）并协调客户端与服务器代理交互的一种实现容错服务的通用方法。</p>
+<p>该方法还为理解和设计（服务器 replica）管理协议提供了一个框架。许多涉及数据或软件复制的协议——无论是为了掩盖故障，还是为了在没有集中控制的情况下促进交互——都可以使用状态机方法派生出来。尽管实际上很少有协议是以这种方式获得的，但是从状态机的角度观察它们有助于理解它们是如何以及为什么工作的。</p>
+<p>本文是状态机方法的一个教程，描述了两种典型环境下的方法和实现。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/86b562df.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/b6a38e07.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/b6a38e07.html" itemprop="url">分布式系统学习——分布式系统中的时间、时钟和事件顺序经典论文Paper翻译</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-15T09:49:43+08:00">
+                2019-08-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/" itemprop="url" rel="index">
+                    <span itemprop="name">操作系统</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/分布式系统/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,879
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  11
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>阅读笔记参考：<a href="https://www.jianshu.com/p/0c79d650d13f" target="_blank" rel="noopener">小强zju的读书笔记</a></p>
+<p><a href="https://www.jianshu.com/p/0d49b1811203" target="_blank" rel="noopener">分布式系统基础－Lamport Clock</a></p>
+<p><a href="https://www.microsoft.com/en-us/research/publication/time-clocks-ordering-events-distributed-system/" target="_blank" rel="noopener">Lamport本人评述</a></p>
+<h1 id="读书笔记——Time-Clocks-and-the-Ordering-of-Events-in-a-Distributed-System"><a href="#读书笔记——Time-Clocks-and-the-Ordering-of-Events-in-a-Distributed-System" class="headerlink" title="读书笔记——Time, Clocks, and the Ordering of Events in a Distributed System"></a>读书笔记——Time, Clocks, and the Ordering of Events in a Distributed System</h1><h2 id="摘要部分"><a href="#摘要部分" class="headerlink" title="摘要部分"></a>摘要部分</h2><p>本文研究了分布式系统中一个事件先于另一个事件发生的概念，并展示了如何定义事件的偏序，同时给出了一种可以对时间完全排序的分布式时钟同步算法。通过一种解决同步问题的方法来描述对全体事件的同步。</p>
+<p>然后介绍专门用于同步物理时钟的情况，并推导出时钟不同步的界限。</p>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>时间概念是我们思维方式的基础，更基本的源于事件发生顺序，其贯穿我们对系统（system）的思考。然而在分布式系统中我们应<strong>重新审视</strong>这一基本概念。</p>
+<blockquote>
+<p>A system is distributed if the message transmission delay is not negligible compared to the time between events in a single process.</p>
+</blockquote>
+<p><strong>如果与单个进程中的事件之间的时间相比，消息传输延迟不可忽略，那么该系统就是分布式的。</strong><br>（无论是在单机系统还是多机系统上，上述情况都要考虑）</p>
+<p>本文重点关注空间分离的系统，但是单机多处理器系统涉及一些相类似的问题，因为某些事件可能以不可预测的顺序发生。“之前发生”只是系统中事件的部分排序。（事实上整体事件呈现一个偏序集合 No happen before）。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/b6a38e07.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/3d51fca5.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/3d51fca5.html" itemprop="url">TOFEL写作</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-30T13:59:41+08:00">
+                2019-07-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/英语/" itemprop="url" rel="index">
+                    <span itemprop="name">英语</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/英语/TOFEL/" itemprop="url" rel="index">
+                    <span itemprop="name">TOFEL</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  468
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  2
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Exercise"><a href="#Exercise" class="headerlink" title="Exercise"></a>Exercise</h2><p>Confronting some parents assertion that the elder children in the family should take care of the younger, while others hold the view that all the children should be treated equatily, regardless of the age.</p>
+<p>Problem: 意思发生改变</p>
+<h2 id="题目改写方法"><a href="#题目改写方法" class="headerlink" title="题目改写方法"></a>题目改写方法</h2><h2 id="背景句"><a href="#背景句" class="headerlink" title="背景句"></a>背景句</h2><h2 id="观点句"><a href="#观点句" class="headerlink" title="观点句"></a>观点句</h2><p>I reckon/assure/advocate/argue/contend that</p>
+<p>I assert the statement that</p>
+<p>From my perspective in my view<br>From where I stand,<br>As far as I am concerned,</p>
+<h3 id="让步-转折"><a href="#让步-转折" class="headerlink" title="让步+转折"></a>让步+转折</h3><p>Although</p>
+<h1 id="独立写作思路理由篇"><a href="#独立写作思路理由篇" class="headerlink" title="独立写作思路理由篇"></a>独立写作思路理由篇</h1><p>四大题型分类：利弊题、事实题、今昔对比、特殊词。</p>
+<p>事实题和利弊题四六开（新手重点解决利弊题）。</p>
+<h2 id="利弊题主题句写法"><a href="#利弊题主题句写法" class="headerlink" title="利弊题主题句写法"></a>利弊题主题句写法</h2><p>小 Trick：题目中所有的对象都可以分析利弊（老小孩、小小孩、大人）。</p>
+<p>利弊题常用解法，万能理由：针对个人。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">万能理由</th>
+<th style="text-align:center">英文表达</th>
+<th style="text-align:center">笔记（备注）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">省钱（性价比高）</td>
+<td style="text-align:center">save money/cost-effective</td>
+<td style="text-align:center">Especially for the poor（极限论证）</td>
+</tr>
+<tr>
+<td style="text-align:center">省时间（便捷）</td>
+<td style="text-align:center">save time/convenient</td>
+<td style="text-align:center">portable</td>
+</tr>
+<tr>
+<td style="text-align:center">有效率</td>
+<td style="text-align:center">Improve efficiency/efficient</td>
+<td style="text-align:center">study/work/</td>
+</tr>
+<tr>
+<td style="text-align:center">安全（身心健康）</td>
+<td style="text-align:center">safe/physical/mental health</td>
+<td style="text-align:center">安全类词汇：&lt;/br&gt;safe safety（个人安全） &lt;/br&gt;secure security（社会安全、安保）&lt;/br&gt;unexpended accidents(potential risks)（不可预知的风险）&lt;/br&gt;Tsunami（海啸）、tornado（龙卷风）、storm（风暴）&lt;/br&gt;健康类词汇（physical）：&lt;/br&gt;short-sight、lack of exercise、overweight、obesity、diabete、heart attack、influence/strengthen the immune system/ protect sb from infectious disease:flu build muscle/ chese muscle&lt;/br&gt;健康类词汇（mental）：&lt;/br&gt;干正事：(release/relieve/reduce) strsss/pressure/burden -&gt; mentail illness: depression&amp; anxiety&amp;insominia（失眠）-&gt; commit suicide （就自杀） : e.g. the hight suicide rate in Japan &lt;/br&gt; 不干正事： mass media -&gt; violent and pornographic information -&gt; mimick the bad behavior -&gt; go astray/ misguided</td>
+</tr>
+<tr>
+<td style="text-align:center">发掘兴趣爱好</td>
+<td style="text-align:center">discover one’s interest</td>
+</tr>
+<tr>
+<td style="text-align:center">扩展知识</td>
+<td style="text-align:center">broaden one’s horizons /expand one’s knowledge</td>
+</tr>
+<tr>
+<td style="text-align:center">交朋友（团队精神）</td>
+<td style="text-align:center">make friends(cooperative/collaborative,teamwork spirits)</td>
+</tr>
+<tr>
+<td style="text-align:center">培养能力</td>
+<td style="text-align:center">improve skills and develop abilities</td>
+<td style="text-align:center">acdemic（学术能力）&lt;/br&gt; practical skill（实践能力）&lt;/br&gt; step on the royal road of academics/ part-time/internship/voluntary activities/ time-management（时间管理能力）</td>
+</tr>
+<tr>
+<td style="text-align:center">增进家人感情</td>
+<td style="text-align:center">strengthen/reinforce family/relationship/ties/bonds</td>
+</tr>
+<tr>
+<td style="text-align:center">成就感（自我实现）</td>
+<td style="text-align:center">obtain a sense of accomplishment/achievement(self-fulfillment)</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/2810df46.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -761,751 +1413,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/4309bc34.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/4309bc34.html" itemprop="url">操作系统学习——Linux基础学习篇（第6章）</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-27T19:29:08+08:00">
-                2019-06-27
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作系统/" itemprop="url" rel="index">
-                    <span itemprop="name">操作系统</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作系统/Linux/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,343
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  5
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="第0章-Linux的文件权限和目录配置"><a href="#第0章-Linux的文件权限和目录配置" class="headerlink" title="第0章 Linux的文件权限和目录配置"></a>第0章 Linux的文件权限和目录配置</h1><h1 id="用户与用户组"><a href="#用户与用户组" class="headerlink" title="用户与用户组"></a>用户与用户组</h1><p><strong>用户</strong>：由于Linux被设计为一个多用户、多任务的系统，用户概念在Linux中极为重要。</p>
-<p><strong>文件所有者</strong>：为了应对多人工作环境，分离不同用户的工作环境，设置了文件的归属权（文件所有者的角色）。</p>
-<p><strong>用户组</strong>：团队开发协作的需要，在用户概念之上设置了用户组的权限管理级别。每组成员相对而言更易互相修改对方的数据，但是其他组的组员则不能看到本组的文件内容。</p>
-<h1 id="Linux文件权限概念"><a href="#Linux文件权限概念" class="headerlink" title="Linux文件权限概念"></a>Linux文件权限概念</h1><h2 id="Linux文件属性"><a href="#Linux文件属性" class="headerlink" title="Linux文件属性"></a>Linux文件属性</h2><p>执行命令</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -al</span><br></pre></td></tr></table></figure>
-<p>会得到下面的结果</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0Linux%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E7%AF%87/6.1.png" alt="6.1"></p>
-<ol>
-<li><p>第一列代表文件权限（permission）</p>
-<p> 第一个字符</p>
-<ul>
-<li>[d]表示目录</li>
-<li>[-]表示文件</li>
-<li>[l]表示链接文件（linkfile）</li>
-<li>[b]表示可控存储的接口设备</li>
-<li><p>[c]表示串行端口设备</p>
-<p>后面字符三个一组</p>
-<ul>
-<li>[r]表示可读</li>
-<li>[w]表示可写</li>
-<li>[x]表示可执行</li>
-<li>第一组为文件所有者权限、第二组为同用户组权限、第三组为其他非本用户组的权限。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>第二列表示有多少文件名连接到此节点（i-node）</p>
-</li>
-<li>第三列表示这个文件的所有者账号</li>
-<li>第四列表示这个文件所属的用户组</li>
-<li>第五列表示文件大小（默认为B）</li>
-<li>第六列表示文件创建日期或者最近修改日期</li>
-<li>第七列表示文件名</li>
-</ol>
-<h2 id="改变文件属性和权限"><a href="#改变文件属性和权限" class="headerlink" title="改变文件属性和权限"></a>改变文件属性和权限</h2><p>三个命令</p>
-<ol>
-<li><p>chgrp 改变文件所属的用户组</p>
- <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chgrp [-R] 账号名称：组名 文件或目录</span><br></pre></td></tr></table></figure>
-<p> -R 参数表示是否要递归改变子目录下的所有文件</p>
-</li>
-<li><p>chown 改变文件所有者</p>
- <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chown [-R] 账号名称：组名 文件或目录</span><br></pre></td></tr></table></figure>
-<p> -R参数同上</p>
-</li>
-<li><p>chmod 改变文件的权限</p>
-<ul>
-<li><p>数字修改</p>
-   <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod xxx 文件目录</span><br></pre></td></tr></table></figure>
-<p>   将三端权限二进制化（比如777就表示权限全开）</p>
-</li>
-<li><p>符号修改</p>
-<p>   | 命令 | 组对象 | 操作符 | 权限 | 文件名 |<br>   | :——-: | :——-: | :——-: | :——-: | :———-: |<br>   | chmod | u g o a | + - = | r w x | 文件或目录 |</p>
-<p>   eg</p>
-   <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod u+r,o=rwx  xxx</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ol>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/4309bc34.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/b94eea64.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/b94eea64.html" itemprop="url">密码技术学习——密码学课程PPT复习提纲</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-15T21:28:49+08:00">
-                2019-06-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/密码学/" itemprop="url" rel="index">
-                    <span itemprop="name">密码学</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,123
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  4
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="CSU密码学课程独门复习提纲"><a href="#CSU密码学课程独门复习提纲" class="headerlink" title="CSU密码学课程独门复习提纲"></a>CSU密码学课程独门复习提纲</h1><p>易考点，并不是“真正意义上”密码学的重点（页数P是按4张PPT一页来的）。</p>
-<h1 id="第一部分-引言"><a href="#第一部分-引言" class="headerlink" title="第一部分 引言"></a>第一部分 引言</h1><ol>
-<li>P4 信息安全定义（Information Security）</li>
-<li>P4 密码学定义（Cryptography）</li>
-<li>五类安全服务（认证鉴别服务、访问控制服务、数据保密性服务、数据完整性服务、抗否认服务）（又名：进不来、拿不走、看不懂、改不了、跑不了）</li>
-<li>P7 安全服务与密码技术的关系（表格）。</li>
-</ol>
-<h1 id="第二部分-密码学概述（古典密码）"><a href="#第二部分-密码学概述（古典密码）" class="headerlink" title="第二部分 密码学概述（古典密码）"></a>第二部分 密码学概述（古典密码）</h1><ol>
-<li>P9 理论安全与时间全（香农信息论，资源与运算力限制）</li>
-<li>P9 四种基本攻击类型</li>
-<li>P10 对称密码与公钥密码各自的特点</li>
-<li>P12 几个同余式的定理（运算性质）</li>
-<li>P16 仿射密码的攻击</li>
-<li><strong>P17 维吉尼亚密码特征（弱点、攻击方式）</strong></li>
-</ol>
-<h1 id="第三部分-现代密码算法"><a href="#第三部分-现代密码算法" class="headerlink" title="第三部分 现代密码算法"></a>第三部分 现代密码算法</h1><h2 id="数学基础"><a href="#数学基础" class="headerlink" title="数学基础"></a>数学基础</h2><ol>
-<li>P21 当$p$为素数时候，模$p$的简化剩余系是一个交换乘群。</li>
-<li>P22 模、剩余系、完全/简化剩余系的概念</li>
-<li>P23 欧拉函数、欧拉定理、费马小定理</li>
-<li>P24 阶、原根定义（利用原根的阶简化计算）</li>
-<li>P24 原根是否存在的充要条件 $n=2,4,p^e,2p^e$ 其中$e≥1$，$p$为素数</li>
-<li>P25 快速指数算法</li>
-<li><strong>P27 置换群、完美洗牌（从2开始交叉插入） $f(x) = 2x \% (2n+1)$</strong></li>
-</ol>
-<h2 id="对称密码算法"><a href="#对称密码算法" class="headerlink" title="对称密码算法"></a>对称密码算法</h2><ol>
-<li><strong>P33 DES和IDEA比较（分组位数、轮数、子密个数等）</strong></li>
-<li><strong>P34 P38 AES总结（分组位数、轮数、子密钥个数等）</strong></li>
-<li>P39 序列密码与分组密码对比（加密方式）</li>
-<li><strong>P47 Hash函数性质</strong></li>
-<li>P47 MD5与SHA函数对比</li>
-<li><strong>P48经典对称密码算法的特点</strong></li>
-</ol>
-<h2 id="公钥密码算法"><a href="#公钥密码算法" class="headerlink" title="公钥密码算法"></a>公钥密码算法</h2><ol>
-<li>P49 公钥密码算法概述</li>
-<li><strong>P50 BSGS算法求离散对数问题，同余方程求解</strong></li>
-<li><strong>P51 CRT</strong></li>
-<li>P52 二次同余方程、二次符号定理、性质</li>
-<li><strong>P53 二次互反定理（$p,q$均为素数的时候判定二次同余方程是否有解加快速度）</strong></li>
-<li>P55 P56 素数生成与素性检测算法</li>
-<li>P57 RSA算法（算法描述、攻击方法、中间人、共模攻击）</li>
-<li>P60 EIGamal算法（选取k的好处、同密文、发送者多次发送不冲突，对比RSA）</li>
-<li>P61 ECC算法</li>
-<li>P62 背包算法（超递增背包-&gt;普通背包 加密）</li>
-<li><strong>P63 公钥密码算法各种比较</strong></li>
-</ol>
-<h2 id="签名算法（这里分类有点迷）"><a href="#签名算法（这里分类有点迷）" class="headerlink" title="签名算法（这里分类有点迷）"></a>签名算法（这里分类有点迷）</h2><ol>
-<li>P65 RSA签名（密钥使用不当，攻击方式）</li>
-<li>P66 DSA算法</li>
-<li><strong>P67 左上签名算法小结</strong></li>
-</ol>
-<h1 id="第四部分-基本密码协议"><a href="#第四部分-基本密码协议" class="headerlink" title="第四部分 基本密码协议"></a>第四部分 基本密码协议</h1><ol>
-<li>P68 密码协议分类（仲裁者裁决者分别对应）</li>
-<li>P70 保密通信协议（公钥密码的中间人攻击、改进方法）</li>
-<li>P73 密钥协商协议（对称+仲裁者、公钥、DH的中间人、EKE的优势看左半面、椭圆曲线DH、双线性对）</li>
-<li><strong>P73 密钥协商协议总结</strong></li>
-<li>P78 数字签名协议形式化描述（对称、公钥）</li>
-<li>P79 阈下信道</li>
-<li>P81 身份鉴别协议（SKEY协议单向链、双向鉴别）</li>
-<li>P83 秘密共享协议（门限分案、Shamir、Bloom）</li>
-</ol>
-<h1 id="第五部分-中级密码协议"><a href="#第五部分-中级密码协议" class="headerlink" title="第五部分 中级密码协议"></a>第五部分 中级密码协议</h1><ol>
-<li><strong>P88 Shamir三次传输协议（异或的问题，不需要共享密钥）</strong></li>
-<li><strong>P88 不经意传输协议（利用上面的、选哪个不知道系列）</strong></li>
-<li>P88 （不考）智力扑克协议</li>
-<li>P89 安全多方计算举例子，理解，盲因子</li>
-<li>P92 密钥分发协议（加入/不加入会话密钥）</li>
-<li>P93 基于CRT密钥分发协议+<strong>总结</strong></li>
-</ol>
-<h1 id="第六部分-高级密码协议"><a href="#第六部分-高级密码协议" class="headerlink" title="第六部分 高级密码协议"></a>第六部分 高级密码协议</h1><p>懂概念、小题</p>
-<ol>
-<li>P94 <strong>零知识协议目的</strong></li>
-<li>P95 盲签名协议（理解）</li>
-<li>P95 同时签约协议（应用不经意传输，理解）</li>
-<li>P97 匿名投票协议图示（可能考）+匿名通信协议（不考）</li>
-<li>P99 数字现金协议图示（理解）</li>
-</ol>
-<h1 id="第七部分-分组密码加密模式"><a href="#第七部分-分组密码加密模式" class="headerlink" title="第七部分 分组密码加密模式"></a>第七部分 分组密码加密模式</h1><p>融入其中了，要考可能只靠特点</p>
-<ol>
-<li>P103 四种模式总结表格</li>
-</ol>
-<h1 id="第八部分-密钥管理"><a href="#第八部分-密钥管理" class="headerlink" title="第八部分 密钥管理"></a>第八部分 密钥管理</h1><ol>
-<li>P105 P106 密钥生命周期内：生成与密钥更新（安全性、哈希生成新密钥）</li>
-<li><strong>P106 P107 Kerberos最后一节课特别强调</strong></li>
-<li>P108 数字证书概述</li>
-<li></li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/86ae82ba.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/86ae82ba.html" itemprop="url">操作系统学习——Linux基础学习篇（第1章）</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-12T14:38:16+08:00">
-                2019-06-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作系统/" itemprop="url" rel="index">
-                    <span itemprop="name">操作系统</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作系统/Linux/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  811
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  3
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="第1章-Linux是什么"><a href="#第1章-Linux是什么" class="headerlink" title="第1章 Linux是什么"></a>第1章 Linux是什么</h1><p><strong>Linux就是一套操作系统</strong>，内核+系统调用。</p>
-<blockquote>
-<p>Windos操作系统本来就是针对个人计算机x86架构的硬件设计的，所以只能在x86的个人计算机上运行，在不同平台上无法运行。而Linux是开源系统，也可以（事实上基本上已经）被修改成适合在各种机器上面运行的，也就是说，Linux是具有“可移植性”，是很重要的不同点。</p>
-</blockquote>
-<h1 id="UNIX历史"><a href="#UNIX历史" class="headerlink" title="UNIX历史"></a>UNIX历史</h1><ul>
-<li>1973年：UNIX正式诞生</li>
-<li>1977年：重要的UNIX分支——BSD诞生</li>
-<li>1979年：重要的System V架构与版权声明</li>
-<li>1984年之一：x86架构的Minix操作系统诞生</li>
-<li>1984年之二：GNU项目与FSF基金会成立<ul>
-<li>GNU相关的一些产出：Emacs程序编辑器、GCC（GNU C Compiler）、GNU通用公共许可证（GPL）、bash shell基本接口</li>
-</ul>
-</li>
-<li>1988年：图形接口XFree86项目（非营利性，后被集成到Linux操作系统中）</li>
-<li>1991年：芬兰大学生Linus Torvalds的一则消息<ul>
-<li>BBS上贴出宣称以bash，gcc等工具写了一个小小的内核程序，这个内核程序可以在Intel的386机器上面运行，然很多人感兴趣，从此开始了Linux不平凡的旅程。</li>
-</ul>
-</li>
-</ul>
-<h1 id="关于GNU项目"><a href="#关于GNU项目" class="headerlink" title="关于GNU项目"></a>关于GNU项目</h1><p>待补充</p>
-<h1 id="Linux的内核版本"><a href="#Linux的内核版本" class="headerlink" title="Linux的内核版本"></a>Linux的内核版本</h1><ul>
-<li><p>主、次版本为奇数：开发中版本（development）</p>
-<p>如2.5.xx，这种内核版本主要用在测试和开发新功能，所以通常这种版本仅有内核开发工程师会使用，如果有新增的内核程序代码，会加到这种版本中</p>
-</li>
-<li><p>主、次版本为偶数：稳定版本（stable）</p>
-<p>如2.6.xx，等到内核功能开发成熟后会加到这类的版本，主要用在一般家庭计算机以及企业版本中。重点在于提供用户一个相对稳定的Linux作业环境平台。</p>
-</li>
-</ul>
-<p>区分内核版本（Linux版本多少）以及发行版本（Linux Ubuntu/CentOS distribution版本多少）。</p>
-<h1 id="Linux-distribution"><a href="#Linux-distribution" class="headerlink" title="Linux distribution"></a>Linux distribution</h1><p>“Kernel+Softwares+Tools”的可完全安装的系统，称为Linux distribution</p>
-<p>各大Linux Distributions的主要异同：支持标准。</p>
-<p>一些标准和规范：Linux Standard Base（LSB）以及目录架构File system Hierarchy Standard（FHS）</p>
-<h1 id="Linux的优缺点"><a href="#Linux的优缺点" class="headerlink" title="Linux的优缺点"></a>Linux的优缺点</h1><ul>
-<li><p>稳定的系统</p>
-<p>基于UNIX概念开发出来的，有相似的程序接口和操作方式，也继承了稳定性效率高的特点。</p>
-</li>
-<li><p>免费或少许费用</p>
-<p>基于GPL授权下的产物，因此任何人皆可自由取得Linux，不需要负担很大的版权费用。</p>
-</li>
-<li><p>安全性、漏洞的快速修补</p>
-<p>由于有强大的社区、热心团体、个人参与其中开发，因此可以随时获得最新的安全信息，并随时更新，相对较安全。</p>
-</li>
-<li><p>多任务、多用户</p>
-<p>不同于Windows系统的单人多任务，Linux可以在一部主机上划分不同等级的用户并且每个用户登录系统的时候工作环境都可以不同。</p>
-</li>
-<li><p>用户与用户组的规划</p>
-</li>
-<li>相对比较不耗资源</li>
-<li>适合需要小内核程序的嵌入式系统</li>
-<li>整合度佳且多样的图形用户界面（GUI）</li>
-</ul>
-<h1 id="关于授权"><a href="#关于授权" class="headerlink" title="关于授权"></a>关于授权</h1><p>待补充</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/86ae82ba.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1560,7 +1467,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">352</span>
+                  <span class="site-state-item-count">355</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1717,7 +1624,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">426.1k</span>
+    <span title="Site words total count">431.5k</span>
   
 </div>
 
