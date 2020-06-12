@@ -366,6 +366,577 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/efa709aa.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/efa709aa.html" itemprop="url">机器学习——决策树实现（Python版）</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-11T13:37:33+08:00">
+                2019-10-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  6,441
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  30
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>完成 ID3、C4.5、CART 决策树构建，阈值限制，连续属性划分，剪枝，缺省值处理。</p>
+<h1 id="什么是决策树"><a href="#什么是决策树" class="headerlink" title="什么是决策树"></a>什么是决策树</h1><p><strong>直观理解</strong>：通过自顶向下的方式，构造一棵数据不断被纯化的树，可用来分类、回归，有监督学习的一种。</p>
+<p><strong>构造过程</strong>：递归构造</p>
+<p><strong>核心问题</strong>：划分的选择（决策依据）</p>
+<p>来自<a href="https://shuwoom.com/?p=1452" target="_blank" rel="noopener">SGUWOOM 的博客</a><br>`</p>
+<blockquote>
+<p>决策树学习采用的是自顶向下的递归方法，其基本思想是以信息熵为度量构造一颗熵值下降最快的树，到叶子节点处，熵值为 $0$。其具有可读性、分类速度快的优点，是一种有监督学习。最早提及决策树思想的是 Quinlan 在 1986 年提出的 ID3 算法和 1993 年提出的 C4.5 算法，以及 Breiman 等人在 1984 年提出的 CART 算法</p>
+</blockquote>
+<p>随着划分不断进行，决策树的分支节点应趋向于属于同一类别，样本集合属于同一类别的程度用“纯度”（purity）表示。</p>
+<h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><h2 id="信息熵"><a href="#信息熵" class="headerlink" title="信息熵"></a>信息熵</h2><p>“信息熵”（Information entropy），衡量样本集合纯度最常用的一种方法，公式：</p>
+<script type="math/tex; mode=display">Ent(D) = - \sum_{k=1}^{ |y|} p_k \log_2 p_k</script><p>其中$p_k$ 为第$k$ 类样本占该样本集的比例。</p>
+<p><del>甚至可以联想热学熵</del>，熵值越低应该越好（纯度越高），从公式易知熵值范围应是$[ 0 , \log_2 |D|]$。</p>
+<h2 id="信息增益"><a href="#信息增益" class="headerlink" title="信息增益"></a>信息增益</h2><p>对于该集合的一种划分（实践上我们尝试通过对某一列属性是否相同，即该属性上的等价关系，对集合进行划分），我们会产生一个<strong>商集</strong>。</p>
+<p>如西瓜书上所假设，离散属性$a$有$V$个可能的取值$\{ a^1,a^2, \cdots , a^n \}$，用该属性对样本集进行划分，会产生$V$个分支节点，属性值与分支节点对应关系为$a^v \rightarrow D^v$，对这$V$个分支节点分别计算信息熵并赋予权重$\frac{ |D^v| }{ | D | }$，与原样本集合的信息熵作比较我们就可以得出<strong>信息增益</strong>，公式：</p>
+<script type="math/tex; mode=display">Gain(D,a) = Ent(D) - \sum_{v=1}^{V} \frac{ |D^v| }{ | D | } Ent(D^v)</script><p>ID3 决策树学习算法采用<strong>信息增益</strong>为准则决定划分属性。</p>
+<h2 id="信息增益率"><a href="#信息增益率" class="headerlink" title="信息增益率"></a>信息增益率</h2><p>对于信息增益，我们很容易发现其偏好属性值可取值较多的属性有偏好（因为分后各分支节点样本都趋近于完全纯和），在一些数据集中会丧失泛化能力。</p>
+<p>信息增益率在信息增益的基础上，增加了“固有值”（Intrinsic Value）的概念，可取值越多的属性，其固有值 IV 常常会越大，计算增益率的公式为：</p>
+<script type="math/tex; mode=display">Gain\_radio(D,a) = \frac{Gain(D,a)}{IV(a)}</script><script type="math/tex; mode=display">IV(a) = - \sum_{v=1}^{V} \frac{ |D^v| }{ | D | } \log_2 \frac{ |D^v| }{ | D | }</script><p>C4.5 决策树算法采用<strong>信息增益率</strong>来选择最优的划分属性，不过由于增益率准则对可取数目较少的属性有所偏好<del>反过来了</del>，因此，C4.5 算法并不是直接选择增益率最大的候选划分属性，而是使用了一个启发式算法，<strong>先从候选划分属性中找出信息增益高于平均水平的属性，再从中选择增益率最高的</strong>。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/efa709aa.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/44da4894.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/44da4894.html" itemprop="url">WordPress——Hexo导出xml并迁移</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-09T01:55:06+08:00">
+                2019-10-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/WordPress/" itemprop="url" rel="index">
+                    <span itemprop="name">WordPress</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  261
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Hexo-导出-xml"><a href="#Hexo-导出-xml" class="headerlink" title="Hexo 导出 xml"></a>Hexo 导出 xml</h1><h2 id="安装-feed-插件"><a href="#安装-feed-插件" class="headerlink" title="安装 feed 插件"></a>安装 feed 插件</h2><p>安装插件<code>hexo-generator-feed</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-generator-feed</span><br></pre></td></tr></table></figure>
+<h2 id="使用插件"><a href="#使用插件" class="headerlink" title="使用插件"></a>使用插件</h2><p>在<code>_config.yml</code>文件添加以下内容</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">plugins:</span></span><br><span class="line">    <span class="string">hexo-generator-feed</span></span><br><span class="line"><span class="comment">#Feed Atom</span></span><br><span class="line"><span class="attr">feed:</span></span><br><span class="line">    <span class="comment">#type: atom</span></span><br><span class="line">    <span class="comment">#path: atom.xml</span></span><br><span class="line">    <span class="comment">#limit: 20</span></span><br><span class="line">    <span class="comment">#改为RSS2.0标准</span></span><br><span class="line"><span class="attr">    type:</span> <span class="string">rss2</span></span><br><span class="line"><span class="attr">    path:</span> <span class="string">rss2.xml</span></span><br><span class="line"><span class="attr">    limit:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">    hub:</span></span><br></pre></td></tr></table></figure>
+<p><code>hexo g</code>完成后从<code>public</code>文件夹中找对应的文件<code>rss2.xml</code>。这个 xml 就可以用来做订阅或者导入 WP 了。</p>
+<h1 id="WordPress-导入-xml"><a href="#WordPress-导入-xml" class="headerlink" title="WordPress 导入 xml"></a>WordPress 导入 xml</h1><p>登录到 WP 仪表盘（控制台），选择工具-&gt;导入-&gt;WordPress-&gt;现在安装-&gt;运行导入器</p>
+<h1 id="解决单次导入限制-2M-问题"><a href="#解决单次导入限制-2M-问题" class="headerlink" title="解决单次导入限制 2M 问题"></a>解决单次导入限制 2M 问题</h1><p>根据官方解释，可能是 php 和 nginx 两方面原因</p>
+<ol>
+<li><p>php<br><a href="https://blog.csdn.net/Mike_Roger/article/details/80711299" target="_blank" rel="noopener">解除 wordpress 上传最大限制</a></p>
+<p>访问 vps，找到 WP 根目录（很多 wp-xxx.php 的那个），编写文件<code>.user.ini</code>，写入如下内容：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">; Memory and file sizes</span></span><br><span class="line"> memory_limit = 64M</span><br><span class="line"> upload_max_filesize = 5M</span><br><span class="line"> post_max_size = 5M</span><br><span class="line"> file_uploads = On</span><br><span class="line"> max_execution_time = 300</span><br><span class="line"> <span class="comment">; End Upload Restrictions</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>nginx</p>
+<p>打开 nginx 服务的配置文件<code>nginx.conf</code>,http 块中加入<code>client_max_body_size xxm</code>, <code>xx</code>根据需求改动。</p>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/785396af.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/785396af.html" itemprop="url">WordPress——网站搭建常见问题</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-09T01:06:57+08:00">
+                2019-10-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/WordPress/" itemprop="url" rel="index">
+                    <span itemprop="name">WordPress</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  421
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  2
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="安装-删除主题或者插件时需要-FTP-用户名密码"><a href="#安装-删除主题或者插件时需要-FTP-用户名密码" class="headerlink" title="安装/删除主题或者插件时需要 FTP 用户名密码"></a>安装/删除主题或者插件时需要 FTP 用户名密码</h2><p>安装好 WP 后，无论是安装插件还是安装主题都会弹出框：权限缺失，需要 FTP 用户名和密码。实际上时服务器权限设置的问题。</p>
+<p><strong>解决方法 1：修改配置文件</strong></p>
+<p>修改<code>wordpress</code>目录下的<code>wp-config.php</code>，加上如下三行：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">define(<span class="string">"FS_METHOD"</span>, <span class="string">"direct"</span>);</span><br><span class="line">define(<span class="string">"FS_CHMOD_DIR"</span>, <span class="number">0777</span>);</span><br><span class="line">define(<span class="string">"FS_CHMOD_FILE"</span>, <span class="number">0777</span>);</span><br></pre></td></tr></table></figure>
+<p>实际上是在上传时候修改权限。</p>
+<p><strong>解决方法 2：修改文件夹权限</strong></p>
+<p>如果你的 WP 按默认方式或者大多数教程方式，则<code>/var/www/html/wordpress</code>应是你的根目录，修改根目录权限</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo chmod -R 775 /var/www/html/wordpress</span><br></pre></td></tr></table></figure>
+<h2 id="安装-删除主题或者插件时提示安装失败，无法创建目录"><a href="#安装-删除主题或者插件时提示安装失败，无法创建目录" class="headerlink" title="安装/删除主题或者插件时提示安装失败，无法创建目录"></a>安装/删除主题或者插件时提示安装失败，无法创建目录</h2><p>源自<a href="https://blog.csdn.net/qq_32846595/article/details/54766833" target="_blank" rel="noopener">解决 wordpress 下载插件，安装失败，无法创建目录问题</a></p>
+<blockquote>
+<p>其实，出现无法创建目录的确是权限的问题，但是，不是目录读写的权限，而是用户组的问题。想要下载插件的用户组为 web 用户组，用户名组名为 www（大家可能不太一样，如果是按照我之前的方式装 lnmp 环境的同学，就是 www，可以在 ngnix.conf 中第一行查看，至于 nginx.conf 的位置就用 locate nginx.conf 搜索一下） ，而此时 wordpress 用户组为 root，这样就不能创建目录了，具体原因大家可以查阅 linux 相关知识。</p>
+</blockquote>
+<p>查阅自己的<code>nginx.conf</code>文件确定用户，我的是<code>www-data</code>，所以在<code>/var/www/html</code>路径下修改<code>wordpress</code>文件夹的用户组就可以了。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo chown -R www-data:www-data wordpress</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/63282d5d.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -699,592 +1270,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/f9c435a6.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/f9c435a6.html" itemprop="url">UbuntuToGo——Ubuntu系统配置与UI美化</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-25T19:37:23+08:00">
-                2019-09-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作系统/" itemprop="url" rel="index">
-                    <span itemprop="name">操作系统</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作系统/UbuntuToGo/" itemprop="url" rel="index">
-                    <span itemprop="name">UbuntuToGo</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,123
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  5
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>本文写于<a href="https://www.edwardzcn98yx.com/post/8bb234ab.html">我的 UbuntuToGo 系统</a>，VScode 编辑器。</p>
-<h1 id="系统配置"><a href="#系统配置" class="headerlink" title="系统配置"></a>系统配置</h1><p>如果想把手上做的这个 UbuntuToGo 做成随时随地插电脑就可以工作的 OS，首先不能忍的是软件包的下载速度。</p>
-<p>我们需要把默认源更换为国内源。</p>
-<h2 id="更换源"><a href="#更换源" class="headerlink" title="更换源"></a>更换源</h2><h3 id="阿里源"><a href="#阿里源" class="headerlink" title="阿里源"></a>阿里源</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/f9c435a6.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/8bb234ab.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/8bb234ab.html" itemprop="url">UbuntuToGo——打造属于自己的移动固态热插拔Liniux操作系统</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-25T10:13:36+08:00">
-                2019-09-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作系统/" itemprop="url" rel="index">
-                    <span itemprop="name">操作系统</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作系统/UbuntuToGo/" itemprop="url" rel="index">
-                    <span itemprop="name">UbuntuToGo</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,727
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  6
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>本文写于<a href="https://www.edwardzcn98yx.com/post/8bb234ab.html">我的 UbuntuToGo 系统</a>，VScode 编辑器。</p>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>暑假末期给自己的戴尔游匣老本子换了西数固态，退役下来的一块 Toshiba 128G 的老固态成了闲置，拿来当移动硬盘总觉得有些浪费。恰好这时候一个室友做了个 WinToGo，“移动硬盘，移动系统，即插即用”，听起来很美妙的样子，便想着可否做个 Ubuntu 的移动版。</p>
-<p>网上找了几篇资料给了我不小的启发，也算是顺着上面的教程<del>加上自己的摸爬滚打</del>完成的。</p>
-<p><a href="https://mzz.pub/2017/12/22/justplay/mobileubuntu/" target="_blank" rel="noopener">把 Ubuntu16.04 装进移动硬盘的惨痛实战</a></p>
-<p>感谢先驱者的宝贵经验。</p>
-<h1 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h1><p>本文采用 U 盘引导 UEFI 安装的方式，希望虚拟机安装或者<del>想用</del>需要用 Legancy 启动的童鞋请参见这两篇文章：<a href="https://www.ithome.com/html/win10/316637.htm" target="_blank" rel="noopener">IT 之家学院：制作同时适用于 Legacy/UEFI 的 Ubuntu To Go 启动盘</a>，<a href="https://www.littleqiu.net/archives/771#]" target="_blank" rel="noopener">Ubuntu To Go | 制作属于你的随身 Ubuntu 系统盘</a></p>
-<ol>
-<li><strong>启动 U 盘</strong>：一个 32G 的 Ubuntu 系统启动盘（需格式化）</li>
-<li><strong>移动 SSD</strong>：一个 128G 东芝的 SSD+硬盘盒（买壳子注意 M.2 接口类型以及支持协议，老的 SSD 并不是 NVMe 协议的，原理上只需要盘中有未分配空间即可，实操中建议先行备份以防杯具）</li>
-<li><strong>Ubuntu 系统镜像</strong>文件：<a href="https://cn.ubuntu.com/download" target="_blank" rel="noopener">Ubuntu 桌面下载 18.04.3 LTS</a></li>
-<li><strong>启动盘制作软件 Rufus</strong>：官网下载<a href="http://rufus.ie" target="_blank" rel="noopener">Rufus3.8</a></li>
-<li><strong>你的脑子</strong></li>
-</ol>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/UbuntuToGo/Ubuntu_1.png" alt="Ubuntu_1"></p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/UbuntuToGo/Ubuntu_2.png" alt="Ubuntu_2"></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/8bb234ab.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/973eccf1.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/973eccf1.html" itemprop="url">数字图像处理——直方图匹配</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-22T00:32:45+08:00">
-                2019-09-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数字图像处理/" itemprop="url" rel="index">
-                    <span itemprop="name">数字图像处理</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2,101
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  10
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><p>上一篇文章讲了<a href="https://www.edwardzcn98yx.com/post/b44049c5.html">直方图均衡</a>相关内容，从实际应用中我们发现，只能对直方图做均衡操作并不能完全满足我们的需要，有时我们更希望调整概率分布（直方图）为<strong>指定形状</strong>，这就是<strong>直方图匹配</strong>。</p>
-<p>比如下图图一猫咪的直方图较为集中在中间，我们希望它的分布贴近第二幅文字图的分布（集中在暗区域）</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/HistogramMatch/output_2_0.png" alt="im1"></p>
-<h1 id="数学基础"><a href="#数学基础" class="headerlink" title="数学基础"></a>数学基础</h1><p>从上一篇文章的介绍中我们发现，对于<strong>任何图像</strong>（$r$的概率密度分布），我们都可以通过其累积分布函数将其函数变换到随机变量$s$，而$s$是均匀分布的。那我们反过来想，能否将均匀分布的随机变量逆变换到某个特定的分布呢？</p>
-<h2 id="公式推导"><a href="#公式推导" class="headerlink" title="公式推导"></a>公式推导</h2><p>设$r$为随机变量值域为$[0,255]$，其概率密度函数为$p_r(r)$。一函数（变换为）：</p>
-<script type="math/tex; mode=display">s = T(r) = (L-1) \int_{0}^{r} p_r(m) \mathrm{d}m</script><p>由上一篇文章我们易知$s$服从均匀分布，我们寻找一个$z$随机变量符合另一特殊分布$p_z(z)$，易知存在一函数（变换）：</p>
-<script type="math/tex; mode=display">s = G(z) = (L-1) \int_{0}^{z} p_z(m) \mathrm{d}m</script><p>由于$G(z)$为累积分布函数，单调，故存在反函数$G^{-1}(z)$，则有新变换 $N = G^{-1} \cdot T$，使得$r$随机变量经$N$变换后符合$z$的分布特征。</p>
-<script type="math/tex; mode=display">z = G^{-1}(s) = G^{-1}(T(r)) = N(r)</script><p>由此，我们找到了某值域内求从<strong>某一分布</strong>随机变量$r$变换到<strong>指定分布</strong>随机变量$z$的方法。</p>
-<h2 id="个人理解"><a href="#个人理解" class="headerlink" title="个人理解"></a>个人理解</h2><p>直方图均衡，均匀分布，实际上在中间做了桥接。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/973eccf1.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/17/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><span class="page-number current">18</span><a class="page-number" href="/page/19/">19</a><span class="space">&hellip;</span><a class="page-number" href="/page/71/">71</a><a class="extend next" rel="next" href="/page/19/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/17/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><span class="page-number current">18</span><a class="page-number" href="/page/19/">19</a><span class="space">&hellip;</span><a class="page-number" href="/page/72/">72</a><a class="extend next" rel="next" href="/page/19/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1334,7 +1324,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">355</span>
+                  <span class="site-state-item-count">358</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1345,7 +1335,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">54</span>
+                  <span class="site-state-item-count">55</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -1356,7 +1346,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">186</span>
+                  <span class="site-state-item-count">187</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -1491,7 +1481,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">431.5k</span>
+    <span title="Site words total count">431.4k</span>
   
 </div>
 

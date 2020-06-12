@@ -1,6 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[分布式系统学习——FAST2016NOVA系统论文学习]]></title>
+    <url>%2Fpost%2F667c5048.html</url>
+    <content type="text"><![CDATA[Step 1题目摘要引言题目NOVA：日志结构文件系统，为Hybrid主内存设计 摘要NVM 将会很快和 DRAM 一同出现在处理器总线上。这种混合系统会为软件提供亚微秒、高贷款的持久数据访问。 基本理论概况结论部分 回答基本问题 类别 内容 正确性 创新点 清晰度 阅读选择 Step 2细读笔记 问题记录未读（且值得读）文献记录 Step 3 思路复现 证明与推理复现 实验验证复现]]></content>
+      <tags>
+        <tag>三步法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[ReadingGroup——Building-An-Elastic-Query-Engine]]></title>
+    <url>%2Fpost%2Ffa2bcc39.html</url>
+    <content type="text"><![CDATA[Step 1题目摘要引言题目SQL，的 Query 引擎，分布式存储器。 摘要Snowflake，一个 cloud-based 数据仓库系统，提供最先进的数据库系统 SQL 支持。设计目标有如下三个 计算和存储弹性 支持 multi-tenancy（多租户，单一软件程序为多个客户的架构） 高性能 本文说明了 Snowflake 的设计和实现。给出云基础设施最近的发展对 Snowflake 设计与优化的影响。通过在执行大量查询过程中，收集到的系统各组件大量数据中，加深对现有问题的理解并突出新的研究挑战（包括存储系统设计，高性能查询执行引擎）。 引言无共享架构：persistent data 被划分到多个计算节点，计算节点只对本地数据负责，不会进行共享。缺点与代价 Hardware-workload mismatch：硬件与工作流失配，无法针对计算节点的适合情况匹配合适的 workload（compute-extensive bandwith-light 还是 compute-light bandwith-extensive） Lack of Elasticity：静态并行（static parallelism）和数据分区是（非弹性）无共享架构固有的，这限制了对数据和 time-varying workload 的适应。此外无共享架构也不支持节点的增删的弹性，因为一旦涉及此过程，数据需要 reshuffle，增大带宽压力同时反而降低性能，因为参与数据 reshuffle 的节点同时还负责查询过程。 传统数据仓库被设计用来进行可预测容量、速率的数据的查询（主要来自内部）。现在越来越多不可预测的来自外部的数据（应有程序日志、社交媒体、Web 应用程序）导致了不可预测的 query workloads。无共享架构应对此类效率较低。 SnowFlake：把计算和存储节点区分开。数据存储在提供高可用性和按需弹性分配的持久化数据仓库中（Amazon S3、Azure Blob Storage）。计算弹性使用预先预热（pre-warmed）节点，可以按需分配给用户。 Snowflake 有两个核心而后设计思想 定制设计的临时存储系统：管理临时/中间数据，在查询执行中与计算节点交换。必要性由于现有持久性存储的局限性： 无法提供必要的 latency 和 throughput 性能?（原因不大理解，为了避免计算任务称为瓶颈） 提供更强的可用性和持久性语义。 临时存储系统充当持久化数据的“缓存”： 未来可能感兴趣的研究方向： Decoupling of compute and ephemeral storage（计算和临时存储解耦） Deep storage hierarchy（深存储层次） 系统应用发现： 只读，只写，读写查询分别占比：~28%、~13%、~59% 中间数据在不同查询中可能有数量级的差距，却对实际查询的持久化数据量、时间基本没有什么影响。 少量的本地存储容量，skewed access distributions 与 temporal patterns 可以为持久化数据访问提供相当高的缓存命中率：60-80% 部分用户使用到弹性支持。 峰值资源利用率很高，但平均资源利用率地行低下（极差大） 基本理论概况结论部分提供实操 Snowflake 数据仓库的经验，覆盖了设计实现概念中最终更关键的几个部分，实现计算和存储的弹性，以及实现多租户架构下的高性能。在 14 天内执行的 70 million 查询中，我们研究发现一些现有设计的缺点。 回答基本问题 类别 内容 正确性 创新点 清晰度 阅读选择 Step 2细读笔记 问题记录未读（且值得读）文献记录 关于作者提到计算-存储 disaggregation [P. X. Gao, A. Narayan, S. Karandikar, J. Carreira, S. Han,R. Agarwal, S. Ratnasamy, and S. Shenker. Networkrequirements for resource disaggregation. InOSDI,2016] [J. Gu, Y. Lee, Y. Zhang, M. Chowdhury, and K. G. Shin.Efficient memory disaggregation with infiniswap. InNSDI, 2017] Step 3 思路复现 证明与推理复现 实验验证复现]]></content>
+      <tags>
+        <tag>三步法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[CUDA学习——编程入门]]></title>
+    <url>%2Fpost%2F461ec2fe.html</url>
+    <content type="text"><![CDATA[CUDA 编程极简入门学习自CUDA 编程入门极简教程 GPU 不是独立的计算平台，需要与 CPU 协同工作。我们常说的用 GPU 并行计算时，其实是指 CPU+GPU 的异构计算架构。CPU 所在位置为主机端（host），而 GPU 所在位置成为设备端（device）。 CUDA 编程模型基础典型的 CUDA 程序的执行流程如下： 分配 host 内存，进行数据初始化（initalize） 分配 device 内存，host =&gt; device 内存拷贝 调用 CUDA 和函数，（GPU 上）完成指定运算 讲 device 上的运算结果拷贝回 host 释放 host 和 device 的内存。 CUDA 这个异构模型通过函数类型限定词开区别 host 和 device 上的函数，主要的三个函数类型限定词如下: __global__：在 device 上执行，从 host 中调用（一些特定的 GPU 也可以从 device 上调用），返回类型必须是 void，不支持可变参数，不能成为类成员函数。注意用__global__定义的 kernel 是异步的，这意味着 host 不会等待 kernel 执行完就执行下一步。 __device__：在 device 上执行，单仅可以从 device 中调用，不可以和__global__同时用。 __host__：在 host 上执行，仅可以从 host 上调用，一般省略不写，不可以和__global__同时用，但可和__device__同时使用，此时函数会在 device 和 host 都编译。 kernelkernel 是 CUDA 中的一个重要概念，实在 device 上线程中并行（启动很多个线程）执行的函数。一个 kernel 启动的所有线程称为一个网格（grid），同一个网格上的线程共享相同的全局内存空间。一个 grid 划分为多个线程块（block），每个 block 包含很多线程（thread），整体看像是很多线程池构成的线程网。 grid 和 block 都定义为dim3类型变量。dim3可以看成是包含三个无符号整数（x，y，z）成员的结构体变量，在定义时，缺省值初始化为 1。因此 grid 和 block 可以灵活地定义为 1-dim，2-dim 以及 3-dim 结构。 kernel 在调用时也必须通过执行配置&lt;&lt;&lt;grid, block&gt;&gt;&gt;来指定 kernel 所使用的线程数及结构。 有时候，我们要知道一个线程在 blcok 中的全局 ID，此时就必须还要知道 block 的组织结构，这是通过线程的内置变量 blockDim 来获得。它获取线程块各个维度的大小。对于一个 2-dim 的 block $(D_x,D_y)$ ，线程 $x,y$ 的 ID 值为 $(x + yD_x)$ ，如果是 3-dim 的 block $(D_x,D_y,D_z)$ ，线程 $(x,y,z)$ 的 ID 值为 $(x+yD_x+zD_xD_y)$ 。另外线程还有内置变量 gridDim，用于获得网格块各个维度的大小（类似于 shape）。 kernel 的这种线程结构天然适合 vector，matrix 等运算。 逻辑层与物理层还有重要一点，你需要对 GPU 的硬件实现有一个基本的认识。上面说到了 kernel 的线程组织层次，那么一个 kernel 实际上会启动很多线程，这些线程是逻辑上并行的，但是在物理层却并不一定。这其实和 CPU 的多线程有类似之处，多线程如果没有多核支持，在物理层也是无法实现并行的。但是好在 GPU 存在很多 CUDA 核心，充分利用 CUDA 核心可以充分发挥 GPU 的并行计算能力。GPU 硬件的一个核心组件是 SM，前面已经说过，SM 是英文名是 Streaming Multiprocessor，翻译过来就是流式多处理器。SM 的核心组件包括 CUDA 核心，共享内存，寄存器等，SM 可以并发地执行数百个线程，并发能力就取决于 SM 所拥有的资源数。当一个 kernel 被执行时，它的 gird 中的线程块被分配到 SM 上，一个线程块只能在一个 SM 上被调度。SM 一般可以调度多个线程块，这要看 SM 本身的能力。那么有可能一个 kernel 的各个线程块被分配多个 SM，所以 grid 只是逻辑层，而 SM 才是执行的物理层。SM 采用的是 SIMT (Single-Instruction, Multiple-Thread，单指令多线程)架构，基本的执行单元是线程束（wraps)，线程束包含 32 个线程，这些线程同时执行相同的指令，但是每个线程都包含自己的指令地址计数器和寄存器状态，也有自己独立的执行路径。所以尽管线程束中的线程同时从同一程序地址执行，但是可能具有不同的行为，比如遇到了分支结构，一些线程可能进入这个分支，但是另外一些有可能不执行，它们只能死等，因为 GPU 规定线程束中所有线程在同一周期执行相同的指令，线程束分化会导致性能下降。当线程块被划分到某个 SM 上时，它将进一步划分为多个线程束，因为这才是 SM 的基本执行单元，但是一个 SM 同时并发的线程束数是有限的。这是因为资源限制，SM 要为每个线程块分配共享内存，而也要为每个线程束中的线程分配独立的寄存器。所以 SM 的配置会影响其所支持的线程块和线程束并发数量。总之，就是网格和线程块只是逻辑划分，一个 kernel 的所有线程其实在物理层是不一定同时并发的。所以 kernel 的 grid 和 block 的配置不同，性能会出现差异，这点是要特别注意的。还有，由于 SM 的基本执行单元是包含 32 个线程的线程束，所以 block 大小一般要设置为 32 的倍数。 NVIDA CUDA 编程指南浏览]]></content>
+      <categories>
+        <category>编程</category>
+        <category>CUDA</category>
+      </categories>
+      <tags>
+        <tag>CUDA</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[软件测试学习——测试工具学习]]></title>
     <url>%2Fpost%2Fd0bec3bf.html</url>
     <content type="text"><![CDATA[前言这一阵子主要工作集中在 MIT6.824 分布式系统理论方面的学习，集中用 go 语言做了两个大实验，本着一学多用的态度，这次测试工具的学习是 go 语言相关（后续学习 C++测试框架 googleTest）。 golang race 检测工具什么是 race多线程（Threads、Goroutine）程序对共享变量变量的修改是复杂的，以n=n+1指令的并行执行为例，如果 t1 和 t2 线程几乎同时取出原始 n 值，在各自线程中完成+1 操作然后储存进变量 n，得到的答案可能并非编程人员想要看到的。 事实上，在上述例子中，我们希望每个线程对共享变量 n 的操作都是有效的，但由于 t1 和 t2 线程几乎同时“看到”n 变量，读取值相同，两次累加从结果看变成了一次累加。 race 的名字变源自于此，这种对共享变量不恰当的操作看起来像像线程间的“赛跑”。 结果是否正确取决于晚些执行到该指令的线程 t2 能否“看到” 先行抵达的线程 t1 的修改（t1 线程执行累加后的变量值）。 race 预防与检测Go 语言提供的锁机制（mu.lock() mu.unlock()）可以帮助我们“锁住”赛跑中的线程，对共享变量加锁是预防 race 出现的常用方式，但是这需要编程人员进行准确细致的编程。不过往往人也有疏忽的时候，可喜的是，golang 在 1.1 之后引入了竞争检测的概念。我们可以使用 go run -race 或者 go build -race 来进行竞争检测。 测试代码 1 123456789101112131415161718192021package mainimport ( "fmt")func main() &#123; n := 1 circle := 10 for i := 0; i &lt; circle; i++ &#123; go func() &#123; temp := n // time.Sleep(1 * time.Second) temp *= 10 n = temp fmt.Println("n is ", n) &#125;() &#125;&#125; 运行指令go run -race，进行 race 检测，如下图 发现了 race，但是由于写回操作较快，没有影响最终结果。 取消time.Sleep所在行的注释，再次运行指令go run -race，运行结果如下图 发现了 race，且这次由于线程写回前休眠，所有线程都在其余线程写回前读，所以最终结果被影响。 golang goconvey 测试框架GoConvey 是一个开源的 go 语言测试工具，实际上 go 本身提供了go test测试指令供开发者使用，在目录下使用该指令会对该目录中所有后缀为*_test.go进行测试编译，并对前缀为Test*的函数进行单元检测。 GoConvey 主要是编写并集成好了一些常用的测试语句（如形式、数值断言等），并提供了一个优秀的可视化界面。 GoConvey 的代码仓库 框架安装由于大陆内部使用 go 语言存在一些限制，而且如果启用GO111MODULE，我需要大幅度调整我的项目格式，所以我没有采用 mod，也没有按照官方建议的go get安装方式。 安装好二进制后，我手动检查了依赖项，并在项目源码\src\github.com分别 clone 几个代码仓库 1234cd $GOPATH/srcgit clone https://github.com/smartystreets/goconvey.git ./smartystreets/goconveygit clone https://github.com/smartystreets/assertions.git ./smartystreets/assertionsgit clone https://github.com/jtolds/gls.git ./jtolds/gls 启动 Web 服务 12cd $GOPATH/bin./goconvey 显示界面如下图，成功。 编写测试代码 待检测程序 student.go 123456789101112131415161718192021222324252627282930package mainimport "fmt"type Student struct &#123; Num int Name string Chinaese int English int Math int&#125;func NewStudent(num int, name string) (*Student, error) &#123; if num &lt; 1 || len(name) &lt; 1 &#123; return nil, fmt.Errorf("num name empty") &#125; stu := new(Student) stu.Num = num stu.Name = name return stu, nil&#125;func (this *Student) GetAve() (int, error) &#123; score := this.Chinaese + this.English + this.Math if score == 0 &#123; return 0, fmt.Errorf("score is 0") &#125; return score / 3, nil&#125; 测试程序 student_test.go 123456789101112131415161718192021222324252627282930313233343536373839404142package mainimport ( "testing" . "github.com/smartystreets/goconvey/convey")func TestNew(t *testing.T) &#123; Convey("start test new", t, func() &#123; stu, err := NewStudent(0, "") Convey("have error", func() &#123; So(err, ShouldBeError) &#125;) Convey("stu is nil", func() &#123; So(stu, ShouldBeNil) &#125;) &#125;)&#125;func TestScore(t *testing.T) &#123; stu, _ := NewStudent(1, "test") Convey("if error", t, func() &#123; _, err := stu.GetAve() Convey("have error", func() &#123; So(err, ShouldBeError) &#125;) &#125;) Convey("normal", t, func() &#123; stu.Math = 60 stu.Chinaese = 70 stu.English = 80 score, err := stu.GetAve() Convey("have error", func() &#123; So(err, ShouldBeError) &#125;) Convey("score &gt; 60", func() &#123; So(score, ShouldBeGreaterThan, 60) &#125;) &#125;)&#125; 执行测试 VSCode 单元测试结果（go test 命令行） 由于有一个 Error 预期和 nil 实际类型不符合，测试不通过。 Web UI 同样显示有一个 Error 预期和 nil 实际类型不符合，测试不通过。从结构看，5 个断言，通过 4 个，断言处在哪个测试函数中也清晰明了。极大方便了我们排查缺陷所在。另一个简单程序的测试通过情况如下。 结语通过本次阶段性学习，我发现了解、熟悉、熟练使用测试工具是三个层次，过去我只停留在了解层面，将测试部分和业务逻辑部分混在一起编写，排错难，测试烦。 进行了go run -race检测和GoConvey工具的学习后，我才知道原来语言开发者、开源社区还存在着如此高效的工具，不仅减少了 bug 产生的概率，也减少了 bug 发现后修复，回归的时间，可谓一举多得，感谢老师给了我们这个主动学习领域内各种实用知识的机会。]]></content>
@@ -51,7 +79,7 @@
   <entry>
     <title><![CDATA[分布式系统学习——NVM相关资料整理]]></title>
     <url>%2Fpost%2F7bd1e0d9.html</url>
-    <content type="text"><![CDATA[存储器 - 金字塔层次结构介绍 Non-volatile memory - Wikipedia Persistant memory fsBetter I/O Through Byte-Addressable, Persistent Memory 问题：原来的存储系统都是基于慢的，块设备接口。但是新的存储介质是基于字节，永久性存储技术，提供快的，细粒度的访问。 设计新的 FS 和硬件结构，适应字节寻址和可持久性。 应用非易失性内存在阿里生产环境的首次应用：Tair NVM 最佳实践总结 构建在缓存场景，作为 DRAM 的补充。 使用方式 Tair MDB 使用 NVM 设备的方式，是把 NVM 以块设备的形式使用 Pmem-Aware File System 挂载（DAX 挂载模式）。分配 NVM 空间对应的操作是在对应的文件系统路径上创建并打开文件，使用 posix_fallocate 分配空间。 会议笔记PM 的使用方式 Memory 使用 Persistent Storage 使用（一般） Persistant Memory 使用 需要再查的事情 Persistent Memory 完全替代（几乎完全） 失去了 log 的功能 DRAM 和 Persist Memory 还存在 log 功能 File Emulation with DAX（FLEX） RocksDB Google 2019 falloc 预分配文件空间会好很多 open 替代为 open+mmap 操作 Tim Harris 论文 SplitFS nova里面做了哪些数据结构 LSM Tree 我自己可以做的事情 复现一下 Nova（机器上已经在跑了）做一些 bench mark Li 建议可以在上面多跑一些应用，其他数据的可以。 科研方向 BloomFilter（写放大问题的研究，好像又没必要）]]></content>
+    <content type="text"><![CDATA[存储器 - 金字塔层次结构介绍 Non-volatile memory - Wikipedia Persistant memory fsBetter I/O Through Byte-Addressable, Persistent Memory 问题：原来的存储系统都是基于慢的，块设备接口。但是新的存储介质是基于字节，永久性存储技术，提供快的，细粒度的访问。 设计新的 FS 和硬件结构，适应字节寻址和可持久性。 应用非易失性内存在阿里生产环境的首次应用：Tair NVM 最佳实践总结 构建在缓存场景，作为 DRAM 的补充。 使用方式 Tair MDB 使用 NVM 设备的方式，是把 NVM 以块设备的形式使用 Pmem-Aware File System 挂载（DAX 挂载模式）。分配 NVM 空间对应的操作是在对应的文件系统路径上创建并打开文件，使用 posix_fallocate 分配空间。 会议笔记PM 的使用方式 Memory 使用 Persistent Storage 使用（一般） Persistant Memory 使用 需要再查的事情 Persistent Memory 完全替代（几乎完全） 失去了 log 的功能 DRAM 和 Persist Memory 还存在 log 功能 File Emulation with DAX（FLEX） RocksDB Google 2019 falloc 预分配文件空间会好很多 open 替代为 open+mmap 操作 Tim Harris 论文 SplitFS nova 里面做了哪些数据结构 LSM Tree 我自己可以做的事情 复现一下 Nova（机器上已经在跑了）做一些 bench mark Li 建议可以在上面多跑一些应用，其他数据的可以。 科研方向 BloomFilter（写放大问题的研究，好像又没必要） 下面是 6.12 的会议记录 B-Tree、LSM Tree（）、SQL 张：从应用角度去考虑，更好一些？结合场景的应用。 李：三种应用场景：Memory 扩展、Persistant Storage、Persistant Memory。KV 也有一些工作。在文件系统层次上可以做一些应用，做一些密集访问文件系统的应用。另外一个就是研究数据结构，数据结构放在这个设备上，同步上做的时候，要不要改变。 张：文件系统都属于 Kernel 态，用户操作都在用户态 User 态，一次系统调用（system call）就超过了你在 kernel 里面做的优化了。 李：SplitFS 是这种思路，转换了一部分操作到 User 态。 张：是数据操作还是/操作仍旧放在了内核态（一部分），所以还是一部分。 李：SplitFS 能力比 NOVA 大四倍。LevelDB 在上面变成两倍。 张：LevelDB 还是一个 CPU bound（嘿嘿嘿），所以现在还有一个思路就是换其他数据结构，可能 Hash Table。 关于网络方面的研究 张：RDMA 跟 TCP/IP 有了差距，Memory 通过 RDMA 暴露给 Leader，Leader 可以直接在后面 append。Raft 和 Paxos 是针对传统 TCP/IP，RDMA 不一样，有了 在 PM 上做一个分布式的 Hash Table。分布式存储里面的一个特点，粒度越细，数据量越多。之前一个问题，元数据过多，大于 Memory 的容量，导致部分存储在磁盘，性能就不好了。有的用很大的 Memory 来保护这些元数据。如果有分布式的 PM 上的 Hash Table，就会对上层编程提供很大便利。 元数据的 bottle neck 张：举个例子，在元数据看，每数据粒度（一个 block）为 256MB 有一个元数据的记录，只有这样可以把元数据压在一个内存中。如果有 Hash Table，就可以缩小粒度！写程序会非常方便！，这是一个 Performance 上的体验。 LevelDB 提供原子性，就已经提供了很多很大的便利。 从需求的角度来看，非常需要PM 上的 Hash Table。 张：怎么做 Replication 是个非常有意思的地方，一种是 RDMA+？？、一种是 Raft 这种 Replication。 李：是一直在跑 Raft 么？选举，replication 也是用 raft。 张：选举的时候用 Raft（或者 Paxos），replication 上不全用 Raft，比如 kernel write（没听清）？？ 张：inline replication 整个流程：server 中写 4K 的数据，inlin replication 首先在 hash table（分布式/单机）查一下有没有这个 key，在另一个 teble 上 查，发挥结果。miss 的话，读一次磁盘，然后插入新 key 再插入。 李：解释一下，写操作一次，两次元数据操作+一次数据操作。由于磁盘持久化本来是负担很大的事情。 张：关注的一个参考的内容 Intel DAOS 落脚点：分布式哈希 Table （DHT）与 PM 结合 学长：Hardware TSX（Transactional Synchronization Extensions） 李，张：提到的是最近没什么人提到了，Software 这类是架了一层中间件，Hardware 是纯粹的硬件层。 ACID： 李：把 Transaction 分成两部分，PM+RMDA 高速网络环境下， 张：总结，分布式 hash 与 PM 结合是个最终目标。一步一步，分布式的 Hash Table 就很难了，ReHash（扩容），静态的意义不大，现在的意义。 李：下一步地再做，带 Transaction 的 Hash Table。 张：现有 DHT 和我们所想的不大一样，是一种寻址的算法和方式。但我们想要的是一个的确能在机器上运行的内存中存在的分布式 Hash Table。 1234514:37:13 Kyle Zhang : daos14:37:36 Cheng Li : https://www.intel.com/content/www/us/en/high-performance-computing/daos-high-performance-storage-brief.html14:40:18 Cheng Li : https://www.cs.utexas.edu/~vijay/papers/sosp19-recipe.pdf14:41:19 Cheng Li : https://arxiv.org/pdf/2003.07302.pdf]]></content>
       <categories>
         <category>分布式系统</category>
       </categories>
@@ -62,7 +90,7 @@
   <entry>
     <title><![CDATA[ReadingGroup——FPGA-Accelerate-Compactions]]></title>
     <url>%2Fpost%2F18988a0e.html</url>
-    <content type="text"><![CDATA[文章由 3step 模板生成 三步法阅读文献笔记记录 Step 1题目摘要引言基本理论概况结论部分确定作者的成过以及点出的经验、问题、改进方式。 回答基本问题 类别 这篇论文是什么类型？测试类？对现有系统进行分析的？对原型系统进行描述的？ 内容 你读过的其他论文有没有与之相关的？相关性与区别最直接体现在哪里？文章中分析问题用的什么理论基础（通过瞥一眼数学概况与核心证明可以得到）。 正确性 结论是否看起来真实有效？ 创新点 论文的主要创新点是什么？总结提到的经验、问题和改进方法是什么？ 清晰度 这篇论文是否写的条理清晰 阅读选择 1. 继续阅读：论文有价值担保，研究领域非常切合，对当前进行工作有极大帮助，圈内爆火文章 2. 不继续阅读：论文不吸引自己，论文价值/正确性存疑，论文作者给出了不适当的假设。 3. 库存保留并标记：当前不处于自己的研究领域，但不久的日后相关论文会有用。 Step 2细读笔记要仔细阅读论文，但是诸如证明等信息要忽略掉 问题记录未读（且值得读）文献记录在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 Step 3试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。 思路复现推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ 证明与推理复现分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源 实验验证复现Rework]]></content>
+    <content type="text"><![CDATA[Step 1题目摘要引言基本理论概况结论部分 回答基本问题 类别 内容 正确性 创新点 清晰度 阅读选择 Step 2细读笔记 问题记录未读（且值得读）文献记录 Step 3 思路复现 证明与推理复现 实验验证复现]]></content>
       <tags>
         <tag>三步法</tag>
       </tags>
@@ -82,7 +110,7 @@
   <entry>
     <title><![CDATA[分布式系统学习——MIT6.824-Lecture4课程笔记]]></title>
     <url>%2Fpost%2Fa3458cbc.html</url>
-    <content type="text"><![CDATA[Replication -&gt; Fault ToleranceFailures Fail-stop faults 更通用称呼， 他并不会计算出错误的答案，Just Stop（可能原因太多了，踢到机子，网络拥塞，CPU 过热）。备份设计对于 Bugs 没有帮助，更多情况下我们只能应对 Fail Stop。 需要保证物理机器的独立性，否则再大数量的机群和备份策略都不能帮助我们，因为一旦出现相关性（co-related）错误，机器会一同挂掉。 Worth it在 GFS 的设计中，需要三倍资源（三份 Replication），是否值得？严格意义上说，我们不能从技术上解释这个问题，它同时也是个经济问题，关系很多其他因素，比如备份策略所应用的 service 价值如何？ Approaches to Replication （Replication Scheme）达成备份的方法。 State transfer -&gt; send memory primary 传递它的状态（比如全部 RAM 内容）给备份，备份储存状态。考虑到效率，更想传递改变的那部分。 State machine replication -&gt; send operations 我们主要讨论的 scheme。 思路来源，发现很多机器可以拆分成内部确定的事件，和外部影响事件，仅受到内部运行事件影响（internal events）的状态机是确定的直到其受到外来信息的影响。 状态机复制策略，不复制完整状态，而仅发送那些状态机会被影响的外部事件（external events）。 所以状态机从同一状态起始，各自进行状态运转，和消息传递，仍能保持状态的一致性，这就达成了备份。 想起来之前学习的那篇论文：状态机容错模型 人们喜欢 State machine 的原因，small，状态整体太大了，而操作往往很小。 Q&amp;AQ：如果 backup 和 primary 没有做到 identical，scheme 出错了，怎么办？ A：以 GFS master 给两个 chunk 发 primary lease 为例。 Q：如何保证状态机复制 Scheme 中，内部状态的运行结果的确是一致的。 A：很多 internal instruction 看起来是确定的，不过也存在你指出的那一小部分，比如获取当前本地时间、获取 PID 等。一个标准答案（参考答案）是，根据指令，backup 并不是完全独立运行？还在听 primary 的指令（正确答案）？ VMware ShcemeIntroduction我们注意到刚刚所提的状态机复制斌没有考虑到多核机器形式，状态机复制可以被推广到多核机器，不同核的内核指令交互是不确定的，so 不能简单的分发 primary 并在后台执行任务。 VMware 设计一种可以跑在多核机器上的状态机复制模型。 要解决的一系列问题 What State P/B Sync primary 和备份需要多接近（为实现一致性最大能容纳的差别？），一步一锁保证 backup 和 primary 始终同步的代价是昂贵的。 Cut over (switch over?) Anomalies 异常现象 New replicas 逐个解决问题 What State所有的内存和所有的寄存器。Replication schema 很少会 replica 特别底层，比如 GFS 的 Replica 是 chunk，属于应用级，考虑 chunk identifiers，机器的其他状态都不储存。 大部分 Replication 走的路线都是 GFS 这样的，今天这篇文章不使用应用级别的 replication，更底层，更效率。并且不用保证应用 interrupt 在特定点。本文不考虑上面跑的什么软件，在 VMware 虚拟中运行任何类型的小程序，都能达到 Fault Tolerance。 VMware FT两台物理机中运行 VMM，建立多个虚拟机（OS+APP），网络连接（LAN）。 网络同时连接多个 Client 和 Server，在这个 Scheme 中，数据储存在网络上 Disk Server 中。 过程简述：当 Client 向一台物理机发送包请求时，该物理机会将 hot package 传递给另一台物理机（另一台伪造一个包请求）。处理完成后，primary 物理机将包传递给 VMM 中的模拟 NIC（网卡），并发送回给 client，那 backup 的包也会相同的传递到模拟 NIC 中，但 VMM 会意识到这个是 backup 的包，丢弃掉。 这就保证了只有 Primary 生成回复包。]]></content>
+    <content type="text"><![CDATA[Replication -&gt; Fault ToleranceFailures Fail-stop faults 更通用称呼， 他并不会计算出错误的答案，Just Stop（可能原因太多了，踢到机子，网络拥塞，CPU 过热）。备份设计对于 Bugs 没有帮助，更多情况下我们只能应对 Fail Stop。 需要保证物理机器的独立性，否则再大数量的机群和备份策略都不能帮助我们，因为一旦出现相关性（co-related）错误，机器会一同挂掉。 Worth it在 GFS 的设计中，需要三倍资源（三份 Replication），是否值得？严格意义上说，我们不能从技术上解释这个问题，它同时也是个经济问题，关系很多其他因素，比如备份策略所应用的 service 价值如何？ Approaches to Replication （Replication Scheme）达成备份的方法。 State transfer -&gt; send memory primary 传递它的状态（比如全部 RAM 内容）给备份，备份储存状态。考虑到效率，更想传递改变的那部分。 State machine replication -&gt; send operations 我们主要讨论的 scheme。 思路来源，发现很多机器可以拆分成内部确定的事件，和外部影响事件，仅受到内部运行事件影响（internal events）的状态机是确定的直到其受到外来信息的影响。 状态机复制策略，不复制完整状态，而仅发送那些状态机会被影响的外部事件（external events）。 所以状态机从同一状态起始，各自进行状态运转，和消息传递，仍能保持状态的一致性，这就达成了备份。 想起来之前学习的那篇论文：状态机容错模型 人们喜欢 State machine 的原因，small，状态整体太大了，而操作往往很小。 Q&amp;AQ：如果 backup 和 primary 没有做到 identical，scheme 出错了，怎么办？ A：以 GFS master 给两个 chunk 发 primary lease 为例。 Q：如何保证状态机复制 Scheme 中，内部状态的运行结果的确是一致的。 A：很多 internal instruction 看起来是确定的，不过也存在你指出的那一小部分，比如获取当前本地时间、获取 PID 等。一个标准答案（参考答案）是，根据指令，backup 并不是完全独立运行？还在听 primary 的指令（正确答案）？ VMware ShcemeIntroduction我们注意到刚刚所提的状态机复制斌没有考虑到多核机器形式，状态机复制可以被推广到多核机器，不同核的内核指令交互是不确定的，so 不能简单的分发 primary 并在后台执行任务。 VMware 设计一种可以跑在多核机器上的状态机复制模型。 要解决的一系列问题 What State P/B Sync primary 和备份需要多接近（为实现一致性最大能容纳的差别？），一步一锁保证 backup 和 primary 始终同步的代价是昂贵的。 Cut over (switch over?) Anomalies 异常现象 New replicas 逐个解决问题 What State所有的内存和所有的寄存器。Replication schema 很少会 replica 特别底层，比如 GFS 的 Replica 是 chunk，属于应用级，考虑 chunk identifiers，机器的其他状态都不储存。 大部分 Replication 走的路线都是 GFS 这样的，今天这篇文章不使用应用级别的 replication，更底层，更效率。并且不用保证应用 interrupt 在特定点。本文不考虑上面跑的什么软件，在 VMware 虚拟中运行任何类型的小程序，都能达到 Fault Tolerance。 VMware FT两台物理机中运行 VMM，建立多个虚拟机（OS+APP），网络连接（LAN）。 网络同时连接多个 Client 和 Server，在这个 Scheme 中，数据储存在网络上 Disk Server 中。 过程简述：当 Client 向一台物理机发送包请求时，该物理机会将 hot package 传递给另一台物理机（另一台伪造一个包请求）。处理完成后，primary 物理机将 reply 包传递给 VMM 中的模拟 NIC（网卡），并发送回给 client，那 backup 的包也会相同的传递到模拟 NIC 中，但 VMM 会意识到这个是 backup 产生的 reply 包，丢弃掉。 这就保证了只有 Primary 生成回复包。 Paer 管上述过程的数据流称为 logging Channel（log events）。在 primary 和 backup 会发生频繁交流，如果备份发现不再接收到 primary 的 logging 后，一段时间后，便不再听候先前 primary 的 inputs，自由行动，且 VMM 不再限制其回复包。 Non-deterministic存在着许多 non-deterministic events，在计算机运行过程中。设计者着重解决这些问题。 Inputs-packet-data + interrupt Weired instructions multic-core parallelism（文章着重考虑，因为它允许多核机器的并行计算，并行的情况是不可确定的） Log entry：instruction num，type，data ？？不大懂，计时器的中断，Primary 的中断还是 Backup 的中断。 Q：每 millionth 条指令 CPU 中断一次？？ A：硬件部分的知识，15 年前 Intel 就已经实现了相关内容。（好吧是真的听不懂了） Q：如果 Backup 跑在了 Primary 前面怎么办？ A：Primary millionth 指令中断一次，Backup 多进行了一点指令，如果我们这种情况发生，那 backup 就太迟了！不能进行中断（在相同的位置）。我们不能让这种情况发生，所以 VMWare 处理了这种情况。他们的处理方式是，在备份机的 VMM 中设置一个 buffer，来储存所有来自于 Primary 的 inputs（events）。buffer 不为空才执行，这样就保证了 backup 至少慢 primary 一个 event， Output Rule假设架设的服务是一个 database，然后 client 希望进行 ADD 操作。 问问自己，什么时候挂掉是最悲惨的：Primary 进行了 ADD 操作，没有返回给 Client，同时，也未能将该事件通知到 Backup，似乎这样导致了 Primary 和 Backup 上数据库的值不相等（差一次 ADD 操作） VMWare 的解决办法就是 Output Rule：Primary 不会讲 output 返回给 client （被 VMM 控制着）直至 backup 确认了它接收到了 all log records。 不过这个机制导致了一个问题：相邻机架连接的机器，RTT 时间短，影响不大，而如果跨地区的数据中心的不同机器，RTT 时间长，又碰上了低延迟需求的应用，就不行了。]]></content>
       <categories>
         <category>操作系统</category>
         <category>分布式系统</category>
@@ -106,7 +134,7 @@
   <entry>
     <title><![CDATA[密码技术学习——旋转密码分析论文解析]]></title>
     <url>%2Fpost%2F62a8c430.html</url>
-    <content type="text"><![CDATA[文章由 3step 模板生成 三步法阅读文献笔记记录 Step 1题目摘要引言题目旋转密码分析 摘要引言基本理论概况结论部分确定作者的成过以及点出的经验、问题、改进方式。 回答基本问题 类别 这篇论文是什么类型？测试类？对现有系统进行分析的？对原型系统进行描述的？ 内容 你读过的其他论文有没有与之相关的？相关性与区别最直接体现在哪里？文章中分析问题用的什么理论基础（通过瞥一眼数学概况与核心证明可以得到）。 正确性 结论是否看起来真实有效？ 创新点 论文的主要创新点是什么？总结提到的经验、问题和改进方法是什么？ 清晰度 这篇论文是否写的条理清晰 阅读选择 1. 继续阅读：论文有价值担保，研究领域非常切合，对当前进行工作有极大帮助，圈内爆火文章 2. 不继续阅读：论文不吸引自己，论文价值/正确性存疑，论文作者给出了不适当的假设。 3. 库存保留并标记：当前不处于自己的研究领域，但不久的日后相关论文会有用。 Step 2细读笔记要仔细阅读论文，但是诸如证明等信息要忽略掉 问题记录未读（且值得读）文献记录在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 Step 3试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。 思路复现推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ 证明与推理复现分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源 实验验证复现Rework]]></content>
+    <content type="text"><![CDATA[文章由 3step 模板生成 三步法阅读文献笔记记录 Step 1题目摘要引言题目旋转密码分析 摘要引言基本理论概况结论部分 回答基本问题 类别 内容 正确性 创新点 清晰度 阅读选择 Step 2细读笔记 问题记录未读（且值得读）文献记录 Step 3 思路复现 证明与推理复现 实验验证复现]]></content>
       <categories>
         <category>密码学</category>
       </categories>
@@ -142,7 +170,7 @@
   <entry>
     <title><![CDATA[ReadingGroup——Supporting-Very-Large-Models]]></title>
     <url>%2Fpost%2Fa2116e6d.html</url>
-    <content type="text"><![CDATA[文章由 3step 模板生成 三步法阅读文献笔记记录 Step 1题目摘要引言题目使用自动数据流图分割支持超大模型 摘要介绍新的模型——Tofu，用于在多个 GPU 上划分超大的 DNN 模型，从而减少单个 GPU 的内存占用。 基本理论概况结论部分确定作者的成过以及点出的经验、问题、改进方式。 回答基本问题 类别 这篇论文是什么类型？测试类？对现有系统进行分析的？对原型系统进行描述的？ 内容 你读过的其他论文有没有与之相关的？相关性与区别最直接体现在哪里？文章中分析问题用的什么理论基础（通过瞥一眼数学概况与核心证明可以得到）。 正确性 结论是否看起来真实有效？ 创新点 论文的主要创新点是什么？总结提到的经验、问题和改进方法是什么？ 清晰度 这篇论文是否写的条理清晰 阅读选择 1. 继续阅读：论文有价值担保，研究领域非常切合，对当前进行工作有极大帮助，圈内爆火文章 2. 不继续阅读：论文不吸引自己，论文价值/正确性存疑，论文作者给出了不适当的假设。 3. 库存保留并标记：当前不处于自己的研究领域，但不久的日后相关论文会有用。 Step 2细读笔记要仔细阅读论文，但是诸如证明等信息要忽略掉 问题记录未读（且值得读）文献记录在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 Step 3试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。 思路复现推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ 证明与推理复现分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源 实验验证复现Rework ReadingGroup 笔记分布式训练 How to fit a large DNN across GPUs (a) 数据并行 Data Parallelism 后台 Sync 适用于小数据规模量 (b) 来不及记录 (c) 层级并行 Layer Parallelism 针对大的模型 tofu tensorflow mash]]></content>
+    <content type="text"><![CDATA[Step 1题目摘要引言题目使用自动数据流图分割支持超大模型 摘要介绍新的模型——Tofu，用于在多个 GPU 上划分超大的 DNN 模型，从而减少单个 GPU 的内存占用。 基本理论概况结论部分 回答基本问题 类别 内容 正确性 创新点 清晰度 阅读选择 Step 2细读笔记 问题记录未读（且值得读）文献记录 Step 3 思路复现 证明与推理复现 实验验证复现 ReadingGroup 笔记分布式训练 How to fit a large DNN across GPUs (a) 数据并行 Data Parallelism 后台 Sync 适用于小数据规模量 (b) 来不及记录 (c) 层级并行 Layer Parallelism 针对大的模型 tofu tensorflow mash]]></content>
       <tags>
         <tag>三步法</tag>
       </tags>
@@ -162,7 +190,7 @@
   <entry>
     <title><![CDATA[ReadingGroup——On-the-Optimal-Repair-Scaling-Trade-off-in-Locally-Repairable-Codes]]></title>
     <url>%2Fpost%2F7450893e.html</url>
-    <content type="text"><![CDATA[文章由 3step 模板生成 三步法阅读文献笔记记录 Step 1题目摘要引言题目对 Locally Repairable Codes（本地可修复码）的最佳 Repair-Scaling Trade-off 的探究 摘要LRC 是针对 erasure coded storage（可擦除码存储方案）提升修复性能的可行编码方式的一种。可以减少修复带宽并可用于实践。文章分析了均衡 repair 和 scaling 的最佳 trade-off，设计了更优的分布策略，并在 LAN 环境下测试优于传统的布局方案。 引言存储系统扩容与容错需求，Erasure coding 技术相较于传统备份，达到相同容错能力时所需代价更小（低冗余）。Erasure code 已经被应用很多商业存储系统，如微软 Azure 等。 Erasure code 以 original data blocks 为输入，可以产生一些附加的冗余块，它们与原始数据块子集可共同作用于恢复全部原始数据，这些冗余块被称为parity blocks。 Erasure coding 解决方案存在的问题就是修复过程中的 I/O 放大问题。LRC 时 Erasure codes 家族的新成员，设计的主要目的就是以进一步增加冗余存储的代价减小修复过程中的网路贷款与磁盘 I/O 消耗（Local）。 trade-off 探寻方式，以 coding 参数为变量平衡系统 performance 与 storage efficiency 的关系。 贡献 第三节阐述 trade-off 的正是分析。先推导出单集群容错性限制下的放置策略，拓展到其他数据放置策略更贴近最优曲线。 极端放置策略，最优 scaling 与最优 repair。在 LAN 上的试验结果表明两种极端情况下的优化性能。 基本理论概况结论部分确定作者的成过以及点出的经验、问题、改进方式。 Numerical Studies 和 Testbed Experiments 都证明了该放置策略的有效性。 实验室源码下载地址 GitHub 源码下载地址 回答基本问题 类别 对现有系统分析 Trade-off 并进行改进 这篇论文是什么类型？测试类？对现有系统进行分析的？对原型系统进行描述的？ 内容 和 Erasure Code 相关，RS-Paxos，CRaft。 你读过的其他论文有没有与之相关的？相关性与区别最直接体现在哪里？文章中分析问题用的什么理论基础（通过瞥一眼数学概况与核心证明可以得到）。 正确性 结论是否看起来真实有效？ 创新点 论文的主要创新点是什么？总结提到的经验、问题和改进方法是什么？ 清晰度 分析优化，较为清晰 这篇论文是否写的条理清晰 阅读选择继续阅读 1. 继续阅读：论文有价值担保，研究领域非常切合，对当前进行工作有极大帮助，圈内爆火文章 2. 不继续阅读：论文不吸引自己，论文价值/正确性存疑，论文作者给出了不适当的假设。 3. 库存保留并标记：当前不处于自己的研究领域，但不久的日后相关论文会有用。 Step 2细读笔记要仔细阅读论文，但是诸如证明等信息要忽略掉 集群存储系统体系结构 两层体系结构 一个集群划分成多个存储结点。 一个集群内的多个节点通过同一台交换机进行通信，集群间通信通过一个网路核心。 一个 Cluster 可以参考成一个机架或者一个数据中心。 数据组织状态是 fixed-size 的，作为基本 r/w 单元。 跨集群带宽比内部集群带宽要稀缺得多（more scarce） Locally Repairable Codes 4 parameters (k,l,g,c) k 表示 data node 数量 l 表示 local parity 数量 g 表示 global parity 数量 c 表示 集群数 在实践中，发生多个集群同时挂掉的情况不常见，故障情况更多为 node failures 而非 cluster failures，采用 Azure Local Reconstruction Code 的形式。将 k 个 data node 划分为 l 份（ $l \mid k$），每$b = \frac{k}{l}$个划分出来的子块通过异或（XOR）产生一个 local 块。这 b+1 个成为一个 local group。 修复过程： 代价，代价平均值 Scaling 过程： fast LRC： （相同 k）l 更小，更多的 local parity，修复表现增强 compact LRC： （相同 k）l 更大，更少的 local parity，提高存储效率 upcoding： fast 转向 compact 增大 l，减少 local parity 的过程 downcoding： compact LRC 问题记录未读（且值得读）文献记录 Erasure Coding 技术 LRC 本地修复码 在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 Step 3试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。 思路复现推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ 证明与推理复现分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源 实验验证复现Rework ReadingGroup 笔记BackGround符合自己学习的内容 Motivation再 repair 和 scaling cost 间进行一个 Trade-off 设计引理 1 (k,l,g) LRC 可以用人任意 g+i 个 block failures（不等式证明） 一个简单结论，不能把 g+i 块放置在一个集群中 举例 upcoding cost 产生于 local parity 之间 repair cost 产生于 data 块与 local parity 之间 分析过程就是一个单元变量，每次将 Local Parity 集中集群中分配一个 LP 块到其对应的 local group 中，一次函数。 验证过程 flat 放置 改变块大小的一系列对比试验 总结 优点 关于 LRC 放置的优化 建模 strictly derived 缺点 绿色： b = g+1 （想把分配出来的 Local Parity 分配到 Local Group 所在机架上），恰好是边界条件 如果要实现一个 OPTr 不同的的 LRC 布置策略是不同的]]></content>
+    <content type="text"><![CDATA[Step 1题目摘要引言题目对 Locally Repairable Codes（本地可修复码）的最佳 Repair-Scaling Trade-off 的探究 摘要LRC 是针对 erasure coded storage（可擦除码存储方案）提升修复性能的可行编码方式的一种。可以减少修复带宽并可用于实践。文章分析了均衡 repair 和 scaling 的最佳 trade-off，设计了更优的分布策略，并在 LAN 环境下测试优于传统的布局方案。 引言存储系统扩容与容错需求，Erasure coding 技术相较于传统备份，达到相同容错能力时所需代价更小（低冗余）。Erasure code 已经被应用很多商业存储系统，如微软 Azure 等。 Erasure code 以 original data blocks 为输入，可以产生一些附加的冗余块，它们与原始数据块子集可共同作用于恢复全部原始数据，这些冗余块被称为parity blocks。 Erasure coding 解决方案存在的问题就是修复过程中的 I/O 放大问题。LRC 时 Erasure codes 家族的新成员，设计的主要目的就是以进一步增加冗余存储的代价减小修复过程中的网路贷款与磁盘 I/O 消耗（Local）。 trade-off 探寻方式，以 coding 参数为变量平衡系统 performance 与 storage efficiency 的关系。 贡献 第三节阐述 trade-off 的正是分析。先推导出单集群容错性限制下的放置策略，拓展到其他数据放置策略更贴近最优曲线。 极端放置策略，最优 scaling 与最优 repair。在 LAN 上的试验结果表明两种极端情况下的优化性能。 基本理论概况结论部分 Numerical Studies 和 Testbed Experiments 都证明了该放置策略的有效性。 实验室源码下载地址 GitHub 源码下载地址 回答基本问题 类别 对现有系统分析 Trade-off 并进行改进 内容 和 Erasure Code 相关，RS-Paxos，CRaft。 正确性 创新点 清晰度 分析优化，较为清晰 阅读选择继续阅读 Step 2细读笔记 集群存储系统体系结构 两层体系结构 一个集群划分成多个存储结点。 一个集群内的多个节点通过同一台交换机进行通信，集群间通信通过一个网路核心。 一个 Cluster 可以参考成一个机架或者一个数据中心。 数据组织状态是 fixed-size 的，作为基本 r/w 单元。 跨集群带宽比内部集群带宽要稀缺得多（more scarce） Locally Repairable Codes 4 parameters (k,l,g,c) k 表示 data node 数量 l 表示 local parity 数量 g 表示 global parity 数量 c 表示 集群数 在实践中，发生多个集群同时挂掉的情况不常见，故障情况更多为 node failures 而非 cluster failures，采用 Azure Local Reconstruction Code 的形式。将 k 个 data node 划分为 l 份（ $l \mid k$），每$b = \frac{k}{l}$个划分出来的子块通过异或（XOR）产生一个 local 块。这 b+1 个成为一个 local group。 修复过程： 代价，代价平均值 Scaling 过程： fast LRC： （相同 k）l 更小，更多的 local parity，修复表现增强 compact LRC： （相同 k）l 更大，更少的 local parity，提高存储效率 upcoding： fast 转向 compact 增大 l，减少 local parity 的过程 downcoding： compact LRC 问题记录未读（且值得读）文献记录 Erasure Coding 技术 LRC 本地修复码 Step 3 思路复现 证明与推理复现 实验验证复现 ReadingGroup 笔记BackGround符合自己学习的内容 Motivation再 repair 和 scaling cost 间进行一个 Trade-off 设计引理 1 (k,l,g) LRC 可以用人任意 g+i 个 block failures（不等式证明） 一个简单结论，不能把 g+i 块放置在一个集群中 举例 upcoding cost 产生于 local parity 之间 repair cost 产生于 data 块与 local parity 之间 分析过程就是一个单元变量，每次将 Local Parity 集中集群中分配一个 LP 块到其对应的 local group 中，一次函数。 验证过程 flat 放置 改变块大小的一系列对比试验 总结 优点 关于 LRC 放置的优化 建模 strictly derived 缺点 绿色： b = g+1 （想把分配出来的 Local Parity 分配到 Local Group 所在机架上），恰好是边界条件 如果要实现一个 OPTr 不同的的 LRC 布置策略是不同的]]></content>
       <categories>
         <category>Paper</category>
       </categories>
@@ -196,7 +224,7 @@
   <entry>
     <title><![CDATA[ReadingGroup——Raft-an-Understandable-Consensus-Algorithm]]></title>
     <url>%2Fpost%2Fa6b62976.html</url>
-    <content type="text"><![CDATA[文章由 3step 模板生成 三步法阅读文献笔记记录 Step 1题目摘要引言题目寻找一种容易理解的（分布式）一致性算法——Raft。 摘要Raft 是解决 log replication management 的分布式共识算法，相当于(multi-)Paxos 效果，且比 Paxos 高效、易懂，为构建实际系统提供了更好的基础。用多数投票保证了安全性。 w 引言基本理论概况结论部分确定作者的成过以及点出的经验、问题、改进方式。 回答基本问题 类别 这篇论文是什么类型？测试类？对现有系统进行分析的？对原型系统进行描述的？ 内容 你读过的其他论文有没有与之相关的？相关性与区别最直接体现在哪里？文章中分析问题用的什么理论基础（通过瞥一眼数学概况与核心证明可以得到）。 正确性 结论是否看起来真实有效？ 创新点 论文的主要创新点是什么？总结提到的经验、问题和改进方法是什么？ 清晰度 这篇论文是否写的条理清晰 阅读选择 1. 继续阅读：论文有价值担保，研究领域非常切合，对当前进行工作有极大帮助，圈内爆火文章 2. 不继续阅读：论文不吸引自己，论文价值/正确性存疑，论文作者给出了不适当的假设。 3. 库存保留并标记：当前不处于自己的研究领域，但不久的日后相关论文会有用。 Step 2细读笔记要仔细阅读论文，但是诸如证明等信息要忽略掉 问题记录未读（且值得读）文献记录在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 Step 3试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。 思路复现推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ 证明与推理复现分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源 实验验证复现Rework]]></content>
+    <content type="text"><![CDATA[Step 1题目摘要引言题目寻找一种容易理解的（分布式）一致性算法——Raft。 摘要Raft 是解决 log replication management 的分布式共识算法，相当于(multi-)Paxos 效果，且比 Paxos 高效、易懂，为构建实际系统提供了更好的基础。用多数投票保证了安全性。 w 引言基本理论概况结论部分 回答基本问题 类别 内容 正确性 创新点 清晰度 阅读选择 Step 2细读笔记 问题记录未读（且值得读）文献记录 Step 3 思路复现 证明与推理复现 实验验证复现]]></content>
       <categories>
         <category>Paper</category>
       </categories>
@@ -207,7 +235,7 @@
   <entry>
     <title><![CDATA[ReadingGroup——CRaft]]></title>
     <url>%2Fpost%2F262d18ab.html</url>
-    <content type="text"><![CDATA[文章由 3step 模板生成 三步法阅读文献笔记记录 Step 1题目摘要引言题目Erasure-coding-supported 版本的 Raft（协议？），目的是降低存储消耗和网络消耗。 摘要共识协议可以为分布式系统提供高效可用的分布式服务。在这些写一下，对系统的访问日志复制到多个 server 上。但是完整的 replication 产生了很大的网络与存储开销。 Erasure coding 是降低存储和网络开销的一种常见手段。将 complete-entry replication 替换为 erasure coding replication，可以极大地降低开销。RS-Paxos 式第一个支持 Erasure-coding 的共识协议，本文指出 RS-Paxos 的活力问题，尝试解决并提出了 CRAFT。 不仅使用Erasure coding来减少开销，同时又具备与 Raft 一样的活动性。 基本理论概况1 结论部分确定作者的成过以及点出的经验、问题、改进方式。 回答基本问题 类别 这篇论文是什么类型？测试类？对现有系统进行分析的？对原型系统进行描述的？ 内容 你读过的其他论文有没有与之相关的？相关性与区别最直接体现在哪里？文章中分析问题用的什么理论基础（通过瞥一眼数学概况与核心证明可以得到）。 正确性 结论是否看起来真实有效？ 创新点 论文的主要创新点是什么？总结提到的经验、问题和改进方法是什么？ 清晰度 这篇论文是否写的条理清晰 阅读选择 1. 继续阅读：论文有价值担保，研究领域非常切合，对当前进行工作有极大帮助，圈内爆火文章 2. 不继续阅读：论文不吸引自己，论文价值/正确性存疑，论文作者给出了不适当的假设。 3. 库存保留并标记：当前不处于自己的研究领域，但不久的日后相关论文会有用。 Step 2细读笔记要仔细阅读论文，但是诸如证明等信息要忽略掉 问题记录未读（且值得读）文献记录在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 Step 3试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。 思路复现推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ 证明与推理复现分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源 实验验证复现Rework ReadingGroup 会议目标减少网络存储开销 Erasure Code切割编码，一种冗余 Replication 的技术。 和密码学中的秘密分割不同，从需求看，秘密分割需要保证分割部分不能推测出原有秘密信息（哪怕部分）。纠删码则不考虑这一层，它只需要保证可恢复，且可应用于传输 transport 过程中。 Reed-Solomon(RS) Code 流程解释 Raft只讲所需部分 Term 任期 逻辑时间 一个任期最多有一个 leader Tree states Follower: 已有 Leader 的 Follower Candidate： 没有 Leader 的时候称为候选人 Leader： 具备 Leader 性质 Preoperty Safty Liveness 容灾能力 N=2F+1 本文要考虑的性质 最大容灾能力 F level RS-Paxos User (k,m)-RS code 这个协议的问题，容灾能力有问题，小于 F。 CRaft 设计思考需要一个完整块，反证法证明 Code-fragment Replication编码分块副本策略 当数据被 F+k 块存储后，Data 就被承认了 选取任意 F+1 个分块， 如果数据被小于 F+k 块存储 需要使用 完整块 p = 0 如何把编码分块和完整块共同利用 Prediction一种贪心的策略 使用最近的心跳回答来预测，可能会失败 New Leader需要增加新的过程 LeaderPre。 分类讨论，对于新 Leader。 Log 分类 commited 保证了 F+1 可用？？ uncommitted 好一点的情况，能搜寻够 Fragment，或者搜寻到完整块，最差的情况，需要抛弃。 设计总结Cheng Li: 很想 RS-Paxos Raft 中：Leader 一定不会 merge、删除我的日志。 CRaft 中：三类情况下的最差情况，可能会删除。 理论证明删除的影响。。 Theorem Log Matching Property Leader Completeness Property 完全信任性质 如果一个 log entry，在 givern term T 时提交，那就会。。。 没太懂，这个性质在 CRaft 中满足性质。 State Machine Safety Property 由前两个性质可以推得，在 CRaft 中也同样满足的性质。 一个重要的东西]]></content>
+    <content type="text"><![CDATA[Step 1题目摘要引言题目Erasure-coding-supported 版本的 Raft（协议？），目的是降低存储消耗和网络消耗。 摘要共识协议可以为分布式系统提供高效可用的分布式服务。在这些写一下，对系统的访问日志复制到多个 server 上。但是完整的 replication 产生了很大的网络与存储开销。 Erasure coding 是降低存储和网络开销的一种常见手段。将 complete-entry replication 替换为 erasure coding replication，可以极大地降低开销。RS-Paxos 式第一个支持 Erasure-coding 的共识协议，本文指出 RS-Paxos 的活力问题，尝试解决并提出了 CRAFT。 不仅使用Erasure coding来减少开销，同时又具备与 Raft 一样的活动性。 基本理论概况1 结论部分 回答基本问题 类别 内容 正确性 创新点 清晰度 阅读选择 Step 2细读笔记 问题记录未读（且值得读）文献记录 Step 3 思路复现 证明与推理复现 实验验证复现 ReadingGroup 会议目标减少网络存储开销 Erasure Code切割编码，一种冗余 Replication 的技术。 和密码学中的秘密分割不同，从需求看，秘密分割需要保证分割部分不能推测出原有秘密信息（哪怕部分）。纠删码则不考虑这一层，它只需要保证可恢复，且可应用于传输 transport 过程中。 Reed-Solomon(RS) Code 流程解释 Raft只讲所需部分 Term 任期 逻辑时间 一个任期最多有一个 leader Tree states Follower: 已有 Leader 的 Follower Candidate： 没有 Leader 的时候称为候选人 Leader： 具备 Leader 性质 Preoperty Safty Liveness 容灾能力 N=2F+1 本文要考虑的性质 最大容灾能力 F level RS-Paxos User (k,m)-RS code 这个协议的问题，容灾能力有问题，小于 F。 CRaft 设计思考需要一个完整块，反证法证明 Code-fragment Replication编码分块副本策略 当数据被 F+k 块存储后，Data 就被承认了 选取任意 F+1 个分块， 如果数据被小于 F+k 块存储 需要使用 完整块 p = 0 如何把编码分块和完整块共同利用 Prediction一种贪心的策略 使用最近的心跳回答来预测，可能会失败 New Leader需要增加新的过程 LeaderPre。 分类讨论，对于新 Leader。 Log 分类 commited 保证了 F+1 可用？？ uncommitted 好一点的情况，能搜寻够 Fragment，或者搜寻到完整块，最差的情况，需要抛弃。 设计总结Cheng Li: 很想 RS-Paxos Raft 中：Leader 一定不会 merge、删除我的日志。 CRaft 中：三类情况下的最差情况，可能会删除。 理论证明删除的影响。。 Theorem Log Matching Property Leader Completeness Property 完全信任性质 如果一个 log entry，在 givern term T 时提交，那就会。。。 没太懂，这个性质在 CRaft 中满足性质。 State Machine Safety Property 由前两个性质可以推得，在 CRaft 中也同样满足的性质。 一个重要的东西]]></content>
       <categories>
         <category>Paper</category>
       </categories>
@@ -266,7 +294,7 @@
   <entry>
     <title><![CDATA[ReadingGroup——How-to-Copy-Files]]></title>
     <url>%2Fpost%2F401bef38.html</url>
-    <content type="text"><![CDATA[文章由 3step 模板生成 三步法阅读文献笔记记录 Step 1题目摘要引言Copy-on-Write写时拷贝技术，查阅资料发现，有两个应用运用CoW较为成功 进程的写时拷贝技术（Linux） 进行fork()时，操作系统不会拷贝父进程的“正文段”、“数据段”、“堆”、“栈”并分配物理块给子进程，而是为新生成的子进程创建虚拟空间结构，它们来复制于父进程的虚拟究竟结构，但是不为这些段分配物理内存，它们共享父进程的物理空间。当父进程有更改段的行为发生时（“Write”发生），再为子进程相应段分配物理空间。原文博主援引 LKD《Linux Kernel Development》： 传统的 fork()系统调用直接把所有的资源复制给新创建的进程。这种实现过于简单并且效率低下，因为它拷贝的数据也许并不共享，更糟的情况是，如果新进程打算立即执行一个新的映像，那么所有的拷贝都将前功尽弃。Linux 的 fork()使用写时拷贝（copy-on-write）页实现。写时拷贝是一种可以推迟甚至免除拷贝数据的技术。内核此时并不复制整个进程地址空间，而是让父进程和子进程共享同一个拷贝。只有在需要写入的时候，数据才会被复制，从而使各个进程拥有各自的拷贝。也就是说，资源的复制只有在需要写入的时候才进行，在此之前，只是以只读方式共享。这种技术使地址空间上的页的拷贝被推迟到实际发生写入的时候。在页根本不会被写入的情况下—举例来说，fork()后立即调用 exec()—它们就无需复制了。fork()的实际开销就是复制父进程的页表以及给子进程创建惟一的进程描述符。在一般情况下，进程创建后都会马上运行一个可执行的文件，这种优化可以避免拷贝大量根本就不会被使用的数据（地址空间里常常包含数十兆的数据）。由于 Unix 强调进程快速执行的能力，所以这个优化是很重要的。这里补充一点：Linux COW 与 exec 没有必然联系 文件系统的写时拷贝技术 Copy-on-write 在对数据进行修改的时候，不会直接在原来的数据位置上进行操作，而是重新找个位置修改，这样的好处其一是一旦系统突然断电，重启之后不需要做 Fsck。好处就是能保证数据的完整性，掉电的话容易恢复。再者就是和本文内容相关，Cow 常常也作为减少文件物理复制的优化手段。比如很多逻辑卷 manager 支持 block-level 的 Cow 快照。一些文件系统直接支持 Cow 文件或目录。 基本理论概况write-optimization 来实现 Copy（复制）与 Write（写）的分离。 没有出现数学公式，图示过程后是复杂度分析。 结论部分确定作者的成过以及点出的经验、问题、改进方式。 文章展示了如何利用写优化来实现Decouple writes from copies，并实现nimble performance的性质。且这种优化不干扰非相关操作的性能。如在 LXC container 体现出 3-4 倍的拷贝性能提升。 推广：数据结构批量更新。不仅能够应用于文件系统，还可用在数据库等，比如（在 B-DAG 的实现可用于 KV store）。 回答基本问题 类别 这篇论文是什么类型？测试类？对现有系统进行分析的？对原型系统进行描述的？ 对现有系统的优化，提出一种新模式。 内容 你读过的其他论文有没有与之相关的？相关性与区别最直接体现在哪里？文章中分析问题用的什么理论基础（通过瞥一眼数学概况与核心证明可以得到）。 暂无，文章中提到的 COW 技术没有学习过。 正确性 结论是否看起来真实有效？ 创新点 论文的主要创新点是什么？总结提到的经验、问题和改进方法是什么？ 不同于传统的 COW 技术，通过写优化将 C 与 W 分开达到性能上的进一步提升。 清晰度 这篇论文是否写的条理清晰 阅读选择 1. 继续阅读：论文有价值担保，研究领域非常切合，对当前进行工作有极大帮助，圈内爆火文章 2. 不继续阅读：论文不吸引自己，论文价值/正确性存疑，论文作者给出了不适当的假设。 3. 库存保留并标记：当前不处于自己的研究领域，但不久的日后相关论文会有用。 继续阅读 Step 2细读笔记要仔细阅读论文，但是诸如证明等信息要忽略掉 IntroductionCow 技术的核心调节参数是 Copy 的粒度： 粒度大 比如文件级 小改动的代价会被放大 会增大更新延时 相关的 Copy 会丧失 share 能力，可能造成大的空间浪费（如只有很小修改） 粒度小 更新很快但是碎片花 按序读代价变大 Nible clones: be fast to create have excellent read locality, so that logically related files can be read at near disk bandwidth, even after modifination. have fast writes, both the original and the clone conserve space（节省空间）, the write amplification and disk footprint are as small as possible, even after updates to the original or to the clone. 现有的 CoW 技术实现都不是 Nible 复制。 文章 Contribution（详细见第二页右下）: 提出一个逻辑复制 specifiction（说明？） nimble clone 必须满足的一组（性能）条件 实现了一个符合上述要求的文件系统设计 CAW（Copy-on-Abundant-Write）：应用于 BetrFS 0.5’s clone 实现，buffer 累计小的修改，直至衡量其维持 delta 的代价超过 copy，如此则重新复制。 BetrFS BackgroundB$^\epsilon$-treeBetrFS 由 KV-store 的数据结构（B$^{\epsilon}$-tree）来命名，同 B 树变体，B$^\epsilon$-tree 将 kv 对储存在叶子结点中， 关键特征：B$^\epsilon$-tree 的内部结点（interior nodes）缓冲了叶子内容将要发生的改变，名为 message。逐曾 flush message 直到达到叶子结点。 B$^\epsilon$-tree 在每个结点 log 更改，而向下的更新是按批次的，所以 IO 的节省空间遂批次增多而增大。 Range OperationBetrFS 对连续键值范围操作的优化，设计用来优化文件系统 namespace 的子树操作。 full-path keys 带来的遍历，读文件、搜索都是一个 range 操作（相同 prefix） 问题记录未读（且值得读）文献记录在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 [25]the log-structured merge-tree (lsm-tree) （太多相关内容都是基于 LSM-tree 的了，一定要补一下）。 Step 3试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。 思路复现推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ 证明与推理复现分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源 实验验证复现Rework 会议内容记录What is logical Copy? cp -r “Not changed” ln “will change” ln -s “will change” 硬软连接 cp --reflink 本文内容，逻辑拷贝 过程描述 改变之前两个文件指向相同的 Data Block 组，假设对 1 位进行改变，会使 Copy 一个新的 Data Block，产生两大问题： 一点修改就要改 Data Block 碎片化，把排排坐有序的 Data Block，变为无序访问了。 测试过程描述（图示） 写放大：每个 block（4KB）都做个小修改， 碎片导致时间开销：越碎片，时间越长？ 当前存在的问题物理 Copy、逻辑 Copy 的三个问题，其中还包含一个 Trade Off。 ContributionImplementation 什么是 BetrFS？ BetrFSL an in-kernel， local file system built on a KV-store substrate(B$^\epsilon$-tree) 特征：1. 更小的关键字 fewer pivots. 2. buffer B$^\epsilon$-tree左边 piviot b 树中的关键字，右边是 buffer Cloning Operation Semanticswrite amplification 对于 Trade Off，根据已知的 B$^\epsilon$-tree 数据结构的特征，在保证块很大的情况下，写也不慢（减小写放大影响）。 Postpone：树到 DAG，树的叶子节点是要保证唯一性的。 GOTO messagesGOTO messages： Prefix /b/0, goto /a。举例子，Docker 逻辑复制，通过 GOTO message 就可以占据一个名称空间，还用原来的物理空间，不扩。 A GOTO message maps: keyrange(a,b)-&gt;a node 把一个范围的 key 映射到一个 node。(The target node should be the Lowest-Common Ancestor(LCA)). 为什么是公共祖先，我个人理解，再下一层就不饿能保证下次对应相同的 data block。 由于加了边（Goto 指向边），变成了个有向无环图。 有向无环图带来的问题，直接指向的位置如果不是最新的（上一层有 buffer），则有过去更改没有刷下来。解决方案，加 Ref 标记，并强制上层路径 flush Handling Fringe NodesImplementation and OptimizationPreferential splitting 分割 leafnodes 的选择 11 Background cleaning BetrFS 的影响写放大和碎片控制都有效，克隆的 Latency 最低的。 结论：相比于剩下三个文件系统，达到的效果：Low space amplification, Low fragmentation, Low clone latency 通常的文件系统 顺序 IO 和随机 IO Li 老师点评Slides 比文章更好，可以再关注下。 Research，小而美的问题，比如这个，How to copy files。 大的 Scope]]></content>
+    <content type="text"><![CDATA[Step 1题目摘要引言Copy-on-Write写时拷贝技术，查阅资料发现，有两个应用运用CoW较为成功 进程的写时拷贝技术（Linux） 进行fork()时，操作系统不会拷贝父进程的“正文段”、“数据段”、“堆”、“栈”并分配物理块给子进程，而是为新生成的子进程创建虚拟空间结构，它们来复制于父进程的虚拟究竟结构，但是不为这些段分配物理内存，它们共享父进程的物理空间。当父进程有更改段的行为发生时（“Write”发生），再为子进程相应段分配物理空间。原文博主援引 LKD《Linux Kernel Development》： 传统的 fork()系统调用直接把所有的资源复制给新创建的进程。这种实现过于简单并且效率低下，因为它拷贝的数据也许并不共享，更糟的情况是，如果新进程打算立即执行一个新的映像，那么所有的拷贝都将前功尽弃。Linux 的 fork()使用写时拷贝（copy-on-write）页实现。写时拷贝是一种可以推迟甚至免除拷贝数据的技术。内核此时并不复制整个进程地址空间，而是让父进程和子进程共享同一个拷贝。只有在需要写入的时候，数据才会被复制，从而使各个进程拥有各自的拷贝。也就是说，资源的复制只有在需要写入的时候才进行，在此之前，只是以只读方式共享。这种技术使地址空间上的页的拷贝被推迟到实际发生写入的时候。在页根本不会被写入的情况下—举例来说，fork()后立即调用 exec()—它们就无需复制了。fork()的实际开销就是复制父进程的页表以及给子进程创建惟一的进程描述符。在一般情况下，进程创建后都会马上运行一个可执行的文件，这种优化可以避免拷贝大量根本就不会被使用的数据（地址空间里常常包含数十兆的数据）。由于 Unix 强调进程快速执行的能力，所以这个优化是很重要的。这里补充一点：Linux COW 与 exec 没有必然联系 文件系统的写时拷贝技术 Copy-on-write 在对数据进行修改的时候，不会直接在原来的数据位置上进行操作，而是重新找个位置修改，这样的好处其一是一旦系统突然断电，重启之后不需要做 Fsck。好处就是能保证数据的完整性，掉电的话容易恢复。再者就是和本文内容相关，Cow 常常也作为减少文件物理复制的优化手段。比如很多逻辑卷 manager 支持 block-level 的 Cow 快照。一些文件系统直接支持 Cow 文件或目录。 基本理论概况write-optimization 来实现 Copy（复制）与 Write（写）的分离。 没有出现数学公式，图示过程后是复杂度分析。 结论部分 文章展示了如何利用写优化来实现Decouple writes from copies，并实现nimble performance的性质。且这种优化不干扰非相关操作的性能。如在 LXC container 体现出 3-4 倍的拷贝性能提升。 推广：数据结构批量更新。不仅能够应用于文件系统，还可用在数据库等，比如（在 B-DAG 的实现可用于 KV store）。 回答基本问题 类别 对现有系统的优化，提出一种新模式。 内容 暂无，文章中提到的 COW 技术没有学习过。 正确性 创新点 不同于传统的 COW 技术，通过写优化将 C 与 W 分开达到性能上的进一步提升。 清晰度 阅读选择 继续阅读 Step 2细读笔记 IntroductionCow 技术的核心调节参数是 Copy 的粒度： 粒度大 比如文件级 小改动的代价会被放大 会增大更新延时 相关的 Copy 会丧失 share 能力，可能造成大的空间浪费（如只有很小修改） 粒度小 更新很快但是碎片花 按序读代价变大 Nible clones: be fast to create have excellent read locality, so that logically related files can be read at near disk bandwidth, even after modifination. have fast writes, both the original and the clone conserve space（节省空间）, the write amplification and disk footprint are as small as possible, even after updates to the original or to the clone. 现有的 CoW 技术实现都不是 Nible 复制。 文章 Contribution（详细见第二页右下）: 提出一个逻辑复制 specifiction（说明？） nimble clone 必须满足的一组（性能）条件 实现了一个符合上述要求的文件系统设计 CAW（Copy-on-Abundant-Write）：应用于 BetrFS 0.5’s clone 实现，buffer 累计小的修改，直至衡量其维持 delta 的代价超过 copy，如此则重新复制。 BetrFS BackgroundB$^\epsilon$-treeBetrFS 由 KV-store 的数据结构（B$^{\epsilon}$-tree）来命名，同 B 树变体，B$^\epsilon$-tree 将 kv 对储存在叶子结点中， 关键特征：B$^\epsilon$-tree 的内部结点（interior nodes）缓冲了叶子内容将要发生的改变，名为 message。逐曾 flush message 直到达到叶子结点。 B$^\epsilon$-tree 在每个结点 log 更改，而向下的更新是按批次的，所以 IO 的节省空间遂批次增多而增大。 Range OperationBetrFS 对连续键值范围操作的优化，设计用来优化文件系统 namespace 的子树操作。 full-path keys 带来的遍历，读文件、搜索都是一个 range 操作（相同 prefix） 问题记录未读（且值得读）文献记录 [25]the log-structured merge-tree (lsm-tree) （太多相关内容都是基于 LSM-tree 的了，一定要补一下）。 Step 3 思路复现 证明与推理复现 实验验证复现 会议内容记录What is logical Copy? cp -r “Not changed” ln “will change” ln -s “will change” 硬软连接 cp --reflink 本文内容，逻辑拷贝 过程描述 改变之前两个文件指向相同的 Data Block 组，假设对 1 位进行改变，会使 Copy 一个新的 Data Block，产生两大问题： 一点修改就要改 Data Block 碎片化，把排排坐有序的 Data Block，变为无序访问了。 测试过程描述（图示） 写放大：每个 block（4KB）都做个小修改， 碎片导致时间开销：越碎片，时间越长？ 当前存在的问题物理 Copy、逻辑 Copy 的三个问题，其中还包含一个 Trade Off。 ContributionImplementation 什么是 BetrFS？ BetrFSL an in-kernel， local file system built on a KV-store substrate(B$^\epsilon$-tree) 特征：1. 更小的关键字 fewer pivots. 2. buffer B$^\epsilon$-tree左边 piviot b 树中的关键字，右边是 buffer Cloning Operation Semanticswrite amplification 对于 Trade Off，根据已知的 B$^\epsilon$-tree 数据结构的特征，在保证块很大的情况下，写也不慢（减小写放大影响）。 Postpone：树到 DAG，树的叶子节点是要保证唯一性的。 GOTO messagesGOTO messages： Prefix /b/0, goto /a。举例子，Docker 逻辑复制，通过 GOTO message 就可以占据一个名称空间，还用原来的物理空间，不扩。 A GOTO message maps: keyrange(a,b)-&gt;a node 把一个范围的 key 映射到一个 node。(The target node should be the Lowest-Common Ancestor(LCA)). 为什么是公共祖先，我个人理解，再下一层就不饿能保证下次对应相同的 data block。 由于加了边（Goto 指向边），变成了个有向无环图。 有向无环图带来的问题，直接指向的位置如果不是最新的（上一层有 buffer），则有过去更改没有刷下来。解决方案，加 Ref 标记，并强制上层路径 flush Handling Fringe NodesImplementation and OptimizationPreferential splitting 分割 leafnodes 的选择 11 Background cleaning BetrFS 的影响写放大和碎片控制都有效，克隆的 Latency 最低的。 结论：相比于剩下三个文件系统，达到的效果：Low space amplification, Low fragmentation, Low clone latency 通常的文件系统 顺序 IO 和随机 IO Li 老师点评Slides 比文章更好，可以再关注下。 Research，小而美的问题，比如这个，How to copy files。 大的 Scope]]></content>
       <categories>
         <category>Paper</category>
       </categories>
@@ -1151,9 +1179,9 @@
         <category>分布式系统</category>
       </categories>
       <tags>
-        <tag>分布式系统</tag>
         <tag>论文</tag>
         <tag>操作系统</tag>
+        <tag>分布式系统</tag>
       </tags>
   </entry>
   <entry>
@@ -1178,9 +1206,9 @@
         <category>分布式系统</category>
       </categories>
       <tags>
-        <tag>分布式系统</tag>
         <tag>论文</tag>
         <tag>操作系统</tag>
+        <tag>分布式系统</tag>
       </tags>
   </entry>
   <entry>
@@ -1248,9 +1276,9 @@
         <category>分布式系统</category>
       </categories>
       <tags>
-        <tag>分布式系统</tag>
         <tag>论文</tag>
         <tag>操作系统</tag>
+        <tag>分布式系统</tag>
         <tag>GFS</tag>
       </tags>
   </entry>
@@ -1263,9 +1291,9 @@
         <category>分布式系统</category>
       </categories>
       <tags>
-        <tag>分布式系统</tag>
         <tag>论文</tag>
         <tag>操作系统</tag>
+        <tag>分布式系统</tag>
         <tag>MapReduce</tag>
       </tags>
   </entry>
@@ -1278,9 +1306,9 @@
         <category>分布式系统</category>
       </categories>
       <tags>
-        <tag>分布式系统</tag>
         <tag>论文</tag>
         <tag>操作系统</tag>
+        <tag>分布式系统</tag>
         <tag>状态机</tag>
       </tags>
   </entry>
@@ -1293,9 +1321,9 @@
         <category>分布式系统</category>
       </categories>
       <tags>
-        <tag>分布式系统</tag>
         <tag>论文</tag>
         <tag>操作系统</tag>
+        <tag>分布式系统</tag>
       </tags>
   </entry>
   <entry>
@@ -1568,8 +1596,8 @@
         <tag>ACM</tag>
         <tag>2019春季训练</tag>
         <tag>二分</tag>
-        <tag>待补充</tag>
         <tag>并查集</tag>
+        <tag>待补充</tag>
         <tag>洛谷</tag>
         <tag>二分图</tag>
       </tags>
@@ -2270,8 +2298,8 @@
         <tag>ACM</tag>
         <tag>算法</tag>
         <tag>2018秋季训练</tag>
-        <tag>待补充</tag>
         <tag>并查集</tag>
+        <tag>待补充</tag>
         <tag>POJ</tag>
       </tags>
   </entry>
@@ -2303,8 +2331,8 @@
         <tag>ACM</tag>
         <tag>算法</tag>
         <tag>HDU</tag>
-        <tag>待补充</tag>
         <tag>并查集</tag>
+        <tag>待补充</tag>
         <tag>2018球季训练</tag>
       </tags>
   </entry>
@@ -2320,8 +2348,8 @@
         <tag>ACM</tag>
         <tag>算法</tag>
         <tag>2018秋季训练</tag>
-        <tag>待补充</tag>
         <tag>并查集</tag>
+        <tag>待补充</tag>
         <tag>POJ</tag>
       </tags>
   </entry>
@@ -3721,8 +3749,8 @@
       <tags>
         <tag>阅读</tag>
         <tag>小说</tag>
-        <tag>刺杀骑士团长</tag>
         <tag>村上春树</tag>
+        <tag>刺杀骑士团长</tag>
       </tags>
   </entry>
   <entry>
@@ -4064,8 +4092,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>二分</tag>
         <tag>2018暑假集训</tag>
+        <tag>二分</tag>
         <tag>POJ</tag>
       </tags>
   </entry>
@@ -4096,8 +4124,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>二分</tag>
         <tag>2018暑假集训</tag>
+        <tag>二分</tag>
         <tag>水题</tag>
         <tag>CodeForces</tag>
       </tags>
@@ -4113,8 +4141,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>二分</tag>
         <tag>2018暑假集训</tag>
+        <tag>二分</tag>
         <tag>CodeForces</tag>
       </tags>
   </entry>
@@ -4861,8 +4889,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>Imitation</tag>
         <tag>2018寒假集训</tag>
+        <tag>Imitation</tag>
         <tag>Graph</tag>
         <tag>POJ</tag>
       </tags>
@@ -4894,8 +4922,8 @@
       <tags>
         <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>Imitation</tag>
         <tag>2018寒假集训</tag>
+        <tag>Imitation</tag>
         <tag>CodeForces</tag>
         <tag>Graph</tag>
       </tags>
