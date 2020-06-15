@@ -366,6 +366,415 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/a3458cbc.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/a3458cbc.html" itemprop="url">分布式系统学习——MIT6.824-Lecture4课程笔记</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-04T15:57:50+08:00">
+                2020-06-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/" itemprop="url" rel="index">
+                    <span itemprop="name">操作系统</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/分布式系统/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,592
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  6
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="Replication-gt-Fault-Tolerance"><a href="#Replication-gt-Fault-Tolerance" class="headerlink" title="Replication -&gt; Fault Tolerance"></a>Replication -&gt; Fault Tolerance</h1><h2 id="Failures"><a href="#Failures" class="headerlink" title="Failures"></a>Failures</h2><ul>
+<li><p>Fail-stop faults</p>
+<p>更通用称呼， 他并不会计算出错误的答案，Just Stop（可能原因太多了，踢到机子，网络拥塞，CPU 过热）。备份设计对于 Bugs 没有帮助，更多情况下我们只能应对 Fail Stop。</p>
+<p>需要保证物理机器的独立性，否则再大数量的机群和备份策略都不能帮助我们，因为一旦出现相关性（co-related）错误，机器会一同挂掉。</p>
+</li>
+</ul>
+<h2 id="Worth-it"><a href="#Worth-it" class="headerlink" title="Worth it"></a>Worth it</h2><p>在 GFS 的设计中，需要三倍资源（三份 Replication），是否值得？严格意义上说，我们不能从技术上解释这个问题，它同时也是个经济问题，关系很多其他因素，比如备份策略所应用的 service 价值如何？</p>
+<h2 id="Approaches-to-Replication-（Replication-Scheme）"><a href="#Approaches-to-Replication-（Replication-Scheme）" class="headerlink" title="Approaches to Replication （Replication Scheme）"></a>Approaches to Replication （Replication Scheme）</h2><p>达成备份的方法。</p>
+<ul>
+<li><p>State transfer</p>
+<p>-&gt; send memory</p>
+<p>primary 传递它的状态（比如全部 RAM 内容）给备份，备份储存状态。考虑到效率，更想传递改变的那部分。</p>
+</li>
+<li><p>State machine replication</p>
+<p>-&gt; send operations</p>
+<p>我们主要讨论的 scheme。</p>
+<p>思路来源，发现很多机器可以拆分成内部确定的事件，和外部影响事件，仅受到内部运行事件影响（internal events）的状态机是确定的直到其受到外来信息的影响。</p>
+<p>状态机复制策略，不复制完整状态，而仅发送那些状态机会被影响的外部事件（external events）。</p>
+<p>所以状态机从同一状态起始，各自进行状态运转，和消息传递，仍能保持状态的一致性，这就达成了备份。</p>
+<p>想起来之前学习的那篇论文：<a href="https://www.edwardzcn98yx.com/post/86b562df.html">状态机容错模型</a></p>
+<p>人们喜欢 State machine 的原因，small，状态整体太大了，而操作往往很小。</p>
+</li>
+</ul>
+<h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><p>Q：如果 backup 和 primary 没有做到 identical，scheme 出错了，怎么办？</p>
+<p>A：以 GFS master 给两个 chunk 发 primary lease 为例。</p>
+<p>Q：如何保证状态机复制 Scheme 中，内部状态的运行结果的确是一致的。</p>
+<p>A：很多 internal instruction 看起来是确定的，不过也存在你指出的那一小部分，比如获取当前本地时间、获取 PID 等。一个标准答案（参考答案）是，根据指令，backup 并不是完全独立运行？还在听 primary 的指令（正确答案）？</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/a3458cbc.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/ea4ba2a6.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/ea4ba2a6.html" itemprop="url">《有所不为的反叛者》读书摘录</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-03T17:15:21+08:00">
+                2020-06-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/阅读/" itemprop="url" rel="index">
+                    <span itemprop="name">阅读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  721
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  2
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="历史学家的美德"><a href="#历史学家的美德" class="headerlink" title="历史学家的美德"></a>历史学家的美德</h1><p>又回到那个读史都会碰到的问题：“历史有什么用？”</p>
+<blockquote>
+<p>P001 “历史学系的学生和教师最怕被问到，偏偏又被问得最多的一个问题，是‘历史有什么用’。其实这是一个<strong>伪问题</strong>，历史是人类精神的基本构造，是人类的思维形式，离开了历史就不会有人类的思维。”</p>
+</blockquote>
+<p>不过多一个字的另一个问题——历史学有什么用？</p>
+<blockquote>
+<p>P001 “历史是对过去的讲述，无比巨大、混沌一团的过去中被赋予了秩序和意义并且被讲述出来那很小很小的一部分，才是我们所说的历史。被讲出来的历史就不再等同于过去；过去的无数方向、无数现缩被简化成历史的单一方向和单一线索，<strong>过去无可计数的参与者被简化为少数人群及其精英</strong>，主人公和中心人物出现了，目的和意义诞生了。”</p>
+</blockquote>
+<p>想起了过去写作文，从杂乱无序的文字与流水账式记录中，加工出核心人物，中心思想，要体现目的和意义。但历史不是文学创作，似乎历史的确需要梳理，可梳理裁剪的历史应该被如何看待？加粗字与“少数人的历史不是历史”有何差别，可能我还需要岁月磨砺与阅读积累才能理解吧。</p>
+<p>回到历史学。</p>
+<blockquote>
+<p>P001 “从过去中选择原料、组织模型和生产历史，是人类最古老、最基本的智力活动，面对历史的生成、演变、发展和应用这个过程进行考察的学科就是历史学。”</p>
+</blockquote>
+<p>谈历史学家的三大美德。</p>
+<blockquote>
+<p>P002 “历史学家有三大美德：<strong>批判</strong>、<strong>怀疑</strong>和<strong>想象力</strong>。”<br>…<br>“我们面对旧的史学知识，首先需要的是批判和怀疑。批判性思维是人类理性的基础，历史思维的价值就在其批判性。可以说，我们熟悉的历史，包含着大量的神话与伪史，其中有些将会被揭穿，剔除和取代，有些则因史料匮乏，证据单一而使质疑者无可奈何。怀疑与批判的美德使我们不仅用于揭破神话、创造新知，而且有助于我们在那些暂时难以撼动的新老神话面前保持警惕、保持距离。”</p>
+</blockquote>
+<p>历史的论辩是一种不同意，一种对已有论述的质疑、纠正、提升或抗争，实在过去的混沌中重新发现或发明关联、模式、意义与秩序。</p>
+<blockquote>
+<p>P003 “如果沉浸在已有论述中不加怀疑、不加批判，那就成了旧历史的囚徒，就失去了选择的能力。”</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/62a8c430.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -975,389 +1384,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/a2116e6d.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/a2116e6d.html" itemprop="url">ReadingGroup——Supporting-Very-Large-Models</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-26T19:31:57+08:00">
-                2020-05-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  196
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <!--文章由 3step 模板生成三步法阅读文献笔记记录-->
-<h1 id="Step-1"><a href="#Step-1" class="headerlink" title="Step 1"></a>Step 1</h1><h2 id="题目摘要引言"><a href="#题目摘要引言" class="headerlink" title="题目摘要引言"></a>题目摘要引言</h2><h3 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h3><p>使用自动数据流图分割支持超大模型</p>
-<h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>介绍新的模型——Tofu，用于在多个 GPU 上划分超大的 DNN 模型，从而减少单个 GPU 的内存占用。</p>
-<h2 id="基本理论概况"><a href="#基本理论概况" class="headerlink" title="基本理论概况"></a>基本理论概况</h2><h2 id="结论部分"><a href="#结论部分" class="headerlink" title="结论部分"></a>结论部分</h2><!-- 确定作者的成过以及点出的经验、问题、改进方 -->
-<h2 id="回答基本问题"><a href="#回答基本问题" class="headerlink" title="回答基本问题"></a>回答基本问题</h2><ol>
-<li>类别</li>
-</ol>
-<!-- 这篇论文是什么类型？测试类？对现有系统进行分析的？对原型系统进行描述的？-->
-<ol>
-<li>内容</li>
-</ol>
-<!-- 你读过的其他论文有没有与之相关的？相关性与区别最直接体现在哪里？文章中分析问题用的什么理论基础（通过瞥一眼数学概况与核心证明可以得到）。 -->
-<ol>
-<li>正确性</li>
-</ol>
-<!-- 结论是否看起来真实有效？ -->
-<ol>
-<li>创新点</li>
-</ol>
-<!-- 论文的主要创新点是什么？总结提到的经验、问题和改进方法是什么？ -->
-<ol>
-<li>清晰度</li>
-</ol>
-<!-- 这篇论文是否写的条理清晰 -->
-<h2 id="阅读选择"><a href="#阅读选择" class="headerlink" title="阅读选择"></a>阅读选择</h2><!--
-1. 继续阅读：论文有价值担保，研究领域非常切合，对当前进行工作有极大帮助，圈内爆火文章
-2. 不继续阅读：论文不吸引自己，论文价值/正确性存疑，论文作者给出了不适当的假设。
-3. 库存保留并标记：当前不处于自己的研究领域，但不久的日后相关论文会有用。
--->
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/a2116e6d.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/d6eb1130.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/d6eb1130.html" itemprop="url">《看见》读书摘录</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-25T17:01:55+08:00">
-                2020-05-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/阅读/" itemprop="url" rel="index">
-                    <span itemprop="name">阅读</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  5,428
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  18
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><blockquote>
-<p>“要想‘看见’，就要从蒙昧中睁开眼来。”<br>“这才是最困难的地方，因为蒙昧就是我自身，像石头一样成了心里的坝。”</p>
-</blockquote>
-<h1 id="第一章-别当了主持人就不是人了"><a href="#第一章-别当了主持人就不是人了" class="headerlink" title="第一章 别当了主持人就不是人了"></a>第一章 别当了主持人就不是人了</h1><h1 id="第二章-那个温热的跳动就是活着"><a href="#第二章-那个温热的跳动就是活着" class="headerlink" title="第二章 那个温热的跳动就是活着"></a>第二章 那个温热的跳动就是活着</h1><blockquote>
-<p>P34 “九年后，再看二〇〇三年对他的采访，那时候我还不能明白这个人为什么说话语速这么慢，脸上一点表情都没有。现在我理解了，那是沉痛。”<br>“我用了很长时间说服他接受参访。我说：‘你不用作什么判断和结论，只要描述你看到、听到、感觉到的，就可以了。’”<br>“在电话里，他沉默了一下说：‘回忆太痛苦了。’”<br>“‘是，’我说，‘但痛苦也是一种清洗，是对牺牲人的告慰。’”</p>
-</blockquote>
-<p>恐慌，是最可怕的吗？</p>
-<blockquote>
-<p>P38 “我做的节目播出后，有同行说：‘你们在制造恐慌。’当时我身边坐着时任《财经》杂志主编的胡舒立，她说：‘比恐慌更可怕的是轻慢。’”</p>
-</blockquote>
-<h1 id="第三章-双城的创伤"><a href="#第三章-双城的创伤" class="headerlink" title="第三章 双城的创伤"></a>第三章 双城的创伤</h1><blockquote>
-<p>P55 “它们没有被呈现，这是一个新闻媒体的‘政治正确’。我们叙述了一个事情的基本框架，但只是一个简陋的框架，以保护大众能够理解和接受这个‘真相’。”</p>
-</blockquote>
-<p>当柴静对采访小男孩不抱希望时，不曾想正是因为几个月前的非典报道，成了两人相互信任的突破口。</p>
-<blockquote>
-<p>P42 “我不抱希望地问了这么一句，但他说：‘我愿意’。”<br>我蹲在地上，有一秒钟没回过神，居然问他：‘为什么？’<br>他说：‘因为我看过你关于非典地报道。’<br>几个月前做非典报道得到的所有荣誉称赞，都比不上这一句。</p>
-<p>P55 “对人的认识有多深，呈现才有多深”<br>“做这期节目的时候，我对人的了解还远远不够，只下了个简易的判断。”</p>
-</blockquote>
-<p>故事的末尾，终于不再是那句“让我们期待一个民主与法治的社会早日来到”。</p>
-<blockquote>
-<p>P56 “一分多钟，我怔怔地看着他地背影，都没有意识到镜头已经摇回来对着我了，直到海南轻声说‘说点什么’，我愣了一下，说了我的感受：‘看着孩子在采访中离开，我们知道他还有很多话没有说出来，也许那些话才是服毒地真正原因，双城事件调查到最后，我们发现，最大的谜，其实是孩子的内心世界，能不能打开它，可能是每个人都需要面对的问题。’”<br>“这个一分四十四秒的长镜头用在了节目结尾，后来在我的职业生涯中常被提起，说这时镜头前的即兴评述能力什么的。但这个段落，对我来说，跟那些无关，它只是撬起了深扎在我头脑里的一根桩子。之前我坐在演播室里的时候，总认未结尾的评论必须是一个答案，说出‘让我们期待一个民主与法治的社会早日来到’才可以收拾回家，<strong>就好像这演播室只是一个布景，我只是在表演一个职业。</strong>我从来没想过一个节目会以无解来结尾，一直到我明白真实的世界即是可能如此。”</p>
-</blockquote>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/d6eb1130.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1412,7 +1438,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">361</span>
+                  <span class="site-state-item-count">363</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1423,7 +1449,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-count">56</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -1434,7 +1460,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">187</span>
+                  <span class="site-state-item-count">188</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -1569,7 +1595,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">434.2k</span>
+    <span title="Site words total count">437.2k</span>
   
 </div>
 
