@@ -33,7 +33,7 @@
   <entry>
     <title><![CDATA[分布式系统学习——Raft拓展版本论文学习]]></title>
     <url>%2Fpost%2F9e6f1f62.html</url>
-    <content type="text"><![CDATA[Step 1题目摘要引言题目寻找一个易于理解的共识算法（拓展版本） 摘要Raft 是解决 log replication management 的分布式共识算法，相当于(multi-)Paxos 效果。为了便于理解，Raft 将共识算法的几个步骤分离开，包括leader 选举、log 复制、安全性。它强调了一致性以减少必须考虑的 states 数量（这个是不是对比 Paxos 说的）。Raft 还包括一个用 overlapping majorities（多数重叠）来改变集群成员的新机制。 引言共识算法允许一组机器在个别成员出现故障时仍能作为一个相关联的群体持续工作。正因为如此，它们在构建可靠的大型软件系统中扮演着重要的角色。Paxos 主导了过去十年关于共识算法的讨论（算法研究、课程教学）。 Paxos 太难理解了，而且为了支持实际系统，它的架构仍要做许多复杂的调整。 Raft 设计初衷就是可理解性：能被实际系统应用且比 Paxos 更易于学习。 Raft 为增强可理解性，在以下方面做出努力： 拆解过程：将leader 选举、log 复制、安全性拆分开。 减少状态空间数：与 Paxos 对比，Raft 降低了不确定性程度（这个不太理解，英文是 nondeterminism）和服务器间出现不一致的方式。 Raft 新颖的特点： Strong leader：与其他共识算法相比，Raft 有一个更“强势”的领导者。比如，log entries 只会从 leader 开始然后影响其他 servers（flow from the leader to other servers）。 Leader election：Raft 使用随机计时器来启动选举过程，这仅需要在现有的 heartbeats（心跳线）机制上增加一点内容，就可以快捷又迅速地解决冲突。 Membership changes：Raft 机制对于改变集群中机器配置使用一种新的方法joint consensus，该方法保证转换过程前后两配置下有一个重叠部分（保证一个 majority 的重叠），这样在配置转换过程中，系统仍可以正常工作。 Raft 有多个开源版本的实现并被应用于实际系统中，教学上得到更好的反馈，其安全性能也得到详细说明和证明。 基本理论概况结论部分 启发：在算法设计过程中，可理解性同正确性、效率和简洁性同样重要。其他几个性质在开发人员将算法应用于实际系统前都无法验证。而缺少可理解性，可能会使得开发人员在实现的过程中产生误解偏离设计者的原有意图（除非开发者对算法有非常深刻的理解并具备将其实现的直觉），这就导致实现很难保证期望的性质。 本问讨论了分布式共识算法的设计问题，提出一个新的算法——Raft，相比原来广为流传的 Paxos 来说，更易于理解，且相信能为系统构建提供更好的途径。在设计途中，我们发现自己不断重复使用一些技术，例如分解问题和简化状态空间。 这些技术不仅提高了 Raft 的可理解性，而且更加容易相信它的正确性。 回答基本问题 类别 基于原有算法进行的新算法设计。 内容 Reading Group 所提到的，结合 Erasure Code 的方案——CRaft。 CRaft 论文 CRaft 阅读笔记 正确性 正确 创新点 可理解性，可理解性。 清晰度 清晰 阅读选择 继续阅读！ Step 2细读笔记 问题记录未读（且值得读）文献记录 Lamport 发明 Paxos 的前前后后 The Part-Time Parliament ── Lamport 于 1998 年发表在 ACM Transactions on Computer Systems 注：这是该算法第一次公开发表。 Paxos made simple 注：Lamport 觉得同行无法接受他的幽默感，于是用容易接受的方法重新表述了一遍。 Google Spanner Step 3 思路复现 证明与推理复现 实验验证复现]]></content>
+    <content type="text"><![CDATA[Step 1题目摘要引言题目寻找一个易于理解的共识算法（拓展版本） 摘要Raft 是解决 log replication management 的分布式共识算法，相当于(multi-)Paxos 效果。为了便于理解，Raft 将共识算法的几个步骤分离开，包括leader 选举、log 复制、安全性。它强调了一致性以减少必须考虑的 states 数量（这个是不是对比 Paxos 说的）。Raft 还包括一个用 overlapping majorities（多数重叠）来改变集群成员的新机制。 引言共识算法允许一组机器在个别成员出现故障时仍能作为一个相关联的群体持续工作。正因为如此，它们在构建可靠的大型软件系统中扮演着重要的角色。Paxos 主导了过去十年关于共识算法的讨论（算法研究、课程教学）。 Paxos 太难理解了，而且为了支持实际系统，它的架构仍要做许多复杂的调整。 Raft 设计初衷就是可理解性：能被实际系统应用且比 Paxos 更易于学习。 Raft 为增强可理解性，在以下方面做出努力： 拆解过程：将leader 选举、log 复制、安全性拆分开。 减少状态空间数：与 Paxos 对比，Raft 降低了不确定性程度（这个不太理解，英文是 nondeterminism）和服务器间出现不一致的方式。 Raft 新颖的特点： Strong leader：与其他共识算法相比，Raft 有一个更“强势”的领导者。比如，log entries 只会从 leader 开始然后影响其他 servers（flow from the leader to other servers）。 Leader election：Raft 使用随机计时器来启动选举过程，这仅需要在现有的 heartbeats（心跳线）机制上增加一点内容，就可以快捷又迅速地解决冲突。 Membership changes：Raft 机制对于改变集群中机器配置使用一种新的方法joint consensus，该方法保证转换过程前后两配置下有一个重叠部分（保证一个 majority 的重叠），这样在配置转换过程中，系统仍可以正常工作。 Raft 有多个开源版本的实现并被应用于实际系统中，教学上得到更好的反馈，其安全性能也得到详细说明和证明。 基本理论概况结论部分 启发：在算法设计过程中，可理解性同正确性、效率和简洁性同样重要。其他几个性质在开发人员将算法应用于实际系统前都无法验证。而缺少可理解性，可能会使得开发人员在实现的过程中产生误解偏离设计者的原有意图（除非开发者对算法有非常深刻的理解并具备将其实现的直觉），这就导致实现很难保证期望的性质。 本问讨论了分布式共识算法的设计问题，提出一个新的算法——Raft，相比原来广为流传的 Paxos 来说，更易于理解，且相信能为系统构建提供更好的途径。在设计途中，我们发现自己不断重复使用一些技术，例如分解问题和简化状态空间。 这些技术不仅提高了 Raft 的可理解性，而且更加容易相信它的正确性。 回答基本问题 类别 基于原有算法进行的新算法设计。 内容 Reading Group 所提到的，结合 Erasure Code 的方案——CRaft。 CRaft 论文 CRaft 阅读笔记 正确性 正确 创新点 可理解性，可理解性。 清晰度 清晰 阅读选择 继续阅读！ Step 2细读笔记 状态机复制共识算法常出现在状态机复制（replicated state machine）上下文中。一组服务器上的状态机计算相同的粗笨，这样即使其中一些服务器宕机，仍能继续工作。状态机复制常用于解决分布式系统的容错问题。 状态机复制常用 replicated log 来实现。每个服务器存储一个包含一系列命令的日志，其状态机按顺序执行这些命令。每个日志以相同的顺序包含相同的命令，因此每个状态机处理相同的命令序列。由于状态机是确定的，所以每个状态机都计算相同的状态和相同的输出序列。 而保证 replicated log 一致就是共识算法的工作。共识模块负责将客户端命令加入日志，并与其他服务器的共识模块通信以保证日志最终以相同的顺序包含相同的请求（same requests in the same order）。当命令被正确地复制，服务器地状态机就会按照日志顺序执行并将结果返回给客户端。 实际系统应用地一致性算法通常有以下特征： 保证 non-Byzantine 条件下的安全性（即只设计以应对 fail stop） 只要保证 majority（绝对多数）的机器是正常且可以通信的，系统就具备完备功能。 不依赖 timing 来保证一致性（这一点以前不清楚，作者解释，在最坏情况下，错误时钟和极端消息可能会导致可用性问题）。 通常情况下，当 majority 都回复了一次远程调用（RPC）时，命令就完成了，minority 的速度较慢的机器不会影响系统的整体性能。 Paxos 的优劣势Leslie Lamport 的 Paxos 协议是该领域近年被讨论最多的。文章中对 Paxos 评价是这样的。 Paxos first defines a protocol capable of reachingagreement on a single decision, such as a single replicatedlog entry. We refer to this subset assingle-decree Paxos.Paxos then combines multiple instances of this protocol tofacilitate a series of decisions such as a log (multi-Paxos).Paxos ensures both safety and liveness, and it supportschanges in cluster membership. Its correctness has beenproven, and it is efficient in the normal case.Paxos 首先定义了一种协议，该协议能够就单个决定达成共识，例如单个复制日志条目。 我们将这个子集称为单命令 Paxos，然后 Paxos 组合了该协议的多个实例以促进一系列决策，例如日志（multi-Paxos）.Paxos 确保安全性和活跃性，并支持集群成员身份的更改。 它的正确性已经被证明，并且在正常情况下是有效的 Unfortunately, Paxos has two significant drawbacks.The first drawback is that Paxos is exceptionally diffi-cult to understand. The full explanation [15] is notori-ously opaque; few people succeed in understanding it, andonly with great effort. As a result, there have been severalattempts to explain Paxos in simpler terms [16, 20, 21].These explanations focus on the single-decree subset, yetthey are still challenging. In an informal survey of atten-dees at NSDI 2012, we found few people who were com-fortable with Paxos, even among seasoned researchers.We struggled with Paxos ourselves; we were not able tounderstand the complete protocol until after reading sev-eral simplified explanations and designing our own alter-native protocol, a process that took almost a year.不幸的是，Paxos 有两个明显的缺点。第一个缺点是 Paxos 非常难以理解。 完整的解释[15]非常模糊，只有很少的人能够成功地理解它。 结果，有几种尝试用较简单的术语来解释 Paxos [16，20，21]。这些解释集中在单法则子集上，但它们仍然具有挑战性。 在 NSDI 2012 上对与会者的非正式调查中，我们发现很少有人对 Paxos 感到满意，即使是经验丰富的研究人员也是如此。 在阅读了一些简化的说明并设计了我们自己的替代协议后，我们才了解完整的协议，这一过程耗时近一年。 We hypothesize that Paxos’ opaqueness derives fromits choice of the single-decree subset as its foundation.Single-decree Paxos is dense and subtle: it is divided intotwo stages that do not have simple intuitive explanationsand cannot be understood independently. Because of this,it is difficult to develop intuitions about why the single-decree protocol works. The composition rules for multi-Paxos add significant additional complexity and subtlety.We believe that the overall problem of reaching consensuson multiple decisions (i.e., a log instead of a single entry)can be decomposed in other ways that are more direct andobvious.我们假设 Paxos 的不透明性源于它对单法则子集的选择的基础。单法则 Paxos 是密集而微妙的：它分为两个阶段，没有简单的直观解释，无法独立理解。 因此，难以理解单法令协议为何起作用的直觉。 多 Paxos 的组成规则增加了许多额外的复杂性和微妙之处。我们认为，可以通过其他更直接和明显的方式来分解在多个决策（即对数而不是单个条目）上达成共识的总体问题。 The second problem with Paxos is that it does not pro-vide a good foundation for building practical implemen-tations. One reason is that there is no widely agreed-upon algorithm for multi-Paxos. Lamport s descriptionsare mostly about single-decree Paxos; he sketched possi-ble approaches to multi-Paxos, but many details are miss-ing. There have been several attempts to flesh out and op-timize Paxos, such as [26], [39], and [13], but these differ2 from each other and from Lamport s sketches.Systems such as Chubby [4] have implemented Paxos-like algo-rithms, but in most cases their details have not been pub-lished.Paxos 的第二个问题是，它没有为构建实际实现提供良好的基础。一个原因是，对于 multi-Paxos，还没有得到广泛认可的算法。Lamport 的描述大多是关于单一法令的 Paxos;他概述了多 paxos 可能的方法，但是很多细节都被遗漏了。已经有一些尝试来充实和调整 Paxos，如[26]、[39]和[13]，但它们彼此不同，也不同于 Lamport 的草图。像 Chubby[4]这样的系统已经实现了类似 paxos 的算法，但它们的很多细节还没有公开。 single-decree decomposition 的另一个结果是 Paxos 难以用于构建实际系统。详细解释还是看文章吧。 因此，实际系统与 Paxos 几乎没有相似之处，都从 Paxos 开始，讲述实现的困难，然后发展出完全不同的体系结构。Chubby 的实现者对 Paxos 的评价很典型： There are significant gaps between the description ofthe Paxos algorithm and the needs of a real-worldsystem. . . . the final system will be based on an un-proven protocol Designing for understandability在 Raft 设计过程中存在许多要做取舍的点，取舍基于可理解性。设计者总是在想如何能使读者完全理解设计方法和实现。 这种“方便理解”的设计是主观的，不过提出了两种普遍使用的技术：过程拆解、简化状态机状态。 The Raft consensus algorithm算法主体部分。 图 2（也就是 6.824 课程教授提到的要特别注意的图）提供了简化版算法以供参考。 图 3 列出了算法的核心性质。 文章拆分成四个模块来介绍 Step 2 阅读中着重理解一下各部分的介绍，对 Safety 证明部分粗略浏览下，放在 Step 3 中进一步阅读。 Raft basics每个 server 的三种状态：leader，follower，candidate。系统保证正常情况下只有一个 Leader，在这个架构下。Leader is strong and followers are passive.。Leader 负责处理所有客户端请求并展开 replication，而 follower 不会自发启动任何请求，只会被动应答 candidate 和 leader。Candidate（候选者）是用来进行 leader 选举时的状态。如图 4 所示。 Raft 将时间划分为不同长短的 term（任期），用连续整数来标识，每届任期都从一次选举开始。若选票分裂，没有选出 leader，则任期以无 leader 情况结束，并且会在稍后启动新的一轮选举（random time）。如图 5 所示。 在一些情况下（比如网络中断、延迟、隔离），server 可能会观察不到选举过程甚至整个任期。Term 在 Raft 中像一个逻辑时钟（没错，Lamport 他又来了）。currentTerm在每台机器上都会被持久化维护。服务器间的交流（比如选举信息或是指令执行），类似 Lamport 逻辑时钟的事件（自增原则要看后面的实现细节）。如果一个服务器的 currentterm 比另一个服务器的 currentterm 小，那么它将其 currentterm 更新为更大的值。如果一个候选人或领导发现他的任期已经过期，它立即恢复到 follower 状态。如果服务器收到一个过去任期的请求，它将拒绝该请求。 Raft 机器间交流通过 RPC 实现，仅需要两种类型的 RPC，后续章节添加了一种 RPC 用来传递快照。 RequestVote PRCs：由 candidates 发起用于选举（在 Leader election 一节中着重介绍）。 AppendEntries RPCs：由 leaders 发起，以 heartbeat 形式提供 replicate log 的功能。 Leader election主体过程描述如下 以 follower 身份启动，如果能持续收到来自 candidate 和 leader 的消息，follower 身份会维持。 在丢失通信达到一定时间（election timeout）后，follower 会开始启动一次选举。 follower 增加它的 currentTerm 值并转换到 candidate 状态。 为自己投票同时并行启动 RequestVote RPCs 访问集群内其他机器。 candidate 维持其身份直至 赢得选举 得到 majority 的选票 转换为 leader 身份并开始发送心跳线信息 其他机器赢得选举 比较 AppendEntries RPC 中 term 与 currentTerm 的大小，RPC 中任期大于等于自身任期，则转变为 follower。 否则拒绝 RPC 请求，保持 candidate 身份。 一段时间后发现没有人赢得选举 多个 candidate 发起选举导致选票分裂无人当选 每个 candidate 经过一小段时间后重启选举 没有其他措施保证时，选票分裂可能重复。（改进：再下次选举前加入 150-300ms 的随机延时） 从可理解性角度抉择：设计者对算法进行了多次调整、包括 rank candidate 形式，每次调整后都会出现新的情况。最后得到的结论，随机重试的方法更明显和可理解。 Log replication图 6 显示日志的组织情况。 选出 leader 后，leader 与客户端进行通信，接受并反馈客户端请求。 leader 持续向其他机器并行发送 AppendEntries RPCs，维持身份同时拷贝 entry（但不执行）。 leader 决定什么时间可以commited entry（提交），即使集群机器可以执行 entry。 条件：当 leader 创建的 entry 被 replicated 到绝对多数的机器。 leader 持续跟踪要进行 commit（已经建立好）的最大的 log index，并将该索引包含在后续的 AppendEntries RPCs 中，以便其他机器最终发现。 follower 获知 entry 被 commited，便在本地执行该日志。 Raft 保持下面的重要性质，他们共同构成图 3 的（Log Matching）： 两份日志中的 entry 块，若具有相同的 log index 和 term，则储存相同命令。 两份日志中的 entry 块，若具有相同的 log index 和 term，则在之前的日志记录都是相同的。 正常情况下，leader 和 follower 间的日志都是一致的，但是如果发生 crash，会出现各种不一致的情况（多出未 commit 的 entry 块、缺少块、历史块产生冲突）。 在 Raft 中，leader 强迫 follower 遵循自己的日志记录，也即冲突覆盖。 后面 Safty 小节将说明，再加上一个限制条件，这是安全的。 为了进行覆盖，leader 需要找到和 follower 达成一致的最近 entry，并删除之后所有的 entries。leader 未每个 follower 维护一个nextIndex，标明下一个该传送的 log entry。当一个 leader 刚被选举上台时，他初始化全部 follower 的nextIndex为 leader 最后一个 log+1。如果 follower 与 leader 的日志不一致，AppendEntries RPC 中的一致性检查失败，然后 leader 递减nextIndex的值再次发送 AppendEntries RPC 请求，直至找到能 match 的日志位置。然后如上述，删除后递增nextIndex持续进行请求。 优化 AppendEntries 交互的方法 当 AppendEntries 失败时，follower 可以知道冲突块所在的 term，以及该 term 第一个块。这样nextIndex一次可以减去该 term 冲突块的数。（作者质疑这种优化的必要性，理由是 failure 并非那么频繁，不会出现大量需要小步修正的 entries） 这种 log replication 机制，对于新选出的 leader，无需额外操作既可以保证集群中日志记录逐渐收敛，并且满足 leader 不重写自己日志的性质。同时只要绝对多数的机器正常运转，一轮 RPCs 就可以将新的 entry 复制到机器上，少数故障不会影响系统表现。 Safety到目前为止所描述的机制还不足以确保每个状态机以同样的顺序执行完全相同的命令，增加一些限制。 选举限制 个人理解：鸽巢定理的应用 Raft 使用一个简单的机制保证先前任期 leader 的所有 commited entries 会存在在新选举的 leader 上。这样就保证了日志流是单向的（leader 到 followers）。 一个 entry 想要被 commited 要得到majority的机器的回应，而一个 candidate 必须联系集群中的majority才能当选，根据鸽巢定理，每条 commited entry 必须至少出现在 candidate 联系的机器中的一台上，如下图所示。 Raft 按如下方式定义日志的新旧： 不同 term，则越后面的 term 越新（逻辑时钟） 相同 term，越长的 log 越新 提交先前任期的 entry 对于前一任期 replicate 但是未 commit 的 entry，现在任期的新 leader 在继续 replicate 时无法第一时间意识到达到绝对多数（从而有可能延迟或者忽略到该 commit 的 entry，而被后续任期的 entry 覆盖），如下图所示。 Raft 要求 leader 在 replicate 先前任期中的 entry 时，保留其原有的 term（在其他一些共识算法中，leader 必须使用新的 term 编号来进行复制。）为了避免图中的问题，Raft不会根据副本计数来提交过去任期的 entry，只会根据计数提交当前任期内的 entry。（交现在不交过去） 安全性争论 反证法证明 Leader Completeness Property 过程 Pass，见第三部分。 根据 Leader Completeness Property，可以证明 State Machine Property。 证明 Pass，见第三部分。 Follower and candidate crashes先前讨论的是 leader 出状况，实际上 follower 和 candidate 的崩溃情况要简单些。 follower 或 candidate 崩溃，leader 持续发送 AppendEntries RPCs 重连时 RPC 会连通 若 follower 或 candidate 接受到 RPC 但是在返回结果前崩溃，那么重连时会收到相同的 RPC，因为 Raft RPC 是幂等的，所以无影响。 Timing and availablilityRaft 设计要求，系统安全性不依赖于时间，不会因事件过快/过慢导致错误结果。但还是有些地方肯定存在时间限制。 Leader election 过程时间要求。 broadcastTime \ll electionTimeout \ll MTBF broadcastTime：并行发送 RPCs 到各个机器并收到回复的平均时间。 electionTimeout：前面描述的判定一轮选举的 timeout MTBF：单个机器故障间隙的平均时间。 分析，Pass，详情见第三节。大致理解，不能太频繁重设 leader，但又要保证真正故障时系统不会长时间停滞。 问题记录未读（且值得读）文献记录 Lamport 发明 Paxos 的前前后后 The Part-Time Parliament ── Lamport 于 1998 年发表在 ACM Transactions on Computer Systems 注：这是该算法第一次公开发表。 Paxos made simple 注：Lamport 觉得同行无法接受他的幽默感，于是用容易接受的方法重新表述了一遍。 Google Spanner Step 3 思路复现 证明与推理复现 实验验证复现]]></content>
       <tags>
         <tag>三步法</tag>
       </tags>
@@ -52,7 +52,11 @@
   <entry>
     <title><![CDATA[分布式系统学习——FAST2016NOVA系统论文学习]]></title>
     <url>%2Fpost%2F667c5048.html</url>
-    <content type="text"><![CDATA[Step 1题目摘要引言题目NOVA：日志结构文件系统，为Hybrid主内存设计 摘要NVM 将会很快和 DRAM 一同出现在处理器总线上。这种混合系统会为软件提供亚微秒、高贷款的持久数据访问。 基本理论概况结论部分 回答基本问题 类别 内容 正确性 创新点 清晰度 阅读选择 Step 2细读笔记 问题记录未读（且值得读）文献记录 Step 3 思路复现 证明与推理复现 实验验证复现]]></content>
+    <content type="text"><![CDATA[Step 1题目摘要引言题目NOVA：日志结构文件系统，为 Hybrid 主内存设计 摘要NVM 将会很快和 DRAM 一同出现在处理器总线上。这种混合系统会为软件提供亚微秒、高贷款的持久数据访问。 基本理论概况结论部分 回答基本问题 类别 内容 正确性 创新点 清晰度 阅读选择 Step 2细读笔记 问题记录未读（且值得读）文献记录 Step 3 思路复现 证明与推理复现 实验验证复现]]></content>
+      <categories>
+        <category>操作系统</category>
+        <category>分布式系统</category>
+      </categories>
       <tags>
         <tag>三步法</tag>
       </tags>
@@ -253,7 +257,7 @@
     <content type="text"><![CDATA[云计算发展的背景计算模式演变的趋势，计算模式变革的目标 更方便快捷的使用方式 更强大的计算能力 双目标一同发展，是主线 从计算模式的演变看计算技术发展的趋势 60-70’s：大型机（mainframe） 集中式、分时共享 （集中） 80-90’s： 个人计算机人手一台 （分散） 95-06’s：互联网/网格/集群/数据中心 （又集中，存在内在不同） 分离 pc 互联以共享资源 — 互联网 连接更多计算资源以解决大的计算问题 — 网格计算 多个微处理器构建大型机处理能力 — 集群 06 年以后： 前端更分散 后端更集中 从信息处理及其模式看物联网发展 需要在线获取和在线反馈的紧耦合模式 — 物联网 云计算与物联网物联网是计算能力向物理端的延申 为什么需要云计算什么是云计算集中式远程计算资源池，按需分配，位终端用户提供强大而廉价的计算服务能力 工业化部署、商业化运作 新的、可商业化的计算和服务模式 计算能力像水电煤气一样，按需分配使用 资源池物理上对用户透明，就像在云端一样 “云计算”概念最早再 06 年由 Google 公司正式提出。 几个典型定义 云计算是一种能够将动态伸缩的虚拟化资源（不一定云计算就一定需要虚拟化资源）通过互联网以服务的方式提供给用户的计算模式 — Wiki 通过网路连接来获取软件和服务的计算模式，用户通过瘦客户端接入云中获取所需资源。 — Wahtis 云计算既指在互联网上以服务形式提供的应用，也指定数据中心提供这些服务的硬件和软件 — 伯克利 云计算是一种更友好的业务运行模式，用户登录使用个性化定制服务。 从运营商角度看： 云计算是一种新的计算方法和商业模式。 通过虚拟化等技术按照“即插即用”的方式，自主管理 云计算分类按云计算服务层面进行分类 SaaS：Software as a Service （提供各种应用软件服务） PaaS： Platform as a Service （提供软件支撑平台） IaaS： Infrastructure as a Service （提供接近于裸机物理机、虚拟机的计算资源和基础设施服务） 按云计算系统类型进行分类 公用云：提供面向社会大众、公共群体的云计算服务（如 Amazon 云平台），优点很多，最大缺点是难以保证数据的私密性 私有云：提供面向应用行业/组织内的云计算服务。如政府机关、移动通信、学校内部使用的云平台。 云计算体系结构CRM: Customer relationship management (CRM) is a technology for managing all your company’s relationships and interactions with customers and potential customers ERP: 企业资源计划即 ERP (Enterprise Resource Planning) OA: 办公自动化系统 思考题、调研：VDISK software defined AOP 云计算业务模式云计算发展现状与趋势 云计算提供一种新的计算模式和服务模式 通过云计算人们能获得前所未有的强大计算能力，并能按需分配，按需付费 通过云计算平台强大的计算和存储能力，人们将能完成更难的问题。 趋势 云计算与管道、业务软件捆绑 整合行业软件构建 SaaS 解决方案（微软，IBM，Amazon marketplace） PaaS 称为云计算热点 中小企业客户需要 PaaS 服务 个性化定制和应用集成（思考题、调研：EAI 企业应用集成，持续集成） 关注的需求点 云计算解决的主要问题用一个集中管理的巨大化的计算资源池，提供巨大的计算资源和能力 为小粒度应用体哦概念股资源共享 为大粒度应用提供大规模计算能力 （自己补充）对特定计算逻辑以服务形式提供（方便客户） 云计算关键技术举几个典型的来说 快速部署 并行部署技术 讲传统顺序部署方式改位并行执行，执行多个部署任务 将虚拟机同时部署到多个物理机上 协同部署技术 资源调度在不同的资源使用者之间进行资源调整的过程 调整计算任务的资源使用量 转移计算任务 云计算新的挑战 海量规模 满足服务级别协定 个人理解：某种角度来看资源调度可以作为负载均衡能力的基础设施 多租户技术 大量用户共享同一堆栈的软、硬件资源 技术难点 数据隔离 blabla 大规模数据通信大规模分布式存储许可证管理与计费怎样算是云计算系统两个最主要的特征 云计算的技术挑战安全性所有云节点都有可能被攻击，现有软件系统该如何调整。 可用性 软件系统在一定时间内正常工作的时间占总时间的比重，通常用百分比衡量 云计算环境能够 可伸缩性 通过资源的增加或减少来应对负载的变换，并保持一致的性能 垂直伸缩 Scale in： 在现有的服务节点上增加或者减少资源 水平伸缩 ： 在现有的服务节点上增加或减少服务节点 信息保密 信息的内容不应该被未授权的人得到 非法用户访问难度较大 根本方法上 逻辑/物理进行数据隔离 高性能标准化维护多个云之间的数据]]></content>
       <categories>
         <category>操作系统</category>
-        <category>分布式</category>
+        <category>分布式系统</category>
       </categories>
       <tags>
         <tag>操作系统</tag>
@@ -298,7 +302,7 @@
     <content type="text"><![CDATA[分布式数据库系统什么是分布式数据库，分布在计算机网络上逻辑相互关联的 DDBS， 分布式 数据特性， 文件的操作，如何做索引，大数据排序。数据库的实现上还是经常用到了底层文件 自己查！！！ 分布式数据库系统的特点集中和自治相结合 适当增加数据冗余度 提高系统的可靠性、可用性 提高系统性能 全局的一致性、可串行性 分布式数据库系统的体系结构！图 数据分片分片应满足的条件： 完全性 不相交性 可重构性 分布透明性 分片透明性（最高层次） 用户或程序只对全局关系进行操作而不必考虑关系分片 位置透明 不必了解片段的存储场地，当存储场地变了，分片模式到分布模式的映像，不必改变 局部数据模型透明 用户不用考虑局部 DBMS 所支持的数据模型、使用哪种数据操纵语言。外层针对内模式（Schema）差异透明了。 分布式数据库管理系统！图 同构、异构、同构同质、同构异质 Components of DDBMS User Processor: User interface用户接口处理器：interpret 用户命令并格式化返回结果。思考：Format 的方法。 Semantic data controller语义数据控制器：检查完整性约束与授权。 Global query optimizer and decomposer全局查询分解器：查询策略优化。 Global monitor全局管程：监视整体进行状态。 Data Processor: Local query processor本地查询器： Local .. 总结，DDBMS 由四部分组成 局部数据库 全局数据库 … 全局数据字典 查询处理与优化Query Processing 高层 high-level 语句扫描，语义更正 高层语句转换为内部查询表示，转化为查询图 … 何时优化 静态优化：在查询执行前（编译阶段），确定优化形式动态优化：查询执行中进行优化（常为启发式的） 利用 CNF BNF 简化，并进行约束判断。 Rewriting，利用关系代数重写规则。 数据的本地化问题 确定涉及了哪些分片 执行本地化程序 物化 semi-join Materialization 是用于 semi-join 的一种特殊的子查询物化技术 优化算法 基本代价模型 代价组件 组件权值 单个操作的代价 基于半连接的优化策略与连接优化策略。 采用连接方案还是半连接方案，取决于数据传输和局部处理的相对费用。若传输费用是主要的，则采用半连接方案；若局部处理费用是主要的，采用连接方案。 同一个场地的两个关系 嵌套循环法： 排序扫描法： 若两个关系在不同场地 整体传输 按需传输 上述方案可以搭配使用 分布事务管理自学 分布式事务执行的控制模型 主从控制模型 三角控制模型 层次控制模型 小结 DDBS 的基本特点：物理分布性、逻辑整体性、场地自治性、场地见的协作性 DDBS 的分类：同构同质、同构异质 分布透明性的三个级别 半连接优化算法的操作过程]]></content>
       <categories>
         <category>操作系统</category>
-        <category>分布式</category>
+        <category>分布式系统</category>
       </categories>
       <tags>
         <tag>操作系统</tag>
@@ -311,7 +315,7 @@
     <content type="text"><![CDATA[分布式计算范型： Q1：分布式系统组件的责任划分，调研GRASP责任划分模式]]></content>
       <categories>
         <category>操作系统</category>
-        <category>分布式</category>
+        <category>分布式系统</category>
       </categories>
       <tags>
         <tag>分布式</tag>
@@ -323,7 +327,7 @@
     <content type="text"><![CDATA[本章对分布式应用中各种范型进行分类，介绍基于这些范型的典型工具和协议。 范型和抽象抽象抽象-&gt;理论-&gt;设计，计算机科学研究的三种形态，对应学科问题求解中三个典型过程。 抽象：源于实验学科，抽象的结果是概念、符号、模型。 理论：源于数理，主要为定义、定理、公理、证明与结果解释，研究内容跟的基本特征是构造性数学特征。 设计：源于工程学，用来开发求解给定问题的系统和设备主要是需求说明。 范型范型是一种模式、例子、模型。（不同形式语言有不同的范型，面向对象、底层 blabla）。识别基本模型并根据模型分类在研究解决复杂问题时非常有用。 本章视图描述分布式系统模型、应用的范型、物理模型等等进行分类。 系统模型分类物理模型：考虑组成系统的计算机和设备的类型以及它们的互联，不涉及特定的技术细节。 体系结构模型：从系统的计算元素执行的计算和通信任务来描述系统。 基础模型：采用抽象的挂点描述大多数分布式系统面临的单个问题的方案。（交互模型 &amp;&amp; 故障模型 &amp;&amp; 安全模型）。 物理模型早期分布式系统和初期互联网规模的分布式系统特征静态、分立、自治。 当代的分布式系统特征 移动计算：节点移动 无处不在的计算：嵌入日常物品周围环境 云计算：一组节点提供给定服务 体系结构模型一个系统体系结构是指：各个独立指定组件的结构， 整体目标：确保结构能满足现在和将来可能的需求。 主要关心：系统可靠性、适应性、可管理型和性价比 体系结构元素与常见问题 通信实体是什么 如何通信（通信范型） 扮演的角色及承担的责任是什么 如何映射到具体的基础设施上（放置） 体系结构元素——通信实体 面向系统的角度：线程、进程、结点。 面向问题的角度：对象（自然单元）、组件（提供的接口和所需接口）、Web 服务（经常跨越组织边界）。 进程间通信：相对底层支持（套接字、多播、消息传递） 远程调用：最常见的通信范型，双向交换 请求——应答协议（RR）：一对消息的交换 远程过程调用（RPC）：远程计算机上进程中的过程能被调用 远程方法调用（RMI）：一个发起调用的对象可以调用一个远程对象中的方法 进程通信及远程调用的限制： 发送者需要知道接收者（空间耦合） 发送者和接收者同时存在（时间耦合） 间接通信（时间空间解耦合） 组通信：一对多通信范型 发布——订阅系统：提供一个中间服务，有效确保生产者生成的消息被路由到需要这个消息的消费者（体系结构生产者消费者问题特化，特对特） 消息队列：提供点到点服务 元组空间：进程可把任意结构化数据存放在一个持久化元组空间，其他进程可读可删除。 分布式共享内存：用于支持在不共享物理内存的进程间共享数据 小结 体系结构元素——中间件内容补充操作系统及以下，归为平台（Platform），最上层是应用服务，中间有一个中间件（MiddleWare）。 中间件提供一个编程抽象来屏蔽异构问题，主要解决包括： 硬件 数据类型在不同硬件平台上表示不同 存储方式不同（PowerPC 采用 big-endian，X86 采用 little-endian） 通信协议 独立于网络底层的传输协议（底层无关） 操作系统 在操作系统上提供更高级的抽象 API，屏蔽操作系统级的异构 编程语言 CORBA 通过 IDL，可以使得不同的语言写的代码互相调用 CORBA——公共对象请求代理结构 体系结构模型——分布式系统结构的设计需求设计考虑： 系统组件间的责任划分 组件在网络上的放置 等等 影响 1：性能问题 响应能力 服务器和网络负载 OS 中间件与代码引起的延迟 吞吐量 负载平衡 影响 2：QoS 服务质量 可靠性、安全性 适应性 性能一般体现在响应与吞吐，但是还有一些新的解释 强时间性数据（time-critical data） QoS 可以在操作系统层、网络层等多个层级实现 影响 3：缓存和复制的使用 缓存复用频度 优化访问时间 影响 4：可靠性问题 正确性 形式化验证 Model Checking 测试技术 容错性 冗余是关键 安全性 保证数据不受攻击 通过网络访问数据的权限 体系结构模型——客户-服务器模式客户端 Client 发出 Invocation，服务端 Server 返回 Result。 CS 模式 C 端比较肥胖，分担了 S 端一些任务，但同样，result 计算却又只在，S 端进行。S 端和网络也是瓶颈。 体系结构模型——层次化体系化结构层次化与分层体系结构互补，是一项组织给顶层功能的技术。层次化应用功能分解。（MVC，MVV?） 表示逻辑：用户交互与用户应用视图逻辑 应用逻辑：设计应用相关（业务逻辑）详细的应用特定储里 数据逻辑：涉及应用的持久存储，通常在一个数据库管理系统中。 体系结构模型——P2P 体系化结构结构化 P2P（分布式哈希表 DHT 映射）与非结构化 P2P，与混合 P2P 体系结构模型变体思路： 使用多个服务器和缓存，增加性能和灵活性 使用移动代码和移动代理 用户硬件喜好 弹性扩展删除的需求 方式 服务器组 代理服务器与缓存 移动代码（服务器与客户端传递） 移动代理（Server 间传递） 网络计算机 分布式通信范型进程间通信 同一节点（操作系统/体系结构中学习） 管道 消息队列 共享内存 不同节点 基于套接字 报文传递 消息传递 发送与接收原语 阻塞/非阻塞：同步型/异步 有缓冲/无缓冲（Buffer） 超时和线程阻塞机制为 IPC 提供了必要的同步，但导致的无限挂起问题通常不能被接受，解决方案 超时机制（Timeout）设置最大阻塞期限 子进程、线程提供组赛操作，主线程 or 父进程可继续其他储里（挂起子进程或子线程）。 解决死锁（协议误解或者程序错误） IPC 数据表示引例在网络体系的物理层中，数据被表示成二进制流，并作为模拟信号进行传输。在应用层中，为支持编程语言提供的数据类型和数据结构，需要用更为复杂的数据表示方法来表示待传输的数据。（如 big endian 与 little endian 的问题） 一些更优的分布式解决方案 数据编码尽管可以用专门定制的程序，采用双方认同的任意一种数据组装方案执行 IPC（IPC 前的额外程序接口），通用分布式应用要求为交换数据编码提供通用的、独立于平台的方案。因此一些有关网络数据编码的标准应运而生。 外部数据表示和编码 三种外部数据表示和编码方法 CORBA 的公共数据表示 Java 的对象序列化 XML（可扩展标记语言） 此外 Goggle 采用协议缓冲区（protocol buffer），JSON（JavaScript Object Notation）也是近年来常用的外部数据表示方法。 序列化：将一个对象或者一组关联对象打平成适合于磁盘存储或消息传送的串行格式 解序列化： 从串行格式中恢复对象或一组对象的状态 Java 反射的应用 实现了根据类名创建类的能力，以及为给定的类创建具有给定参数类型的构造函数 反射使得以完成通用的方式进行序列化和反序列化成为可能 Java 对象序列化使用反射找到要序列化的对象的类名，以及该类的实例变量的名字、类型和值 （解序列化有时候像一个动态生成类的过程） 组播通信 单个消息从一个进程发送到译组进程的每个成员的操作 组的成员对发送方常是透明的 组播的行为有很多种情况，最简单的组播不提供消息传递保证或排序保证 组播消息为构造具有下列特征的分布式系统提供了基础设施： 基于复制服务的容错（比如 Raft 协议，Leader Election 过程都是基于组播通信） 在自发网络中发现服务 通过复制的数据获得更好的性能（找寻恢复？） 事件通知的传播（包括内网穿透等） 网络虚拟化网络虚拟化涉及在一个已有的网络之上构造多个不同的虚拟网络 每个虚拟网络被设计成支持一个特定的分布式应用 多媒体数据流 多人在线游戏 面向特定应用的虚拟网络构建在一个已有的网络上并为特定的应用进行优化，而不改变底层网络的特征。 覆盖网络积淀和虚拟链接组成的虚拟网络，位于一个底层网络之上 满足一类应用需求的服务器胡总一个特别高层的服务，例如多媒体内容分发 在一个给定的联网环境中的更有效的操作 额外特色，例如：组播或安全通道 好处 不改变底层网络就能定义新的网络服务 取决于该领域标准化的水平和修补底层路由功能的困难 鼓励对网络服务进行实验和对服务进行面向特定应用的定制 能定义多个覆盖王，它们能同时存在，从而行成更开放和拓展的网络体系结构 不足 引入了额外的间接层 与属虚的分层概念相关 一个覆盖网是一层，TCP/IP 结构外存在的一层 DIY 该层核心元素：寻址模式、要采用的协议、路由方法等。 客户-服务器范型注意说的是通信范型还是体系结构 CS 范型服务器扮演服务提供者决策，被动地等待请求的到达。 寻址 为了发消息给服务器，客户必须知道服务器的地址 进程编址方法 客户机代码中指明机器/进程号（machine，process number）：文件服务器不透明（类似于绝对地址） 给每个进程分配唯一地址-&gt;中央服务器（单点故障） 让进程选择随机地址，用广播定位进程：额外的系统负担 在客户机中存放 ASCII 服务器名字，运行时寻找它：需要命名服务器（有点像 DNS） 阻塞与非阻塞原语 有一个要求？？消息要是不可修改的（WHY？） 有缓冲和无缓冲原语 无缓冲的形式，当多 C 访问 S 时可能会造成消息丢失的问题 解决：缓冲，邮箱 blablabla 可靠的和非可靠原语 可靠：请求后多一个 ACK（内核到内核的确认） P2P 范型集中目录式结构用户注册与文件检索过程类似于传统的 C/S 模式，区别在于所有资料并非储存在服务器上，而是储存在各个节点中。查询选择合适的节点建立直接连接。 这种结构简单，显示系统信息量的巨大优势和吸引力，同时也揭示了 P2P 系统本质上所不可避免的两个问题：法律版权和资源浪费的问题。 纯 P2P 网络模型广播式 P2P，取消集中的中央服务器。现在应用最广泛的纯 P2P 非结构化拓扑模型——Gnutella 模型。 明显的问题：易受垃圾信息和病毒的恶意攻击，搜索算法是泛洪方式，低效性。 混合式网络模型Kazza 模型是代表，引入超级节点的概念。根据节点能力不同（计算能力、内存大小 blabla） 结构化网络模型结构化/非结构化根本区别：每个节点所维护的邻居是否能够按照某种全局方式组织起来以利于快速查找。 目前的主流方式：分布式哈希技术（DHT）。目前扩展性最好的 P2P 路由方式质以。借助 DHT 的优势，取消泛洪算法，又可有效达到目标节点。 远程过程调用范型范型简介补充，自行了解 请求应答协议 远程过程调用（RPC），将传统的过程调用模型扩展到分布式系统中，允许客户程序透明地调用在服务程序中的过程。 远程方法调用（RMI），基于对象的编程模型的扩展，允许不用进程运行的对象通过其彼此通信。是对本地方法调用的扩展。（数据库操作中，ODBC） RPC 主要步骤略 RPC 的设计问题 RPC 编程风格——接口编程 RPC 关联的调用语义 透明性的关键问题和它如何与远程过程调用相关联 接口编程 一些编程语言提供了把程序组织成很多个模块+彼此通信的方法。（面向对象编程典型） 模块间通信依靠模块间过程调用/访问变量 通过模块定义显示接口，接口访问过程和变量。 实现的接口可以隐藏除接口外的所有信息，只要模块接口保持相同，模块的实现就可以随意改变而不影响模块的使用。 分布式系统的接口 分布式程序中，模块能够运行在不同的进程中 服务接口，涉及服务器提供过程的说明、定义和每个过程参数的格式 分布式编程中使用接口的好处 对于任何形式的模块化编程，只需要关系服务接口提供的抽象而不需要关注它们的实现细节（比如 Map、Reduce） 程序员无需知道实现服务的语言和底层平台 只要接口保持不变，实现可以改变，自然的支持软件的演化。 接口定义受到分布式底层基础设施的影响 某进程访问另一个进程中模块的变量是不可能的 本地过程调用使用参数传递机制，不适用于调用者和过程在不同进程中的情况 不支持引用的传递 某个参数同时作为输入/输出时，请求和应答必须传值 内存地址无效化，不能作为调用结果返回（没有意义） 接口定义语言（IDL） RPC 可以集成在编程语言中 接口定义语言，跨语言，以不同语言实现过程以便相互调用]]></content>
       <categories>
         <category>操作系统</category>
-        <category>分布式</category>
+        <category>分布式系统</category>
       </categories>
       <tags>
         <tag>分布式</tag>
@@ -381,7 +385,7 @@
     <content type="text"><![CDATA[NoSQL类型 列存储 Hbase、Cassandra、Hypertable 文档存储 MongoDB、CoutTree 调研： 什么是 NoSQL 生态圈 分布式存储系统的定义与实现问题 数据分布：分布均匀？跨服务器读写 一致性：如何复制多个数据副本并保证不同副本之间的一致性 容错 负载均衡 事务与并发控制 易用性 压缩/解压缩 分布式存储系统分类 分布式文件系统：存储 Blob 对象、定长块以及大文件 Facebook Haystack GFS Amazon EBS 分布式键值存储系统 调研学习：DAS、SAN、NAS 存储引擎 哈希存储引擎 哈希表的持久化实现 支持增删改和随机读取，不支持顺序扫描 对应键值存储系统 B 树存储引擎 B 树的持久化实现 支持增删读改，支持顺序扫描 对应关系数据库 LSM 树存储引擎 支持增删读改，支持顺序扫描 互联网后台存储系统 数据模型 文件模型 以目录树的形式组织文件 对象模型与文件模型类似 关系模型 键值模型 表格模型 支持插入删除更新读取扫描 不支持多表关联 思考：单点登录（有状态服务器、无状服务器） 文件服务体系结构层次文件 XX 树形结构目录——目录树 每个目录包含文件和其他可以从此目录访问的目录的名字 可以使用路径名来访问任一文件或目录 NOTE： UNIX 文件系统不完全是树形的—一个文件可以在一个或多个目录中 目录图一说 目录图目录的维护：目录树中目录位空时，才能删除指向该目录。 文件组 位于给定服务器上的文件集合 一个服务器可以包含数个文件组 与 UNIX 中的文件集系统，一个存储设备或者分区拥有的文件的集合类似 分布式系统中 分布式文件系统中的命名方法思考题 讨论： 把主机名和文件的本地名字结合起来给文件明明 把远程文件目录附加到本地名字空间中 把所有各部分文件系统全部集成组成单一的全局名字结构 名字的结构 绝对名字/相对名字 单层（平面）地址/分层地址 查找与解析迭代名称解析 解析程序将完整名称（dir，name1，namek）发给 server0 Server0 连接：例解 DNS 递归/迭代名称解析原理 同步机制DFS 锁机制例 分布式锁机制：GFS、GPFS、Lustre 租赁方式：NFS v4 提出，StorageTank 采用类似机制 基于时间的机制：NFS v3 提出，SANergy 等采用 文件的远程访问方法 远程服务和缓存是实现客户进程对远程文件进行访问的两个互相补充的方法 常规文件缓存-&gt;减少磁盘读写，而分布式缓存-&gt;减少网络通信量 分布式文件系统中缓存方案设计 被缓存的数据的粒度 客户缓存器的地点，即使用主存进行缓存，还是使用磁盘 如何传播被缓存的副本的修改 如何确定各个客户缓存中的数据是否一致 缓存高速缓存 写直达 写回 关闭时写 集中控制 复制 通过对每个文件的独立备份来增加系统的可靠性 当一个文件服务器出现问题时，仍允许文件访问 把工作量分配到多个服务器上 更新协议 主拷贝复制 表决（voting） 分布式文件系统举例 NAS VFS 在定义网络文件系统 NFS 时创造的 AFS Lusture GFS 继承理念，HDFS 开源 MogileFS Fast DFS Windows DFS Hadoop HDFS TFS 淘宝提供海量小文件存储系统]]></content>
       <categories>
         <category>操作系统</category>
-        <category>分布式</category>
+        <category>分布式系统</category>
       </categories>
       <tags>
         <tag>分布式</tag>
@@ -393,10 +397,10 @@
     <content type="text"><![CDATA[动态调度集中 分散 开环 不参考过去决策 闭环 参考 负载平衡 负载（系统相关）举例： CPU 队列的长度（进程数目） 某时段 CPU 队列的平均长度 可用内存的大小 上下文切换的速率 系统调用的速率 负载描述系统的负担状态 负载平衡算法构成方式 选取发出者 选取任务 任务应该足够大，值得耗费额外的资源（转移操作）来处理它 选出目标 集中式：收取信息协调者分配 非集中式：轮询（轮寻？） 信息策略：决定系统中其他站点的状态信息如何收集信息的（懒惰 or 积极） 发送者主动算法超载发送给轻载站点 转移策略：阈值 选择策略：选择新任务 定位策略：阈值 信息策略： 接收者主动算法负载不足时从重载站点获取额外任务 双向主动算法接收者主动的渗透算法基本思想： 预约策略一个轻载站点按一定方式查询系统状态，请求某个重载站点 投标策略 重载站点向系统广播消息 接收到这一请求消息的站点根据自己的状态决定是否参与 广播策略智能型任务调度算法 最佳任务调度是$NP$完全问题，传统研究的寻优，存在一些问题 分布式站点自治性和冬天变化的远程对象状态，使局部调度算法具有的全局状态信息是不确定的 系统观点来看 从而引出 智能型任务调度算法 任务调度中的知识及其表示 调度知识：设计任务调度算法的一些经验、原理、规则、就近调度原则、不要调度运行中的任务等。 对象知识：构成任务调度算法的一些基本知识，一个对象知识主要是由对象提、作用在其上的操作和相关知识三部分组成。 任务调度程序结构（图） 任务调度算法的实现 分层实现 核心层：观察处理器的状态。一行成统计数据；将任务分配到指定的处理器；常驻内存 决策层：完成调度任务决策，包裹状态管理和决策管理 用户界面层：良好的 HCI。 自学 基于 DNS 的 基于反向代理 基于 CDN 轮寻算法 Hash 散列算法 思考题 目前经常用到的负载均衡技术有哪些，都用在什么地方？ 目前 memcached 集群用到的负载均衡技术有哪些 调研 JBoss 服务器中的负载平衡机制 分布式系统范型？]]></content>
       <categories>
         <category>操作系统</category>
-        <category>分布式</category>
+        <category>分布式系统</category>
       </categories>
       <tags>
-        <tag>分布式</tag>
+        <tag>分布式系统</tag>
       </tags>
   </entry>
   <entry>
@@ -1362,7 +1366,7 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[分布式系统学习——分布式系统中的时间、时钟和事件顺序经典论文Paper翻译]]></title>
+    <title><![CDATA[分布式系统学习——Lamport时钟经典论文Paper翻译]]></title>
     <url>%2Fpost%2Fb6a38e07.html</url>
     <content type="text"><![CDATA[阅读笔记参考：小强zju的读书笔记 分布式系统基础－Lamport Clock Lamport本人评述 读书笔记——Time, Clocks, and the Ordering of Events in a Distributed System摘要部分本文研究了分布式系统中一个事件先于另一个事件发生的概念，并展示了如何定义事件的偏序，同时给出了一种可以对时间完全排序的分布式时钟同步算法。通过一种解决同步问题的方法来描述对全体事件的同步。 然后介绍专门用于同步物理时钟的情况，并推导出时钟不同步的界限。 Introduction时间概念是我们思维方式的基础，更基本的源于事件发生顺序，其贯穿我们对系统（system）的思考。然而在分布式系统中我们应重新审视这一基本概念。 A system is distributed if the message transmission delay is not negligible compared to the time between events in a single process. 如果与单个进程中的事件之间的时间相比，消息传输延迟不可忽略，那么该系统就是分布式的。（无论是在单机系统还是多机系统上，上述情况都要考虑） 本文重点关注空间分离的系统，但是单机多处理器系统涉及一些相类似的问题，因为某些事件可能以不可预测的顺序发生。“之前发生”只是系统中事件的部分排序。（事实上整体事件呈现一个偏序集合 No happen before）。 The Partial Ordering We will therefore define the “happened before” relation without using physical clocks. 我们将不依赖物理时钟定义“happen before”规则。 因应用的不同，我们可以将一个子程序（或是一条机器指令的执行）当作某个process里的一个event。 我们假定某个process的所有events构成一个序列，这个序列是线序（或许应该说不包含相等的情况），用文中的话说是具有先验总排序。我们根据process中event的发生顺序定义“happen before” 定义“happen before”关系，用（→表示） 如果a，b是相同进程的两个事件，且a出现在b之前，那么$a \rightarrow b$。 如果a是某进程消息发送的一方，b是另一进程接收该消息的一方，则$a \rightarrow b$。 该关系具备传递性，即$a \rightarrow b$ ，$b \rightarrow c$，则$a \rightarrow c$。如果$a \nrightarrow b$，$b \nrightarrow a$，那我们称a，b是并发（concurrent）的。 另外补充，该关系是反自反的，即，对任意a，$a \nrightarrow a$，（系统中一个时间可以在它自身之前发生没有实际意义）。 在图中$a \rightarrow b$即表示可以从a通过波浪线（消息传播途径），或者纵向的进程轴线（事件发生途径）走到b。 另一种方式解读该图像，我们也可以说，并发的进程是不会不经意间相互影响的。 Happened Before的理论和狭义相对论中的物理世界中的观念十分的类似，即event的先后是相对的，在实际世界中的不同惯性坐标系下，2个event的先后关系可能发生变化。不过Paper中没有深入的对比，我会在感想部分中深入讨论下 Logical Clocks现在考虑引入时钟，先以数学的方式为每个事件分配一个数字来代表其事件发生的时间。以时钟函数$C_i$表示$P_i$进程，其中$C_i \langle a \rangle$表示该进程a事件的值。$C$ 函数表示整个系统的时钟，如果b是进程$P_i$的事件之一，则$C \langle b \rangle = C_i \langle b \rangle$。 由于当前没有将函数值和物理事件关联起来，所以我们将其认为是逻辑时间。 考虑该逻辑时钟的合理性，我们无法根据物理时间验证（这会要求基于物理时间的时钟引入），考虑一个强合理性的条件，如果事件a发生在另一个事件b之前，则a应该在比b更早的时间发生。 我们更正式地陈述这种情况如下。 Clock Condition For any events a, b:if $a \rightarrow b$ then $C \langle a \rangle &lt; C \langle b \rangle$ 其逆命题不成立（否则会要求所有并发事件同时发生，易证否），即只具备充分性。 满足下面两条件时，时钟条件（Clock Condition）是满足的。 C1. 如果a和b是同一进程的两个事件且a发生在b之前，则$C_i \langle a \rangle &lt; C_i \langle b \rangle$。 C2. 如果a是i进程消息发送方，而b是j进程中该消息的接收方，则$C_i \langle a \rangle &lt; C_j \langle b \rangle$。 Condition）。 通过算法来为上述构建的时钟函数赋值，为满足C1和C2，分别设定两条规则： IR1. 同一个process的相邻event，其时钟值是递增的。 IR2. i进程a活动发送的消息会携带一个时间戳$T_m = C_i \langle a \rangle$，则接收方b进程活动b设定其时钟值为$C_j \langle b \rangle = MAX(T_m,C_j \langle b \rangle)+1$。 两条分别对应两条规则，所以时钟条件也得到满足，保证了具备逻辑时钟的合理系统。 Ordering the Events Totally在规定进程间一个顺序后，通过以下规则，我们从事件的偏序构建全序，我们便可得到新的“全序关系”（用$\Rightarrow$）来表示： 若对于a，b两事件，有$C_i \langle a \rangle &lt; C_j \langle b \rangle$，则$a \Rightarrow b$ 若$C_i \langle a \rangle = C_j \langle b \rangle$ 且 $P_i &lt; P_j$，则$a \Rightarrow b$ 可以说“$\Rightarrow$”是将“happen before”偏序关系“$\rightarrow$”拓展成的全序关系。 该全序依赖与系统时钟的确定，是不唯一的，相反，唯一确定的是事件发生的偏序关系。 对事件进行全排序的有用性将通过解决下列情况下的互斥问题来说明，考虑一个共享单个资源的固定过程集合的系统： Q1. 已被授予资源的进程必须先释放它，然后才能将其授予另一个进程。Q2. 必须按照它们的顺序授予对资源的不同请求。Q3. 如果授予资源的每个进程最终都会释放该资源，那么每一个请求都后被授权。 通过一个中心化的进程通过请求抵达的时刻来安排资源是不可行的（后抵达该进程的消息可能先需求了资源）。 为了解决该问题，我们实行一个满足了IR1和IR2的系统，并且通过其定义出所有事件的全序，具备全局序后，问题就变得相当简单了，只需要确保每个进程清楚其他进程得操作即可。 分布式算法细节每个进程维护自己的请求队列，规定请求队列初始包含单一的消息$T_0$：$P_0$请求资源，其中$P_0$是初始占据资源的进程（根据假设，所有资源初始归同一进程占据），且$T_0$小于任何时钟的初始值。 该算法由以下五条规则定义。为了方便起见，假定每个规则定义的操作构成一个单一事件。 为了请求资源，请求方进程$P_i$将消息“$T_m$：$P_i$请求资源”递送至所有其他进程，并把该消息加入自己的请求队列。$T_m$表示该消息的时间戳。 当$P_j$收到消息“$T_m$：$P_i$请求资源”，将其加入自己的请求队列并向$P_i$发送一个带时间戳的确认消息。 为了释放资源，进程$P_i$将所有“$T_m$：$P_i$请求资源”消息移出队列，并把一个带时间戳的释放消息递送给所有其他进程。 当$P_j$收到消息“$P_i$释放资源”，将所有“$T_m$：$P_i$请求资源”消息移出队列。 当满足下列两条件时，进程$P_i$占据该资源： 存在一个“$T_m$：$P_i$请求资源”消息在其请求队列中并且序优先于其他的所有请求。 $P_i$收到了所有其他进程发来的时间戳晚于$T_m$的消息。 易于说明该算法满足该系统的三个要求。 这是一个分布式算法，每个进程独立遵循这些规则，没有集中的同步进程或是中央存储。 根据算法1-&gt;5构建可以证明Q1，Q2，Q3是满足要求的。 对于Q1，反证法： 假设Q1不成立，则意味着在资源分配给某进程后，假设该进程为$P_j$，存在至少一个进程，假设为$P_i$，未释放该资源。但是根据3、4点，这意味着，$P_i$没有发出“释放”的消息，也就应导致着进程$P_j$维护的队列中，仍存在“$T_{m_1}$：$P_i$请求资源”这一消息并未移出（第四点），且$T_{m_1}$是最早的。现在我们审查第五点，上述未删除的消息存在队列，便不会使“$T_{m_2}$：$P_j$请求资源”这条满足最先（5.1点），那$P_j$维护队列中不满足其占有资源的条件，矛盾。 对于Q2，时间戳是一个全序，由于5.2点要求收到所有其他进程法来的更晚的消息，所以可以保证先前消息是完全的，可以确定是最早的，根据全序顺序，可保证。 对于Q3，反证法： 假设在均释放的情况下，存在至少一个请求没有被授权（批准），不妨设最早的是$P_j$的请求，则在其自身队列以及所有其他进程队列中都应在某一时间后都存在着这样一条“$T_{m_2}$：$P_j$请求资源”，由于始终未被授权，假设5.1不被满足，则应存在“$T_{m_1}$：$P_i$请求资源”始终存在，且$T_{m_1}&lt;T_{m_2}$但是我们设定$P_j$是最早的不被授权的，所以前者必定在某个时间释放，$P_i$请求资源的记录会随释放消息的到达被撤，不可能始终存在，不成立。若5.2始终不能被满足，在5.1成立后，由于没有fail的机器，必然会收到确认消息，不成立。所以5.1，5.2总会在一定时间后被满足，矛盾。 Anomalous Behavior异常情况，上面定义的Logical Clocks有一些反常的行为，例如我们定义的Total Ordering是$b&lt;a$，但事实上a事件的操作员执行之后通过电话告诉b事件的操作员开始执行，那么Logical Clocks给出的全序就明显违背了客观情况。 这种情况的出现是由于系统不知道“电联”这一要求，因为这种先后顺序是在系统外定义的。为避免这种反常，有2中解法： 将外部的happened before关系手动的引入到系统内（event b产生是强调依赖 event a） 引入实际物理时钟 Physical Clocks对物理始终两条限制， 实际上时限制增速尽可能贴近1，以及各时钟的同步性。 后面保证物理时钟一致性以及满足C1，C2的算法暂时没有看懂，所以后面再补吧，数学功底差一些。]]></content>
       <categories>
@@ -1422,8 +1426,8 @@
         <category>Linux</category>
       </categories>
       <tags>
-        <tag>操作系统</tag>
         <tag>Linux</tag>
+        <tag>操作系统</tag>
       </tags>
   </entry>
   <entry>
@@ -1446,9 +1450,9 @@
         <category>Linux</category>
       </categories>
       <tags>
+        <tag>Linux</tag>
         <tag>待补充</tag>
         <tag>操作系统</tag>
-        <tag>Linux</tag>
       </tags>
   </entry>
   <entry>
@@ -1460,8 +1464,8 @@
         <category>Linux</category>
       </categories>
       <tags>
-        <tag>操作系统</tag>
         <tag>Linux</tag>
+        <tag>操作系统</tag>
       </tags>
   </entry>
   <entry>
@@ -2224,6 +2228,11 @@
       <tags>
         <tag>Git</tag>
       </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Hello Hexo]]></title>
+    <url>%2Fpost%2Fa1751c09.html</url>
+    <content type="text"><![CDATA[今日博客搬家 bing 基于Hexo-Next-Gemini 还在搬运Evernote和CSDN上的东西 还有很多功能没有添加，欢迎各位提意见]]></content>
   </entry>
   <entry>
     <title><![CDATA[VSCode——Git配置及终端替换]]></title>
@@ -3911,8 +3920,8 @@
         <tag>ACM</tag>
         <tag>算法</tag>
         <tag>2018暑假集训</tag>
-        <tag>POJ</tag>
         <tag>计算几何</tag>
+        <tag>POJ</tag>
       </tags>
   </entry>
   <entry>
@@ -3943,8 +3952,8 @@
         <tag>ACM</tag>
         <tag>算法</tag>
         <tag>2018暑假集训</tag>
-        <tag>POJ</tag>
         <tag>计算几何</tag>
+        <tag>POJ</tag>
       </tags>
   </entry>
   <entry>
@@ -3959,8 +3968,8 @@
         <tag>ACM</tag>
         <tag>算法</tag>
         <tag>2018暑假集训</tag>
-        <tag>POJ</tag>
         <tag>计算几何</tag>
+        <tag>POJ</tag>
       </tags>
   </entry>
   <entry>
@@ -4617,11 +4626,6 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[Hello Hexo]]></title>
-    <url>%2Fpost%2Fa1751c09.html</url>
-    <content type="text"><![CDATA[今日博客搬家 bing 基于Hexo-Next-Gemini 还在搬运Evernote和CSDN上的东西 还有很多功能没有添加，欢迎各位提意见]]></content>
-  </entry>
-  <entry>
     <title><![CDATA[《1Q84》读书笔记]]></title>
     <url>%2Fpost%2F280fbdcb.html</url>
     <content type="text"><![CDATA[内容摘录第一部 P371 “世界这个东西，青豆啊，就是一种记忆和相反的另一种记忆永无休止的斗争。” 第二部 P262 “人的生命虽然本质上是孤独的存在，却不是孤立的存在。” P270 “但店内除了天吾，只有一对像是大学生的青年男女并肩坐在吧台前，正在交头接耳，起劲地说着悄悄话。望着他们，天吾感到了许久不曾有过的深深地寂寞。在这个世界上，自己是孤独的，和谁都没有关联。” P274 “我当时看见了月亮。青豆也看见了同一个月亮。浮在下午三点半依然十分明亮的天上的灰色岩块。沉默而孤独的卫星。两人并肩而立，望着那个月亮。但是，那究竟意味着什么？难道月亮会领我去青豆所在的地方吗？” P276 “天吾专注着望着月光，心中从远古时代传承下来的记忆般的东西被唤醒了。远在人类获得火、工具和语言之前，月亮就始终不变地是人们的朋友。它作为天赐地灯火，不时照亮黑暗的世界，缓解了人们的恐惧。它地圆缺给了人们时间观念。对月亮这种无偿地感谢之情，纵然在黑暗已从绝大部分地域驱逐的现在，似乎依然牢牢烙印在人类的遗传因子里。作为一种温暖的集体记忆。” P311 “我隔着一条马路看到了她，还因为可能被他拥入怀中而颤抖。虽说只有几分钟，我毕竟也全身心地题为过那种激烈的喜悦和期待。她闭上眼睛，紧攥着滑梯的扶手，咬住嘴唇。” P312 “不过这将无所谓。我将为他而死。我不能为自己而活，这种可能性从一开始就被剥夺了。可是，我却能为他而死。这样就够了。我可以微笑着去死。 这不是谎言。” P338 “他像被遗弃在风暴逝去后的静谧中，无法在任何事物上集中精神。” P341 “父亲依旧纹丝不动，他的双眼被牢牢封闭在那黑暗地深坑底部，望去仿佛在静静地等待降雪，将深坑填成白色。” Emmm…我喜欢带鼓点的纯音乐，因为在不知哪个关键的时刻，想起的鼓点声总能巧妙地切合这个场景。 P350 “这二十年间，他心里时时刻刻装着这位少女的面容。 青豆，天吾叫出声来。 少女沉在深深的睡眠中。似乎是很深的自然的睡眠，连呼吸都极其微弱。她的心脏也只是轻微地鼓动着，虚幻得传不到人的耳朵里。甚至连抬起眼睑得力量都没有……青豆在遥远的地方听见了这呼唤。天吾君，她在心中念道，还清晰地呼出声来。但这句话却不会掀动躺在空气蛹中少女的嘴唇，也不会传入天吾的耳朵。”]]></content>
@@ -4655,8 +4659,8 @@
       </categories>
       <tags>
         <tag>阅读</tag>
-        <tag>龙应台</tag>
         <tag>书信</tag>
+        <tag>龙应台</tag>
         <tag>安德烈</tag>
         <tag>亲爱的安德烈</tag>
       </tags>
@@ -4708,8 +4712,8 @@
       </categories>
       <tags>
         <tag>随笔</tag>
-        <tag>读后感</tag>
         <tag>龙应台</tag>
+        <tag>读后感</tag>
       </tags>
   </entry>
   <entry>
@@ -4929,8 +4933,8 @@
         <tag>ACM</tag>
         <tag>算法</tag>
         <tag>2018寒假集训</tag>
-        <tag>HDU</tag>
         <tag>STL</tag>
+        <tag>HDU</tag>
       </tags>
   </entry>
   <entry>
@@ -4996,8 +5000,8 @@
         <tag>算法</tag>
         <tag>2018寒假集训</tag>
         <tag>补图</tag>
-        <tag>HDU</tag>
         <tag>STL</tag>
+        <tag>HDU</tag>
       </tags>
   </entry>
   <entry>

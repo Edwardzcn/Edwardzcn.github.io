@@ -93,10 +93,18 @@
 <meta property="og:site_name" content="Eddy的个人博客">
 <meta property="og:description" content="Step 1题目摘要引言题目寻找一个易于理解的共识算法（拓展版本） 摘要Raft 是解决 log replication management 的分布式共识算法，相当于(multi-)Paxos 效果。为了便于理解，Raft 将共识算法的几个步骤分离开，包括leader 选举、log 复制、安全性。它强调了一致性以减少必须考虑的 states 数量（这个是不是对比 Paxos 说的）。Raft">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-06-15T09:50:57.939Z">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Raft/Raft_1.png">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Raft/Raft_2.png">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Raft/Raft_3.png">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Raft/Raft_4.png">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Raft/Raft_5.png">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Raft/Raft_6.png">
+<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Raft/Raft_7.png">
+<meta property="og:updated_time" content="2020-06-17T05:18:44.923Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="分布式系统学习——Raft拓展版本论文学习">
 <meta name="twitter:description" content="Step 1题目摘要引言题目寻找一个易于理解的共识算法（拓展版本） 摘要Raft 是解决 log replication management 的分布式共识算法，相当于(multi-)Paxos 效果。为了便于理解，Raft 将共识算法的几个步骤分离开，包括leader 选举、log 复制、安全性。它强调了一致性以减少必须考虑的 states 数量（这个是不是对比 Paxos 说的）。Raft">
+<meta name="twitter:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Raft/Raft_1.png">
 
 
 
@@ -428,7 +436,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1,042
+                  4,923
                 </span>
               
 
@@ -444,7 +452,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  4
+                  19
                 </span>
               
             </div>
@@ -523,6 +531,138 @@
 <p>继续阅读！</p>
 <a id="more"></a>
 <h1 id="Step-2"><a href="#Step-2" class="headerlink" title="Step 2"></a>Step 2</h1><h2 id="细读笔记"><a href="#细读笔记" class="headerlink" title="细读笔记"></a>细读笔记</h2><!-- 要仔细阅读论文，但是诸如证明等信息要忽略掉 -->
+<h3 id="状态机复制"><a href="#状态机复制" class="headerlink" title="状态机复制"></a>状态机复制</h3><p>共识算法常出现在状态机复制（replicated state machine）上下文中。一组服务器上的状态机计算相同的粗笨，这样即使其中一些服务器宕机，仍能继续工作。状态机复制常用于解决分布式系统的容错问题。</p>
+<p>状态机复制常用 replicated log 来实现。每个服务器存储一个包含一系列命令的日志，其状态机按顺序执行这些命令。每个日志以相同的顺序包含相同的命令，因此每个状态机处理相同的命令序列。由于状态机是确定的，所以每个状态机都计算相同的状态和相同的输出序列。</p>
+<p>而保证 replicated log 一致就是共识算法的工作。共识模块负责将客户端命令加入日志，并与其他服务器的共识模块通信以保证日志最终以相同的顺序包含相同的请求（same requests in the same order）。当命令被正确地复制，服务器地状态机就会按照日志顺序执行并将结果返回给客户端。</p>
+<p>实际系统应用地一致性算法通常有以下特征：</p>
+<ul>
+<li>保证 non-Byzantine 条件下的安全性（即只设计以应对 fail stop）</li>
+<li>只要保证 majority（绝对多数）的机器是正常且可以通信的，系统就具备完备功能。</li>
+<li>不依赖 timing 来保证一致性（<strong>这一点以前不清楚，作者解释，在最坏情况下，错误时钟和极端消息可能会导致可用性问题</strong>）。</li>
+<li>通常情况下，当 majority 都回复了一次远程调用（RPC）时，命令就完成了，minority 的速度较慢的机器不会影响系统的整体性能。</li>
+</ul>
+<h3 id="Paxos-的优劣势"><a href="#Paxos-的优劣势" class="headerlink" title="Paxos 的优劣势"></a>Paxos 的优劣势</h3><p>Leslie Lamport 的 Paxos 协议是该领域近年被讨论最多的。文章中对 Paxos 评价是这样的。</p>
+<blockquote>
+<p>Paxos first defines a protocol capable of reachingagreement on a single decision, such as a single replicatedlog entry. We refer to this subset assingle-decree Paxos.Paxos then combines multiple instances of this protocol tofacilitate a series of decisions such as a log (multi-Paxos).Paxos ensures both safety and liveness, and it supportschanges in cluster membership. Its correctness has beenproven, and it is efficient in the normal case.<br>Paxos 首先定义了一种协议，该协议能够就单个决定达成共识，例如单个复制日志条目。 我们将这个子集称为单命令 Paxos，然后 Paxos 组合了该协议的多个实例以促进一系列决策，例如日志（multi-Paxos）.Paxos 确保安全性和活跃性，并支持集群成员身份的更改。 它的正确性已经被证明，并且在正常情况下是有效的</p>
+<p>Unfortunately, Paxos has two significant drawbacks.The first drawback is that Paxos is exceptionally diffi-cult to understand. The full explanation [15] is notori-ously opaque; few people succeed in understanding it, andonly with great effort. As a result, there have been severalattempts to explain Paxos in simpler terms [16, 20, 21].These explanations focus on the single-decree subset, yetthey are still challenging. In an informal survey of atten-dees at NSDI 2012, we found few people who were com-fortable with Paxos, even among seasoned researchers.We struggled with Paxos ourselves; we were not able tounderstand the complete protocol until after reading sev-eral simplified explanations and designing our own alter-native protocol, a process that took almost a year.<br>不幸的是，Paxos 有两个明显的缺点。第一个缺点是 Paxos 非常难以理解。 完整的解释[15]非常模糊，只有很少的人能够成功地理解它。 结果，有几种尝试用较简单的术语来解释 Paxos [16，20，21]。这些解释集中在单法则子集上，但它们仍然具有挑战性。 在 NSDI 2012 上对与会者的非正式调查中，我们发现很少有人对 Paxos 感到满意，即使是经验丰富的研究人员也是如此。 在阅读了一些简化的说明并设计了我们自己的替代协议后，我们才了解完整的协议，这一过程耗时近一年。</p>
+<p>We hypothesize that Paxos’ opaqueness derives fromits choice of the single-decree subset as its foundation.Single-decree Paxos is dense and subtle: it is divided intotwo stages that do not have simple intuitive explanationsand cannot be understood independently. Because of this,it is difficult to develop intuitions about why the single-decree protocol works. The composition rules for multi-Paxos add significant additional complexity and subtlety.We believe that the overall problem of reaching consensuson multiple decisions (i.e., a log instead of a single entry)can be decomposed in other ways that are more direct andobvious.<br>我们假设 Paxos 的不透明性源于它对单法则子集的选择的基础。单法则 Paxos 是密集而微妙的：它分为两个阶段，没有简单的直观解释，无法独立理解。 因此，难以理解单法令协议为何起作用的直觉。 多 Paxos 的组成规则增加了许多额外的复杂性和微妙之处。我们认为，可以通过其他更直接和明显的方式来分解在多个决策（即对数而不是单个条目）上达成共识的总体问题。</p>
+<p>The second problem with Paxos is that it does not pro-vide a good foundation for building practical implemen-tations. One reason is that there is no widely agreed-upon algorithm for multi-Paxos. Lamport s descriptionsare mostly about single-decree Paxos; he sketched possi-ble approaches to multi-Paxos, but many details are miss-ing. There have been several attempts to flesh out and op-timize Paxos, such as [26], [39], and [13], but these differ2 from each other and from Lamport s sketches.Systems such as Chubby [4] have implemented Paxos-like algo-rithms, but in most cases their details have not been pub-lished.<br>Paxos 的第二个问题是，它没有为构建实际实现提供良好的基础。一个原因是，对于 multi-Paxos，还没有得到广泛认可的算法。Lamport 的描述大多是关于单一法令的 Paxos;他概述了多 paxos 可能的方法，但是很多细节都被遗漏了。已经有一些尝试来充实和调整 Paxos，如[26]、[39]和[13]，但它们彼此不同，也不同于 Lamport 的草图。像 Chubby[4]这样的系统已经实现了类似 paxos 的算法，但它们的很多细节还没有公开。</p>
+</blockquote>
+<p>single-decree decomposition 的另一个结果是 Paxos 难以用于构建实际系统。详细解释还是看文章吧。</p>
+<p>因此，实际系统与 Paxos 几乎没有相似之处，都从 Paxos 开始，讲述实现的困难，然后发展出完全不同的体系结构。Chubby 的实现者对 Paxos 的评价很典型：</p>
+<blockquote>
+<p>There are significant gaps between the description ofthe Paxos algorithm and the needs of a real-worldsystem. . . . the final system will be based on an un-proven protocol</p>
+</blockquote>
+<h3 id="Designing-for-understandability"><a href="#Designing-for-understandability" class="headerlink" title="Designing for understandability"></a>Designing for understandability</h3><p>在 Raft 设计过程中存在许多要做取舍的点，取舍基于<strong>可理解性</strong>。设计者总是在想如何能使读者完全理解设计方法和实现。</p>
+<p>这种“方便理解”的设计是主观的，不过提出了两种普遍使用的技术：过程拆解、简化状态机状态。</p>
+<h3 id="The-Raft-consensus-algorithm"><a href="#The-Raft-consensus-algorithm" class="headerlink" title="The Raft consensus algorithm"></a>The Raft consensus algorithm</h3><p>算法主体部分。</p>
+<p>图 2（也就是 6.824 课程教授提到的要特别注意的图）提供了简化版算法以供参考。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Raft/Raft_1.png" alt="Raft_1"></p>
+<p>图 3 列出了算法的核心性质。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Raft/Raft_2.png" alt="Raft_2"></p>
+<p>文章拆分成四个模块来介绍</p>
+<p>Step 2 阅读中着重理解一下各部分的介绍，对 Safety 证明部分粗略浏览下，放在 Step 3 中进一步阅读。</p>
+<h4 id="Raft-basics"><a href="#Raft-basics" class="headerlink" title="Raft basics"></a>Raft basics</h4><p>每个 server 的三种状态：<strong>leader</strong>，<strong>follower</strong>，<strong>candidate</strong>。系统保证正常情况下只有一个 Leader，在这个架构下。<strong>Leader is strong and followers are passive.</strong>。Leader 负责处理所有客户端请求并展开 replication，而 follower 不会自发启动任何请求，只会被动应答 candidate 和 leader。Candidate（候选者）是用来进行 leader 选举时的状态。如图 4 所示。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Raft/Raft_3.png" alt="Raft_3"></p>
+<p>Raft 将时间划分为不同长短的 term（任期），用连续整数来标识，每届任期都从一次选举开始。若选票分裂，没有选出 leader，则任期以无 leader 情况结束，并且会在稍后启动新的一轮选举（random time）。如图 5 所示。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Raft/Raft_4.png" alt="Raft_4"></p>
+<p>在一些情况下（比如网络中断、延迟、隔离），server 可能会观察不到选举过程甚至整个任期。Term 在 Raft 中像一个<a href="https://www.edwardzcn98yx.com/post/b6a38e07.html">逻辑时钟</a>（没错，Lamport 他又来了）。<code>currentTerm</code>在每台机器上都会被持久化维护。服务器间的交流（比如选举信息或是指令执行），类似 Lamport 逻辑时钟的事件（自增原则要看后面的实现细节）。如果一个服务器的 currentterm 比另一个服务器的 currentterm 小，那么它将其 currentterm 更新为更大的值。如果一个候选人或领导发现他的任期已经过期，它立即恢复到 follower 状态。如果服务器收到一个过去任期的请求，它将拒绝该请求。</p>
+<p>Raft 机器间交流通过 RPC 实现，仅需要两种类型的 RPC，后续章节添加了一种 RPC 用来传递快照。</p>
+<ul>
+<li>RequestVote PRCs：由 candidates 发起用于选举（在 Leader election 一节中着重介绍）。</li>
+<li>AppendEntries RPCs：由 leaders 发起，以 heartbeat 形式提供 replicate log 的功能。</li>
+</ul>
+<h4 id="Leader-election"><a href="#Leader-election" class="headerlink" title="Leader election"></a>Leader election</h4><p>主体过程描述如下</p>
+<ul>
+<li>以 follower 身份启动，如果能持续收到来自 candidate 和 leader 的消息，follower 身份会维持。</li>
+<li>在丢失通信达到一定时间（election timeout）后，follower 会开始启动一次选举。</li>
+<li>follower 增加它的 currentTerm 值并转换到 candidate 状态。</li>
+<li>为自己投票同时并行启动 RequestVote RPCs 访问集群内其他机器。</li>
+<li>candidate 维持其身份直至<ul>
+<li>赢得选举<ul>
+<li>得到 majority 的选票</li>
+<li>转换为 leader 身份并开始发送心跳线信息</li>
+</ul>
+</li>
+<li>其他机器赢得选举<ul>
+<li>比较 AppendEntries RPC 中 term 与 currentTerm 的大小，RPC 中任期大于等于自身任期，则转变为 follower。</li>
+<li>否则拒绝 RPC 请求，保持 candidate 身份。</li>
+</ul>
+</li>
+<li>一段时间后发现没有人赢得选举<ul>
+<li>多个 candidate 发起选举导致选票分裂无人当选</li>
+<li>每个 candidate 经过一小段时间后重启选举</li>
+<li>没有其他措施保证时，选票分裂可能重复。（改进：再下次选举前加入 150-300ms 的随机延时）</li>
+<li>从<strong>可理解性</strong>角度抉择：设计者对算法进行了多次调整、包括 rank candidate 形式，每次调整后都会出现新的情况。最后得到的结论，随机重试的方法更明显和可理解。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="Log-replication"><a href="#Log-replication" class="headerlink" title="Log replication"></a>Log replication</h4><p>图 6 显示日志的组织情况。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Raft/Raft_5.png" alt="Raft_5"></p>
+<ul>
+<li>选出 leader 后，leader 与客户端进行通信，接受并反馈客户端请求。</li>
+<li>leader 持续向其他机器并行发送 AppendEntries RPCs，维持身份同时拷贝 entry（但不执行）。</li>
+<li>leader 决定什么时间可以<strong>commited</strong> entry（提交），即使集群机器可以执行 entry。<ul>
+<li>条件：当 leader 创建的 entry 被 replicated 到绝对多数的机器。</li>
+</ul>
+</li>
+<li>leader 持续跟踪要进行 commit（已经建立好）的最大的 log index，并将该索引包含在后续的 AppendEntries RPCs 中，以便其他机器最终发现。</li>
+<li>follower 获知 entry 被 commited，便在本地执行该日志。</li>
+</ul>
+<p>Raft 保持下面的重要性质，他们共同构成图 3 的（Log Matching）：</p>
+<ul>
+<li>两份日志中的 entry 块，<strong>若具有相同的 log index 和 term，则储存相同命令</strong>。</li>
+<li>两份日志中的 entry 块，<strong>若具有相同的 log index 和 term，则在之前的日志记录都是相同的</strong>。</li>
+</ul>
+<p>正常情况下，leader 和 follower 间的日志都是一致的，但是如果发生 crash，会出现各种不一致的情况（多出未 commit 的 entry 块、缺少块、历史块产生冲突）。</p>
+<p>在 Raft 中，leader 强迫 follower 遵循自己的日志记录，也即冲突覆盖。 后面 Safty 小节将说明，再加上一个限制条件，这是安全的。</p>
+<p>为了进行覆盖，leader 需要找到和 follower 达成一致的最近 entry，并删除之后所有的 entries。leader 未每个 follower 维护一个<code>nextIndex</code>，标明下一个该传送的 log entry。当一个 leader 刚被选举上台时，他初始化全部 follower 的<code>nextIndex</code>为 leader 最后一个 log+1。如果 follower 与 leader 的日志不一致，AppendEntries RPC 中的一致性检查失败，然后 leader 递减<code>nextIndex</code>的值再次发送 AppendEntries RPC 请求，直至找到能 match 的日志位置。然后如上述，删除后递增<code>nextIndex</code>持续进行请求。</p>
+<p>优化 AppendEntries 交互的方法</p>
+<blockquote>
+<p>当 AppendEntries 失败时，follower 可以知道冲突块所在的 term，以及该 term 第一个块。这样<code>nextIndex</code>一次可以减去该 term 冲突块的数。（作者质疑这种优化的必要性，理由是 failure 并非那么频繁，不会出现大量需要小步修正的 entries）</p>
+</blockquote>
+<p>这种 log replication 机制，对于新选出的 leader，无需额外操作既可以保证集群中日志记录逐渐收敛，并且满足 leader 不重写自己日志的性质。同时只要绝对多数的机器正常运转，一轮 RPCs 就可以将新的 entry 复制到机器上，少数故障不会影响系统表现。</p>
+<h4 id="Safety"><a href="#Safety" class="headerlink" title="Safety"></a>Safety</h4><p>到目前为止所描述的机制还不足以确保每个状态机以同样的顺序执行完全相同的命令，增加一些限制。</p>
+<ul>
+<li><p>选举限制</p>
+<p>个人理解：鸽巢定理的应用</p>
+<p>Raft 使用一个简单的机制保证先前任期 leader 的所有 commited entries 会存在在新选举的 leader 上。这样就保证了日志流是单向的（leader 到 followers）。</p>
+<p>一个 entry 想要被 commited 要得到<strong>majority</strong>的机器的回应，而一个 candidate 必须联系集群中的<strong>majority</strong>才能当选，根据<strong>鸽巢定理</strong>，每条 commited entry 必须至少出现在 candidate 联系的机器中的一台上，如下图所示。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Raft/Raft_6.png" alt="Raft_6"></p>
+<p>Raft 按如下方式定义日志的新旧：</p>
+<ul>
+<li>不同 term，则越后面的 term 越新（逻辑时钟）</li>
+<li>相同 term，越长的 log 越新</li>
+</ul>
+</li>
+<li><p>提交先前任期的 entry</p>
+<p>对于前一任期 replicate 但是未 commit 的 entry，现在任期的新 leader 在继续 replicate 时无法第一时间意识到达到绝对多数（从而有可能延迟或者忽略到该 commit 的 entry，而被后续任期的 entry 覆盖），如下图所示。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Raft/Raft_7.png" alt="Raft_7"></p>
+<p>Raft 要求 leader 在 replicate 先前任期中的 entry 时，保留其原有的 term（在其他一些共识算法中，leader 必须使用新的 term 编号来进行复制。）为了避免图中的问题，Raft<strong>不会</strong>根据副本计数来提交过去任期的 entry，<strong>只会</strong>根据计数提交当前任期内的 entry。（交现在不交过去）</p>
+</li>
+<li><p>安全性争论</p>
+<p>反证法证明 Leader Completeness Property</p>
+<p>过程 Pass，见第三部分。</p>
+<p>根据 Leader Completeness Property，可以证明 State Machine Property。</p>
+<p>证明 Pass，见第三部分。</p>
+</li>
+</ul>
+<h4 id="Follower-and-candidate-crashes"><a href="#Follower-and-candidate-crashes" class="headerlink" title="Follower and candidate crashes"></a>Follower and candidate crashes</h4><p>先前讨论的是 leader 出状况，实际上 follower 和 candidate 的崩溃情况要简单些。</p>
+<ul>
+<li>follower 或 candidate 崩溃，leader 持续发送 AppendEntries RPCs</li>
+<li>重连时 RPC 会连通</li>
+<li>若 follower 或 candidate 接受到 RPC 但是在返回结果前崩溃，那么重连时会收到相同的 RPC，因为 Raft RPC 是幂等的，所以无影响。</li>
+</ul>
+<h4 id="Timing-and-availablility"><a href="#Timing-and-availablility" class="headerlink" title="Timing and availablility"></a>Timing and availablility</h4><p>Raft 设计要求，系统安全性不依赖于时间，不会因事件过快/过慢导致错误结果。但还是有些地方肯定存在时间限制。</p>
+<p>Leader election 过程时间要求。</p>
+<script type="math/tex; mode=display">broadcastTime \ll electionTimeout \ll MTBF</script><ul>
+<li><strong>broadcastTime</strong>：并行发送 RPCs 到各个机器并收到回复的平均时间。</li>
+<li><strong>electionTimeout</strong>：前面描述的判定一轮选举的 timeout</li>
+<li><strong>MTBF</strong>：单个机器故障间隙的平均时间。</li>
+</ul>
+<p>分析，Pass，详情见第三节。大致理解，不能太频繁重设 leader，但又要保证真正故障时系统不会长时间停滞。</p>
 <h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><h2 id="未读（且值得读）文献记录"><a href="#未读（且值得读）文献记录" class="headerlink" title="未读（且值得读）文献记录"></a>未读（且值得读）文献记录</h2><!-- 在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 -->
 <p><a href="http://research.microsoft.com/users/lamport/pubs/pubs.html#lamport-paxos" target="_blank" rel="noopener">Lamport 发明 Paxos 的前前后后</a></p>
 <p><a href="http://research.microsoft.com/users/lamport/pubs/lamport-paxos.pdf" target="_blank" rel="noopener">The Part-Time Parliament ── Lamport 于 1998 年发表在 ACM Transactions on Computer Systems</a> 注：这是该算法第一次公开发表。</p>
@@ -666,7 +806,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">56</span>
+                  <span class="site-state-item-count">55</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -793,7 +933,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Step-1"><span class="nav-number">1.</span> <span class="nav-text">Step 1</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#题目摘要引言"><span class="nav-number">1.1.</span> <span class="nav-text">题目摘要引言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#题目"><span class="nav-number">1.1.1.</span> <span class="nav-text">题目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#摘要"><span class="nav-number">1.1.2.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#引言"><span class="nav-number">1.1.3.</span> <span class="nav-text">引言</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基本理论概况"><span class="nav-number">1.2.</span> <span class="nav-text">基本理论概况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结论部分"><span class="nav-number">1.3.</span> <span class="nav-text">结论部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#回答基本问题"><span class="nav-number">1.4.</span> <span class="nav-text">回答基本问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#阅读选择"><span class="nav-number">1.5.</span> <span class="nav-text">阅读选择</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Step-2"><span class="nav-number">2.</span> <span class="nav-text">Step 2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#细读笔记"><span class="nav-number">2.1.</span> <span class="nav-text">细读笔记</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题记录"><span class="nav-number">2.2.</span> <span class="nav-text">问题记录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#未读（且值得读）文献记录"><span class="nav-number">2.3.</span> <span class="nav-text">未读（且值得读）文献记录</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Step-3"><span class="nav-number">3.</span> <span class="nav-text">Step 3</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#思路复现"><span class="nav-number">3.1.</span> <span class="nav-text">思路复现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#证明与推理复现"><span class="nav-number">3.2.</span> <span class="nav-text">证明与推理复现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实验验证复现"><span class="nav-number">3.3.</span> <span class="nav-text">实验验证复现</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Step-1"><span class="nav-number">1.</span> <span class="nav-text">Step 1</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#题目摘要引言"><span class="nav-number">1.1.</span> <span class="nav-text">题目摘要引言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#题目"><span class="nav-number">1.1.1.</span> <span class="nav-text">题目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#摘要"><span class="nav-number">1.1.2.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#引言"><span class="nav-number">1.1.3.</span> <span class="nav-text">引言</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基本理论概况"><span class="nav-number">1.2.</span> <span class="nav-text">基本理论概况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结论部分"><span class="nav-number">1.3.</span> <span class="nav-text">结论部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#回答基本问题"><span class="nav-number">1.4.</span> <span class="nav-text">回答基本问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#阅读选择"><span class="nav-number">1.5.</span> <span class="nav-text">阅读选择</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Step-2"><span class="nav-number">2.</span> <span class="nav-text">Step 2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#细读笔记"><span class="nav-number">2.1.</span> <span class="nav-text">细读笔记</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#状态机复制"><span class="nav-number">2.1.1.</span> <span class="nav-text">状态机复制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Paxos-的优劣势"><span class="nav-number">2.1.2.</span> <span class="nav-text">Paxos 的优劣势</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Designing-for-understandability"><span class="nav-number">2.1.3.</span> <span class="nav-text">Designing for understandability</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#The-Raft-consensus-algorithm"><span class="nav-number">2.1.4.</span> <span class="nav-text">The Raft consensus algorithm</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Raft-basics"><span class="nav-number">2.1.4.1.</span> <span class="nav-text">Raft basics</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Leader-election"><span class="nav-number">2.1.4.2.</span> <span class="nav-text">Leader election</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Log-replication"><span class="nav-number">2.1.4.3.</span> <span class="nav-text">Log replication</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Safety"><span class="nav-number">2.1.4.4.</span> <span class="nav-text">Safety</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Follower-and-candidate-crashes"><span class="nav-number">2.1.4.5.</span> <span class="nav-text">Follower and candidate crashes</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Timing-and-availablility"><span class="nav-number">2.1.4.6.</span> <span class="nav-text">Timing and availablility</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题记录"><span class="nav-number">2.2.</span> <span class="nav-text">问题记录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#未读（且值得读）文献记录"><span class="nav-number">2.3.</span> <span class="nav-text">未读（且值得读）文献记录</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Step-3"><span class="nav-number">3.</span> <span class="nav-text">Step 3</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#思路复现"><span class="nav-number">3.1.</span> <span class="nav-text">思路复现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#证明与推理复现"><span class="nav-number">3.2.</span> <span class="nav-text">证明与推理复现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实验验证复现"><span class="nav-number">3.3.</span> <span class="nav-text">实验验证复现</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -828,7 +968,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">437.2k</span>
+    <span title="Site words total count">441.1k</span>
   
 </div>
 
