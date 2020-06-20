@@ -93,7 +93,7 @@
 <meta property="og:site_name" content="Eddy的个人博客">
 <meta property="og:description" content="存储器 - 金字塔层次结构介绍 Non-volatile memory - Wikipedia Persistant memory fsBetter I/O Through Byte-Addressable, Persistent Memory 问题：原来的存储系统都是基于慢的，块设备接口。但是新的存储介质是基于字节，永久性存储技术，提供快的，细粒度的访问。 设计新的 FS 和硬件结构，适应字节寻">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-06-13T09:10:16.358Z">
+<meta property="og:updated_time" content="2020-06-19T07:05:07.966Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="分布式系统学习——NVM相关资料整理">
 <meta name="twitter:description" content="存储器 - 金字塔层次结构介绍 Non-volatile memory - Wikipedia Persistant memory fsBetter I/O Through Byte-Addressable, Persistent Memory 问题：原来的存储系统都是基于慢的，块设备接口。但是新的存储介质是基于字节，永久性存储技术，提供快的，细粒度的访问。 设计新的 FS 和硬件结构，适应字节寻">
@@ -450,7 +450,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1,343
+                  2,019
                 </span>
               
 
@@ -466,7 +466,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  5
+                  8
                 </span>
               
             </div>
@@ -538,7 +538,7 @@
 <h2 id="科研方向"><a href="#科研方向" class="headerlink" title="科研方向"></a>科研方向</h2><ul>
 <li>BloomFilter（写放大问题的研究，好像又没必要）</li>
 </ul>
-<p>下面是 6.12 的会议记录</p>
+<h3 id="6-12-会议记录"><a href="#6-12-会议记录" class="headerlink" title="6.12 会议记录"></a>6.12 会议记录</h3><p>下面是 6.12 的会议记录</p>
 <p>B-Tree、LSM Tree（）、SQL</p>
 <p>张：从应用角度去考虑，更好一些？结合场景的应用。</p>
 <p>李：三种应用场景：Memory 扩展、Persistant Storage、Persistant Memory。KV 也有一些工作。在文件系统层次上可以做一些应用，做一些密集访问文件系统的应用。另外一个就是研究数据结构，数据结构放在这个设备上，同步上做的时候，要不要改变。</p>
@@ -569,6 +569,77 @@
 <p>李：下一步地再做，带 Transaction 的 Hash Table。</p>
 <p>张：现有 DHT 和我们所想的不大一样，是一种寻址的算法和方式。但我们想要的是一个的确能在机器上运行的内存中存在的分布式 Hash Table。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">14:37:13	  Kyle Zhang : daos</span><br><span class="line">14:37:36	  Cheng Li : https://www.intel.com/content/www/us/en/high-performance-computing/daos-high-performance-storage-brief.html</span><br><span class="line">14:40:18	  Cheng Li : https://www.cs.utexas.edu/~v</span><br><span class="line">ijay/papers/sosp19-recipe.pdf</span><br><span class="line">14:41:19	  Cheng Li : https://arxiv.org/pdf/2003.07302.pdf</span><br></pre></td></tr></table></figure>
+<h3 id="6-19-会议记录"><a href="#6-19-会议记录" class="headerlink" title="6.19 会议记录"></a>6.19 会议记录</h3><p>下面是 6.19 日会议记录</p>
+<ul>
+<li><p>Paper1: Using RDMA Efficiently for Key-Value Services</p>
+</li>
+<li><p>Paper2: FaRM</p>
+<ul>
+<li>Fast Remote Memory</li>
+<li>微软？</li>
+<li>构建的是面向内存的，分布式 KV-Store（我们是研究 PM 上的）</li>
+<li>李：我们是希望用 PM 的特性，这里面是不是有一些冗余部分（一致性部分？）</li>
+<li>张：做的是分布式内存管理，可以作为我们研究的基础，但是应用场景有下列不同<ul>
+<li>第一个：还是一个 Memory 的结构，感觉这个并不符合每个操作 Atomic（虽然有日志）</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>RDMA 操作 PM 和 DM 不同，操作 DM（无论写在哪里）都告知成功了，操作 PM 不能确定写持久化了。</p>
+</li>
+<li>张：RDMA 对面是内存，那不能确定持久化了（还需要一次 commit 操作），如果 RDMA 对面是 PM，那就可以省去 commit。</li>
+<li><p>李：核心问题：RDMA 和关注两个 CC，Concurrency Control、Commit Control</p>
+</li>
+<li><p>张：里面还是有一些 miss-match 的地方，这些都是基于 DM 的工作，而 PM 有一致性的地方。</p>
+</li>
+<li><p>李：提供一篇对 RDMA 更好的论文</p>
+</li>
+<li><p>Paper3：Design Guidelines for High Performance RDMA Systems</p>
+</li>
+</ul>
+<p>用于分布式系统元数据管理的 workload 需求？（张总的需求？）</p>
+<p>张：文件系统元数据与 KV 的区别</p>
+<ul>
+<li>文件系统元数据树形，有时候要考虑锁</li>
+<li>文件系统元数据设计一般不考虑横向扩展性（Octopus 好像有个扩展）</li>
+</ul>
+<p>李：张总那边的 Workload 的特征？</p>
+<p>张：</p>
+<ul>
+<li>分布式可横向扩展：CPU 和内存容量要同步横向扩展，扩展 memory，现今情况都会带 cpu，可以利用上。仔细想一下其中的通信<ul>
+<li>client-server：发送请求</li>
+<li>server-server：跑 Paxos 协议？</li>
+<li>一种是提交给一台机器，然后 log replication，另一种是提交给多台机器。</li>
+<li>李：不考虑 logging，用 CoW、Shadow 尝试下。现阶段 log 是 sequential 的，然后 batch 到一起往下刷（这样就很快），我问的问题的回答：batch 的性能优化体现在， function call，（函数调用、系统调用、网络调用）如果能 batch 到一起的话，能极大的降低 overhead 和 latency。</li>
+</ul>
+</li>
+</ul>
+<p>后续的工作：</p>
+<ul>
+<li>SmartX 的需求：K-V 来做文件系统元数据，常见的操作有哪些</li>
+<li>考虑把 FaRM 搬到 PM 上</li>
+<li>RDMA 和 PM 结合</li>
+</ul>
+<h3 id="6-19-Summary"><a href="#6-19-Summary" class="headerlink" title="6.19 Summary"></a>6.19 Summary</h3><p>Read more papers on RDMA usage in distributed systems:</p>
+<ul>
+<li>FaRM: Fast Remote Memory</li>
+<li>Using RDMA Efficiently for Key-Value Services</li>
+<li>Design Guidelines for High Performance RDMA Systems</li>
+<li>Deconstructing RDMA-enabled Distributed Transactions: Hybrid is Better!</li>
+<li>Orion: A Distributed File System for Non-Volatile Main Memory and RDMA-Capable Networks</li>
+</ul>
+<p>Find suitable model for distributed key-value store:</p>
+<ul>
+<li>Partition</li>
+<li>Caching</li>
+<li>Local data structure</li>
+<li>Space allocation</li>
+<li>Replication</li>
+<li>how to use RDMA more efficiently</li>
+<li>How to make better use of servers’ CPU</li>
+<li>How to implement atomicity/transaction</li>
+</ul>
+<p>Evaluate FaRM on our machines</p>
 
       
     </div>
@@ -692,7 +763,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">363</span>
+                  <span class="site-state-item-count">365</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -830,7 +901,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Persistant-memory-fs"><span class="nav-number">1.</span> <span class="nav-text">Persistant memory fs</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#应用"><span class="nav-number">2.</span> <span class="nav-text">应用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#会议笔记"><span class="nav-number">3.</span> <span class="nav-text">会议笔记</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#需要再查的事情"><span class="nav-number">3.1.</span> <span class="nav-text">需要再查的事情</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#我自己可以做的事情"><span class="nav-number">3.2.</span> <span class="nav-text">我自己可以做的事情</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#科研方向"><span class="nav-number">3.3.</span> <span class="nav-text">科研方向</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Persistant-memory-fs"><span class="nav-number">1.</span> <span class="nav-text">Persistant memory fs</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#应用"><span class="nav-number">2.</span> <span class="nav-text">应用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#会议笔记"><span class="nav-number">3.</span> <span class="nav-text">会议笔记</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#需要再查的事情"><span class="nav-number">3.1.</span> <span class="nav-text">需要再查的事情</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#我自己可以做的事情"><span class="nav-number">3.2.</span> <span class="nav-text">我自己可以做的事情</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#科研方向"><span class="nav-number">3.3.</span> <span class="nav-text">科研方向</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-12-会议记录"><span class="nav-number">3.3.1.</span> <span class="nav-text">6.12 会议记录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-19-会议记录"><span class="nav-number">3.3.2.</span> <span class="nav-text">6.19 会议记录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-19-Summary"><span class="nav-number">3.3.3.</span> <span class="nav-text">6.19 Summary</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -865,7 +936,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">441.1k</span>
+    <span title="Site words total count">444.0k</span>
   
 </div>
 

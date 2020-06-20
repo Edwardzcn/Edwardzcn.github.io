@@ -366,6 +366,415 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/b894091d.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/b894091d.html" itemprop="url">分布式系统学习——Hadoop安装与单机模式调试</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-01T21:14:21+08:00">
+                2020-05-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/系统/" itemprop="url" rel="index">
+                    <span itemprop="name">系统</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/系统/分布式系统/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,152
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  9
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>系列文章主要记录自己在阿里云 ECS 配置安装 Hadoop，搭建伪分布式环境，学习 Hadoop、HDFS、Hbase 相关内容的过程。</p>
+<h1 id="系统安装"><a href="#系统安装" class="headerlink" title="系统安装"></a>系统安装</h1><h2 id="采取什么方式安装-Hadoop"><a href="#采取什么方式安装-Hadoop" class="headerlink" title="采取什么方式安装 Hadoop"></a>采取什么方式安装 Hadoop</h2><p>实际上我们有很多方式来安装 Hadoop，比如通过 Cloudera 图形化界面（就像 Anaconda Navigator 那样），不过网上许多教程都是通过命令行形式进行安装的（包括 Apache 官方网站），鉴于以后要进行服务器管理，分布式搭建，我们也按照官网推荐的方式通过命令行安装 Hadoop。</p>
+<h2 id="建立-Hadoop-用户并配置免密钥-SSH-登录"><a href="#建立-Hadoop-用户并配置免密钥-SSH-登录" class="headerlink" title="建立 Hadoop 用户并配置免密钥 SSH 登录"></a>建立 Hadoop 用户并配置免密钥 SSH 登录</h2><p>从安全角度触发，不要始终用 root 用户进行操作，我们一般会建立<code>hadoop</code>或者<code>hduser</code>等用户（日后很多时候网管也不会给你 root 权限）。</p>
+<p>建立用户过程简述</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">$ user add -m hadoop</span><br><span class="line"><span class="comment"># -m参数添加用户根目录</span></span><br><span class="line">$ passwd hadoop</span><br><span class="line"><span class="comment"># 为hadoop用户设置密码</span></span><br><span class="line">$ chsh -s /bin/zsh hadoop</span><br><span class="line"><span class="comment"># zsh为本人常使用shell 所以做一下更换</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 接下来进行的是把hadoop添加到sudoers</span></span><br><span class="line">$ chmod u+w /etc/sudoers</span><br><span class="line">$ vim /etc/sudoers</span><br><span class="line"><span class="comment"># 在里面增添 hadoop ALL=NOPASSWD:ALL</span></span><br><span class="line">$ chmod u-w /etc/sudoers</span><br><span class="line"><span class="comment"># 测试</span></span><br><span class="line">$ su hadoop</span><br><span class="line">$ sudo whoami</span><br><span class="line"><span class="comment"># 出现Root即ok</span></span><br></pre></td></tr></table></figure>
+<p>配置免密登录，检查/home/hadoop/.ssh 文件查看是否有公钥，没有的话通过<code>ssh-gen</code>进行生成。若可以直接<strong>免密</strong>登录本机<code>ssh localhost</code>则可以直接跳过本过程。</p>
+<p>如果不行的话需要将公钥加入授权</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat id_rsa.pub &gt;&gt; authorized_keys</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/b894091d.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/fcfa77c8.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/fcfa77c8.html" itemprop="url">分布式系统学习——分布式存储与文件系统</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-29T19:41:59+08:00">
+                2020-04-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/" itemprop="url" rel="index">
+                    <span itemprop="name">操作系统</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/分布式系统/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,060
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  4
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="NoSQL"><a href="#NoSQL" class="headerlink" title="NoSQL"></a>NoSQL</h1><p>类型</p>
+<p>列存储</p>
+<p>Hbase、Cassandra、Hypertable</p>
+<p>文档存储</p>
+<p>MongoDB、CoutTree</p>
+<p>调研：</p>
+<p>什么是 NoSQL 生态圈</p>
+<h1 id="分布式存储系统的定义与实现问题"><a href="#分布式存储系统的定义与实现问题" class="headerlink" title="分布式存储系统的定义与实现问题"></a>分布式存储系统的定义与实现问题</h1><ol>
+<li>数据分布：分布均匀？跨服务器读写</li>
+<li>一致性：如何复制多个数据副本并保证不同副本之间的一致性</li>
+<li>容错</li>
+<li>负载均衡</li>
+<li>事务与并发控制</li>
+<li>易用性</li>
+<li>压缩/解压缩</li>
+</ol>
+<h1 id="分布式存储系统分类"><a href="#分布式存储系统分类" class="headerlink" title="分布式存储系统分类"></a>分布式存储系统分类</h1><ol>
+<li>分布式文件系统：存储 Blob 对象、定长块以及大文件<ol>
+<li>Facebook Haystack</li>
+<li>GFS Amazon EBS</li>
+</ol>
+</li>
+<li>分布式键值存储系统</li>
+</ol>
+<p>调研学习：DAS、SAN、NAS</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/fcfa77c8.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/5824281a.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -925,383 +1334,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/85a76ac.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/85a76ac.html" itemprop="url">【LeetCode-16-22】解题报告（模拟，集合）</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-22T19:49:07+08:00">
-                2020-04-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/编程/" itemprop="url" rel="index">
-                    <span itemprop="name">编程</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  631
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  3
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="原始题目"><a href="#原始题目" class="headerlink" title="原始题目"></a>原始题目</h1><p>一只蚂蚁坐在由白色和黑色方格构成的无限网格上。开始时，网格全白，蚂蚁面向右侧。每行走一步，蚂蚁执行以下操作。</p>
-<p>(1) 如果在白色方格上，则翻转方格的颜色，向右(顺时针)转 90 度，并向前移动一个单位。<br>(2) 如果在黑色方格上，则翻转方格的颜色，向左(逆时针方向)转 90 度，并向前移动一个单位。</p>
-<p>编写程序来模拟蚂蚁执行的前 K 个动作，并返回最终的网格。</p>
-<p>网格由数组表示，每个元素是一个字符串，代表网格中的一行，黑色方格由  ‘X’  表示，白色方格由  ‘_‘  表示，蚂蚁所在的位置由  ‘L’, ‘U’, ‘R’, ‘D’  表示，分别表示蚂蚁   左、上、右、下 的朝向。只需要返回能够包含蚂蚁走过的所有方格的最小矩形。</p>
-<h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><p>无需维护整个地图状态，用一个点集合来维护黑色方格，绘图时确定边界为$[min{now,p (p \in S)}, max{now, p (p \in S)}$。</p>
-<p>需要特别注意的是 C++构造输出答案时应用了 <code>vector&lt;string&gt; ans(rows,temp)</code>构造方式，否则超时（逐个 push_back）。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/85a76ac.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/78fc1ccf.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/78fc1ccf.html" itemprop="url">【LeetCode-955】解题报告（暴力，贪心）</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-22T18:57:42+08:00">
-                2020-04-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/编程/" itemprop="url" rel="index">
-                    <span itemprop="name">编程</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  689
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  3
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="原始题目"><a href="#原始题目" class="headerlink" title="原始题目"></a>原始题目</h1><p>给定由  N  个小写字母字符串组成的数组  A，其中每个字符串长度相等。</p>
-<p>选取一个删除索引序列，对于  A  中的每个字符串，删除对应每个索引处的字符。</p>
-<p>比如，有  A = [“abcdef”, “uvwxyz”]，删除索引序列  {0, 2, 3}，删除后  A  为[“bef”, “vyz”]。</p>
-<p>假设，我们选择了一组删除索引  D，那么在执行删除操作之后，最终得到的数组的元素是按 字典序（A[0] &lt;= A[1] &lt;= A[2] … &lt;= A[A.length - 1]）排列的，然后请你返回  D.length  的最小可能值。</p>
-<h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><ol>
-<li><p>裸枚举</p>
-<p>对于每个位置，判断整体是否符合字典序，复杂度$O(WN^{2})$</p>
-</li>
-<li><p>贪心</p>
-<p>对于每个间隔位置，用一个 vis 数组保存前面序列是否出现$A[i-1][j] &lt; A[i][j]$。</p>
-<p>遍历每个位置，不用判断整体字符串，只需考虑新加入的列，结合 vis 数组，如何结合？</p>
-<ul>
-<li>若$vis[i] = 0$，表明之前间隔两边合法字符总是相同字符（反序字符列可以证明被删除），对于当前新加入的列，分三种情况，若出现正序，则更新为$vis[i]=1$；若相等，保持$vis[i]=0$；若出现反序，删除列，保持$vis[i]=0$。</li>
-<li>若$vis[i]=1$，表明之前间隔两边出现至少一次正序，那该间隔无需再考虑，间隔将题目要求分割到不同段的子要求。</li>
-</ul>
-</li>
-</ol>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/78fc1ccf.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1356,7 +1388,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">363</span>
+                  <span class="site-state-item-count">365</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1513,7 +1545,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">441.1k</span>
+    <span title="Site words total count">444.0k</span>
   
 </div>
 

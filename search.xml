@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[ReadingGroup——Cloud-Based-Distributed-Training]]></title>
+    <url>%2Fpost%2F3dd78f6.html</url>
+    <content type="text"><![CDATA[Step 1题目摘要引言基本理论概况结论部分 回答基本问题 类别 内容 正确性 创新点 清晰度 阅读选择 Step 2细读笔记 问题记录未读（且值得读）文献记录 Step 3 思路复现 证明与推理复现 实验验证复现 ReadingGroup 会议Motivation图 PC2：Pytorch/Caffee2 MX：MxNet（） GV：Gradient Compression Enable（梯度压缩） Q：ec2 和 Azure 时可以设置“部署”在同一个机架？好像不能这个拓扑？A：现在提出的就是，提出一种算法，探测这种拓扑。 Inefficiencies in Existing Approaches 拓扑感知 Design and Implementation Idea #1: Two Level Hierarchial Aggregation HA does not reduce the total amount of data transferred on the wire, but create more localized traffic and avoid slow links 为什么选择两级，经验法则选取 Step. 数据转入 buffer，分块，选出 local master Idea #2: Capturing Network Locality with ProbeEmbed(？嵌入) 嵌入到一个欧式空间（优化一个最小值） Grouping nodes $k+\frac{n}{k}$，$k = \sqrt{n}$取最值。 用 K-means 我问的问题：$a$参数是可调的（$a$越大越“推开”） Idea #3：Reacting to Network Changes with Autotune 核心想法：将负载从 bottleneck node 转移走，基于blame（惩罚系数） 惩罚系数构成： $t(i), l(i), B(i)$ Summary PLink 工作包括： Topology-aware Hierarchical aggregation Autotune Limitations： Can’t get enough benefit from finetune The complexity of topology-aware 是 O(n)]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>三步法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[分布式系统学习——SOSP2006亚马逊DynamoKV存储系统]]></title>
+    <url>%2Fpost%2Fefb778b6.html</url>
+    <content type="text"><![CDATA[Step 1题目摘要引言题目Dynamo，Amazon 高高可用性 KV 存储系统 摘要Amazon 作为世界上最大的电子商务公司之一，轻微中断也会有严重的经济后果。由于亚马逊还同时为许多网站提供服务（作为 IaaS 或者 SaaS ），这同时也会影响公司的商业信誉。亚马逊的服务是在位于全球许多数据中心的数万台服务器和网络组件的基础设施上实现的。在这种规模下，大小组件都会持续地产生故障，从而推动了对系统可靠性和扩展性研究。 文章描述了 Dynamo 的设计和实现，Dynamo 是一种高可用的键值存储系统，Amazon 的一些核心服务使用该系统提供“always-on”的体验。为了实现这种级别的可用性，Dynamo 在某些故障场景下牺牲了一致性。 引言Amazon 平台业务需求：性能（performance），可靠性（reliability） ，效率（efficiency） 基本理论概况结论部分 回答基本问题 类别 内容 正确性 创新点 清晰度 阅读选择 Step 2细读笔记 问题记录未读（且值得读）文献记录 Step 3 思路复现 证明与推理复现 实验验证复现]]></content>
+      <categories>
+        <category>操作系统</category>
+        <category>分布式系统</category>
+      </categories>
+      <tags>
+        <tag>三步法</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[《Minecraft诞生纪录片》观后感]]></title>
     <url>%2Fpost%2Fb2053c47.html</url>
     <content type="text"><![CDATA[So, do you have any words of advice to people out there that, you know, trying to become an indie developer?所以你有没有给那些人们一些建议，比如鼓励他们努力成为一个独立开发者？ Notch 的建议 I think that the best advice I can give everyone is, “Don’t listen to advice”, buf if you are going to listen to advice, then making sure you actually do something is good advice. If you just sit around planning something and not doing it, you’re not actually gonna get anywhere.我想给每个人最好的建议是，“不要听他人的建议”，如果你一定要听的话，那么实实在在做事就是好建议。如果你只是坐着空想而不做，那么你什么都不会收获。]]></content>
@@ -26,6 +49,10 @@
     <title><![CDATA[分布式系统学习——OSDI2018PM哈希方案]]></title>
     <url>%2Fpost%2Fa0c7159f.html</url>
     <content type="text"><![CDATA[Step 1题目摘要引言题目为 Persistent Memory 设计的写优化 Hashing Index Scheme 摘要由于 NVM 数据一致性和硬件限制的要求，原来为 DRAM 设计的传统索引技术在 PM 中效率低下。为了有效高效地在 PM 中建立数据索引，本文提出了一种高性能写优化的架构—— level hashing（层级 Hashing）。 level hashing（层级 Hashing）提供了基于共享的两层哈希表。不额外增加 NVM 写操作情况下就降低增删查改操作为常数复杂度。为了以较低开销实现一致性（这个是指什么的一致性？），level hashing 使用无日志（log-free）的一致性方案进行增删和 resize 操作。为了更高效 resize，level hashing 调整了 resize 方案，以 1/3 代替原有整表的代价。 引言NVM 引入，对 DRAM 不足之处的补充，RcRAM，PCM，STT-RAM，3D XPoint。由于 byte-addressable 的优势和接近于 DRAM 的 latency，PM 可以直接与 CPU 通过内存总线相连。 NVM 的劣势:limited endurance and low write performance。 Tree 索引工作概述：传统的方式进行数据索引效率低下，因为没有考虑到数据一致性和 NVM 设备的特性（这部分需要再读引用文献 35，46，58，64，68）。现有的许多工作都对 tree-based 数据索引结构进行研究以适应 PM（这部分仍需再读文章）。 又谈 Hash 索引结构的必要性：与基于 tree 的索引结构不同，基于 hash 的结构式扁平的（相应，空间代价应该要更大一些？），能够实现 O(1)的查找速率（与总量 N 是独立的）。因而 哈希索引结构被广泛应用于主存系统，例如，它们是主内存数据库（27,33,38,65）的基本组件。 ！下面的内容要重点关注，与后面的工作较为相关。 将哈希索引结构应用于 PM 所面临的挑战： High Overhead for Consistency Guarantee.（为保证一致性的高二开销）： Performance Degradation for Reducing Writes.（为减少写操作而导致的性能下滑）： Cost Inefficiency for Resizing Hash Table.（重设哈希表大小的代价效益问题）： 为应对上述挑战，本文所提出的方法： Low-overhead Consistency Guarantee.（低负担的一致性保证） Write-optimized Hash Table Structure. （写优化的哈希表结构 ） Cost-efficient Resizing. （代价效益 Resize） Real Implementation and Evaluation. （实际实现和分析） 基本理论概况结论部分 实现了单机 PM 上高效的哈希方式——level hashing，具备写优化、高性能、低负担的一致性保证与效益更好的 Resize 策略等性质。同时还支持高效的并发 multi-reader 和 multi-writier。 在 DRAM、PM 混合平台上的测试结果： 和最先进的哈希方法对比： 1.4-3.0 倍插入速率 1.2-2.1 倍更新速率 4.3 倍 Resize 调整思虑 保证较高的搜索和删除性能（文章中没有体现出来） 和最先进的并发哈希方法对比： 1.6-2.1 倍吞吐量（throughput） 回答基本问题 类别 基于新型硬件对现有系统进行改良。 内容 暂时没有相关性，应该要补充很多 Tree 结构的文章。 正确性 源码开源在Level-Hashing 创新点 结合 PM 与 Hash Table，着重应对 Resize 地问题提供了解决方案，以小博大，获得了整体性能地提升。如果从 Hash 数据结构做出发点在 PM 上进行实现，这篇文章应该算不错地入门文章。 清晰度 粗略看条理比较清晰， 阅读选择 继续阅读！ Step 2细读笔记 NVM 中的数据一致性必须解决系统故障时易失性器间与非易失性器间间的数据一致性问题。CPU 和内存控制器可能会调整内存的写记录。我们需要使用缓存线路刷新指令（cache line flush instruction）和内存 fence 指令（memory fence instruction）来保证刷出了内存写内容。CFLUSH 和 MFENCE 指令由 Intel x86 指令集提供。 问题记录未读（且值得读）文献记录 现有数据索引低效的引用文献（35，46，58，64，68） tree-based 数据索引结构研究 CDDS B-tree （58） NV-tree （64） wB+-Tree （17） FP-Tree （46） WORT （35） FAST&amp;FAIR （30） Step 3 思路复现 证明与推理复现 实验验证复现]]></content>
+      <categories>
+        <category>操作系统</category>
+        <category>分布式系统</category>
+      </categories>
       <tags>
         <tag>三步法</tag>
       </tags>
@@ -34,6 +61,10 @@
     <title><![CDATA[分布式系统学习——Raft拓展版本论文学习]]></title>
     <url>%2Fpost%2F9e6f1f62.html</url>
     <content type="text"><![CDATA[Step 1题目摘要引言题目寻找一个易于理解的共识算法（拓展版本） 摘要Raft 是解决 log replication management 的分布式共识算法，相当于(multi-)Paxos 效果。为了便于理解，Raft 将共识算法的几个步骤分离开，包括leader 选举、log 复制、安全性。它强调了一致性以减少必须考虑的 states 数量（这个是不是对比 Paxos 说的）。Raft 还包括一个用 overlapping majorities（多数重叠）来改变集群成员的新机制。 引言共识算法允许一组机器在个别成员出现故障时仍能作为一个相关联的群体持续工作。正因为如此，它们在构建可靠的大型软件系统中扮演着重要的角色。Paxos 主导了过去十年关于共识算法的讨论（算法研究、课程教学）。 Paxos 太难理解了，而且为了支持实际系统，它的架构仍要做许多复杂的调整。 Raft 设计初衷就是可理解性：能被实际系统应用且比 Paxos 更易于学习。 Raft 为增强可理解性，在以下方面做出努力： 拆解过程：将leader 选举、log 复制、安全性拆分开。 减少状态空间数：与 Paxos 对比，Raft 降低了不确定性程度（这个不太理解，英文是 nondeterminism）和服务器间出现不一致的方式。 Raft 新颖的特点： Strong leader：与其他共识算法相比，Raft 有一个更“强势”的领导者。比如，log entries 只会从 leader 开始然后影响其他 servers（flow from the leader to other servers）。 Leader election：Raft 使用随机计时器来启动选举过程，这仅需要在现有的 heartbeats（心跳线）机制上增加一点内容，就可以快捷又迅速地解决冲突。 Membership changes：Raft 机制对于改变集群中机器配置使用一种新的方法joint consensus，该方法保证转换过程前后两配置下有一个重叠部分（保证一个 majority 的重叠），这样在配置转换过程中，系统仍可以正常工作。 Raft 有多个开源版本的实现并被应用于实际系统中，教学上得到更好的反馈，其安全性能也得到详细说明和证明。 基本理论概况结论部分 启发：在算法设计过程中，可理解性同正确性、效率和简洁性同样重要。其他几个性质在开发人员将算法应用于实际系统前都无法验证。而缺少可理解性，可能会使得开发人员在实现的过程中产生误解偏离设计者的原有意图（除非开发者对算法有非常深刻的理解并具备将其实现的直觉），这就导致实现很难保证期望的性质。 本问讨论了分布式共识算法的设计问题，提出一个新的算法——Raft，相比原来广为流传的 Paxos 来说，更易于理解，且相信能为系统构建提供更好的途径。在设计途中，我们发现自己不断重复使用一些技术，例如分解问题和简化状态空间。 这些技术不仅提高了 Raft 的可理解性，而且更加容易相信它的正确性。 回答基本问题 类别 基于原有算法进行的新算法设计。 内容 Reading Group 所提到的，结合 Erasure Code 的方案——CRaft。 CRaft 论文 CRaft 阅读笔记 正确性 正确 创新点 可理解性，可理解性。 清晰度 清晰 阅读选择 继续阅读！ Step 2细读笔记 状态机复制共识算法常出现在状态机复制（replicated state machine）上下文中。一组服务器上的状态机计算相同的粗笨，这样即使其中一些服务器宕机，仍能继续工作。状态机复制常用于解决分布式系统的容错问题。 状态机复制常用 replicated log 来实现。每个服务器存储一个包含一系列命令的日志，其状态机按顺序执行这些命令。每个日志以相同的顺序包含相同的命令，因此每个状态机处理相同的命令序列。由于状态机是确定的，所以每个状态机都计算相同的状态和相同的输出序列。 而保证 replicated log 一致就是共识算法的工作。共识模块负责将客户端命令加入日志，并与其他服务器的共识模块通信以保证日志最终以相同的顺序包含相同的请求（same requests in the same order）。当命令被正确地复制，服务器地状态机就会按照日志顺序执行并将结果返回给客户端。 实际系统应用地一致性算法通常有以下特征： 保证 non-Byzantine 条件下的安全性（即只设计以应对 fail stop） 只要保证 majority（绝对多数）的机器是正常且可以通信的，系统就具备完备功能。 不依赖 timing 来保证一致性（这一点以前不清楚，作者解释，在最坏情况下，错误时钟和极端消息可能会导致可用性问题）。 通常情况下，当 majority 都回复了一次远程调用（RPC）时，命令就完成了，minority 的速度较慢的机器不会影响系统的整体性能。 Paxos 的优劣势Leslie Lamport 的 Paxos 协议是该领域近年被讨论最多的。文章中对 Paxos 评价是这样的。 Paxos first defines a protocol capable of reachingagreement on a single decision, such as a single replicatedlog entry. We refer to this subset assingle-decree Paxos.Paxos then combines multiple instances of this protocol tofacilitate a series of decisions such as a log (multi-Paxos).Paxos ensures both safety and liveness, and it supportschanges in cluster membership. Its correctness has beenproven, and it is efficient in the normal case.Paxos 首先定义了一种协议，该协议能够就单个决定达成共识，例如单个复制日志条目。 我们将这个子集称为单命令 Paxos，然后 Paxos 组合了该协议的多个实例以促进一系列决策，例如日志（multi-Paxos）.Paxos 确保安全性和活跃性，并支持集群成员身份的更改。 它的正确性已经被证明，并且在正常情况下是有效的 Unfortunately, Paxos has two significant drawbacks.The first drawback is that Paxos is exceptionally diffi-cult to understand. The full explanation [15] is notori-ously opaque; few people succeed in understanding it, andonly with great effort. As a result, there have been severalattempts to explain Paxos in simpler terms [16, 20, 21].These explanations focus on the single-decree subset, yetthey are still challenging. In an informal survey of atten-dees at NSDI 2012, we found few people who were com-fortable with Paxos, even among seasoned researchers.We struggled with Paxos ourselves; we were not able tounderstand the complete protocol until after reading sev-eral simplified explanations and designing our own alter-native protocol, a process that took almost a year.不幸的是，Paxos 有两个明显的缺点。第一个缺点是 Paxos 非常难以理解。 完整的解释[15]非常模糊，只有很少的人能够成功地理解它。 结果，有几种尝试用较简单的术语来解释 Paxos [16，20，21]。这些解释集中在单法则子集上，但它们仍然具有挑战性。 在 NSDI 2012 上对与会者的非正式调查中，我们发现很少有人对 Paxos 感到满意，即使是经验丰富的研究人员也是如此。 在阅读了一些简化的说明并设计了我们自己的替代协议后，我们才了解完整的协议，这一过程耗时近一年。 We hypothesize that Paxos’ opaqueness derives fromits choice of the single-decree subset as its foundation.Single-decree Paxos is dense and subtle: it is divided intotwo stages that do not have simple intuitive explanationsand cannot be understood independently. Because of this,it is difficult to develop intuitions about why the single-decree protocol works. The composition rules for multi-Paxos add significant additional complexity and subtlety.We believe that the overall problem of reaching consensuson multiple decisions (i.e., a log instead of a single entry)can be decomposed in other ways that are more direct andobvious.我们假设 Paxos 的不透明性源于它对单法则子集的选择的基础。单法则 Paxos 是密集而微妙的：它分为两个阶段，没有简单的直观解释，无法独立理解。 因此，难以理解单法令协议为何起作用的直觉。 多 Paxos 的组成规则增加了许多额外的复杂性和微妙之处。我们认为，可以通过其他更直接和明显的方式来分解在多个决策（即对数而不是单个条目）上达成共识的总体问题。 The second problem with Paxos is that it does not pro-vide a good foundation for building practical implemen-tations. One reason is that there is no widely agreed-upon algorithm for multi-Paxos. Lamport s descriptionsare mostly about single-decree Paxos; he sketched possi-ble approaches to multi-Paxos, but many details are miss-ing. There have been several attempts to flesh out and op-timize Paxos, such as [26], [39], and [13], but these differ2 from each other and from Lamport s sketches.Systems such as Chubby [4] have implemented Paxos-like algo-rithms, but in most cases their details have not been pub-lished.Paxos 的第二个问题是，它没有为构建实际实现提供良好的基础。一个原因是，对于 multi-Paxos，还没有得到广泛认可的算法。Lamport 的描述大多是关于单一法令的 Paxos;他概述了多 paxos 可能的方法，但是很多细节都被遗漏了。已经有一些尝试来充实和调整 Paxos，如[26]、[39]和[13]，但它们彼此不同，也不同于 Lamport 的草图。像 Chubby[4]这样的系统已经实现了类似 paxos 的算法，但它们的很多细节还没有公开。 single-decree decomposition 的另一个结果是 Paxos 难以用于构建实际系统。详细解释还是看文章吧。 因此，实际系统与 Paxos 几乎没有相似之处，都从 Paxos 开始，讲述实现的困难，然后发展出完全不同的体系结构。Chubby 的实现者对 Paxos 的评价很典型： There are significant gaps between the description ofthe Paxos algorithm and the needs of a real-worldsystem. . . . the final system will be based on an un-proven protocol Designing for understandability在 Raft 设计过程中存在许多要做取舍的点，取舍基于可理解性。设计者总是在想如何能使读者完全理解设计方法和实现。 这种“方便理解”的设计是主观的，不过提出了两种普遍使用的技术：过程拆解、简化状态机状态。 The Raft consensus algorithm算法主体部分。 图 2（也就是 6.824 课程教授提到的要特别注意的图）提供了简化版算法以供参考。 图 3 列出了算法的核心性质。 文章拆分成四个模块来介绍 Step 2 阅读中着重理解一下各部分的介绍，对 Safety 证明部分粗略浏览下，放在 Step 3 中进一步阅读。 Raft basics每个 server 的三种状态：leader，follower，candidate。系统保证正常情况下只有一个 Leader，在这个架构下。Leader is strong and followers are passive.。Leader 负责处理所有客户端请求并展开 replication，而 follower 不会自发启动任何请求，只会被动应答 candidate 和 leader。Candidate（候选者）是用来进行 leader 选举时的状态。如图 4 所示。 Raft 将时间划分为不同长短的 term（任期），用连续整数来标识，每届任期都从一次选举开始。若选票分裂，没有选出 leader，则任期以无 leader 情况结束，并且会在稍后启动新的一轮选举（random time）。如图 5 所示。 在一些情况下（比如网络中断、延迟、隔离），server 可能会观察不到选举过程甚至整个任期。Term 在 Raft 中像一个逻辑时钟（没错，Lamport 他又来了）。currentTerm在每台机器上都会被持久化维护。服务器间的交流（比如选举信息或是指令执行），类似 Lamport 逻辑时钟的事件（自增原则要看后面的实现细节）。如果一个服务器的 currentterm 比另一个服务器的 currentterm 小，那么它将其 currentterm 更新为更大的值。如果一个候选人或领导发现他的任期已经过期，它立即恢复到 follower 状态。如果服务器收到一个过去任期的请求，它将拒绝该请求。 Raft 机器间交流通过 RPC 实现，仅需要两种类型的 RPC，后续章节添加了一种 RPC 用来传递快照。 RequestVote PRCs：由 candidates 发起用于选举（在 Leader election 一节中着重介绍）。 AppendEntries RPCs：由 leaders 发起，以 heartbeat 形式提供 replicate log 的功能。 Leader election主体过程描述如下 以 follower 身份启动，如果能持续收到来自 candidate 和 leader 的消息，follower 身份会维持。 在丢失通信达到一定时间（election timeout）后，follower 会开始启动一次选举。 follower 增加它的 currentTerm 值并转换到 candidate 状态。 为自己投票同时并行启动 RequestVote RPCs 访问集群内其他机器。 candidate 维持其身份直至 赢得选举 得到 majority 的选票 转换为 leader 身份并开始发送心跳线信息 其他机器赢得选举 比较 AppendEntries RPC 中 term 与 currentTerm 的大小，RPC 中任期大于等于自身任期，则转变为 follower。 否则拒绝 RPC 请求，保持 candidate 身份。 一段时间后发现没有人赢得选举 多个 candidate 发起选举导致选票分裂无人当选 每个 candidate 经过一小段时间后重启选举 没有其他措施保证时，选票分裂可能重复。（改进：再下次选举前加入 150-300ms 的随机延时） 从可理解性角度抉择：设计者对算法进行了多次调整、包括 rank candidate 形式，每次调整后都会出现新的情况。最后得到的结论，随机重试的方法更明显和可理解。 Log replication图 6 显示日志的组织情况。 选出 leader 后，leader 与客户端进行通信，接受并反馈客户端请求。 leader 持续向其他机器并行发送 AppendEntries RPCs，维持身份同时拷贝 entry（但不执行）。 leader 决定什么时间可以commited entry（提交），即使集群机器可以执行 entry。 条件：当 leader 创建的 entry 被 replicated 到绝对多数的机器。 leader 持续跟踪要进行 commit（已经建立好）的最大的 log index，并将该索引包含在后续的 AppendEntries RPCs 中，以便其他机器最终发现。 follower 获知 entry 被 commited，便在本地执行该日志。 Raft 保持下面的重要性质，他们共同构成图 3 的（Log Matching）： 两份日志中的 entry 块，若具有相同的 log index 和 term，则储存相同命令。 两份日志中的 entry 块，若具有相同的 log index 和 term，则在之前的日志记录都是相同的。 正常情况下，leader 和 follower 间的日志都是一致的，但是如果发生 crash，会出现各种不一致的情况（多出未 commit 的 entry 块、缺少块、历史块产生冲突）。 在 Raft 中，leader 强迫 follower 遵循自己的日志记录，也即冲突覆盖。 后面 Safty 小节将说明，再加上一个限制条件，这是安全的。 为了进行覆盖，leader 需要找到和 follower 达成一致的最近 entry，并删除之后所有的 entries。leader 未每个 follower 维护一个nextIndex，标明下一个该传送的 log entry。当一个 leader 刚被选举上台时，他初始化全部 follower 的nextIndex为 leader 最后一个 log+1。如果 follower 与 leader 的日志不一致，AppendEntries RPC 中的一致性检查失败，然后 leader 递减nextIndex的值再次发送 AppendEntries RPC 请求，直至找到能 match 的日志位置。然后如上述，删除后递增nextIndex持续进行请求。 优化 AppendEntries 交互的方法 当 AppendEntries 失败时，follower 可以知道冲突块所在的 term，以及该 term 第一个块。这样nextIndex一次可以减去该 term 冲突块的数。（作者质疑这种优化的必要性，理由是 failure 并非那么频繁，不会出现大量需要小步修正的 entries） 这种 log replication 机制，对于新选出的 leader，无需额外操作既可以保证集群中日志记录逐渐收敛，并且满足 leader 不重写自己日志的性质。同时只要绝对多数的机器正常运转，一轮 RPCs 就可以将新的 entry 复制到机器上，少数故障不会影响系统表现。 Safety到目前为止所描述的机制还不足以确保每个状态机以同样的顺序执行完全相同的命令，增加一些限制。 选举限制 个人理解：鸽巢定理的应用 Raft 使用一个简单的机制保证先前任期 leader 的所有 commited entries 会存在在新选举的 leader 上。这样就保证了日志流是单向的（leader 到 followers）。 一个 entry 想要被 commited 要得到majority的机器的回应，而一个 candidate 必须联系集群中的majority才能当选，根据鸽巢定理，每条 commited entry 必须至少出现在 candidate 联系的机器中的一台上，如下图所示。 Raft 按如下方式定义日志的新旧： 不同 term，则越后面的 term 越新（逻辑时钟） 相同 term，越长的 log 越新 提交先前任期的 entry 对于前一任期 replicate 但是未 commit 的 entry，现在任期的新 leader 在继续 replicate 时无法第一时间意识到达到绝对多数（从而有可能延迟或者忽略到该 commit 的 entry，而被后续任期的 entry 覆盖），如下图所示。 Raft 要求 leader 在 replicate 先前任期中的 entry 时，保留其原有的 term（在其他一些共识算法中，leader 必须使用新的 term 编号来进行复制。）为了避免图中的问题，Raft不会根据副本计数来提交过去任期的 entry，只会根据计数提交当前任期内的 entry。（交现在不交过去） 安全性争论 反证法证明 Leader Completeness Property 过程 Pass，见第三部分。 根据 Leader Completeness Property，可以证明 State Machine Property。 证明 Pass，见第三部分。 Follower and candidate crashes先前讨论的是 leader 出状况，实际上 follower 和 candidate 的崩溃情况要简单些。 follower 或 candidate 崩溃，leader 持续发送 AppendEntries RPCs 重连时 RPC 会连通 若 follower 或 candidate 接受到 RPC 但是在返回结果前崩溃，那么重连时会收到相同的 RPC，因为 Raft RPC 是幂等的，所以无影响。 Timing and availablilityRaft 设计要求，系统安全性不依赖于时间，不会因事件过快/过慢导致错误结果。但还是有些地方肯定存在时间限制。 Leader election 过程时间要求。 broadcastTime \ll electionTimeout \ll MTBF broadcastTime：并行发送 RPCs 到各个机器并收到回复的平均时间。 electionTimeout：前面描述的判定一轮选举的 timeout MTBF：单个机器故障间隙的平均时间。 分析，Pass，详情见第三节。大致理解，不能太频繁重设 leader，但又要保证真正故障时系统不会长时间停滞。 问题记录未读（且值得读）文献记录 Lamport 发明 Paxos 的前前后后 The Part-Time Parliament ── Lamport 于 1998 年发表在 ACM Transactions on Computer Systems 注：这是该算法第一次公开发表。 Paxos made simple 注：Lamport 觉得同行无法接受他的幽默感，于是用容易接受的方法重新表述了一遍。 Google Spanner Step 3 思路复现 证明与推理复现 实验验证复现]]></content>
+      <categories>
+        <category>操作系统</category>
+        <category>分布式系统</category>
+      </categories>
       <tags>
         <tag>三步法</tag>
       </tags>
@@ -41,7 +72,7 @@
   <entry>
     <title><![CDATA[多媒体原理与系统——期末复习知识点汇总]]></title>
     <url>%2Fpost%2Fc66fbeaf.html</url>
-    <content type="text"><![CDATA[绪论前言研究方向 图象语义分析 语音识别和合成 多摄像机视频协同系统 图象视频合成 对象视频和成 对象检测跟踪 图象视频检索 新型音视频编解码技术 沉浸式显示关键技术（VR 虚拟空间、AR 真实与虚拟互动） 多媒体内容和传输安全 数字音频基础主要，参考手写笔记章节这里先不细致复习。 将模拟音频转换成数字音频留意 PCM，DM，ADPCM，自适应差分脉冲编码调制 ADPCM 的步骤。 音频格式文件CD-Audio、WAVE、MPEG Audio 家族、MIDI（描述一系列指令而非音乐本出身）、WMA 音频压缩的原理编程环境与平台COM 组件与应用 组件：组件(或软件组件)是指构建软件系统的基础性单元或模块，它封装了特定的设计策略，通过标准化、可重用和开放的接口与其它组件进行组合，以便构建完整的应用系统。 可扩展性：可以方便的将应用系统扩展到网络环境下 跨平台性：与语言和平台无关的特性使所有的程序员均可充分发挥自己的才智和专长编写组件模块。 COM 组件对象和接口 多媒体应用设计的主要特点 流数据，数据量大，存储和传输的高效性 音频流 视频流 实时性：视频跟踪；不能做迟来大师 同步性 视频与音频的同步 字幕与图象的同步 自适应性和鲁棒性 数据格式复杂 应用环境复杂（终端设备型号多、失效情况等） Microsoft Media FoundationMF 介绍相关 基本组成元素概念和用途、MF 的编程模式、数据管道模式 波形文件分析波形音频文件的概念波形音频文件是存储数字音频样本(samples)序列的格式文件，这些样本直接记录了音频的波形，故称波形音频文件。波形音频文件为音频数据处理提供了最基本的数据源。MIDI 音频和 MP3 等各类压缩格式的音频文件最终都要转换成波形音频才能应用。 WAVE 文件结构WAVE 文件是使用最广泛的声波音频文件，它遵从 RIFF(ResourceInterchangeFileFormat)格式标准。WAVE 文件的头四个字节是“RIFF”。WAVE 文件由若干个块(Chunk)组成。按照在文件中出现的先后顺序，一般有四个块，即 RIFF WAVE Chunk，Format Chunk，Fact Chunk(可选)，Data Chunk。 详细文件结构参见 PPT，需要注意的是，RIFF WAVE Chunk 中的 Size 是 FileLeb-8。Data Chunk 中的 Size 是真正数据部分的 Size。 无损数据（编码）压缩算法这部分有手写笔记 数据（编码）压缩基础 编码：将携带信息的一种符号序列按照一定规则映射成另一种符号序列的变换。根据信源的统计特性进行。 目的：去冗余，压缩信源剩余度，提高传输消息的有效性，把消息变成适合信道传输的信号。 分类：有损编码、无损编码 数学模型：见 PPT 熵编码讲解算术编码讲解行程编码讲解数字图象基础数字图像基本概念 图像 时空中各个坐标点的颜色值（强度）集合。 3 维动态图像 $I= f(x,y,z,t)$ 3 维度静止图像 $I = f(x,y,z)$ 2 维动态图像$I = f(x,y,t)$ 2 维静止图像 $I = f(x,y)$ 数字图像 如何从图像到数字图像？ 从图像到数字图像 采样（扫描），行采样+列采样 图像分辨率（resolution）：正式用法：单位面积或长度上像素的个数。习惯用法：图像在水平和垂直方向上的像素数的乘积。 上采样（提高分辨率，放大图像，从而可以显示在更高分辨率的显示设备上。） 下采样（缩小图像大小）。 量化：像素的位深度，量化等级越多，图像层次越丰富，图像质量好，但数据量大；量化等级越少。 颜色 亮度 指色光的明暗程度，由色光所含的能量决定。光源色光的亮度正比于它的光通量(光功率)；物体色光的亮度正比于各点反射光的光通量，由光源亮度和物体光反射能力共同决定。 色调 指颜色的类别，如通常所说的红色、绿色、蓝色、品红、青色等色调。光源的色调由其光谱分布（光频率）决定；物体的色调由照射光源的光谱和物体本身反射特性共同决定。（例如蓝布在日光照射下，只反射蓝光而吸收其它成分。如果分别在红光，黄光或绿光的照射下，它会呈现黑色。） 饱和度 指色调的深浅程度。各种单色光饱和度最高。单色光中掺入的白光愈多，饱和度愈低，白光占绝大部分时，饱和度接近于零，白光的饱和度等于零。物体色调的饱和度决定于该物体表面反射光谱辐射的选择性程度，物体对光谱某一较窄波段（颜色）的反射率越高，而对其它波长的反射率越低或不反射，则物体的该颜色饱和度就越高。 色彩模型 RGB 模型 用红、绿、蓝三种基本颜色表示其他颜色的模型。红、绿、蓝原色是加性原色，不同量原色混合在一起可以产生不同的复合颜色。 RGBA 模型 在 RGB 的扩展；增加一个 Alpha 通道，表示透明度。如果一个颜色值的 Alpha 通道值为 0，则该颜色是完全透明的(该颜色看不见)；Alpha 通道值为 1，则该颜色完全不透明(只看到该颜色)，这个时候 RGBA 退化为 RGB。 CMY 空间和 CMYK 模型 是用物质吸收光的数量（反射）表示色彩的方式，即通过青(C)、品红(M)、黄(Y)三原色颜料混合表示颜色，称为 CMY 颜色空间。理论上 CMY 空间中，混合青(C)、品(M)、黄(Y)三原色时理论上会得到黑色；实际应用由于工艺问题是暗红色，所以额外引入纯黑(K，不是 B!)，得到 CMYK 模型，应用于实际的印刷工业。 对比 RGB 模型：RGB 中，当红、绿、蓝三原色混合时，产生白色，这种叫加色模型。青、品、黄混合时，产生黑色，这种叫减色模型。 一般电脑屏（光源）RGB 模型；印刷品（反射源）CMYK 模型 像素色彩格式 二值图像与灰度图像 彩色图像 真彩图像 伪彩图像 数字图象存储方式 真彩图像像素的存储格式 RGB888 BGR（低地址-&gt;高地址） RGB8888 BGRX（X为保留或表示透明度，低地址-&gt;高地址） BMP 图像格式GIF 图像格式]]></content>
+    <content type="text"><![CDATA[绪论前言研究方向 图象语义分析 语音识别和合成 多摄像机视频协同系统 图象视频合成 对象视频和成 对象检测跟踪 图象视频检索 新型音视频编解码技术 沉浸式显示关键技术（VR 虚拟空间、AR 真实与虚拟互动） 多媒体内容和传输安全 数字音频基础主要，参考手写笔记章节这里先不细致复习。 将模拟音频转换成数字音频留意 PCM，DM，ADPCM，自适应差分脉冲编码调制 ADPCM 的步骤。 音频格式文件CD-Audio、WAVE、MPEG Audio 家族、MIDI（描述一系列指令而非音乐本出身）、WMA 音频压缩的原理编程环境与平台COM 组件与应用 组件：组件(或软件组件)是指构建软件系统的基础性单元或模块，它封装了特定的设计策略，通过标准化、可重用和开放的接口与其它组件进行组合，以便构建完整的应用系统。 可扩展性：可以方便的将应用系统扩展到网络环境下 跨平台性：与语言和平台无关的特性使所有的程序员均可充分发挥自己的才智和专长编写组件模块。 COM 组件对象和接口 多媒体应用设计的主要特点 流数据，数据量大，存储和传输的高效性 音频流 视频流 实时性：视频跟踪；不能做迟来大师 同步性 视频与音频的同步 字幕与图象的同步 自适应性和鲁棒性 数据格式复杂 应用环境复杂（终端设备型号多、失效情况等） Microsoft Media FoundationMF 介绍相关 基本组成元素概念和用途、MF 的编程模式、数据管道模式 波形文件分析波形音频文件的概念波形音频文件是存储数字音频样本(samples)序列的格式文件，这些样本直接记录了音频的波形，故称波形音频文件。波形音频文件为音频数据处理提供了最基本的数据源。MIDI 音频和 MP3 等各类压缩格式的音频文件最终都要转换成波形音频才能应用。 WAVE 文件结构WAVE 文件是使用最广泛的声波音频文件，它遵从 RIFF(ResourceInterchangeFileFormat)格式标准。WAVE 文件的头四个字节是“RIFF”。WAVE 文件由若干个块(Chunk)组成。按照在文件中出现的先后顺序，一般有四个块，即 RIFF WAVE Chunk，Format Chunk，Fact Chunk(可选)，Data Chunk。 详细文件结构参见 PPT，需要注意的是，RIFF WAVE Chunk 中的 Size 是 FileLeb-8。Data Chunk 中的 Size 是真正数据部分的 Size。 无损数据（编码）压缩算法这部分有手写笔记 数据（编码）压缩基础 编码：将携带信息的一种符号序列按照一定规则映射成另一种符号序列的变换。根据信源的统计特性进行。 目的：去冗余，压缩信源剩余度，提高传输消息的有效性，把消息变成适合信道传输的信号。 分类：有损编码、无损编码 数学模型：见 PPT 熵编码讲解算术编码讲解行程编码讲解数字图象基础数字图像基本概念 图像 时空中各个坐标点的颜色值（强度）集合。 3 维动态图像 $I= f(x,y,z,t)$ 3 维度静止图像 $I = f(x,y,z)$ 2 维动态图像$I = f(x,y,t)$ 2 维静止图像 $I = f(x,y)$ 数字图像 如何从图像到数字图像？ 从图像到数字图像 采样（扫描），行采样+列采样 图像分辨率（resolution）：正式用法：单位面积或长度上像素的个数。习惯用法：图像在水平和垂直方向上的像素数的乘积。 上采样（提高分辨率，放大图像，从而可以显示在更高分辨率的显示设备上。） 下采样（缩小图像大小）。 量化：像素的位深度，量化等级越多，图像层次越丰富，图像质量好，但数据量大；量化等级越少。 颜色 亮度 指色光的明暗程度，由色光所含的能量决定。光源色光的亮度正比于它的光通量(光功率)；物体色光的亮度正比于各点反射光的光通量，由光源亮度和物体光反射能力共同决定。 色调 指颜色的类别，如通常所说的红色、绿色、蓝色、品红、青色等色调。光源的色调由其光谱分布（光频率）决定；物体的色调由照射光源的光谱和物体本身反射特性共同决定。（例如蓝布在日光照射下，只反射蓝光而吸收其它成分。如果分别在红光，黄光或绿光的照射下，它会呈现黑色。） 饱和度 指色调的深浅程度。各种单色光饱和度最高。单色光中掺入的白光愈多，饱和度愈低，白光占绝大部分时，饱和度接近于零，白光的饱和度等于零。物体色调的饱和度决定于该物体表面反射光谱辐射的选择性程度，物体对光谱某一较窄波段（颜色）的反射率越高，而对其它波长的反射率越低或不反射，则物体的该颜色饱和度就越高。 色彩模型 RGB 模型 用红、绿、蓝三种基本颜色表示其他颜色的模型。红、绿、蓝原色是加性原色，不同量原色混合在一起可以产生不同的复合颜色。 RGBA 模型 在 RGB 的扩展；增加一个 Alpha 通道，表示透明度。如果一个颜色值的 Alpha 通道值为 0，则该颜色是完全透明的(该颜色看不见)；Alpha 通道值为 1，则该颜色完全不透明(只看到该颜色)，这个时候 RGBA 退化为 RGB。 CMY 空间和 CMYK 模型 是用物质吸收光的数量（反射）表示色彩的方式，即通过青(C)、品红(M)、黄(Y)三原色颜料混合表示颜色，称为 CMY 颜色空间。理论上 CMY 空间中，混合青(C)、品(M)、黄(Y)三原色时理论上会得到黑色；实际应用由于工艺问题是暗红色，所以额外引入纯黑(K，不是 B!)，得到 CMYK 模型，应用于实际的印刷工业。 对比 RGB 模型：RGB 中，当红、绿、蓝三原色混合时，产生白色，这种叫加色模型。青、品、黄混合时，产生黑色，这种叫减色模型。 一般电脑屏（光源）RGB 模型；印刷品（反射源）CMYK 模型 像素色彩格式 二值图像与灰度图像 彩色图像 真彩图像 伪彩图像 数字图象存储方式 真彩图像像素的存储格式 RGB888 BGR（低地址-&gt;高地址） RGB8888 BGRX（X 为保留或表示透明度，低地址-&gt;高地址） BMP 图像格式GIF 图像格式图像处理与应用程序设计未加入章节标题 数字视频基础未加入章节标题 视频应用程序设计未加入章节标题 数字视频编码原理与标准未加入章节标题 网络多媒体基础网络多媒体的概念 计算机网络 概念：计算机网络是以信息传输、资源共享为目标，通过通信线路连接起来的自治计算机系统的集合。 分类： 视角一（网络覆盖范围）：以网络大小为标准，即根据网络的覆盖范围与规模来进行分类,将计算机网络分为个域网 、局域网、城域网和广域网 4 种类型。 视角二（传输技术）： 按照网络使用的传输技术来分，可以把计算机网络分为广播类型的网络和点到点类型的网络。 构成：计算机网络是一种信息基础设施，它的技术焦点是网络体系结构，包括协议分层模型、协议的数据报文格式、网络节点地址与名称管理、路由算法、数据传输及其管理等。 体系结构（computer network architecture）：指网络的技术构成方式，核心内容是网络协议及其分层模型。 分布式系统 概念：分布式系统是指以计算机网络为基础，由部署在连网的计算机上的程序或组件，通过传递消息进行通信并协同工作的软件系统。这个定义涵盖了所有可有效部署在连网计算机上的软件系统。 计算机网络与分布式系统 区分：计算机网络和分布式系统是两个容易混淆的概念。我们已经阐明，计算机网络是一种信息基础设施，它的焦点是网络体系结构。而分布式系统则关注组件的协同工作和应用。 网络多媒体 概念：泛指一切与多媒体相关的网络技术。例如，多媒体传输协议、流媒体技术等等。 分布式多媒体系统 概念：是指以传输和应用多媒体信息为目标的分布式系统，典型代表。视频会议、互联网电话、交互式电视、远程教育、远程医疗、网络视频监控、网络游戏等 特点： 1. 多媒体应用程序通常是高度分布的：并且在通用的分布式计算环境中使用。与其他分布式应用程序竞争网络带宽和计算资源。 2. 多媒体应用程序对资源的需求是动态的：分布式多媒体应用可能还涉及其他间歇性负载，需要赋予系统高可用性和良好的可伸缩性。 3. 多媒体数据是连续的和基于时间的：所谓连续的和基于时间的特性，是指多媒体 数据内部的一种前后关联性，其比特或数据块之间服从严格的先后顺序。流用于描述这种时序关系的既形象又确定的一个概念。所谓数据流就是基于时序的连续数据。媒体应用程序在处理这种连续数据的时候需要特别注意保持数据的时序关系。 挑战： 异构网络与随机性：建立在异构物理网络和 IP 协议基础上的互联网，是一个不保证服务质量的基础结构，它的传输延时、带宽和丢包率具有随机性。 服务质量 QoS：带宽（bandwidth）、延时（delay）和丢包率（lost rate）3 个主要参数 多媒体的传输研究方向 第一个研究方向：针对网络的异构性和不确定性，着眼多媒体数据本身的特点，在信源端采用分层的可伸缩性编码，通过多种速率来传输不同质量的多媒体数据，从而适应传输链路、交换节点和接受终端的异构性。 第二个研究方向：是从网络技术本身着手，对现有网络模型和基础结构进行改进，例如，提高网络传输带宽、增强路由器等交换设备的能力、提供资源预留与组播服务等。 第三个研究方向：是分布式多媒体系统本身的体系结构，例如基于中心服务器的体系结构有助于简化数据管理，但存在较高的延时，而对等模型（即 p2p 网络模型）则有助于提高系统的可伸缩性，但管理复杂。 组播技术 网络传播方式：网络有 3 种传输方式：这就是广播（broadcast）、单播（unicast）和多播（组播，multicast） 广播：广播意味着源端向子网的每一个主机都传送同样的数据包，无论这些主机是否乐意接收这些数据包。 单播：单播是指在发送者和接收者之间实现的点对点传输. 如果发送者同时给多个接收者传输相同的数据，它必须通过多个连接来发送复制的数据包 组播：后面详细阐述组播 组播概念： 组播是指将源端的数据传送给一组特定接收者的传输方式。 网络组播：是指通过网络交换设备（路由器）建立一种树状分发结构所实现的组传输。组播大大减轻了源主机的负担，因为源端只需要发送一个数据流；也能够显著降低网络通信量。 应用：广泛应用于一对多（one-to-many）的传输 新闻/体育/股票/天气信息的更新发布 远程教育(Distance Learning) 网络路由信息更新(routing updates) 远程会议(Teleconferencing) 分布式交互式游戏和仿真 内容发布(Content distribution) Web 缓存更新(Web-cache updates) 数据库应用(Database replication) 用户模型群组关系管理协议路由协议]]></content>
       <categories>
         <category>多媒体</category>
       </categories>
@@ -65,6 +96,9 @@
     <title><![CDATA[ReadingGroup——Building-An-Elastic-Query-Engine]]></title>
     <url>%2Fpost%2Ffa2bcc39.html</url>
     <content type="text"><![CDATA[Step 1题目摘要引言题目SQL，的 Query 引擎，分布式存储器。 摘要Snowflake，一个 cloud-based 数据仓库系统，提供最先进的数据库系统 SQL 支持。设计目标有如下三个 计算和存储弹性 支持 multi-tenancy（多租户，单一软件程序为多个客户的架构） 高性能 本文说明了 Snowflake 的设计和实现。给出云基础设施最近的发展对 Snowflake 设计与优化的影响。通过在执行大量查询过程中，收集到的系统各组件大量数据中，加深对现有问题的理解并突出新的研究挑战（包括存储系统设计，高性能查询执行引擎）。 引言无共享架构：persistent data 被划分到多个计算节点，计算节点只对本地数据负责，不会进行共享。缺点与代价 Hardware-workload mismatch：硬件与工作流失配，无法针对计算节点的适合情况匹配合适的 workload（compute-extensive bandwith-light 还是 compute-light bandwith-extensive） Lack of Elasticity：静态并行（static parallelism）和数据分区是（非弹性）无共享架构固有的，这限制了对数据和 time-varying workload 的适应。此外无共享架构也不支持节点的增删的弹性，因为一旦涉及此过程，数据需要 reshuffle，增大带宽压力同时反而降低性能，因为参与数据 reshuffle 的节点同时还负责查询过程。 传统数据仓库被设计用来进行可预测容量、速率的数据的查询（主要来自内部）。现在越来越多不可预测的来自外部的数据（应有程序日志、社交媒体、Web 应用程序）导致了不可预测的 query workloads。无共享架构应对此类效率较低。 SnowFlake：把计算和存储节点区分开。数据存储在提供高可用性和按需弹性分配的持久化数据仓库中（Amazon S3、Azure Blob Storage）。计算弹性使用预先预热（pre-warmed）节点，可以按需分配给用户。 Snowflake 有两个核心而后设计思想 定制设计的临时存储系统：管理临时/中间数据，在查询执行中与计算节点交换。必要性由于现有持久性存储的局限性： 无法提供必要的 latency 和 throughput 性能?（原因不大理解，为了避免计算任务称为瓶颈） 提供更强的可用性和持久性语义。 临时存储系统充当持久化数据的“缓存”： 未来可能感兴趣的研究方向： Decoupling of compute and ephemeral storage（计算和临时存储解耦） Deep storage hierarchy（深存储层次） 系统应用发现： 只读，只写，读写查询分别占比：~28%、~13%、~59% 中间数据在不同查询中可能有数量级的差距，却对实际查询的持久化数据量、时间基本没有什么影响。 少量的本地存储容量，skewed access distributions 与 temporal patterns 可以为持久化数据访问提供相当高的缓存命中率：60-80% 部分用户使用到弹性支持。 峰值资源利用率很高，但平均资源利用率地行低下（极差大） 基本理论概况结论部分提供实操 Snowflake 数据仓库的经验，覆盖了设计实现概念中最终更关键的几个部分，实现计算和存储的弹性，以及实现多租户架构下的高性能。在 14 天内执行的 70 million 查询中，我们研究发现一些现有设计的缺点。 回答基本问题 类别 内容 正确性 创新点 清晰度 阅读选择 Step 2细读笔记 问题记录未读（且值得读）文献记录 关于作者提到计算-存储 disaggregation，原理上的内容再看。 [P. X. Gao, A. Narayan, S. Karandikar, J. Carreira, S. Han,R. Agarwal, S. Ratnasamy, and S. Shenker. Networkrequirements for resource disaggregation. InOSDI,2016] [J. Gu, Y. Lee, Y. Zhang, M. Chowdhury, and K. G. Shin.Efficient memory disaggregation with infiniswap. InNSDI, 2017] Step 3 思路复现 证明与推理复现 实验验证复现 ReadingGroup 会议Introduction 什么是 Query Engine？ 右边流程图 本文主要关注数据储存部分。 Store what Persistent data Long-live Intermediate data Short-live Metadata Shared-nothing architecture 优势 劣势 中间数据 Hardware-workload mismatch（较低的资源利用） 弹性缺失 SolutionSnowflake 总览 Centralized Control Compute Part Local Ephemeral Storage（中间存储） Remote Persistant Storage（持久化存储） 实现细节Ephemeral Storage System 为什么要做这个？中间数据需要更低延迟更高的吞吐，Amazon S3 不支持。 Idea 1: Spill from mem to local SSD Spill from local SSD to remote S3 Motivation: Why not only mem? Why not spill to ohters? 不用跟踪 间接性 Idea 2: Caching persistent data Motivation S3 太慢了 中间数据短寿命且 size varies Peak Hith Average LOW 内存和 SSD 可以更好的优化 Workload 一定的局部性 How：（不同的策略） Consistent hashing Write-through LRU Caching Persistent Data Strategy 1：Consistent hashing 基于一致性哈希的想法。 Strategy 2：Work stealing 一致性哈希对于静态，ok？ Strategy 3：Lazy consistent hashing 新添加一个 N6，Task6 转向 N6，N1 不用移动到 N6， Cache 的效果 见图 Future Directions 将中间数据和 ephemeral storage 对应起来。 端到端的性能表现 中间数据的吞吐量 Caching data 的命中率 Caching hierarchy Existing caching mechanisms are designed for 2-tier： Mem to SSD Task Scheduling： 一个极端：co-locate the tasks with the files（current） 另一个极端：locate the tasks in a single node 有兴趣去找最优的方案。 Elasticity 粒度太不匹配了（query 的变化和虚拟性）。 李：感觉完全不能匹配，除非 serverless serverless： Other Problems资源： 价格：由租用机器时间转化为流量（或者启动时间）。 挑战：保证隔离性的情况下，多用户使用多机子的性能——Trade Off 目标：]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
       <tags>
         <tag>三步法</tag>
       </tags>
@@ -132,7 +166,7 @@
   <entry>
     <title><![CDATA[分布式系统学习——NVM相关资料整理]]></title>
     <url>%2Fpost%2F7bd1e0d9.html</url>
-    <content type="text"><![CDATA[存储器 - 金字塔层次结构介绍 Non-volatile memory - Wikipedia Persistant memory fsBetter I/O Through Byte-Addressable, Persistent Memory 问题：原来的存储系统都是基于慢的，块设备接口。但是新的存储介质是基于字节，永久性存储技术，提供快的，细粒度的访问。 设计新的 FS 和硬件结构，适应字节寻址和可持久性。 应用非易失性内存在阿里生产环境的首次应用：Tair NVM 最佳实践总结 构建在缓存场景，作为 DRAM 的补充。 使用方式 Tair MDB 使用 NVM 设备的方式，是把 NVM 以块设备的形式使用 Pmem-Aware File System 挂载（DAX 挂载模式）。分配 NVM 空间对应的操作是在对应的文件系统路径上创建并打开文件，使用 posix_fallocate 分配空间。 会议笔记PM 的使用方式 Memory 使用 Persistent Storage 使用（一般） Persistant Memory 使用 需要再查的事情 Persistent Memory 完全替代（几乎完全） 失去了 log 的功能 DRAM 和 Persist Memory 还存在 log 功能 File Emulation with DAX（FLEX） RocksDB Google 2019 falloc 预分配文件空间会好很多 open 替代为 open+mmap 操作 Tim Harris 论文 SplitFS nova 里面做了哪些数据结构 LSM Tree 我自己可以做的事情 复现一下 Nova（机器上已经在跑了）做一些 bench mark Li 建议可以在上面多跑一些应用，其他数据的可以。 科研方向 BloomFilter（写放大问题的研究，好像又没必要） 下面是 6.12 的会议记录 B-Tree、LSM Tree（）、SQL 张：从应用角度去考虑，更好一些？结合场景的应用。 李：三种应用场景：Memory 扩展、Persistant Storage、Persistant Memory。KV 也有一些工作。在文件系统层次上可以做一些应用，做一些密集访问文件系统的应用。另外一个就是研究数据结构，数据结构放在这个设备上，同步上做的时候，要不要改变。 张：文件系统都属于 Kernel 态，用户操作都在用户态 User 态，一次系统调用（system call）就超过了你在 kernel 里面做的优化了。 李：SplitFS 是这种思路，转换了一部分操作到 User 态。 张：是数据操作还是/操作仍旧放在了内核态（一部分），所以还是一部分。 李：SplitFS 能力比 NOVA 大四倍。LevelDB 在上面变成两倍。 张：LevelDB 还是一个 CPU bound（嘿嘿嘿），所以现在还有一个思路就是换其他数据结构，可能 Hash Table。 关于网络方面的研究 张：RDMA 跟 TCP/IP 有了差距，Memory 通过 RDMA 暴露给 Leader，Leader 可以直接在后面 append。Raft 和 Paxos 是针对传统 TCP/IP，RDMA 不一样，有了 在 PM 上做一个分布式的 Hash Table。分布式存储里面的一个特点，粒度越细，数据量越多。之前一个问题，元数据过多，大于 Memory 的容量，导致部分存储在磁盘，性能就不好了。有的用很大的 Memory 来保护这些元数据。如果有分布式的 PM 上的 Hash Table，就会对上层编程提供很大便利。 元数据的 bottle neck 张：举个例子，在元数据看，每数据粒度（一个 block）为 256MB 有一个元数据的记录，只有这样可以把元数据压在一个内存中。如果有 Hash Table，就可以缩小粒度！写程序会非常方便！，这是一个 Performance 上的体验。 LevelDB 提供原子性，就已经提供了很多很大的便利。 从需求的角度来看，非常需要PM 上的 Hash Table。 张：怎么做 Replication 是个非常有意思的地方，一种是 RDMA+？？、一种是 Raft 这种 Replication。 李：是一直在跑 Raft 么？选举，replication 也是用 raft。 张：选举的时候用 Raft（或者 Paxos），replication 上不全用 Raft，比如 kernel write（没听清）？？ 张：inline replication 整个流程：server 中写 4K 的数据，inlin replication 首先在 hash table（分布式/单机）查一下有没有这个 key，在另一个 teble 上 查，发挥结果。miss 的话，读一次磁盘，然后插入新 key 再插入。 李：解释一下，写操作一次，两次元数据操作+一次数据操作。由于磁盘持久化本来是负担很大的事情。 张：关注的一个参考的内容 Intel DAOS 落脚点：分布式哈希 Table （DHT）与 PM 结合 学长：Hardware TSX（Transactional Synchronization Extensions） 李，张：提到的是最近没什么人提到了，Software 这类是架了一层中间件，Hardware 是纯粹的硬件层。 ACID： 李：把 Transaction 分成两部分，PM+RMDA 高速网络环境下， 张：总结，分布式 hash 与 PM 结合是个最终目标。一步一步，分布式的 Hash Table 就很难了，ReHash（扩容），静态的意义不大，现在的意义。 李：下一步地再做，带 Transaction 的 Hash Table。 张：现有 DHT 和我们所想的不大一样，是一种寻址的算法和方式。但我们想要的是一个的确能在机器上运行的内存中存在的分布式 Hash Table。 1234514:37:13 Kyle Zhang : daos14:37:36 Cheng Li : https://www.intel.com/content/www/us/en/high-performance-computing/daos-high-performance-storage-brief.html14:40:18 Cheng Li : https://www.cs.utexas.edu/~vijay/papers/sosp19-recipe.pdf14:41:19 Cheng Li : https://arxiv.org/pdf/2003.07302.pdf]]></content>
+    <content type="text"><![CDATA[存储器 - 金字塔层次结构介绍 Non-volatile memory - Wikipedia Persistant memory fsBetter I/O Through Byte-Addressable, Persistent Memory 问题：原来的存储系统都是基于慢的，块设备接口。但是新的存储介质是基于字节，永久性存储技术，提供快的，细粒度的访问。 设计新的 FS 和硬件结构，适应字节寻址和可持久性。 应用非易失性内存在阿里生产环境的首次应用：Tair NVM 最佳实践总结 构建在缓存场景，作为 DRAM 的补充。 使用方式 Tair MDB 使用 NVM 设备的方式，是把 NVM 以块设备的形式使用 Pmem-Aware File System 挂载（DAX 挂载模式）。分配 NVM 空间对应的操作是在对应的文件系统路径上创建并打开文件，使用 posix_fallocate 分配空间。 会议笔记PM 的使用方式 Memory 使用 Persistent Storage 使用（一般） Persistant Memory 使用 需要再查的事情 Persistent Memory 完全替代（几乎完全） 失去了 log 的功能 DRAM 和 Persist Memory 还存在 log 功能 File Emulation with DAX（FLEX） RocksDB Google 2019 falloc 预分配文件空间会好很多 open 替代为 open+mmap 操作 Tim Harris 论文 SplitFS nova 里面做了哪些数据结构 LSM Tree 我自己可以做的事情 复现一下 Nova（机器上已经在跑了）做一些 bench mark Li 建议可以在上面多跑一些应用，其他数据的可以。 科研方向 BloomFilter（写放大问题的研究，好像又没必要） 6.12 会议记录下面是 6.12 的会议记录 B-Tree、LSM Tree（）、SQL 张：从应用角度去考虑，更好一些？结合场景的应用。 李：三种应用场景：Memory 扩展、Persistant Storage、Persistant Memory。KV 也有一些工作。在文件系统层次上可以做一些应用，做一些密集访问文件系统的应用。另外一个就是研究数据结构，数据结构放在这个设备上，同步上做的时候，要不要改变。 张：文件系统都属于 Kernel 态，用户操作都在用户态 User 态，一次系统调用（system call）就超过了你在 kernel 里面做的优化了。 李：SplitFS 是这种思路，转换了一部分操作到 User 态。 张：是数据操作还是/操作仍旧放在了内核态（一部分），所以还是一部分。 李：SplitFS 能力比 NOVA 大四倍。LevelDB 在上面变成两倍。 张：LevelDB 还是一个 CPU bound（嘿嘿嘿），所以现在还有一个思路就是换其他数据结构，可能 Hash Table。 关于网络方面的研究 张：RDMA 跟 TCP/IP 有了差距，Memory 通过 RDMA 暴露给 Leader，Leader 可以直接在后面 append。Raft 和 Paxos 是针对传统 TCP/IP，RDMA 不一样，有了 在 PM 上做一个分布式的 Hash Table。分布式存储里面的一个特点，粒度越细，数据量越多。之前一个问题，元数据过多，大于 Memory 的容量，导致部分存储在磁盘，性能就不好了。有的用很大的 Memory 来保护这些元数据。如果有分布式的 PM 上的 Hash Table，就会对上层编程提供很大便利。 元数据的 bottle neck 张：举个例子，在元数据看，每数据粒度（一个 block）为 256MB 有一个元数据的记录，只有这样可以把元数据压在一个内存中。如果有 Hash Table，就可以缩小粒度！写程序会非常方便！，这是一个 Performance 上的体验。 LevelDB 提供原子性，就已经提供了很多很大的便利。 从需求的角度来看，非常需要PM 上的 Hash Table。 张：怎么做 Replication 是个非常有意思的地方，一种是 RDMA+？？、一种是 Raft 这种 Replication。 李：是一直在跑 Raft 么？选举，replication 也是用 raft。 张：选举的时候用 Raft（或者 Paxos），replication 上不全用 Raft，比如 kernel write（没听清）？？ 张：inline replication 整个流程：server 中写 4K 的数据，inlin replication 首先在 hash table（分布式/单机）查一下有没有这个 key，在另一个 teble 上 查，发挥结果。miss 的话，读一次磁盘，然后插入新 key 再插入。 李：解释一下，写操作一次，两次元数据操作+一次数据操作。由于磁盘持久化本来是负担很大的事情。 张：关注的一个参考的内容 Intel DAOS 落脚点：分布式哈希 Table （DHT）与 PM 结合 学长：Hardware TSX（Transactional Synchronization Extensions） 李，张：提到的是最近没什么人提到了，Software 这类是架了一层中间件，Hardware 是纯粹的硬件层。 ACID： 李：把 Transaction 分成两部分，PM+RMDA 高速网络环境下， 张：总结，分布式 hash 与 PM 结合是个最终目标。一步一步，分布式的 Hash Table 就很难了，ReHash（扩容），静态的意义不大，现在的意义。 李：下一步地再做，带 Transaction 的 Hash Table。 张：现有 DHT 和我们所想的不大一样，是一种寻址的算法和方式。但我们想要的是一个的确能在机器上运行的内存中存在的分布式 Hash Table。 1234514:37:13 Kyle Zhang : daos14:37:36 Cheng Li : https://www.intel.com/content/www/us/en/high-performance-computing/daos-high-performance-storage-brief.html14:40:18 Cheng Li : https://www.cs.utexas.edu/~vijay/papers/sosp19-recipe.pdf14:41:19 Cheng Li : https://arxiv.org/pdf/2003.07302.pdf 6.19 会议记录下面是 6.19 日会议记录 Paper1: Using RDMA Efficiently for Key-Value Services Paper2: FaRM Fast Remote Memory 微软？ 构建的是面向内存的，分布式 KV-Store（我们是研究 PM 上的） 李：我们是希望用 PM 的特性，这里面是不是有一些冗余部分（一致性部分？） 张：做的是分布式内存管理，可以作为我们研究的基础，但是应用场景有下列不同 第一个：还是一个 Memory 的结构，感觉这个并不符合每个操作 Atomic（虽然有日志） RDMA 操作 PM 和 DM 不同，操作 DM（无论写在哪里）都告知成功了，操作 PM 不能确定写持久化了。 张：RDMA 对面是内存，那不能确定持久化了（还需要一次 commit 操作），如果 RDMA 对面是 PM，那就可以省去 commit。 李：核心问题：RDMA 和关注两个 CC，Concurrency Control、Commit Control 张：里面还是有一些 miss-match 的地方，这些都是基于 DM 的工作，而 PM 有一致性的地方。 李：提供一篇对 RDMA 更好的论文 Paper3：Design Guidelines for High Performance RDMA Systems 用于分布式系统元数据管理的 workload 需求？（张总的需求？） 张：文件系统元数据与 KV 的区别 文件系统元数据树形，有时候要考虑锁 文件系统元数据设计一般不考虑横向扩展性（Octopus 好像有个扩展） 李：张总那边的 Workload 的特征？ 张： 分布式可横向扩展：CPU 和内存容量要同步横向扩展，扩展 memory，现今情况都会带 cpu，可以利用上。仔细想一下其中的通信 client-server：发送请求 server-server：跑 Paxos 协议？ 一种是提交给一台机器，然后 log replication，另一种是提交给多台机器。 李：不考虑 logging，用 CoW、Shadow 尝试下。现阶段 log 是 sequential 的，然后 batch 到一起往下刷（这样就很快），我问的问题的回答：batch 的性能优化体现在， function call，（函数调用、系统调用、网络调用）如果能 batch 到一起的话，能极大的降低 overhead 和 latency。 后续的工作： SmartX 的需求：K-V 来做文件系统元数据，常见的操作有哪些 考虑把 FaRM 搬到 PM 上 RDMA 和 PM 结合 6.19 SummaryRead more papers on RDMA usage in distributed systems: FaRM: Fast Remote Memory Using RDMA Efficiently for Key-Value Services Design Guidelines for High Performance RDMA Systems Deconstructing RDMA-enabled Distributed Transactions: Hybrid is Better! Orion: A Distributed File System for Non-Volatile Main Memory and RDMA-Capable Networks Find suitable model for distributed key-value store: Partition Caching Local data structure Space allocation Replication how to use RDMA more efficiently How to make better use of servers’ CPU How to implement atomicity/transaction Evaluate FaRM on our machines]]></content>
       <categories>
         <category>分布式系统</category>
       </categories>
@@ -144,6 +178,9 @@
     <title><![CDATA[ReadingGroup——FPGA-Accelerate-Compactions]]></title>
     <url>%2Fpost%2F18988a0e.html</url>
     <content type="text"><![CDATA[Step 1题目摘要引言基本理论概况结论部分 回答基本问题 类别 内容 正确性 创新点 清晰度 阅读选择 Step 2细读笔记 问题记录未读（且值得读）文献记录 Step 3 思路复现 证明与推理复现 实验验证复现]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
       <tags>
         <tag>三步法</tag>
       </tags>
@@ -224,6 +261,9 @@
     <title><![CDATA[ReadingGroup——Supporting-Very-Large-Models]]></title>
     <url>%2Fpost%2Fa2116e6d.html</url>
     <content type="text"><![CDATA[Step 1题目摘要引言题目使用自动数据流图分割支持超大模型 摘要介绍新的模型——Tofu，用于在多个 GPU 上划分超大的 DNN 模型，从而减少单个 GPU 的内存占用。 基本理论概况结论部分 回答基本问题 类别 内容 正确性 创新点 清晰度 阅读选择 Step 2细读笔记 问题记录未读（且值得读）文献记录 Step 3 思路复现 证明与推理复现 实验验证复现 ReadingGroup 笔记分布式训练 How to fit a large DNN across GPUs (a) 数据并行 Data Parallelism 后台 Sync 适用于小数据规模量 (b) 来不及记录 (c) 层级并行 Layer Parallelism 针对大的模型 tofu tensorflow mash]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
       <tags>
         <tag>三步法</tag>
       </tags>
@@ -1426,8 +1466,8 @@
         <category>Linux</category>
       </categories>
       <tags>
-        <tag>Linux</tag>
         <tag>操作系统</tag>
+        <tag>Linux</tag>
       </tags>
   </entry>
   <entry>
@@ -1450,9 +1490,9 @@
         <category>Linux</category>
       </categories>
       <tags>
-        <tag>Linux</tag>
         <tag>待补充</tag>
         <tag>操作系统</tag>
+        <tag>Linux</tag>
       </tags>
   </entry>
   <entry>
@@ -1464,8 +1504,8 @@
         <category>Linux</category>
       </categories>
       <tags>
-        <tag>Linux</tag>
         <tag>操作系统</tag>
+        <tag>Linux</tag>
       </tags>
   </entry>
   <entry>
@@ -2230,11 +2270,6 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[Hello Hexo]]></title>
-    <url>%2Fpost%2Fa1751c09.html</url>
-    <content type="text"><![CDATA[今日博客搬家 bing 基于Hexo-Next-Gemini 还在搬运Evernote和CSDN上的东西 还有很多功能没有添加，欢迎各位提意见]]></content>
-  </entry>
-  <entry>
     <title><![CDATA[VSCode——Git配置及终端替换]]></title>
     <url>%2Fpost%2Feae0b80e.html</url>
     <content type="text"><![CDATA[Git安装如果本机还没有安装过Git，那么首先从官网上下载合适的版本（Mac OS/Windows/Linux） 官方地址为：https://git-scm.com/download/win 下载完以后双击进行安装，勾选使用Git Bash以及使用VSCode作为默认编辑器（这个看个人喜好）。 安装成功界面 检查Git命令行输入 git --version 得到结果 git version 2.20.1.windows.1 证明Git安装正常，若出现异常，无对应函数，确定一下环境变量是否配置正常 VSCode中Git配置 Git 路径 Ctrl+,打开Setting界面，搜索Git.path，编辑到User Setting中（本机都使用所以可以不必每次都添加到Workspace Setting处设计），值为本机安装的Git文件目录里git.exe的路径。（注意Windows修改’\\’为’\\\\’） Git Bash替换原有终端 鉴于不少人习惯通过Git Bash命令行进行操作，我们利用VSCode提供的内置终端功能，将终端替换为Git Bash，再也不用担心一堆Git窗口来回切了，还可以配合Ctrl+\等快捷键充分发挥终端小窗口并行工作的潜力。 Ctrl+,打开Setting界面，搜索git.integrated.shell.window,编辑对应框，路径改为对应的Bash.exe路径（我的机器中是D:\Program Files\Git\bin\bash.exe） Thanks to微软爸爸，现在我们就可以在VSCode里优雅的使用Git啦。 关于Git的教程，后续读完《精通Git》会补一篇。链接在这里。]]></content>
@@ -2337,8 +2372,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018秋季训练</tag>
         <tag>HDU</tag>
         <tag>并查集</tag>
@@ -2353,8 +2388,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018秋季训练</tag>
         <tag>并查集</tag>
         <tag>待补充</tag>
@@ -2370,8 +2405,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018秋季训练</tag>
         <tag>HDU</tag>
         <tag>并查集</tag>
@@ -2386,8 +2421,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>HDU</tag>
         <tag>并查集</tag>
         <tag>待补充</tag>
@@ -2403,8 +2438,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018秋季训练</tag>
         <tag>并查集</tag>
         <tag>待补充</tag>
@@ -2429,8 +2464,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -2444,8 +2479,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -2459,8 +2494,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -2474,8 +2509,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -2489,8 +2524,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -2504,8 +2539,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -2519,8 +2554,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>2018秋季训练</tag>
       </tags>
@@ -2721,8 +2756,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>数据结构</tag>
         <tag>2018秋季训练</tag>
         <tag>UVA</tag>
@@ -2737,8 +2772,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>Imitation</tag>
         <tag>2018秋季训练</tag>
         <tag>UVA</tag>
@@ -2753,8 +2788,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>Imitation</tag>
         <tag>2018秋季训练</tag>
         <tag>UVA</tag>
@@ -2769,8 +2804,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018秋季训练</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -2785,8 +2820,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018秋季训练</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -2829,8 +2864,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018秋季训练</tag>
         <tag>HDU</tag>
         <tag>大数</tag>
@@ -2873,8 +2908,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018秋季训练</tag>
         <tag>UVALive</tag>
       </tags>
@@ -2888,8 +2923,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018秋季训练</tag>
         <tag>UVALive</tag>
         <tag>概率</tag>
@@ -2904,8 +2939,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>Imitation</tag>
         <tag>2018秋季训练</tag>
@@ -2920,8 +2955,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>博弈</tag>
         <tag>2018秋季培训</tag>
@@ -2950,8 +2985,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
       </tags>
@@ -2965,11 +3000,11 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
-        <tag>2018暑假集训</tag>
         <tag>字典树</tag>
+        <tag>2018暑假集训</tag>
       </tags>
   </entry>
   <entry>
@@ -2981,11 +3016,11 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
-        <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
+        <tag>Imitation</tag>
       </tags>
   </entry>
   <entry>
@@ -2997,8 +3032,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
       </tags>
@@ -3012,8 +3047,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>Dijkstra</tag>
@@ -3029,11 +3064,11 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
-        <tag>2018暑假集训</tag>
         <tag>字典树</tag>
+        <tag>2018暑假集训</tag>
       </tags>
   </entry>
   <entry>
@@ -3045,8 +3080,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
       </tags>
@@ -3060,8 +3095,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
       </tags>
@@ -3075,8 +3110,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
       </tags>
@@ -3090,8 +3125,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -3106,8 +3141,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -3122,8 +3157,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -3138,8 +3173,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -3154,8 +3189,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>Imitation</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -3170,8 +3205,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>补图</tag>
         <tag>UVA</tag>
@@ -3187,8 +3222,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>补图</tag>
         <tag>UVA</tag>
@@ -3204,8 +3239,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>数论</tag>
         <tag>HDU</tag>
@@ -3220,10 +3255,10 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>Imitation</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
+        <tag>Imitation</tag>
         <tag>补图</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -3238,8 +3273,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>补图</tag>
         <tag>STL</tag>
@@ -3255,8 +3290,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>补图</tag>
         <tag>STL</tag>
@@ -3272,8 +3307,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>补图</tag>
         <tag>STL</tag>
@@ -3288,8 +3323,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>DP</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
@@ -3305,8 +3340,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>数论</tag>
@@ -3321,8 +3356,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>二分</tag>
         <tag>Greedy</tag>
         <tag>UVA</tag>
@@ -3337,10 +3372,10 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>Imitation</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
+        <tag>Imitation</tag>
         <tag>UVA</tag>
       </tags>
   </entry>
@@ -3353,8 +3388,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>STL</tag>
         <tag>UVA</tag>
@@ -3383,8 +3418,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>POJ</tag>
         <tag>Floyd</tag>
@@ -3399,8 +3434,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>BFS</tag>
         <tag>HDU</tag>
@@ -3415,8 +3450,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>CodeForces</tag>
       </tags>
@@ -3430,8 +3465,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>BFS</tag>
         <tag>数论</tag>
@@ -3447,8 +3482,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>AtCoder</tag>
       </tags>
   </entry>
@@ -3461,8 +3496,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>AtCoder</tag>
       </tags>
   </entry>
@@ -3475,8 +3510,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>AtCoder</tag>
         <tag>DP</tag>
       </tags>
@@ -3490,8 +3525,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>AtCoder</tag>
       </tags>
   </entry>
@@ -3538,8 +3573,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
@@ -3554,8 +3589,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
         <tag>HDU</tag>
@@ -3570,8 +3605,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
         <tag>HDU</tag>
@@ -3595,8 +3630,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
         <tag>HDU</tag>
@@ -3611,8 +3646,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
@@ -3627,8 +3662,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
@@ -3643,8 +3678,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
         <tag>2018杭电多校</tag>
@@ -3659,8 +3694,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
         <tag>2018杭电多校</tag>
@@ -3675,11 +3710,11 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>DP</tag>
-        <tag>2018暑假集训</tag>
         <tag>字典树</tag>
+        <tag>2018暑假集训</tag>
         <tag>UVALive</tag>
       </tags>
   </entry>
@@ -3692,11 +3727,11 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
-        <tag>2018暑假集训</tag>
         <tag>字典树</tag>
+        <tag>2018暑假集训</tag>
       </tags>
   </entry>
   <entry>
@@ -3708,10 +3743,10 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>2018暑假集训</tag>
+        <tag>ACM</tag>
         <tag>字典树</tag>
+        <tag>2018暑假集训</tag>
         <tag>HDU</tag>
       </tags>
   </entry>
@@ -3724,10 +3759,10 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
-        <tag>2018暑假集训</tag>
+        <tag>ACM</tag>
         <tag>字典树</tag>
+        <tag>2018暑假集训</tag>
         <tag>HDU</tag>
       </tags>
   </entry>
@@ -3740,8 +3775,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>字符串hash</tag>
         <tag>POJ</tag>
@@ -3756,8 +3791,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>KMP</tag>
         <tag>HDU</tag>
@@ -3773,8 +3808,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>Dijkstra</tag>
         <tag>HDU</tag>
         <tag>最长路</tag>
@@ -3789,8 +3824,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>Dijkstra</tag>
         <tag>最短路</tag>
@@ -3820,8 +3855,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>区间DP</tag>
@@ -3836,8 +3871,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>区间DP</tag>
         <tag>POJ</tag>
@@ -3852,8 +3887,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>区间DP</tag>
@@ -3868,8 +3903,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>Greedy</tag>
         <tag>HDU</tag>
@@ -3884,8 +3919,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>Greedy</tag>
@@ -3900,8 +3935,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
         <tag>2018杭电多校</tag>
@@ -3917,11 +3952,11 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
-        <tag>计算几何</tag>
         <tag>POJ</tag>
+        <tag>计算几何</tag>
       </tags>
   </entry>
   <entry>
@@ -3933,8 +3968,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>计算几何</tag>
         <tag>UVA</tag>
@@ -3949,11 +3984,11 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
-        <tag>计算几何</tag>
         <tag>POJ</tag>
+        <tag>计算几何</tag>
       </tags>
   </entry>
   <entry>
@@ -3965,11 +4000,11 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
-        <tag>计算几何</tag>
         <tag>POJ</tag>
+        <tag>计算几何</tag>
       </tags>
   </entry>
   <entry>
@@ -3981,8 +4016,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>数论</tag>
         <tag>HDU</tag>
@@ -4014,8 +4049,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>ZOJ</tag>
@@ -4030,8 +4065,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
@@ -4047,8 +4082,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>UVA</tag>
@@ -4063,8 +4098,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>URAL</tag>
@@ -4079,8 +4114,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>水题</tag>
@@ -4096,8 +4131,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>DP</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
@@ -4113,8 +4148,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>几何</tag>
@@ -4131,8 +4166,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>递推</tag>
         <tag>水题</tag>
@@ -4148,8 +4183,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>二分</tag>
         <tag>2018暑假集训</tag>
         <tag>POJ</tag>
@@ -4164,8 +4199,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>二分</tag>
         <tag>水题</tag>
         <tag>POJ</tag>
@@ -4180,8 +4215,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>二分</tag>
         <tag>2018暑假集训</tag>
         <tag>水题</tag>
@@ -4197,8 +4232,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>二分</tag>
         <tag>2018暑假集训</tag>
         <tag>CodeForces</tag>
@@ -4213,11 +4248,11 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
-        <tag>Imitation</tag>
         <tag>2018暑假集训</tag>
+        <tag>Imitation</tag>
       </tags>
   </entry>
   <entry>
@@ -4229,8 +4264,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>Greedy</tag>
         <tag>HDU</tag>
@@ -4246,8 +4281,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>Greedy</tag>
         <tag>HDU</tag>
@@ -4263,8 +4298,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>数论</tag>
         <tag>HDU</tag>
@@ -4280,8 +4315,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>BFS</tag>
         <tag>HDU</tag>
@@ -4297,12 +4332,12 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
-        <tag>2017HDU多校</tag>
         <tag>规律</tag>
+        <tag>2017HDU多校</tag>
       </tags>
   </entry>
   <entry>
@@ -4314,8 +4349,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>DP</tag>
         <tag>2018暑假集训</tag>
         <tag>HDU</tag>
@@ -4332,8 +4367,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>数据结构</tag>
         <tag>2018暑期选拔</tag>
@@ -4348,8 +4383,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>CSU</tag>
         <tag>2018暑期选拔</tag>
         <tag>BFS</tag>
@@ -4405,8 +4440,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018春季训练</tag>
         <tag>CSU</tag>
         <tag>矩阵快速幂</tag>
@@ -4421,8 +4456,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018春季训练</tag>
         <tag>CSU</tag>
         <tag>矩阵快速幂</tag>
@@ -4437,8 +4472,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>AtCoder</tag>
         <tag>math</tag>
         <tag>2018春季训练</tag>
@@ -4453,8 +4488,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018春季训练</tag>
         <tag>二分</tag>
         <tag>CodeForces</tag>
@@ -4469,8 +4504,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>math</tag>
         <tag>2018春季训练</tag>
         <tag>CodeForces</tag>
@@ -4486,8 +4521,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>math</tag>
         <tag>2018春季训练</tag>
         <tag>CodeForces</tag>
@@ -4503,8 +4538,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018春季训练</tag>
         <tag>水题</tag>
         <tag>CodeForces</tag>
@@ -4520,8 +4555,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018春季训练</tag>
         <tag>Greedy</tag>
         <tag>CodeForces</tag>
@@ -4537,8 +4572,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018春季训练</tag>
         <tag>水题</tag>
         <tag>CodeForces</tag>
@@ -4553,8 +4588,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018春季训练</tag>
         <tag>CSU</tag>
         <tag>二分</tag>
@@ -4569,8 +4604,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018春季训练</tag>
         <tag>HDU</tag>
         <tag>线段树</tag>
@@ -4585,8 +4620,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018春季训练</tag>
         <tag>HDU</tag>
         <tag>线段树</tag>
@@ -4601,8 +4636,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018春季训练</tag>
         <tag>HDU</tag>
         <tag>线段树</tag>
@@ -4617,13 +4652,18 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018春季训练</tag>
         <tag>CSU</tag>
         <tag>位运算</tag>
         <tag>补图</tag>
       </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Hello Hexo]]></title>
+    <url>%2Fpost%2Fa1751c09.html</url>
+    <content type="text"><![CDATA[今日博客搬家 bing 基于Hexo-Next-Gemini 还在搬运Evernote和CSDN上的东西 还有很多功能没有添加，欢迎各位提意见]]></content>
   </entry>
   <entry>
     <title><![CDATA[《1Q84》读书笔记]]></title>
@@ -4659,8 +4699,8 @@
       </categories>
       <tags>
         <tag>阅读</tag>
-        <tag>书信</tag>
         <tag>龙应台</tag>
+        <tag>书信</tag>
         <tag>安德烈</tag>
         <tag>亲爱的安德烈</tag>
       </tags>
@@ -4712,8 +4752,8 @@
       </categories>
       <tags>
         <tag>随笔</tag>
-        <tag>龙应台</tag>
         <tag>读后感</tag>
+        <tag>龙应台</tag>
       </tags>
   </entry>
   <entry>
@@ -4766,8 +4806,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>DP</tag>
         <tag>2018寒假集训</tag>
         <tag>POJ</tag>
@@ -4782,8 +4822,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018寒假集训</tag>
         <tag>补图</tag>
         <tag>HDU</tag>
@@ -4799,8 +4839,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>DP</tag>
         <tag>2018寒假集训</tag>
         <tag>CodeForces</tag>
@@ -4815,8 +4855,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>AtCoder</tag>
         <tag>DP</tag>
         <tag>2018寒假集训</tag>
@@ -4831,8 +4871,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>DP</tag>
         <tag>2018寒假集训</tag>
         <tag>DFS</tag>
@@ -4848,8 +4888,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018寒假集训</tag>
         <tag>BFS</tag>
         <tag>HDU</tag>
@@ -4864,8 +4904,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018寒假集训</tag>
         <tag>BFS</tag>
         <tag>补图</tag>
@@ -4881,8 +4921,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018寒假集训</tag>
         <tag>BFS</tag>
         <tag>CodeForces</tag>
@@ -4897,8 +4937,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018寒假集训</tag>
         <tag>BFS</tag>
         <tag>ZOJ</tag>
@@ -4913,8 +4953,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018寒假集训</tag>
         <tag>Greedy</tag>
         <tag>CodeForces</tag>
@@ -4930,11 +4970,11 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018寒假集训</tag>
-        <tag>STL</tag>
         <tag>HDU</tag>
+        <tag>STL</tag>
       </tags>
   </entry>
   <entry>
@@ -4946,8 +4986,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018寒假集训</tag>
         <tag>Imitation</tag>
         <tag>Graph</tag>
@@ -4963,8 +5003,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018寒假集训</tag>
         <tag>Greedy</tag>
         <tag>POJ</tag>
@@ -4979,8 +5019,8 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018寒假集训</tag>
         <tag>Imitation</tag>
         <tag>CodeForces</tag>
@@ -4996,12 +5036,12 @@
         <category>ACM</category>
       </categories>
       <tags>
-        <tag>ACM</tag>
         <tag>算法</tag>
+        <tag>ACM</tag>
         <tag>2018寒假集训</tag>
         <tag>补图</tag>
-        <tag>STL</tag>
         <tag>HDU</tag>
+        <tag>STL</tag>
       </tags>
   </entry>
   <entry>

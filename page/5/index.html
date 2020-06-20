@@ -366,6 +366,419 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/b6bdfc04.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/b6bdfc04.html" itemprop="url">分布式系统学习——MIT6.824-Lecture3课堂笔记</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-01T16:45:17+08:00">
+                2020-06-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/" itemprop="url" rel="index">
+                    <span itemprop="name">操作系统</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/分布式系统/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,662
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  10
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>本节课主要讨论的是 Google 的文件系统 GFS 的论文。</p>
+<h1 id="Big-Strorage"><a href="#Big-Strorage" class="headerlink" title="Big Strorage"></a>Big Strorage</h1><p>存储抽象问题，或许对于分布式系统来说，你能想到很多，但是提供一个简单的存储接口<code>storage interface</code>会更方便，更通常。</p>
+<p>我们会主要讨论如何更好的设计 big storage 的接口以及如何设计存储系统的内部来提供更好的性能。</p>
+<p>文章中还有很多关键词汇，如<code>parallel performance</code>，<code>fault tolerance replication</code>，<code>consistency</code>。文章展开很自然、直接，容易理解。</p>
+<p>教授在讲解 GFS 前先理了一下分布式存储系统的思路。</p>
+<h2 id="Why-hard"><a href="#Why-hard" class="headerlink" title="Why hard"></a>Why hard</h2><p>Performance -&gt; Sharding（碎片化）</p>
+<p>我们需要将数据分片储存到很多个储存节点上，也需要从很多个节点（clients）中读取数据进行处理。如果你分片到成百上千个 server 上，总会有个别宕掉。错误是 constant 的。</p>
+<p>Faults -&gt; Tolerance</p>
+<p>所以我们需要<code>automatic fault-tolerant systems</code>能够自动化容错的系统。提供容错能力最直接有效的方法是使用备份（replication）转移到多台机器上，So，一台坏掉，我们就需要启动备份容灾的能力。</p>
+<p>Tolerance -&gt; Replication</p>
+<p>那多个备份，就要小心<code>out of sync</code>不同步的情况，这样才能保证使用任意备份都可以用来 tolerate the fault（备份间应是 interchangeably）。</p>
+<p>Replication -&gt; Inconsistency</p>
+<p>通过更合理的设计，能避免 inconsistency 带来的影响。反之，则需要更多机器间的确认。这样挤占吞吐量会降低性能。</p>
+<p>Consistency -&gt; Low Performance</p>
+<p>这样就产生了一个奇怪的 loop，从提高性能出发却得到了更差的性能，感觉做了无用功？</p>
+<h2 id="Strong-Consistency"><a href="#Strong-Consistency" class="headerlink" title="Strong Consistency"></a>Strong Consistency</h2><p>好的一致性就让 client 和 server 之间的操作像对待单一机器一样，这个在课程后面会再详细说明。</p>
+<p>一个例子，并发的两个 client，C1 和 C2 在同时修改了相同 key 的 value，C1 修改 keyx 值为 1，C2 修改相同 key 值为 2.如果之后读该 key，值该是多少呢？如果读出来的值总是一致且确定的，具备强一致性。</p>
+<h2 id="Bad-Replication-Design"><a href="#Bad-Replication-Design" class="headerlink" title="Bad Replication Design"></a>Bad Replication Design</h2><p>两个 k-v store 的 server，S1 和 S2，我们希望他们彼此独立，因为如果一台宕掉，另一台要能继续支持我们的工作。还是 C1 和 C2，每个 client 分别给 server 发出写命令。</p>
+<p>那么很有可能出现这样的情况，S1 接收顺序为 C1C2，而 S2 接收顺序为 C2C1，那么 S1 最终 key x 的 value 为 2，S2 最终 key x 的 value 为 1。</p>
+<p>人们设计了很多层级的一致性，以及哪些不一致情况可被 reveal。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/GFS/GFS_1.png" alt="GFS_1"></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/b6bdfc04.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/6b2b2581.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Edwardzcn">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Eddy的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/post/6b2b2581.html" itemprop="url">分布式系统学习——MIT6.824-Lecture2课堂笔记</a></h1>
+        
+
+        <div class="post-meta">
+          
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-31T17:29:31+08:00">
+                2020-05-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/" itemprop="url" rel="index">
+                    <span itemprop="name">操作系统</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/分布式系统/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,760
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>课堂笔记</p>
+<h1 id="Go-语言"><a href="#Go-语言" class="headerlink" title="Go 语言"></a>Go 语言</h1><h2 id="Why-use-Go"><a href="#Why-use-Go" class="headerlink" title="Why use Go"></a>Why use Go</h2><p>很多系统风格的语言可以选择，比如 Java、C#、Python、C++。Go 像其它语言一样，提供了很多许多 features，比如 thread 线程、locking、synchronization，尤其是 RPC（remote procedure call）包，非常方便实用。</p>
+<p>与 C++不同，Go Type safe and memory safe，编程内存问题会少很多，垃圾回收机制也会帮助我们进行内存管理避免错误。<strong>Combination of threads and garbage collection is particularly important</strong>。没有如此特性的 C++，需要找出最后一个线程利用完对象后再 free，但这很困难，也很麻烦。</p>
+<p>Go 还很简单，比起 C++更难出错，编译器给出的错误提示也更有帮助，C++还要去想 error message 实际表示哪里出错了。</p>
+<h1 id="Threads"><a href="#Threads" class="headerlink" title="Threads"></a>Threads</h1><p>多线程，我们进行并发编程最常用到的。并发性是分布式程序中非常重要的特性。需要一种更简单的方式进行一对多的交流。<code>go routines</code>和<code>threads</code>一码事。</p>
+<p>一个 Box 表示的 Address space 地址空间。</p>
+<ul>
+<li>串行程序：1 个 pc、1 组寄存器、1 个栈</li>
+<li>并行程序：每一个程序都有一个 separate pc、寄存器和栈。</li>
+</ul>
+<p>实际上串行程序的栈等都集中在一个地址空间。</p>
+<p>使用 Threads 的主要原因</p>
+<h2 id="IO-concurrency"><a href="#IO-concurrency" class="headerlink" title="IO concurrency"></a>IO concurrency</h2><p>使用这个称呼是来源于单机的并发（同时等待或操作 IO），在分布式中，用来描述处理请求（launched or removed RPCs）的同时等待着其他机器的回复（waiting for many replies）。使用 Threads，可以让其中一部分等待，一部分执行。</p>
+<h2 id="Multi-core-parallelism"><a href="#Multi-core-parallelism" class="headerlink" title="Multi-core parallelism"></a>Multi-core parallelism</h2><p>多核机器，在不同核上进行计算会提供 Threads 物理上真正的并行运行。</p>
+<h2 id="Convenience"><a href="#Convenience" class="headerlink" title="Convenience"></a>Convenience</h2><p>A little bit less important</p>
+<p>一些工作不需要始终 running，只是阶段性的进行，比如 Master Server 检查其他 Workers 是否 alive，间隔固定实践发送某些消息。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/post/6b2b2581.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/a2116e6d.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -408,6 +821,28 @@
             
           </span>
 
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Paper/" itemprop="url" rel="index">
+                    <span itemprop="name">Paper</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -957,452 +1392,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/f3c25b0b.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/f3c25b0b.html" itemprop="url">分布式系统学习——云计算发展</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-20T19:06:10+08:00">
-                2020-05-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作系统/" itemprop="url" rel="index">
-                    <span itemprop="name">操作系统</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作系统/分布式系统/" itemprop="url" rel="index">
-                    <span itemprop="name">分布式系统</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,526
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  5
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="云计算发展的背景"><a href="#云计算发展的背景" class="headerlink" title="云计算发展的背景"></a>云计算发展的背景</h1><p>计算模式演变的趋势，计算模式变革的目标</p>
-<ul>
-<li>更方便快捷的使用方式</li>
-<li>更强大的计算能力</li>
-</ul>
-<p>双目标一同发展，是主线</p>
-<p>从计算模式的演变看计算技术发展的趋势</p>
-<p>60-70’s：大型机（mainframe） 集中式、分时共享 （集中）</p>
-<p>80-90’s： 个人计算机人手一台 （分散）</p>
-<p>95-06’s：互联网/网格/集群/数据中心 （又集中，存在内在不同）</p>
-<ul>
-<li>分离 pc 互联以共享资源 — 互联网</li>
-<li>连接更多计算资源以解决大的计算问题 — 网格计算</li>
-<li>多个微处理器构建大型机处理能力 — 集群</li>
-</ul>
-<p>06 年以后：</p>
-<ul>
-<li>前端更分散</li>
-<li>后端更集中</li>
-</ul>
-<p>从信息处理及其模式看物联网发展</p>
-<ul>
-<li>需要在线获取和在线反馈的紧耦合模式 — 物联网</li>
-</ul>
-<h2 id="云计算与物联网"><a href="#云计算与物联网" class="headerlink" title="云计算与物联网"></a>云计算与物联网</h2><p>物联网是计算能力向物理端的延申</p>
-<h2 id="为什么需要云计算"><a href="#为什么需要云计算" class="headerlink" title="为什么需要云计算"></a>为什么需要云计算</h2><h2 id="什么是云计算"><a href="#什么是云计算" class="headerlink" title="什么是云计算"></a>什么是云计算</h2><p>集中式远程<code>计算资源池</code>，按需分配，位终端用户提供强大而廉价的计算服务能力</p>
-<ul>
-<li>工业化部署、商业化运作</li>
-<li>新的、可商业化的计算和服务模式</li>
-<li>计算能力像水电煤气一样，按需分配使用</li>
-<li>资源池物理上对用户透明，就像在云端一样</li>
-</ul>
-<p>“云计算”概念最早再 06 年由 Google 公司正式提出。</p>
-<p>几个典型定义</p>
-<ul>
-<li>云计算是一种能够将动态伸缩的<strong>虚拟化资源</strong>（不一定云计算就一定需要虚拟化资源）通过互联网以<strong>服务</strong>的方式提供给用户的计算模式 — Wiki</li>
-<li>通过网路连接来获取软件和服务的计算模式，用户通过瘦客户端接入云中获取所需资源。 — Wahtis</li>
-<li>云计算既指在互联网上以服务形式提供的应用，也指定数据中心提供这些服务的硬件和软件 — 伯克利</li>
-<li>云计算是一种更友好的业务运行模式，用户登录使用个性化定制服务。</li>
-</ul>
-<p>从运营商角度看：</p>
-<ul>
-<li>云计算是一种新的计算方法和商业模式。</li>
-<li>通过虚拟化等技术按照“即插即用”的方式，自主管理</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/f3c25b0b.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/36f994e1.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/post/36f994e1.html" itemprop="url">多媒体原理与系统——视频应用系统程序设计</a></h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-17T11:14:49+08:00">
-                2020-05-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/多媒体/" itemprop="url" rel="index">
-                    <span itemprop="name">多媒体</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  431
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  2
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="错误整理区分"><a href="#错误整理区分" class="headerlink" title="错误整理区分"></a>错误整理区分</h1><h2 id="YUV-采样格式与存储样式差异"><a href="#YUV-采样格式与存储样式差异" class="headerlink" title="YUV 采样格式与存储样式差异"></a>YUV 采样格式与存储样式差异</h2><p>采样格式（描述采样频率比例）</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:left">采样比例</th>
-<th style="text-align:left">含义</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left">4:4:4</td>
-<td style="text-align:left">表示色度频道没有下采样。</td>
-</tr>
-<tr>
-<td style="text-align:left">4:2:2</td>
-<td style="text-align:left">表示 2:1 的水平下采样，没有垂直下采样。对于每两个 U 样例或 V 样例，每个扫描行都包含四个 Y 样例。</td>
-</tr>
-<tr>
-<td style="text-align:left">4:2:0</td>
-<td style="text-align:left">表示 2:1 的水平下采样，2:1 的垂直下采样。</td>
-</tr>
-<tr>
-<td style="text-align:left">4:1:1</td>
-<td style="text-align:left">表示 4:1 的水平下采样，没有垂直下采样。对于每个 U 样例或 V 样例，每个扫描行都包含四个 Y 样例。与其他格式相比，4:1:1 采样不太常用，本文不对其进行详细讨论。</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h2 id="存储样式"><a href="#存储样式" class="headerlink" title="存储样式"></a>存储样式</h2><p><code>YU12格式</code>：不是交错存储的</p>
-<blockquote>
-<p>在 android 平台下也叫作 I420 格式，首先是所有 Y 值，然后是所有 U 值，最后是所有 V 值。</p>
-</blockquote>
-<p><code>YV12格式</code>：YV12 格式与 YU12 基本相同，首先是所有 Y 值，然后是所有 V 值，最后是所有 U 值。只要注意从适当的位置提取 U 和 V 值，YU12 和 YV12 都可以使用相同的算法进行处理。</p>
-<p><code>NV21格式</code>：android 手机从摄像头采集的预览数据一般都是 NV21，存储顺序是先存 Y，再 VU 交替存储，NV21 存储顺序是先存 Y 值，再 VU 交替存储：YYYYVUVUVU，以 4 X 4 图片为例子，占用内存为 4 X 4 X 3 / 2 = 24 个字节</p>
-<p><code>NV12格式</code>：NV12 与 NV21 类似，也属于 YUV420SP 格式，NV12 存储顺序是先存 Y 值，再 UV 交替存储：YYYYUVUVUV，以 4 X 4 图片为例子，占用内存为 4 X 4 X 3 / 2 = 24 个字节</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/post/36f994e1.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1457,7 +1446,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">363</span>
+                  <span class="site-state-item-count">365</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1614,7 +1603,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">441.1k</span>
+    <span title="Site words total count">444.0k</span>
   
 </div>
 
