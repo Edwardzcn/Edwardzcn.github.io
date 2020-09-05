@@ -1,7 +1,7 @@
+
+
 <!DOCTYPE html>
-<html lang="zh-CN">
-
-
+<html lang="zh-CN" data-default-color-scheme=&#34;dark&#34;>
 
 
 
@@ -26,6 +26,7 @@
   <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
   
+    
     <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
   
 
@@ -33,7 +34,7 @@
 
 
 <!-- 主题依赖的图标库，不要自行修改 -->
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_6peoq002giu.css">
 
 <link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
 
@@ -42,7 +43,8 @@
 <!-- 自定义样式保持在最底部 -->
 
 
-  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
 
 
@@ -125,8 +127,14 @@
         
         
           <li class="nav-item" id="search-btn">
-            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
-                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
           </li>
         
       </ul>
@@ -134,12 +142,12 @@
   </div>
 </nav>
 
-    <div class="view intro-2" id="background" parallax=true
+    <div class="banner intro-2" id="background" parallax=true
          style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-          <div class="container text-center white-text fadeInUp">
+          <div class="container page-header text-center fade-in-up">
             <span class="h2" id="subtitle">
               
             </span>
@@ -148,7 +156,7 @@
               
   <div class="mt-3 post-meta">
     <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2019-11-04 20:11">
+    <time datetime="2019-11-04 20:11" pubdate>
       2019年11月4日 晚上
     </time>
   </div>
@@ -197,9 +205,11 @@
     <div class="col-lg-8 nopadding-md">
       <div class="container nopadding-md" id="board-ctn">
         <div class="py-5" id="board">
-          <div class="post-content mx-auto" id="post">
+          <article class="post-content mx-auto" id="post">
+            <!-- SEO header -->
+            <h1 style="display: none">Go学习——《Go语言程序设计》Chap1</h1>
             
-            <article class="markdown-body">
+            <div class="markdown-body" id="post-body">
               <h1 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h1><h2 id="编辑、编译与运行"><a href="#编辑、编译与运行" class="headerlink" title="编辑、编译与运行"></a>编辑、编译与运行</h2><p>Go 语言的官方编译器被称为 gc，包括编译工具<code>5g</code>、<code>6g</code>和<code>8g</code>，链接工具<code>5l</code>、<code>6l</code>和<code>8l</code>，以及文档查看工具<code>godoc</code>，这些古怪的命名习惯源自 Plan 9 操作系统，例如用数字来表示处理器的架构（5 代表 ARM，6 代表包括 Intel 64 位处理器在内的 AMD64 架构，而 8 则代表 Intel 386）</p>
 <p>Go 语言针对的处理单元是包而非文件，这意味着我们可以将包拆分成任意数量的文件。在 Go 编译器看来，如果所有这些文件的包声明都是一样的，那么它们就同样属于一个包，这跟把所有内容放在一个单一的文件里是一样的。</p>
 <p>执行顺序：init()-&gt;main()，如果一个包里包含了一个或多个 init()函数，那么它们会在 main()函数之前被自动执行，而且 init()函数不能被显示调用。</p>
@@ -332,7 +342,7 @@
 <p>用户输入了合法数字并已经以<code>polar</code>结构体的格式发送到<code>questions</code>通道，那么就会阻塞主<code>goroutine</code>，等待 answers 通道的响应。<code>createSolver()</code>函数额外创建的一个<code>goroutine</code>会阻塞等待<code>questions</code>通道接收到一个<code>polar</code>类型的数据，因此当我们发送<code>polar</code>数据后，这个<code>goroutine</code>将会执行计算，并将计算结果发送会<code>answer</code>通道，然后等待另一个问题的输入（在开始阻塞自身），而一旦<code>interact()</code>函数在<code>answers</code>通道上接收到<code>cartesian</code>，就不再阻塞，这样就会打印出相关信息。</p>
 </blockquote>
 
-            </article>
+            </div>
             <hr>
             <div>
               <div class="post-metas mb-3">
@@ -360,7 +370,7 @@
               
               
                 <div class="post-prevnext row">
-                  <div class="post-prev col-6">
+                  <article class="post-prev col-6">
                     
                     
                       <a href="/post/7ac02bb8.html">
@@ -369,8 +379,8 @@
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
-                  </div>
-                  <div class="post-next col-6">
+                  </article>
+                  <article class="post-next col-6">
                     
                     
                       <a href="/post/8278c2d3.html">
@@ -379,13 +389,13 @@
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
-                  </div>
+                  </article>
                 </div>
               
             </div>
 
             
-          </div>
+          </article>
         </div>
       </div>
     </div>
@@ -489,7 +499,7 @@
 
       tocbot.init({
         tocSelector: '#tocbot',
-        contentSelector: 'article.markdown-body',
+        contentSelector: '#post-body',
         headingSelector: 'h1,h2,h3,h4,h5,h6',
         linkClass: 'tocbot-link',
         activeLinkClass: 'tocbot-active-link',
