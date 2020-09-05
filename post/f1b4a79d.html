@@ -1,7 +1,7 @@
-
-
 <!DOCTYPE html>
-<html lang="zh-CN" data-default-color-scheme=&#34;dark&#34;>
+<html lang="zh-CN">
+
+
 
 
 
@@ -26,7 +26,6 @@
   <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
   
-    
     <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
   
 
@@ -34,7 +33,7 @@
 
 
 <!-- 主题依赖的图标库，不要自行修改 -->
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_6peoq002giu.css">
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
 
 <link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
 
@@ -43,8 +42,7 @@
 <!-- 自定义样式保持在最底部 -->
 
 
-  <script  src="/js/utils.js" ></script>
-  <script  src="/js/color-schema.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
 
 
@@ -127,14 +125,8 @@
         
         
           <li class="nav-item" id="search-btn">
-            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
-                class="iconfont icon-search"></i>&nbsp;</a>
-          </li>
-        
-        
-          <li class="nav-item" id="color-toggle-btn">
-            <a class="nav-link" href="javascript:">&nbsp;<i
-                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
           </li>
         
       </ul>
@@ -142,12 +134,12 @@
   </div>
 </nav>
 
-    <div class="banner intro-2" id="background" parallax=true
+    <div class="view intro-2" id="background" parallax=true
          style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-          <div class="container page-header text-center fade-in-up">
+          <div class="container text-center white-text fadeInUp">
             <span class="h2" id="subtitle">
               
             </span>
@@ -156,7 +148,7 @@
               
   <div class="mt-3 post-meta">
     <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2020-07-19 13:41" pubdate>
+    <time datetime="2020-07-19 13:41">
       2020年7月19日 下午
     </time>
   </div>
@@ -205,11 +197,9 @@
     <div class="col-lg-8 nopadding-md">
       <div class="container nopadding-md" id="board-ctn">
         <div class="py-5" id="board">
-          <article class="post-content mx-auto" id="post">
-            <!-- SEO header -->
-            <h1 style="display: none">操作系统学习——文件系统崩溃一致性</h1>
+          <div class="post-content mx-auto" id="post">
             
-            <div class="markdown-body" id="post-body">
+            <article class="markdown-body">
               <h1 id="文件系统的崩溃一致性"><a href="#文件系统的崩溃一致性" class="headerlink" title="文件系统的崩溃一致性"></a>文件系统的崩溃一致性</h1><p>待读文章：<a href="https://www.usenix.org/system/files/conference/osdi14/osdi14-paper-pillai.pdf" target="_blank" rel="noopener">All File Systems Are Not Created Equal</a></p>
 <p>基于先代文件系统之上的应用程序级崩溃一致性协议（crash-consistency protocol）。</p>
 <p>状态更新来持久化状态，依赖底层文件系统。</p>
@@ -233,7 +223,7 @@
 <p>(4) 软更新（Soft updates）文件系统：Soft updates 是对 Berkeley FFS 的优化，在文件系统崩溃的时候，保留磁盘上的文件系统格式数据（也就是元数据），使得无需执行 fsck 程序就可挂载文件系统。Soft updates 仔细调整对文件系统的更新顺序，因而任意时刻文件系统发生崩溃，除去部分“leaked”（标记为已分配，实际上是空闲的）的 inodes 和 blocks 外，文件系统数据是一致的。后台 fsck 程序运行在文件系统的快照上，找出这些未引用的 blocks 并将其再次标记为空闲。Soft update 是的负面影响主要是极度复杂，难于理解和实现，并且每个文件系统操作需要其自己独特设计的 update 代码。当前已知的仅有一个实现的 soft updates 实例。</p>
 <p>(5) 写时拷贝（copy-on-write(COW)）文件系统：最新趋势的文件系统架构。COW 文件系统的典型代表是 WAFL (Write Anywhere File Layout, Network Appliance 的内部文件系统)、ZFS 以及 Btrfs。这些文件系统以树的方式组织文件 blocks。当一个 block 更新的时候，就分配一个新的 block，链接 block 的指针指向更新后的 block——当然也会引起这些指针所在的 block 的更新产生。当一组一致的更新写到磁盘之后，root block 自动更新为指向新的 blocks 树，该新的 blocks 树包含最新的分配信息。这种结构方式极其易于实现文件系统快照技术，而且集中了文件系统一致性代码。COW 文件系统的不足之处与 Log-structured 文件系统相似——每次写操作要强制重分配，同时不确定完成一次更新需要多少的磁盘空间。同时，好的同步性能需要加入某种 journal，使得 COW 文件系统的实现更复杂。</p>
 
-            </div>
+            </article>
             <hr>
             <div>
               <div class="post-metas mb-3">
@@ -261,7 +251,7 @@
               
               
                 <div class="post-prevnext row">
-                  <article class="post-prev col-6">
+                  <div class="post-prev col-6">
                     
                     
                       <a href="/post/5943431e.html">
@@ -270,8 +260,8 @@
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
-                  </article>
-                  <article class="post-next col-6">
+                  </div>
+                  <div class="post-next col-6">
                     
                     
                       <a href="/post/9b82f934.html">
@@ -280,13 +270,13 @@
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
-                  </article>
+                  </div>
                 </div>
               
             </div>
 
             
-          </article>
+          </div>
         </div>
       </div>
     </div>
@@ -390,7 +380,7 @@
 
       tocbot.init({
         tocSelector: '#tocbot',
-        contentSelector: '#post-body',
+        contentSelector: 'article.markdown-body',
         headingSelector: 'h1,h2,h3,h4,h5,h6',
         linkClass: 'tocbot-link',
         activeLinkClass: 'tocbot-active-link',
