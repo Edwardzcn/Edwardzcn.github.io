@@ -1,502 +1,216 @@
+
+
 <!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&quot;auto&quot;>
 
 
 
-  
-
-
-<html class="theme-next gemini use-motion" lang="zh-Hans">
 <head>
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-<meta name="theme-color" content="#222">
-<meta name="baidu-site-verification" content="ZzhwBFUe1V" />
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="http://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" type="image/png" href="http://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  <title>数字图像处理——频率域平滑锐化图像常用滤波器 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
 
-
-
-
-
-
-
-
-
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
-
-<meta http-equiv="Cache-Control" content="max-age=600" />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
   
+    
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
-
-
-
-
-
-
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
-
-<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
-
-
-  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
-
-
-
-
-
-  <meta name="keywords" content="数字图像处理," />
-
-
-
-
-
-  <link rel="alternate" href="/rss2.xml" title="Eddy的个人博客" type="application/atom+xml" />
-
-
-
-
-
-
-<meta name="description" content="频率域滤波器本文主要是动手实现一些常见的滤波器，并展示其频率域和空间域图像。 这里介绍的常见滤波器为：（高通/低通）理想滤波、布特沃斯滤波器和高斯滤波器，根据书本 P169 页，他们的区别与联系如下：  这三种滤波器涵盖了从非常急剧（理想）的滤波到非常平滑（高斯）的滤波范围。布特沃斯滤波器有一个参数，它成为滤波器的“阶数”。当阶数较高时，布特沃斯滤波器接近于理想滤波器。对于较低的阶数值，布特沃斯滤">
-<meta name="keywords" content="数字图像处理">
-<meta property="og:type" content="article">
-<meta property="og:title" content="数字图像处理——频率域平滑锐化图像常用滤波器">
-<meta property="og:url" content="http://www.edwardzcn98yx.com/post/e371c683.html">
-<meta property="og:site_name" content="Eddy的个人博客">
-<meta property="og:description" content="频率域滤波器本文主要是动手实现一些常见的滤波器，并展示其频率域和空间域图像。 这里介绍的常见滤波器为：（高通/低通）理想滤波、布特沃斯滤波器和高斯滤波器，根据书本 P169 页，他们的区别与联系如下：  这三种滤波器涵盖了从非常急剧（理想）的滤波到非常平滑（高斯）的滤波范围。布特沃斯滤波器有一个参数，它成为滤波器的“阶数”。当阶数较高时，布特沃斯滤波器接近于理想滤波器。对于较低的阶数值，布特沃斯滤">
-<meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/3.png">
-<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/4.png">
-<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/5.png">
-<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/6.png">
-<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/7.png">
-<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/8.png">
-<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/1.png">
-<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/2.png">
-<meta property="og:updated_time" content="2019-10-25T00:39:58.613Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="数字图像处理——频率域平滑锐化图像常用滤波器">
-<meta name="twitter:description" content="频率域滤波器本文主要是动手实现一些常见的滤波器，并展示其频率域和空间域图像。 这里介绍的常见滤波器为：（高通/低通）理想滤波、布特沃斯滤波器和高斯滤波器，根据书本 P169 页，他们的区别与联系如下：  这三种滤波器涵盖了从非常急剧（理想）的滤波到非常平滑（高斯）的滤波范围。布特沃斯滤波器有一个参数，它成为滤波器的“阶数”。当阶数较高时，布特沃斯滤波器接近于理想滤波器。对于较低的阶数值，布特沃斯滤">
-<meta name="twitter:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/3.png">
-
-
-
-<script type="text/javascript" id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Gemini',
-    version: '5.1.4',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
-    fancybox: true,
-    tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
-    duoshuo: {
-      userId: '0',
-      author: '博主'
-    },
-    algolia: {
-      applicationID: '9M2C5ORTA3',
-      apiKey: 'cab906b07b7695815e9a87dda0c83ede',
-      indexName: 'EddyBlog',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"输入关键字","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
-</script>
-
-
-
-  <link rel="canonical" href="http://www.edwardzcn98yx.com/post/e371c683.html"/>
-
-
-
-
-
-  <title>数字图像处理——频率域平滑锐化图像常用滤波器 | Eddy的个人博客</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
+<!-- 主题依赖的图标库，不要自行修改 -->
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_6peoq002giu.css">
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
 
 
-
-
-
-
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
 
-  
-  
-    
-  
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
 
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
-    <div class="headband"></div>
-    <a href="https://github.com/Edwardzcn" class="github-corner" aria-label="View source on Github">
-    <svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true">
-    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
-    <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
-    <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path>
-    </svg>
-    </a>
-    <style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
-
-
-    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta ">
-    
-
-    <div class="custom-logo-site-title">
-      <a href="/"  class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Eddy的个人博客</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
-    </div>
-      
-        <p class="site-subtitle">相知相遇，即是幸运</p>
-      
-  </div>
-
-  <div class="site-nav-toggle">
-    <button>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
     </button>
-  </div>
-</div>
 
-<nav class="site-nav">
-  
-
-  
-    <ul id="menu" class="menu">
-      
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
         
-        <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
-            
-            我的首页
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-about">
-          <a href="/about/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
-            
-            关于我
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-tags">
-          <a href="/tags/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
-            
-            标签
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-categories">
-          <a href="/categories/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
-            
-            目录总览
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-reading">
-          <a href="/categories/阅读" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
-            
-            阅读
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-travelling">
-          <a href="/categories/旅行" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
-            
-            旅行
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-programming">
-          <a href="/categories/编程" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
-            
-            编程
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-essay">
-          <a href="/categories/随笔" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
-            
-            随笔
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-archives">
-          <a href="/archives/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
-            
-            时间线
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-schedule">
-          <a href="/schedule/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />
-            
-            日程表
-          </a>
-        </li>
-      
-
-      
-        <li class="menu-item menu-item-search">
           
-            <a href="javascript:;" class="popup-trigger">
           
-            
-              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
-            
-            搜索
-          </a>
-        </li>
-      
-    </ul>
-  
-
-  
-    <div class="site-search">
-      
-  
-  <div class="algolia-popup popup search-popup">
-    <div class="algolia-search">
-      <div class="algolia-search-input-icon">
-        <i class="fa fa-search"></i>
-      </div>
-      <div class="algolia-search-input" id="algolia-search-input"></div>
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
     </div>
-
-    <div class="algolia-results">
-      <div id="algolia-stats"></div>
-      <div id="algolia-hits"></div>
-      <div id="algolia-pagination" class="algolia-pagination"></div>
-    </div>
-
-    <span class="popup-btn-close">
-      <i class="fa fa-times-circle"></i>
-    </span>
   </div>
-
-
-
-
-    </div>
-  
 </nav>
 
-
-
- </div>
-    </header>
-
-    <main id="main" class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
-    
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/e371c683.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">数字图像处理——频率域平滑锐化图像常用滤波器</h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-22T21:03:37+08:00">
-                2019-10-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数字图像处理/" itemprop="url" rel="index">
-                    <span itemprop="name">数字图像处理</span>
-                  </a>
-                </span>
-
-                
-                
+    <div class="banner intro-2" id="background" parallax=true
+         style="background: url('http://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container page-header text-center fade-in-up">
+            <span class="h2" id="subtitle">
               
             </span>
-          
 
-          
             
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
               
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2,800
-                </span>
-              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2019-10-22 21:03" pubdate>
+      2019年10月22日 晚上
+    </time>
+  </div>
 
-              
-                <span class="post-meta-divider">|</span>
-              
 
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  14
-                </span>
-              
-            </div>
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.7k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      41
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
           
-
-          
-
         </div>
-      </header>
-    
+      </div>
+    </div>
+  </header>
 
+  <main>
     
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
-      
-        <h1 id="频率域滤波器"><a href="#频率域滤波器" class="headerlink" title="频率域滤波器"></a>频率域滤波器</h1><p>本文主要是动手实现一些常见的滤波器，并展示其频率域和空间域图像。</p>
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto" id="post">
+            <!-- SEO header -->
+            <h1 style="display: none">数字图像处理——频率域平滑锐化图像常用滤波器</h1>
+            
+            <div class="markdown-body" id="post-body">
+              <h1 id="频率域滤波器"><a href="#频率域滤波器" class="headerlink" title="频率域滤波器"></a>频率域滤波器</h1><p>本文主要是动手实现一些常见的滤波器，并展示其频率域和空间域图像。</p>
 <p>这里介绍的常见滤波器为：（高通/低通）理想滤波、布特沃斯滤波器和高斯滤波器，根据书本 P169 页，他们的区别与联系如下：</p>
 <blockquote>
 <p>这三种滤波器涵盖了从非常急剧（理想）的滤波到非常平滑（高斯）的滤波范围。布特沃斯滤波器有一个参数，它成为滤波器的“阶数”。当阶数较高时，布特沃斯滤波器接近于理想滤波器。对于较低的阶数值，布特沃斯滤波器更像高斯滤波器。这样，布特沃斯滤波器可视为两种“极端”滤波器的过渡。</p>
@@ -519,601 +233,587 @@ H_{IHPF}(u,v) = \left \{
 1, & D(u,b) > D_0
 \end{aligned}
 \right.</script><h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><p>代码实现低通滤波器并展示其频率域透视图、频率域图像显示、空间域图像显示和径向剖面图。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 获得指定大小的理想滤波器</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getIdealMask</span><span class="params">(mask_shape, filter_d0,hl_type)</span>:</span></span><br><span class="line">    <span class="keyword">assert</span> hl_type <span class="keyword">in</span> (<span class="string">"lpf"</span>,<span class="string">"hpf"</span>)</span><br><span class="line">    rows,cols = mask_shape[<span class="number">0</span>],mask_shape[<span class="number">1</span>]</span><br><span class="line">    crow = rows/<span class="number">2</span></span><br><span class="line">    ccol = cols/<span class="number">2</span></span><br><span class="line">    mask = np.zeros((rows,cols))</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(rows):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(cols):</span><br><span class="line">            dis = sqrt((i-crow)**<span class="number">2</span> + (j-ccol)**<span class="number">2</span>)</span><br><span class="line">            <span class="keyword">if</span> hl_type == <span class="string">"lpf"</span>:</span><br><span class="line">                <span class="keyword">if</span> dis &lt;= filter_d0:</span><br><span class="line">                    mask[i,j] = <span class="number">1</span></span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    mask[i,j] = <span class="number">0</span></span><br><span class="line">            <span class="keyword">elif</span> hl_type == <span class="string">"hpf"</span>:</span><br><span class="line">                <span class="keyword">if</span> dis &lt;= filter_d0:</span><br><span class="line">                    mask[i,j] = <span class="number">0</span></span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    mask[i,j] = <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> mask</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试ILPF</span></span><br><span class="line"><span class="comment"># 参数设置</span></span><br><span class="line">mask_shape = (<span class="number">100</span>,<span class="number">100</span>)</span><br><span class="line">d = <span class="number">20</span></span><br><span class="line">filter_type = <span class="string">"lpf"</span></span><br><span class="line"><span class="comment"># 获得滤波器</span></span><br><span class="line">myfilter = getIdealMask(mask_shape,d,filter_type)</span><br><span class="line"><span class="comment"># 绘图</span></span><br><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">12</span>))</span><br><span class="line">ax1=plt.subplot(<span class="number">221</span>,projection = <span class="string">"3d"</span>)</span><br><span class="line">ax2=plt.subplot(<span class="number">222</span>)</span><br><span class="line">ax3=plt.subplot(<span class="number">223</span>)</span><br><span class="line">ax4=plt.subplot(<span class="number">224</span>)</span><br><span class="line">drawPerspective(ax1,myfilter,title = <span class="string">"ILPF Perspective Axes3D"</span>, cmap = <span class="string">"gray"</span>)</span><br><span class="line"><span class="comment"># 不想进行列表解析,需要调用frompyfunc构建np可以用的分段函数</span></span><br><span class="line">ufunc1 = np.frompyfunc(<span class="keyword">lambda</span> x: <span class="number">0</span> <span class="keyword">if</span> (x-d)&gt;<span class="number">0</span> <span class="keyword">else</span> <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">drawCurv(ax2,[ufunc1],[<span class="string">"ILPF"</span>],d,title = <span class="string">"ILPF Curv"</span>)</span><br><span class="line">drawPanel(ax3,myfilter,title = <span class="string">"ILPF Frequency Panel Axes2D"</span>)</span><br><span class="line">spatial_myfilter = frequencyToSpatial(myfilter)</span><br><span class="line">drawPanel(ax4,spatial_myfilter,title = <span class="string">"ILPF Spatial Panel Axes2D"</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试IHPF</span></span><br><span class="line">d = <span class="number">20</span></span><br><span class="line">filter_type = <span class="string">"hpf"</span></span><br><span class="line">myfilter = getIdealMask(mask_shape,d,filter_type)</span><br><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">12</span>))</span><br><span class="line">ax1=plt.subplot(<span class="number">221</span>,projection = <span class="string">"3d"</span>)</span><br><span class="line">ax2=plt.subplot(<span class="number">222</span>)</span><br><span class="line">ax3=plt.subplot(<span class="number">223</span>)</span><br><span class="line">ax4=plt.subplot(<span class="number">224</span>)</span><br><span class="line">drawPerspective(ax1,myfilter,title = <span class="string">"IHPF Perspective Axes3D"</span>, cmap = <span class="string">"gray"</span>)</span><br><span class="line"><span class="comment"># 不想进行列表解析,需要调用frompyfunc构建np可以用的分段函数</span></span><br><span class="line">ufunc1 = np.frompyfunc(<span class="keyword">lambda</span> x: <span class="number">1</span> <span class="keyword">if</span> (x-d)&gt;<span class="number">0</span> <span class="keyword">else</span> <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">drawCurv(ax2,[ufunc1],[<span class="string">"IHPF"</span>],d,title = <span class="string">"Curv"</span>)</span><br><span class="line">drawPanel(ax3,myfilter,title = <span class="string">"IHPF Frequency Panel Axes2D"</span>)</span><br><span class="line">spatial_myfilter = frequencyToSpatial(myfilter)</span><br><span class="line">drawPanel(ax4,spatial_myfilter,title = <span class="string">"IHPF Spatial Panel Axes2D"</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<pre><code class="hljs python"><span class="hljs-comment"># 获得指定大小的理想滤波器</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getIdealMask</span><span class="hljs-params">(mask_shape, filter_d0,hl_type)</span>:</span>
+    <span class="hljs-keyword">assert</span> hl_type <span class="hljs-keyword">in</span> (<span class="hljs-string">"lpf"</span>,<span class="hljs-string">"hpf"</span>)
+    rows,cols = mask_shape[<span class="hljs-number">0</span>],mask_shape[<span class="hljs-number">1</span>]
+    crow = rows/<span class="hljs-number">2</span>
+    ccol = cols/<span class="hljs-number">2</span>
+    mask = np.zeros((rows,cols))
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(rows):
+        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> range(cols):
+            dis = sqrt((i-crow)**<span class="hljs-number">2</span> + (j-ccol)**<span class="hljs-number">2</span>)
+            <span class="hljs-keyword">if</span> hl_type == <span class="hljs-string">"lpf"</span>:
+                <span class="hljs-keyword">if</span> dis &lt;= filter_d0:
+                    mask[i,j] = <span class="hljs-number">1</span>
+                <span class="hljs-keyword">else</span>:
+                    mask[i,j] = <span class="hljs-number">0</span>
+            <span class="hljs-keyword">elif</span> hl_type == <span class="hljs-string">"hpf"</span>:
+                <span class="hljs-keyword">if</span> dis &lt;= filter_d0:
+                    mask[i,j] = <span class="hljs-number">0</span>
+                <span class="hljs-keyword">else</span>:
+                    mask[i,j] = <span class="hljs-number">1</span>
+    <span class="hljs-keyword">return</span> mask
+
+<span class="hljs-comment"># 测试ILPF</span>
+<span class="hljs-comment"># 参数设置</span>
+mask_shape = (<span class="hljs-number">100</span>,<span class="hljs-number">100</span>)
+d = <span class="hljs-number">20</span>
+filter_type = <span class="hljs-string">"lpf"</span>
+<span class="hljs-comment"># 获得滤波器</span>
+myfilter = getIdealMask(mask_shape,d,filter_type)
+<span class="hljs-comment"># 绘图</span>
+plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">12</span>))
+ax1=plt.subplot(<span class="hljs-number">221</span>,projection = <span class="hljs-string">"3d"</span>)
+ax2=plt.subplot(<span class="hljs-number">222</span>)
+ax3=plt.subplot(<span class="hljs-number">223</span>)
+ax4=plt.subplot(<span class="hljs-number">224</span>)
+drawPerspective(ax1,myfilter,title = <span class="hljs-string">"ILPF Perspective Axes3D"</span>, cmap = <span class="hljs-string">"gray"</span>)
+<span class="hljs-comment"># 不想进行列表解析,需要调用frompyfunc构建np可以用的分段函数</span>
+ufunc1 = np.frompyfunc(<span class="hljs-keyword">lambda</span> x: <span class="hljs-number">0</span> <span class="hljs-keyword">if</span> (x-d)&gt;<span class="hljs-number">0</span> <span class="hljs-keyword">else</span> <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)
+drawCurv(ax2,[ufunc1],[<span class="hljs-string">"ILPF"</span>],d,title = <span class="hljs-string">"ILPF Curv"</span>)
+drawPanel(ax3,myfilter,title = <span class="hljs-string">"ILPF Frequency Panel Axes2D"</span>)
+spatial_myfilter = frequencyToSpatial(myfilter)
+drawPanel(ax4,spatial_myfilter,title = <span class="hljs-string">"ILPF Spatial Panel Axes2D"</span>)
+plt.show()
+
+<span class="hljs-comment"># 测试IHPF</span>
+d = <span class="hljs-number">20</span>
+filter_type = <span class="hljs-string">"hpf"</span>
+myfilter = getIdealMask(mask_shape,d,filter_type)
+plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">12</span>))
+ax1=plt.subplot(<span class="hljs-number">221</span>,projection = <span class="hljs-string">"3d"</span>)
+ax2=plt.subplot(<span class="hljs-number">222</span>)
+ax3=plt.subplot(<span class="hljs-number">223</span>)
+ax4=plt.subplot(<span class="hljs-number">224</span>)
+drawPerspective(ax1,myfilter,title = <span class="hljs-string">"IHPF Perspective Axes3D"</span>, cmap = <span class="hljs-string">"gray"</span>)
+<span class="hljs-comment"># 不想进行列表解析,需要调用frompyfunc构建np可以用的分段函数</span>
+ufunc1 = np.frompyfunc(<span class="hljs-keyword">lambda</span> x: <span class="hljs-number">1</span> <span class="hljs-keyword">if</span> (x-d)&gt;<span class="hljs-number">0</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)
+drawCurv(ax2,[ufunc1],[<span class="hljs-string">"IHPF"</span>],d,title = <span class="hljs-string">"Curv"</span>)
+drawPanel(ax3,myfilter,title = <span class="hljs-string">"IHPF Frequency Panel Axes2D"</span>)
+spatial_myfilter = frequencyToSpatial(myfilter)
+drawPanel(ax4,spatial_myfilter,title = <span class="hljs-string">"IHPF Spatial Panel Axes2D"</span>)
+plt.show()</code></pre>
 <p>理想低通 ILPF 结果四图</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/3.png" alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/3.png" srcset="/img/loading.gif" alt="png"></p>
 <p>理想高通 IHPF 结果四图</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/4.png" alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/4.png" srcset="/img/loading.gif" alt="png"></p>
 <h2 id="布特沃斯滤波器"><a href="#布特沃斯滤波器" class="headerlink" title="布特沃斯滤波器"></a>布特沃斯滤波器</h2><p>可通过硬件实现，可以通过阶数进行控制，一些资料中又称之为“巴特沃斯滤波器”。</p>
 <h3 id="布特沃斯低通滤波器-BLPF"><a href="#布特沃斯低通滤波器-BLPF" class="headerlink" title="布特沃斯低通滤波器 BLPF"></a>布特沃斯低通滤波器 BLPF</h3><p>截止频率位于距原点$D_0$的$n$阶布特沃斯滤波器（BLPF）的传递函数定义为：</p>
 <script type="math/tex; mode=display">H_{BLPF}(u,v) = \dfrac{1}{ 1 + {[ \dfrac {D(u,v)}{D_0} ]}^{2n} }</script><h3 id="布特沃斯高通滤波器-BHPF"><a href="#布特沃斯高通滤波器-BHPF" class="headerlink" title="布特沃斯高通滤波器 BHPF"></a>布特沃斯高通滤波器 BHPF</h3><p>对应的传递函数定义为：</p>
 <script type="math/tex; mode=display">H_{BHPF}(u,v) = \dfrac{1}{ 1 + {[ \dfrac {D_0}{D_(u,v)} ]}^{2n} }</script><p>（分母分子颠倒）</p>
 <p>两式中$n$对应了即阶参数，下面的代码给出巴特沃斯滤波器的实现，其频率域透视图、频率域图像显示、空间域图像显示和径向剖面图，曲线图绘制出不同阶下的取值。</p>
-<h3 id="代码实现-1"><a href="#代码实现-1" class="headerlink" title="代码实现"></a>代码实现</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 获得指定大小的布特沃斯滤波器</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getButterworthMask</span><span class="params">(mask_shape,filter_d0,hl_type,butter_n = <span class="number">1</span>)</span>:</span></span><br><span class="line">    <span class="keyword">assert</span> hl_type <span class="keyword">in</span> (<span class="string">"lpf"</span>,<span class="string">"hpf"</span>)</span><br><span class="line">    rows,cols = mask_shape[<span class="number">0</span>],mask_shape[<span class="number">1</span>]</span><br><span class="line">    crow = rows/<span class="number">2</span></span><br><span class="line">    ccol = cols/<span class="number">2</span></span><br><span class="line">    mask = np.zeros((rows,cols))</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(rows):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(cols):</span><br><span class="line">            dis = sqrt((i-crow)**<span class="number">2</span> + (j-ccol)**<span class="number">2</span>)</span><br><span class="line">            <span class="keyword">if</span> hl_type == <span class="string">"lpf"</span>:</span><br><span class="line">                mask[i,j] = <span class="number">1.0</span>/(<span class="number">1</span>+(dis/filter_d0)**(<span class="number">2</span>*butter_n))</span><br><span class="line">            <span class="keyword">elif</span> hl_type == <span class="string">"hpf"</span>:</span><br><span class="line">                <span class="comment"># 除以0情况特判一下</span></span><br><span class="line">                <span class="keyword">if</span> np.abs(dis)&lt;eps:</span><br><span class="line">                    mask[i,j] = <span class="number">0</span></span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    mask[i,j] = <span class="number">1.0</span>/(<span class="number">1</span>+(filter_d0/dis)**(<span class="number">2</span>*butter_n))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> mask</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试BLPF</span></span><br><span class="line"><span class="comment"># 参数设置</span></span><br><span class="line">mask_shape = (<span class="number">100</span>,<span class="number">100</span>)</span><br><span class="line">d = <span class="number">20</span></span><br><span class="line">filter_type = <span class="string">"lpf"</span></span><br><span class="line"><span class="comment"># 获得滤波器</span></span><br><span class="line">myfilter = getButterworthMask(mask_shape,d,filter_type, butter_n=<span class="number">2</span>)</span><br><span class="line"><span class="comment"># 绘图</span></span><br><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">12</span>))</span><br><span class="line">ax1=plt.subplot(<span class="number">221</span>,projection = <span class="string">"3d"</span>)</span><br><span class="line">ax2=plt.subplot(<span class="number">222</span>)</span><br><span class="line">ax3=plt.subplot(<span class="number">223</span>)</span><br><span class="line">ax4=plt.subplot(<span class="number">224</span>)</span><br><span class="line">drawPerspective(ax1,myfilter,title = <span class="string">"BLPF(n=2) Perspective Axes3D"</span>, cmap = <span class="string">"gray"</span>)</span><br><span class="line">funcs = []</span><br><span class="line">labels = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">6</span>):</span><br><span class="line">    labels.append(<span class="string">"BLPF "</span>+<span class="string">"n="</span>+str(i))</span><br><span class="line">funcs.append(<span class="keyword">lambda</span> x:<span class="number">1.0</span>/(<span class="number">1</span>+(x/d)**(<span class="number">2</span>*<span class="number">1</span>)))</span><br><span class="line">funcs.append(<span class="keyword">lambda</span> x:<span class="number">1.0</span>/(<span class="number">1</span>+(x/d)**(<span class="number">2</span>*<span class="number">2</span>)))</span><br><span class="line">funcs.append(<span class="keyword">lambda</span> x:<span class="number">1.0</span>/(<span class="number">1</span>+(x/d)**(<span class="number">2</span>*<span class="number">3</span>)))</span><br><span class="line">funcs.append(<span class="keyword">lambda</span> x:<span class="number">1.0</span>/(<span class="number">1</span>+(x/d)**(<span class="number">2</span>*<span class="number">4</span>)))</span><br><span class="line">funcs.append(<span class="keyword">lambda</span> x:<span class="number">1.0</span>/(<span class="number">1</span>+(x/d)**(<span class="number">2</span>*<span class="number">5</span>)))</span><br><span class="line"></span><br><span class="line">drawCurv(ax2,funcs,labels,d,title = <span class="string">"BLPF(n=1,2,3,4,5) Curv"</span>)</span><br><span class="line">drawPanel(ax3,myfilter,title = <span class="string">"BLPF(n=2) Frequency Panel Axes2D"</span>)</span><br><span class="line">spatial_myfilter = frequencyToSpatial(myfilter)</span><br><span class="line">drawPanel(ax4,spatial_myfilter,title = <span class="string">"BLPF(n=2) Spatial Panel Axes2D"</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试BHPF</span></span><br><span class="line">d = <span class="number">20</span></span><br><span class="line">filter_type = <span class="string">"hpf"</span></span><br><span class="line">myfilter = getButterworthMask(mask_shape,d,filter_type, butter_n=<span class="number">1</span>)</span><br><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">12</span>))</span><br><span class="line">ax1=plt.subplot(<span class="number">221</span>,projection = <span class="string">"3d"</span>)</span><br><span class="line">ax2=plt.subplot(<span class="number">222</span>)</span><br><span class="line">ax3=plt.subplot(<span class="number">223</span>)</span><br><span class="line">ax4=plt.subplot(<span class="number">224</span>)</span><br><span class="line">drawPerspective(ax1,myfilter,title = <span class="string">"BHPF(n=2) Perspective Axes3D"</span>, cmap = <span class="string">"gray"</span>)</span><br><span class="line">funcs = []</span><br><span class="line">labels = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">6</span>):</span><br><span class="line"><span class="comment">#     funcs.append(lambda x:1.0/(1+(d/x)**(2*i)))</span></span><br><span class="line"><span class="comment">#     ufunc = np.frompyfunc(lambda x: 0 if np.abs(x)&lt;eps else 1.0/(1+(d/x)**(2*i)), 1, 1)</span></span><br><span class="line"><span class="comment">#     funcs.append(ufunc)</span></span><br><span class="line">    labels.append(<span class="string">"BHPF "</span>+<span class="string">"n="</span>+str(i))</span><br><span class="line">ufunc1 = np.frompyfunc(<span class="keyword">lambda</span> x: <span class="number">0</span> <span class="keyword">if</span> np.abs(x)&lt;eps <span class="keyword">else</span> <span class="number">1.0</span>/(<span class="number">1</span>+(d/x)**(<span class="number">2</span>*<span class="number">1</span>)), <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">ufunc2 = np.frompyfunc(<span class="keyword">lambda</span> x: <span class="number">0</span> <span class="keyword">if</span> np.abs(x)&lt;eps <span class="keyword">else</span> <span class="number">1.0</span>/(<span class="number">1</span>+(d/x)**(<span class="number">2</span>*<span class="number">2</span>)), <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">ufunc3 = np.frompyfunc(<span class="keyword">lambda</span> x: <span class="number">0</span> <span class="keyword">if</span> np.abs(x)&lt;eps <span class="keyword">else</span> <span class="number">1.0</span>/(<span class="number">1</span>+(d/x)**(<span class="number">2</span>*<span class="number">3</span>)), <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">ufunc4 = np.frompyfunc(<span class="keyword">lambda</span> x: <span class="number">0</span> <span class="keyword">if</span> np.abs(x)&lt;eps <span class="keyword">else</span> <span class="number">1.0</span>/(<span class="number">1</span>+(d/x)**(<span class="number">2</span>*<span class="number">4</span>)), <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">ufunc5 = np.frompyfunc(<span class="keyword">lambda</span> x: <span class="number">0</span> <span class="keyword">if</span> np.abs(x)&lt;eps <span class="keyword">else</span> <span class="number">1.0</span>/(<span class="number">1</span>+(d/x)**(<span class="number">2</span>*<span class="number">5</span>)), <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">funcs.append(ufunc1)</span><br><span class="line">funcs.append(ufunc2)</span><br><span class="line">funcs.append(ufunc3)</span><br><span class="line">funcs.append(ufunc4)</span><br><span class="line">funcs.append(ufunc5)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">drawCurv(ax2,funcs,labels,d,title = <span class="string">"BHPF(n=1,2,3,4,5) Curv"</span>)</span><br><span class="line">drawPanel(ax3,myfilter,title = <span class="string">"BHPF(n=2) Frequency Panel Axes2D"</span>)</span><br><span class="line">spatial_myfilter = frequencyToSpatial(myfilter)</span><br><span class="line">drawPanel(ax4,spatial_myfilter,title = <span class="string">"BHPF(n=2) Spatial Panel Axes2D"</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<h3 id="代码实现-1"><a href="#代码实现-1" class="headerlink" title="代码实现"></a>代码实现</h3><pre><code class="hljs python"><span class="hljs-comment"># 获得指定大小的布特沃斯滤波器</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getButterworthMask</span><span class="hljs-params">(mask_shape,filter_d0,hl_type,butter_n = <span class="hljs-number">1</span>)</span>:</span>
+    <span class="hljs-keyword">assert</span> hl_type <span class="hljs-keyword">in</span> (<span class="hljs-string">"lpf"</span>,<span class="hljs-string">"hpf"</span>)
+    rows,cols = mask_shape[<span class="hljs-number">0</span>],mask_shape[<span class="hljs-number">1</span>]
+    crow = rows/<span class="hljs-number">2</span>
+    ccol = cols/<span class="hljs-number">2</span>
+    mask = np.zeros((rows,cols))
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(rows):
+        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> range(cols):
+            dis = sqrt((i-crow)**<span class="hljs-number">2</span> + (j-ccol)**<span class="hljs-number">2</span>)
+            <span class="hljs-keyword">if</span> hl_type == <span class="hljs-string">"lpf"</span>:
+                mask[i,j] = <span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(dis/filter_d0)**(<span class="hljs-number">2</span>*butter_n))
+            <span class="hljs-keyword">elif</span> hl_type == <span class="hljs-string">"hpf"</span>:
+                <span class="hljs-comment"># 除以0情况特判一下</span>
+                <span class="hljs-keyword">if</span> np.abs(dis)&lt;eps:
+                    mask[i,j] = <span class="hljs-number">0</span>
+                <span class="hljs-keyword">else</span>:
+                    mask[i,j] = <span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(filter_d0/dis)**(<span class="hljs-number">2</span>*butter_n))
+
+    <span class="hljs-keyword">return</span> mask
+
+<span class="hljs-comment"># 测试BLPF</span>
+<span class="hljs-comment"># 参数设置</span>
+mask_shape = (<span class="hljs-number">100</span>,<span class="hljs-number">100</span>)
+d = <span class="hljs-number">20</span>
+filter_type = <span class="hljs-string">"lpf"</span>
+<span class="hljs-comment"># 获得滤波器</span>
+myfilter = getButterworthMask(mask_shape,d,filter_type, butter_n=<span class="hljs-number">2</span>)
+<span class="hljs-comment"># 绘图</span>
+plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">12</span>))
+ax1=plt.subplot(<span class="hljs-number">221</span>,projection = <span class="hljs-string">"3d"</span>)
+ax2=plt.subplot(<span class="hljs-number">222</span>)
+ax3=plt.subplot(<span class="hljs-number">223</span>)
+ax4=plt.subplot(<span class="hljs-number">224</span>)
+drawPerspective(ax1,myfilter,title = <span class="hljs-string">"BLPF(n=2) Perspective Axes3D"</span>, cmap = <span class="hljs-string">"gray"</span>)
+funcs = []
+labels = []
+<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">1</span>,<span class="hljs-number">6</span>):
+    labels.append(<span class="hljs-string">"BLPF "</span>+<span class="hljs-string">"n="</span>+str(i))
+funcs.append(<span class="hljs-keyword">lambda</span> x:<span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(x/d)**(<span class="hljs-number">2</span>*<span class="hljs-number">1</span>)))
+funcs.append(<span class="hljs-keyword">lambda</span> x:<span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(x/d)**(<span class="hljs-number">2</span>*<span class="hljs-number">2</span>)))
+funcs.append(<span class="hljs-keyword">lambda</span> x:<span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(x/d)**(<span class="hljs-number">2</span>*<span class="hljs-number">3</span>)))
+funcs.append(<span class="hljs-keyword">lambda</span> x:<span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(x/d)**(<span class="hljs-number">2</span>*<span class="hljs-number">4</span>)))
+funcs.append(<span class="hljs-keyword">lambda</span> x:<span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(x/d)**(<span class="hljs-number">2</span>*<span class="hljs-number">5</span>)))
+
+drawCurv(ax2,funcs,labels,d,title = <span class="hljs-string">"BLPF(n=1,2,3,4,5) Curv"</span>)
+drawPanel(ax3,myfilter,title = <span class="hljs-string">"BLPF(n=2) Frequency Panel Axes2D"</span>)
+spatial_myfilter = frequencyToSpatial(myfilter)
+drawPanel(ax4,spatial_myfilter,title = <span class="hljs-string">"BLPF(n=2) Spatial Panel Axes2D"</span>)
+plt.show()
+
+<span class="hljs-comment"># 测试BHPF</span>
+d = <span class="hljs-number">20</span>
+filter_type = <span class="hljs-string">"hpf"</span>
+myfilter = getButterworthMask(mask_shape,d,filter_type, butter_n=<span class="hljs-number">1</span>)
+plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">12</span>))
+ax1=plt.subplot(<span class="hljs-number">221</span>,projection = <span class="hljs-string">"3d"</span>)
+ax2=plt.subplot(<span class="hljs-number">222</span>)
+ax3=plt.subplot(<span class="hljs-number">223</span>)
+ax4=plt.subplot(<span class="hljs-number">224</span>)
+drawPerspective(ax1,myfilter,title = <span class="hljs-string">"BHPF(n=2) Perspective Axes3D"</span>, cmap = <span class="hljs-string">"gray"</span>)
+funcs = []
+labels = []
+<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">1</span>,<span class="hljs-number">6</span>):
+<span class="hljs-comment">#     funcs.append(lambda x:1.0/(1+(d/x)**(2*i)))</span>
+<span class="hljs-comment">#     ufunc = np.frompyfunc(lambda x: 0 if np.abs(x)&lt;eps else 1.0/(1+(d/x)**(2*i)), 1, 1)</span>
+<span class="hljs-comment">#     funcs.append(ufunc)</span>
+    labels.append(<span class="hljs-string">"BHPF "</span>+<span class="hljs-string">"n="</span>+str(i))
+ufunc1 = np.frompyfunc(<span class="hljs-keyword">lambda</span> x: <span class="hljs-number">0</span> <span class="hljs-keyword">if</span> np.abs(x)&lt;eps <span class="hljs-keyword">else</span> <span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(d/x)**(<span class="hljs-number">2</span>*<span class="hljs-number">1</span>)), <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)
+ufunc2 = np.frompyfunc(<span class="hljs-keyword">lambda</span> x: <span class="hljs-number">0</span> <span class="hljs-keyword">if</span> np.abs(x)&lt;eps <span class="hljs-keyword">else</span> <span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(d/x)**(<span class="hljs-number">2</span>*<span class="hljs-number">2</span>)), <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)
+ufunc3 = np.frompyfunc(<span class="hljs-keyword">lambda</span> x: <span class="hljs-number">0</span> <span class="hljs-keyword">if</span> np.abs(x)&lt;eps <span class="hljs-keyword">else</span> <span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(d/x)**(<span class="hljs-number">2</span>*<span class="hljs-number">3</span>)), <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)
+ufunc4 = np.frompyfunc(<span class="hljs-keyword">lambda</span> x: <span class="hljs-number">0</span> <span class="hljs-keyword">if</span> np.abs(x)&lt;eps <span class="hljs-keyword">else</span> <span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(d/x)**(<span class="hljs-number">2</span>*<span class="hljs-number">4</span>)), <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)
+ufunc5 = np.frompyfunc(<span class="hljs-keyword">lambda</span> x: <span class="hljs-number">0</span> <span class="hljs-keyword">if</span> np.abs(x)&lt;eps <span class="hljs-keyword">else</span> <span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(d/x)**(<span class="hljs-number">2</span>*<span class="hljs-number">5</span>)), <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)
+funcs.append(ufunc1)
+funcs.append(ufunc2)
+funcs.append(ufunc3)
+funcs.append(ufunc4)
+funcs.append(ufunc5)
+
+
+drawCurv(ax2,funcs,labels,d,title = <span class="hljs-string">"BHPF(n=1,2,3,4,5) Curv"</span>)
+drawPanel(ax3,myfilter,title = <span class="hljs-string">"BHPF(n=2) Frequency Panel Axes2D"</span>)
+spatial_myfilter = frequencyToSpatial(myfilter)
+drawPanel(ax4,spatial_myfilter,title = <span class="hljs-string">"BHPF(n=2) Spatial Panel Axes2D"</span>)
+plt.show()</code></pre>
 <p>布特沃斯低通 BLPF 结果四图</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/5.png" alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/5.png" srcset="/img/loading.gif" alt="png"></p>
 <p>布特沃斯高通 BHPF 结果四图</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/6.png" alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/6.png" srcset="/img/loading.gif" alt="png"></p>
 <a id="more"></a>
 <h3 id="高斯低通滤波器-GLPF"><a href="#高斯低通滤波器-GLPF" class="headerlink" title="高斯低通滤波器 GLPF"></a>高斯低通滤波器 GLPF</h3><p>高斯低通滤波器二维形式由下式给处：</p>
 <script type="math/tex; mode=display">H_{GLPF}(u,v) = e^{\dfrac{-D^2(u,v)}{2 \sigma^2}}</script><p>$\sigma$描述了中心的扩散速度，和其他滤波器描述式统一，通过令$\sigma = D_0$，可以用表示其他滤波器的方法表示高斯滤波器。</p>
 <script type="math/tex; mode=display">H_{GLPF}(u,v) = e^{\dfrac{-D^2(u,v)}{2 D_0^2}}</script><h3 id="高斯高通滤波器-GHPF"><a href="#高斯高通滤波器-GHPF" class="headerlink" title="高斯高通滤波器 GHPF"></a>高斯高通滤波器 GHPF</h3><p>如下：</p>
-<script type="math/tex; mode=display">H_{GHPF}(u,v) =1 - e^{\dfrac{-D^2(u,v)}{2 D_0^2}}</script><h3 id="代码实现-2"><a href="#代码实现-2" class="headerlink" title="代码实现"></a>代码实现</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 获得指定大小的高斯滤波器</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getGaussianMask</span><span class="params">(mask_shape,filter_d0,hl_type)</span>:</span></span><br><span class="line">    <span class="keyword">assert</span> hl_type <span class="keyword">in</span> (<span class="string">"lpf"</span>,<span class="string">"hpf"</span>)</span><br><span class="line">    rows,cols = mask_shape[<span class="number">0</span>],mask_shape[<span class="number">1</span>]</span><br><span class="line">    crow = rows/<span class="number">2</span></span><br><span class="line">    ccol = cols/<span class="number">2</span></span><br><span class="line">    mask = np.zeros((rows,cols))</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(rows):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(cols):</span><br><span class="line">            dis = sqrt((i-crow)**<span class="number">2</span> + (j-ccol)**<span class="number">2</span>)</span><br><span class="line">            <span class="keyword">if</span> hl_type == <span class="string">"hpf"</span>:</span><br><span class="line">                mask[i,j] = <span class="number">1</span>-np.exp(-(dis**<span class="number">2</span>) / (<span class="number">2</span>*(filter_d0**<span class="number">2</span>)))</span><br><span class="line">            <span class="keyword">elif</span> hl_type == <span class="string">"lpf"</span>:</span><br><span class="line">                mask[i,j] = np.exp(-(dis**<span class="number">2</span>)/(<span class="number">2</span>*(filter_d0**<span class="number">2</span>)))</span><br><span class="line">    <span class="keyword">return</span> mask</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试GLPF</span></span><br><span class="line"><span class="comment"># 参数设置</span></span><br><span class="line">mask_shape = (<span class="number">200</span>,<span class="number">200</span>)</span><br><span class="line">d = <span class="number">20</span></span><br><span class="line">filter_type = <span class="string">"lpf"</span></span><br><span class="line"><span class="comment"># 获得滤波器</span></span><br><span class="line">myfilter = getGaussianMask(mask_shape,d,filter_type)</span><br><span class="line"><span class="comment"># 绘图</span></span><br><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">12</span>))</span><br><span class="line">ax1=plt.subplot(<span class="number">221</span>,projection = <span class="string">"3d"</span>)</span><br><span class="line">ax2=plt.subplot(<span class="number">222</span>)</span><br><span class="line">ax3=plt.subplot(<span class="number">223</span>)</span><br><span class="line">ax4=plt.subplot(<span class="number">224</span>)</span><br><span class="line">drawPerspective(ax1,myfilter,title = <span class="string">"GLPF Perspective Axes3D"</span>, cmap = <span class="string">"gray"</span>)</span><br><span class="line">drawCurv(ax2,[<span class="keyword">lambda</span> x:np.exp(-(x**<span class="number">2</span>)/(<span class="number">2</span>*(d**<span class="number">2</span>)))],[<span class="string">"GLPF"</span>],d,title = <span class="string">"GLPF Curv"</span>)</span><br><span class="line">drawPanel(ax3,myfilter,title = <span class="string">"GLPF Frequency Panel Axes2D"</span>)</span><br><span class="line">spatial_myfilter = frequencyToSpatial(myfilter)</span><br><span class="line">drawPanel(ax4,spatial_myfilter,title = <span class="string">"GLPF Spatial Panel Axes2D"</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试GHPF</span></span><br><span class="line">d = <span class="number">20</span></span><br><span class="line">filter_type = <span class="string">"hpf"</span></span><br><span class="line">myfilter = getGaussianMask(mask_shape,d,filter_type)</span><br><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">12</span>))</span><br><span class="line">ax1=plt.subplot(<span class="number">221</span>,projection = <span class="string">"3d"</span>)</span><br><span class="line">ax2=plt.subplot(<span class="number">222</span>)</span><br><span class="line">ax3=plt.subplot(<span class="number">223</span>)</span><br><span class="line">ax4=plt.subplot(<span class="number">224</span>)</span><br><span class="line">drawPerspective(ax1,myfilter,title = <span class="string">"GLPF Perspective Axes3D"</span>, cmap = <span class="string">"gray"</span>)</span><br><span class="line">drawCurv(ax2,[<span class="keyword">lambda</span> x:<span class="number">1</span>-np.exp(-(x**<span class="number">2</span>)/(<span class="number">2</span>*(d**<span class="number">2</span>)))],[<span class="string">"GHPF"</span>],d,title = <span class="string">"GLPF Curv"</span>)</span><br><span class="line">drawPanel(ax3,myfilter,title = <span class="string">"GLPF Frequency Panel Axes2D"</span>)</span><br><span class="line">spatial_myfilter = frequencyToSpatial(myfilter)</span><br><span class="line">drawPanel(ax4,spatial_myfilter,title = <span class="string">"GLPF Spatial Panel Axes2D"</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<script type="math/tex; mode=display">H_{GHPF}(u,v) =1 - e^{\dfrac{-D^2(u,v)}{2 D_0^2}}</script><h3 id="代码实现-2"><a href="#代码实现-2" class="headerlink" title="代码实现"></a>代码实现</h3><pre><code class="hljs python"><span class="hljs-comment"># 获得指定大小的高斯滤波器</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getGaussianMask</span><span class="hljs-params">(mask_shape,filter_d0,hl_type)</span>:</span>
+    <span class="hljs-keyword">assert</span> hl_type <span class="hljs-keyword">in</span> (<span class="hljs-string">"lpf"</span>,<span class="hljs-string">"hpf"</span>)
+    rows,cols = mask_shape[<span class="hljs-number">0</span>],mask_shape[<span class="hljs-number">1</span>]
+    crow = rows/<span class="hljs-number">2</span>
+    ccol = cols/<span class="hljs-number">2</span>
+    mask = np.zeros((rows,cols))
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(rows):
+        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> range(cols):
+            dis = sqrt((i-crow)**<span class="hljs-number">2</span> + (j-ccol)**<span class="hljs-number">2</span>)
+            <span class="hljs-keyword">if</span> hl_type == <span class="hljs-string">"hpf"</span>:
+                mask[i,j] = <span class="hljs-number">1</span>-np.exp(-(dis**<span class="hljs-number">2</span>) / (<span class="hljs-number">2</span>*(filter_d0**<span class="hljs-number">2</span>)))
+            <span class="hljs-keyword">elif</span> hl_type == <span class="hljs-string">"lpf"</span>:
+                mask[i,j] = np.exp(-(dis**<span class="hljs-number">2</span>)/(<span class="hljs-number">2</span>*(filter_d0**<span class="hljs-number">2</span>)))
+    <span class="hljs-keyword">return</span> mask
+
+<span class="hljs-comment"># 测试GLPF</span>
+<span class="hljs-comment"># 参数设置</span>
+mask_shape = (<span class="hljs-number">200</span>,<span class="hljs-number">200</span>)
+d = <span class="hljs-number">20</span>
+filter_type = <span class="hljs-string">"lpf"</span>
+<span class="hljs-comment"># 获得滤波器</span>
+myfilter = getGaussianMask(mask_shape,d,filter_type)
+<span class="hljs-comment"># 绘图</span>
+plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">12</span>))
+ax1=plt.subplot(<span class="hljs-number">221</span>,projection = <span class="hljs-string">"3d"</span>)
+ax2=plt.subplot(<span class="hljs-number">222</span>)
+ax3=plt.subplot(<span class="hljs-number">223</span>)
+ax4=plt.subplot(<span class="hljs-number">224</span>)
+drawPerspective(ax1,myfilter,title = <span class="hljs-string">"GLPF Perspective Axes3D"</span>, cmap = <span class="hljs-string">"gray"</span>)
+drawCurv(ax2,[<span class="hljs-keyword">lambda</span> x:np.exp(-(x**<span class="hljs-number">2</span>)/(<span class="hljs-number">2</span>*(d**<span class="hljs-number">2</span>)))],[<span class="hljs-string">"GLPF"</span>],d,title = <span class="hljs-string">"GLPF Curv"</span>)
+drawPanel(ax3,myfilter,title = <span class="hljs-string">"GLPF Frequency Panel Axes2D"</span>)
+spatial_myfilter = frequencyToSpatial(myfilter)
+drawPanel(ax4,spatial_myfilter,title = <span class="hljs-string">"GLPF Spatial Panel Axes2D"</span>)
+plt.show()
+
+<span class="hljs-comment"># 测试GHPF</span>
+d = <span class="hljs-number">20</span>
+filter_type = <span class="hljs-string">"hpf"</span>
+myfilter = getGaussianMask(mask_shape,d,filter_type)
+plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">12</span>))
+ax1=plt.subplot(<span class="hljs-number">221</span>,projection = <span class="hljs-string">"3d"</span>)
+ax2=plt.subplot(<span class="hljs-number">222</span>)
+ax3=plt.subplot(<span class="hljs-number">223</span>)
+ax4=plt.subplot(<span class="hljs-number">224</span>)
+drawPerspective(ax1,myfilter,title = <span class="hljs-string">"GLPF Perspective Axes3D"</span>, cmap = <span class="hljs-string">"gray"</span>)
+drawCurv(ax2,[<span class="hljs-keyword">lambda</span> x:<span class="hljs-number">1</span>-np.exp(-(x**<span class="hljs-number">2</span>)/(<span class="hljs-number">2</span>*(d**<span class="hljs-number">2</span>)))],[<span class="hljs-string">"GHPF"</span>],d,title = <span class="hljs-string">"GLPF Curv"</span>)
+drawPanel(ax3,myfilter,title = <span class="hljs-string">"GLPF Frequency Panel Axes2D"</span>)
+spatial_myfilter = frequencyToSpatial(myfilter)
+drawPanel(ax4,spatial_myfilter,title = <span class="hljs-string">"GLPF Spatial Panel Axes2D"</span>)
+plt.show()</code></pre>
 <p>高斯低通 GLPF 结果四图</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/7.png" alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/7.png" srcset="/img/loading.gif" alt="png"></p>
 <p>高斯高通 GHPF 结果四图</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/8.png" alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/8.png" srcset="/img/loading.gif" alt="png"></p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>在规定滤波器为 100x100，阈值为 20 时，可以明显观察到，理想滤波器-&gt;高阶布特沃斯滤波器-&gt;低阶布特沃斯滤波器-&gt;高斯滤波器，可以由函数 Curv 看出对应的过渡。</p>
 <p>我们同时也发现理想滤波器确实会存在<strong>振铃特性</strong>，这个将在后面的文章中再做分析学习。</p>
 <h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><p>辅助代码</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">import</span> imageio</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> math <span class="keyword">import</span> sqrt</span><br><span class="line"><span class="keyword">from</span> mpl_toolkits.mplot3d <span class="keyword">import</span> Axes3D</span><br><span class="line"></span><br><span class="line">eps = np.finfo(float).eps</span><br></pre></td></tr></table></figure>
-<h3 id="绘制三维透视图"><a href="#绘制三维透视图" class="headerlink" title="绘制三维透视图"></a>绘制三维透视图</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">drawPerspective</span><span class="params">(handleax,input_matrix,title=None,cmap = <span class="string">"gray"</span>)</span>:</span></span><br><span class="line">    handleax.set_title(title)</span><br><span class="line">    handleax.set_zlabel(<span class="string">'Z'</span>)  <span class="comment"># 坐标轴</span></span><br><span class="line">    handleax.set_ylabel(<span class="string">'Y'</span>)</span><br><span class="line">    handleax.set_xlabel(<span class="string">'X'</span>)</span><br><span class="line">    x,y = input_matrix.shape</span><br><span class="line">    X = np.arange(<span class="number">0</span>,x,<span class="number">1</span>)</span><br><span class="line">    Y = np.arange(<span class="number">0</span>,y,<span class="number">1</span>)</span><br><span class="line">    <span class="comment"># 由于图像x,y坐标和 meshigrid出来是互反的</span></span><br><span class="line">    <span class="comment"># 这里需要调转一下</span></span><br><span class="line">    <span class="comment"># 否则会出现mismatch的现象</span></span><br><span class="line">    X,Y = np.meshgrid(Y, X)</span><br><span class="line">    handleax.plot_surface(Y, X, input_matrix, cmap=cmap)</span><br><span class="line"><span class="comment">#     handleax.plot_wireframe(Y, X, input_matrix, cmap=cmap)</span></span><br></pre></td></tr></table></figure>
-<h3 id="绘制平面图"><a href="#绘制平面图" class="headerlink" title="绘制平面图"></a>绘制平面图</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">drawPanel</span><span class="params">(handleax,input_matrix,title=None,cmap = <span class="string">"gray"</span>)</span>:</span></span><br><span class="line">    handleax.set_title(title)</span><br><span class="line">    handleax.set_ylabel(<span class="string">'Y'</span>)</span><br><span class="line">    handleax.set_xlabel(<span class="string">'X'</span>)</span><br><span class="line">    handleax.imshow(input_matrix,cmap = cmap)</span><br></pre></td></tr></table></figure>
-<h3 id="绘制曲线图"><a href="#绘制曲线图" class="headerlink" title="绘制曲线图"></a>绘制曲线图</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">drawCurv</span><span class="params">(handleax,functions,labels,filter_d0,title=None,cmap = <span class="string">"gray"</span>)</span>:</span></span><br><span class="line">    <span class="comment"># 绘制从0到 3D_0的函数剖面图</span></span><br><span class="line">    handleax.set_title(title)</span><br><span class="line">    handleax.set_xlabel(<span class="string">"$D(u,v)$"</span>)</span><br><span class="line">    handleax.set_ylabel(<span class="string">"$H(u,v)$"</span>)</span><br><span class="line">    <span class="comment"># 标出D_0点</span></span><br><span class="line">    <span class="comment"># handleax.annotate(r"$D_0$", xy = (filter_d0,0) , weight='heavy')</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> func,lab <span class="keyword">in</span> zip(functions,labels):</span><br><span class="line">        <span class="comment"># 对每一对func和label绘图 （针对需要画多条线的情况）</span></span><br><span class="line">        X = np.arange(<span class="number">0</span>,<span class="number">3</span>*filter_d0+<span class="number">1</span>,<span class="number">0.1</span>)</span><br><span class="line">        Y = func(X)</span><br><span class="line">        handleax.plot(X,Y,label = lab)</span><br><span class="line">    handleax.set_xticks([<span class="number">0</span>,filter_d0])</span><br><span class="line">    handleax.set_xticklabels([<span class="string">"$0$"</span>,<span class="string">"$D_0$"</span>])</span><br><span class="line">    handleax.legend()</span><br></pre></td></tr></table></figure>
-<h3 id="频率域转空间域"><a href="#频率域转空间域" class="headerlink" title="频率域转空间域"></a>频率域转空间域</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">frequencyToSpatial</span><span class="params">(input_matrix)</span>:</span></span><br><span class="line">    <span class="comment"># 这里不太明白为什么shift与否最后都需要添加一个fftshift来得到想要的空间域图像</span></span><br><span class="line">    shift_input_matrix = np.fft.ifftshift(input_matrix)</span><br><span class="line"><span class="comment">#     shift_input_matrix = input_matrix</span></span><br><span class="line">    spatial_img = np.abs(np.fft.ifft2(shift_input_matrix))</span><br><span class="line">    spatial_img = np.fft.fftshift(spatial_img)</span><br><span class="line">    <span class="keyword">return</span> spatial_img</span><br></pre></td></tr></table></figure>
+<pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-keyword">import</span> cv2
+<span class="hljs-keyword">import</span> imageio
+<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+<span class="hljs-keyword">from</span> math <span class="hljs-keyword">import</span> sqrt
+<span class="hljs-keyword">from</span> mpl_toolkits.mplot3d <span class="hljs-keyword">import</span> Axes3D
+
+eps = np.finfo(float).eps</code></pre>
+<h3 id="绘制三维透视图"><a href="#绘制三维透视图" class="headerlink" title="绘制三维透视图"></a>绘制三维透视图</h3><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">drawPerspective</span><span class="hljs-params">(handleax,input_matrix,title=None,cmap = <span class="hljs-string">"gray"</span>)</span>:</span>
+    handleax.set_title(title)
+    handleax.set_zlabel(<span class="hljs-string">'Z'</span>)  <span class="hljs-comment"># 坐标轴</span>
+    handleax.set_ylabel(<span class="hljs-string">'Y'</span>)
+    handleax.set_xlabel(<span class="hljs-string">'X'</span>)
+    x,y = input_matrix.shape
+    X = np.arange(<span class="hljs-number">0</span>,x,<span class="hljs-number">1</span>)
+    Y = np.arange(<span class="hljs-number">0</span>,y,<span class="hljs-number">1</span>)
+    <span class="hljs-comment"># 由于图像x,y坐标和 meshigrid出来是互反的</span>
+    <span class="hljs-comment"># 这里需要调转一下</span>
+    <span class="hljs-comment"># 否则会出现mismatch的现象</span>
+    X,Y = np.meshgrid(Y, X)
+    handleax.plot_surface(Y, X, input_matrix, cmap=cmap)
+<span class="hljs-comment">#     handleax.plot_wireframe(Y, X, input_matrix, cmap=cmap)</span></code></pre>
+<h3 id="绘制平面图"><a href="#绘制平面图" class="headerlink" title="绘制平面图"></a>绘制平面图</h3><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">drawPanel</span><span class="hljs-params">(handleax,input_matrix,title=None,cmap = <span class="hljs-string">"gray"</span>)</span>:</span>
+    handleax.set_title(title)
+    handleax.set_ylabel(<span class="hljs-string">'Y'</span>)
+    handleax.set_xlabel(<span class="hljs-string">'X'</span>)
+    handleax.imshow(input_matrix,cmap = cmap)</code></pre>
+<h3 id="绘制曲线图"><a href="#绘制曲线图" class="headerlink" title="绘制曲线图"></a>绘制曲线图</h3><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">drawCurv</span><span class="hljs-params">(handleax,functions,labels,filter_d0,title=None,cmap = <span class="hljs-string">"gray"</span>)</span>:</span>
+    <span class="hljs-comment"># 绘制从0到 3D_0的函数剖面图</span>
+    handleax.set_title(title)
+    handleax.set_xlabel(<span class="hljs-string">"$D(u,v)$"</span>)
+    handleax.set_ylabel(<span class="hljs-string">"$H(u,v)$"</span>)
+    <span class="hljs-comment"># 标出D_0点</span>
+    <span class="hljs-comment"># handleax.annotate(r"$D_0$", xy = (filter_d0,0) , weight='heavy')</span>
+
+    <span class="hljs-keyword">for</span> func,lab <span class="hljs-keyword">in</span> zip(functions,labels):
+        <span class="hljs-comment"># 对每一对func和label绘图 （针对需要画多条线的情况）</span>
+        X = np.arange(<span class="hljs-number">0</span>,<span class="hljs-number">3</span>*filter_d0+<span class="hljs-number">1</span>,<span class="hljs-number">0.1</span>)
+        Y = func(X)
+        handleax.plot(X,Y,label = lab)
+    handleax.set_xticks([<span class="hljs-number">0</span>,filter_d0])
+    handleax.set_xticklabels([<span class="hljs-string">"$0$"</span>,<span class="hljs-string">"$D_0$"</span>])
+    handleax.legend()</code></pre>
+<h3 id="频率域转空间域"><a href="#频率域转空间域" class="headerlink" title="频率域转空间域"></a>频率域转空间域</h3><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">frequencyToSpatial</span><span class="hljs-params">(input_matrix)</span>:</span>
+    <span class="hljs-comment"># 这里不太明白为什么shift与否最后都需要添加一个fftshift来得到想要的空间域图像</span>
+    shift_input_matrix = np.fft.ifftshift(input_matrix)
+<span class="hljs-comment">#     shift_input_matrix = input_matrix</span>
+    spatial_img = np.abs(np.fft.ifft2(shift_input_matrix))
+    spatial_img = np.fft.fftshift(spatial_img)
+    <span class="hljs-keyword">return</span> spatial_img</code></pre>
 <p>对三维透视可视化代码进行测试</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 测试1</span></span><br><span class="line">test_img1 = cv2.imread(<span class="string">'./DIP3E_Original_Images_CH02/Fig0207(a)(gray level band).tif'</span>,<span class="number">0</span>)</span><br><span class="line">test_img2 = cv2.imread(<span class="string">'./DIP3E_CH07_Original_Images/Fig0726(a).tif'</span>,<span class="number">0</span>)</span><br><span class="line">plt.figure(figsize=(<span class="number">16</span>,<span class="number">12</span>))</span><br><span class="line">ax1 = plt.subplot(<span class="number">221</span>,projection = <span class="string">"3d"</span>)</span><br><span class="line">ax2 = plt.subplot(<span class="number">222</span>)</span><br><span class="line">ax3 = plt.subplot(<span class="number">223</span>,projection = <span class="string">"3d"</span>)</span><br><span class="line">ax4 = plt.subplot(<span class="number">224</span>)</span><br><span class="line">drawPerspective(ax1,test_img1,<span class="string">"Test Fig0726(a) Axes3D"</span>,<span class="string">"rainbow"</span>)</span><br><span class="line">drawPanel(ax2,test_img1,<span class="string">"Test Fig0726(a) Axes2D"</span>,<span class="string">"rainbow"</span>)</span><br><span class="line">drawPerspective(ax3,test_img2,<span class="string">"Test Fig0726(a) Axes3D"</span>,<span class="string">"rainbow"</span>)</span><br><span class="line">drawPanel(ax4,test_img2,<span class="string">"Test Fig0726(a) Axes2D"</span>,<span class="string">"rainbow"</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<pre><code class="hljs python"><span class="hljs-comment"># 测试1</span>
+test_img1 = cv2.imread(<span class="hljs-string">'./DIP3E_Original_Images_CH02/Fig0207(a)(gray level band).tif'</span>,<span class="hljs-number">0</span>)
+test_img2 = cv2.imread(<span class="hljs-string">'./DIP3E_CH07_Original_Images/Fig0726(a).tif'</span>,<span class="hljs-number">0</span>)
+plt.figure(figsize=(<span class="hljs-number">16</span>,<span class="hljs-number">12</span>))
+ax1 = plt.subplot(<span class="hljs-number">221</span>,projection = <span class="hljs-string">"3d"</span>)
+ax2 = plt.subplot(<span class="hljs-number">222</span>)
+ax3 = plt.subplot(<span class="hljs-number">223</span>,projection = <span class="hljs-string">"3d"</span>)
+ax4 = plt.subplot(<span class="hljs-number">224</span>)
+drawPerspective(ax1,test_img1,<span class="hljs-string">"Test Fig0726(a) Axes3D"</span>,<span class="hljs-string">"rainbow"</span>)
+drawPanel(ax2,test_img1,<span class="hljs-string">"Test Fig0726(a) Axes2D"</span>,<span class="hljs-string">"rainbow"</span>)
+drawPerspective(ax3,test_img2,<span class="hljs-string">"Test Fig0726(a) Axes3D"</span>,<span class="hljs-string">"rainbow"</span>)
+drawPanel(ax4,test_img2,<span class="hljs-string">"Test Fig0726(a) Axes2D"</span>,<span class="hljs-string">"rainbow"</span>)
+plt.show()</code></pre>
 <p>测试结果</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/1.png" alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/1.png" srcset="/img/loading.gif" alt="png"></p>
 <p>对绘制函数曲线代码进行测试</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 测试2</span></span><br><span class="line">test_d0 = <span class="number">10</span></span><br><span class="line">test_funcs1 = []</span><br><span class="line">test_funcs1.append(<span class="keyword">lambda</span> x: np.sin(x))</span><br><span class="line">test_funcs1.append(<span class="keyword">lambda</span> x: np.cos(x))</span><br><span class="line">test_labels1 = [<span class="string">"$sin(x)$"</span>,<span class="string">"$cos(x)$"</span>]</span><br><span class="line"></span><br><span class="line">test_funcs2 = []</span><br><span class="line">test_funcs2.append(<span class="keyword">lambda</span> x: np.sqrt(x))</span><br><span class="line">test_funcs2.append(<span class="keyword">lambda</span> x: np.exp(-(x**<span class="number">2</span>)/(<span class="number">2</span>*(test_d0)**<span class="number">2</span>)))</span><br><span class="line">test_labels2 = [<span class="string">"$x$"</span>,<span class="string">"$e^&#123;\dfrac&#123;-D^2(u,v)&#125;&#123;2 D_0^2&#125;&#125;$"</span>]</span><br><span class="line"></span><br><span class="line">plt.figure(figsize=(<span class="number">14</span>,<span class="number">7</span>))</span><br><span class="line">ax1 = plt.subplot(<span class="number">121</span>)</span><br><span class="line">ax2 = plt.subplot(<span class="number">122</span>)</span><br><span class="line">drawCurv(ax1,test_funcs1,test_labels1,test_d0,title=<span class="string">"Test sin(x) and cos(x)"</span>)</span><br><span class="line">drawCurv(ax2,test_funcs2,test_labels2,test_d0,title=<span class="string">"Test x and gaussian"</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<pre><code class="hljs python"><span class="hljs-comment"># 测试2</span>
+test_d0 = <span class="hljs-number">10</span>
+test_funcs1 = []
+test_funcs1.append(<span class="hljs-keyword">lambda</span> x: np.sin(x))
+test_funcs1.append(<span class="hljs-keyword">lambda</span> x: np.cos(x))
+test_labels1 = [<span class="hljs-string">"$sin(x)$"</span>,<span class="hljs-string">"$cos(x)$"</span>]
+
+test_funcs2 = []
+test_funcs2.append(<span class="hljs-keyword">lambda</span> x: np.sqrt(x))
+test_funcs2.append(<span class="hljs-keyword">lambda</span> x: np.exp(-(x**<span class="hljs-number">2</span>)/(<span class="hljs-number">2</span>*(test_d0)**<span class="hljs-number">2</span>)))
+test_labels2 = [<span class="hljs-string">"$x$"</span>,<span class="hljs-string">"$e^&#123;\dfrac&#123;-D^2(u,v)&#125;&#123;2 D_0^2&#125;&#125;$"</span>]
+
+plt.figure(figsize=(<span class="hljs-number">14</span>,<span class="hljs-number">7</span>))
+ax1 = plt.subplot(<span class="hljs-number">121</span>)
+ax2 = plt.subplot(<span class="hljs-number">122</span>)
+drawCurv(ax1,test_funcs1,test_labels1,test_d0,title=<span class="hljs-string">"Test sin(x) and cos(x)"</span>)
+drawCurv(ax2,test_funcs2,test_labels2,test_d0,title=<span class="hljs-string">"Test x and gaussian"</span>)
+plt.show()</code></pre>
 <p>测试结果</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/2.png" alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/2.png" srcset="/img/loading.gif" alt="png"></p>
 
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tag/数字图像处理/" rel="tag"> <i class="fa fa-tag"></i> 数字图像处理</a>
-          
-        </div>
-      
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/post/684a8ddc.html" rel="next" title="行为金融学——线性成长与指数成长">
-                <i class="fa fa-chevron-left"></i> 行为金融学——线性成长与指数成长
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/post/d140a694.html" rel="prev" title="数字图像处理——高斯滤波器与零填充避免DFT固有周期性影响">
-                数字图像处理——高斯滤波器与零填充避免DFT固有周期性影响 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-
-    <div class="post-spread">
-      
-    </div>
-  </div>
-
-
-          </div>
-          
-
-
-          
-
-  
-
-
-
-        </div>
-        
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <section class="site-overview-wrap sidebar-panel">
-        <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-            
-              <img class="site-author-image" itemprop="image"
-                src="/images/avatar.jpg"
-                alt="Edwardzcn" />
-            
-              <p class="site-author-name" itemprop="name">Edwardzcn</p>
-              <p class="site-description motion-element" itemprop="description">这是一个利用（可爱的）Hexo搭建的博客</p>
-          </div>
-
-          <nav class="site-state motion-element">
-
-            
-              <div class="site-state-item site-state-posts">
-              
-                <a href="/archives/">
-              
-                  <span class="site-state-item-count">366</span>
-                  <span class="site-state-item-name">日志</span>
-                </a>
-              </div>
-            
-
-            
-              
-              
-              <div class="site-state-item site-state-categories">
-                <a href="/categories/index.html">
-                  <span class="site-state-item-count">55</span>
-                  <span class="site-state-item-name">分类</span>
-                </a>
-              </div>
-            
-            
-            
-              
-              
-              <div class="site-state-item site-state-tags">
-                <a href="/tags/index.html">
-                  <span class="site-state-item-count">188</span>
-                  <span class="site-state-item-name">标签</span>
-                </a>
-              </div>
-            
-
-          </nav>
-
-          
-            <div class="feed-link motion-element">
-              <a href="/rss2.xml" rel="alternate">
-                <i class="fa fa-rss"></i>
-                RSS
-              </a>
             </div>
-          
-
-          
-            <div class="links-of-author motion-element">
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
                 
-                  <span class="links-of-author-item">
-                    <a href="https://github.com/Edwardzcn" target="_blank" title="GitHub">
-                      
-                        <i class="fa fa-fw fa-github"></i>GitHub</a>
-                  </span>
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/数字图像处理/">数字图像处理</a>
+                    
+                  </div>
                 
-                  <span class="links-of-author-item">
-                    <a href="mailto:edwardzcn98@gmail.com" target="_blank" title="E-Mail">
-                      
-                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
-                  </span>
                 
-                  <span class="links-of-author-item">
-                    <a href="https://www.google.com" target="_blank" title="Google">
-                      
-                        <i class="fa fa-fw fa-google"></i>Google</a>
-                  </span>
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/数字图像处理/">数字图像处理</a>
+                    
+                  </div>
                 
-                  <span class="links-of-author-item">
-                    <a href="https://www.zhihu.com/people/decades-42/activities" target="_blank" title="Zhihu">
-                      
-                        <i class="fa fa-fw fa-globe"></i>Zhihu</a>
-                  </span>
-                
-                  <span class="links-of-author-item">
-                    <a href="https://www.instagram.com/edwardz98" target="_blank" title="Instagram">
-                      
-                        <i class="fa fa-fw fa-instagram"></i>Instagram</a>
-                  </span>
-                
-            </div>
-          
-
-          
-          
-
-          
-          
-            <div class="links-of-blogroll motion-element links-of-blogroll-block">
-              <div class="links-of-blogroll-title">
-                <i class="fa  fa-fw fa-link"></i>
-                Links
               </div>
-              <ul class="links-of-blogroll-list">
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="https://www.github.com" title="Github" target="_blank">Github</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="https://yangyangyang.cc" title="yyy的博客" target="_blank">yyy的博客</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="https://blog.mrcactus.cn" title="syx的博客" target="_blank">syx的博客</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="http://www.cnblogs.com/wawcac-blog" title="SHer_zfc的博客" target="_blank">SHer_zfc的博客</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="https://csuwangj.github.io/" title="DJ的博客" target="_blank">DJ的博客</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="https://blog.csdn.net/SSS_Benjamin" title="cx的博客" target="_blank">cx的博客</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="https://www.cnblogs.com/csu-lmw" title="吕少的博客" target="_blank">吕少的博客</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="https://ipads.se.sjtu.edu.cn/zh/index.html" title="SJTU_IPAD梦想" target="_blank">SJTU_IPAD梦想</a>
-                  </li>
-                
-              </ul>
-            </div>
-          
-
-          
-
-        </div>
-      </section>
-
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
               
-            
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/post/d140a694.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">数字图像处理——高斯滤波器与零填充避免DFT固有周期性影响</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/post/684a8ddc.html">
+                        <span class="hidden-mobile">行为金融学——线性成长与指数成长</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#频率域滤波器"><span class="nav-number">1.</span> <span class="nav-text">频率域滤波器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#理想滤波器"><span class="nav-number">1.1.</span> <span class="nav-text">理想滤波器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#理想低通滤波器-ILPF"><span class="nav-number">1.1.1.</span> <span class="nav-text">理想低通滤波器 ILPF</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#理想高通滤波器-IHPF"><span class="nav-number">1.1.2.</span> <span class="nav-text">理想高通滤波器 IHPF</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码实现"><span class="nav-number">1.1.3.</span> <span class="nav-text">代码实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#布特沃斯滤波器"><span class="nav-number">1.2.</span> <span class="nav-text">布特沃斯滤波器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#布特沃斯低通滤波器-BLPF"><span class="nav-number">1.2.1.</span> <span class="nav-text">布特沃斯低通滤波器 BLPF</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#布特沃斯高通滤波器-BHPF"><span class="nav-number">1.2.2.</span> <span class="nav-text">布特沃斯高通滤波器 BHPF</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码实现-1"><span class="nav-number">1.2.3.</span> <span class="nav-text">代码实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#高斯低通滤波器-GLPF"><span class="nav-number">1.2.4.</span> <span class="nav-text">高斯低通滤波器 GLPF</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#高斯高通滤波器-GHPF"><span class="nav-number">1.2.5.</span> <span class="nav-text">高斯高通滤波器 GHPF</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码实现-2"><span class="nav-number">1.2.6.</span> <span class="nav-text">代码实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">1.3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#附录"><span class="nav-number">1.4.</span> <span class="nav-text">附录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#绘制三维透视图"><span class="nav-number">1.4.1.</span> <span class="nav-text">绘制三维透视图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#绘制平面图"><span class="nav-number">1.4.2.</span> <span class="nav-text">绘制平面图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#绘制曲线图"><span class="nav-number">1.4.3.</span> <span class="nav-text">绘制曲线图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#频率域转空间域"><span class="nav-number">1.4.4.</span> <span class="nav-text">频率域转空间域</span></a></li></ol></li></ol></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
-      
-
-      
-
-    </div>
-  </aside>
-
-
-        
+          </article>
+        </div>
       </div>
-    </main>
-
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
-  <span class="with-love">
-    <i class="fa fa-user"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">Edwardzcn</span>
-
-  
-    <span class="post-meta-divider">|</span>
-    <span class="post-meta-item-icon">
-      <i class="fa fa-area-chart"></i>
-    </span>
+    </div>
     
-      <span class="post-meta-item-text">Site words total count&#58;</span>
-    
-    <span title="Site words total count">451.2k</span>
-  
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
 </div>
 
-<div class="copyright">
-<span id="busuanzi_container_site_uv"><a class="theme-link" href="http://www.miitbeian.gov.cn">冀ICP备18024730号</a></span>
-<span id="bei_an"> <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641" ><img src="https://www.edwardzcn98yx.com/batb.png" />湘公网安备 43010402000641号</a></span>
+      </div>
+    
+  </div>
 </div>
 
-<div class="powered-by">
-<i class ="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
-    本站访客数：<span id="busuanzi_value_site_uv"></span></spam></div>
-
-<!--
-
-   <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+<!-- Custom -->
 
 
+    
+  </main>
 
-  <span class="post-meta-divider">|</span>
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
 
-
-
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
-
-
-
--->
-        
-
-
-
-
-
-
-
-        
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
-    </footer>
-
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
       </div>
-    
-
-    
-
+    </div>
   </div>
-
-  
-
-<script type="text/javascript">
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
-</script>
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-  
-  
-
-
-
-
-
-
-
-
-
-  
-  
-    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/three/three.min.js"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
-  
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
-
-
-
-  
-  
-
-
-  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
-
-
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
-
-
-
-  
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-  
-  
-  
-  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
-
-  
-  
-  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
-  
-
-  <script src="/js/src/algolia-search.js?v=5.1.4"></script>
-
-
-
+</div>
   
 
   
 
   
-<script>
-(function(){
-    var bp = document.createElement('script');
-    var curProtocol = window.location.protocol.split(':')[0];
-    if (curProtocol === 'https') {
-        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '#post-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "数字图像处理——频率域平滑锐化图像常用滤波器&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
     }
-    else {
-        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
     }
-    var s = document.getElementsByTagName("script")[0];
-    s.parentNode.insertBefore(bp, s);
-})();
-</script>
+  </script>
 
 
-  
-  
 
-  
-  
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
         tex2jax: {
-          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
-          processEscapes: true,
-          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
         }
-      });
-    </script>
-
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for (i=0; i < all.length; i += 1) {
-          all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-      });
-    </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  
-
-
-  
-
-  
-
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </body>
 </html>

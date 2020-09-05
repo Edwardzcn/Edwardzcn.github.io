@@ -1,507 +1,216 @@
+
+
 <!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&quot;auto&quot;>
 
 
 
-  
-
-
-<html class="theme-next gemini use-motion" lang="zh-Hans">
 <head>
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-<meta name="theme-color" content="#222">
-<meta name="baidu-site-verification" content="ZzhwBFUe1V" />
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="http://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" type="image/png" href="http://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  <title>分布式系统学习——MapReduce方法Paper翻译 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
 
-
-
-
-
-
-
-
-
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
-
-<meta http-equiv="Cache-Control" content="max-age=600" />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
   
+    
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
-
-
-
-
-
-
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
-
-<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
-
-
-  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
-
-
-
-
-
-  <meta name="keywords" content="论文,操作系统,分布式系统,MapReduce," />
-
-
-
-
-
-  <link rel="alternate" href="/rss2.xml" title="Eddy的个人博客" type="application/atom+xml" />
-
-
-
-
-
-
-<meta name="description" content="读书笔记——MapReduce: Simplified Data Processing on Large Clusters大型集群上的简化处理：MapReduce（两个主要操作） 原始翻译版本网址：《MapReduce: Simplified Data Processing on Large Cluster 》翻译 AbstractMapReduce 是一种编程模型和一种用来处理和产生大数据集的相">
-<meta name="keywords" content="论文,操作系统,分布式系统,MapReduce">
-<meta property="og:type" content="article">
-<meta property="og:title" content="分布式系统学习——MapReduce方法Paper翻译">
-<meta property="og:url" content="http://www.edwardzcn98yx.com/post/cbabc18d.html">
-<meta property="og:site_name" content="Eddy的个人博客">
-<meta property="og:description" content="读书笔记——MapReduce: Simplified Data Processing on Large Clusters大型集群上的简化处理：MapReduce（两个主要操作） 原始翻译版本网址：《MapReduce: Simplified Data Processing on Large Cluster 》翻译 AbstractMapReduce 是一种编程模型和一种用来处理和产生大数据集的相">
-<meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_3_1.png">
-<meta property="og:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_3_2.png">
-<meta property="og:updated_time" content="2019-11-04T10:21:19.390Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="分布式系统学习——MapReduce方法Paper翻译">
-<meta name="twitter:description" content="读书笔记——MapReduce: Simplified Data Processing on Large Clusters大型集群上的简化处理：MapReduce（两个主要操作） 原始翻译版本网址：《MapReduce: Simplified Data Processing on Large Cluster 》翻译 AbstractMapReduce 是一种编程模型和一种用来处理和产生大数据集的相">
-<meta name="twitter:image" content="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_3_1.png">
-
-
-
-<script type="text/javascript" id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Gemini',
-    version: '5.1.4',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
-    fancybox: true,
-    tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
-    duoshuo: {
-      userId: '0',
-      author: '博主'
-    },
-    algolia: {
-      applicationID: '9M2C5ORTA3',
-      apiKey: 'cab906b07b7695815e9a87dda0c83ede',
-      indexName: 'EddyBlog',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"输入关键字","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
-</script>
-
-
-
-  <link rel="canonical" href="http://www.edwardzcn98yx.com/post/cbabc18d.html"/>
-
-
-
-
-
-  <title>分布式系统学习——MapReduce方法Paper翻译 | Eddy的个人博客</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
+<!-- 主题依赖的图标库，不要自行修改 -->
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_6peoq002giu.css">
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
 
 
-
-
-
-
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
 
-  
-  
-    
-  
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
 
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
-    <div class="headband"></div>
-    <a href="https://github.com/Edwardzcn" class="github-corner" aria-label="View source on Github">
-    <svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true">
-    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
-    <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
-    <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path>
-    </svg>
-    </a>
-    <style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
-
-
-    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta ">
-    
-
-    <div class="custom-logo-site-title">
-      <a href="/"  class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Eddy的个人博客</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
-    </div>
-      
-        <p class="site-subtitle">相知相遇，即是幸运</p>
-      
-  </div>
-
-  <div class="site-nav-toggle">
-    <button>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
     </button>
-  </div>
-</div>
 
-<nav class="site-nav">
-  
-
-  
-    <ul id="menu" class="menu">
-      
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
         
-        <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
-            
-            我的首页
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-about">
-          <a href="/about/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
-            
-            关于我
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-tags">
-          <a href="/tags/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
-            
-            标签
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-categories">
-          <a href="/categories/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
-            
-            目录总览
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-reading">
-          <a href="/categories/阅读" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
-            
-            阅读
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-travelling">
-          <a href="/categories/旅行" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
-            
-            旅行
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-programming">
-          <a href="/categories/编程" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
-            
-            编程
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-essay">
-          <a href="/categories/随笔" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
-            
-            随笔
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-archives">
-          <a href="/archives/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
-            
-            时间线
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-schedule">
-          <a href="/schedule/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />
-            
-            日程表
-          </a>
-        </li>
-      
-
-      
-        <li class="menu-item menu-item-search">
           
-            <a href="javascript:;" class="popup-trigger">
           
-            
-              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
-            
-            搜索
-          </a>
-        </li>
-      
-    </ul>
-  
-
-  
-    <div class="site-search">
-      
-  
-  <div class="algolia-popup popup search-popup">
-    <div class="algolia-search">
-      <div class="algolia-search-input-icon">
-        <i class="fa fa-search"></i>
-      </div>
-      <div class="algolia-search-input" id="algolia-search-input"></div>
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
     </div>
-
-    <div class="algolia-results">
-      <div id="algolia-stats"></div>
-      <div id="algolia-hits"></div>
-      <div id="algolia-pagination" class="algolia-pagination"></div>
-    </div>
-
-    <span class="popup-btn-close">
-      <i class="fa fa-times-circle"></i>
-    </span>
   </div>
-
-
-
-
-    </div>
-  
 </nav>
 
-
-
- </div>
-    </header>
-
-    <main id="main" class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
-    
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.edwardzcn98yx.com/post/cbabc18d.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Edwardzcn">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Eddy的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">分布式系统学习——MapReduce方法Paper翻译</h1>
-        
-
-        <div class="post-meta">
-          
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-24T08:20:58+08:00">
-                2019-08-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作系统/" itemprop="url" rel="index">
-                    <span itemprop="name">操作系统</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作系统/分布式系统/" itemprop="url" rel="index">
-                    <span itemprop="name">分布式系统</span>
-                  </a>
-                </span>
-
-                
-                
+    <div class="banner intro-2" id="background" parallax=true
+         style="background: url('http://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container page-header text-center fade-in-up">
+            <span class="h2" id="subtitle">
               
             </span>
-          
 
-          
             
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
               
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  10,315
-                </span>
-              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2019-08-24 08:20" pubdate>
+      2019年8月24日 早上
+    </time>
+  </div>
 
-              
-                <span class="post-meta-divider">|</span>
-              
 
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  37
-                </span>
-              
-            </div>
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      22
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
           
-
-          
-
         </div>
-      </header>
-    
+      </div>
+    </div>
+  </header>
 
+  <main>
     
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
-      
-        <h1 id="读书笔记——MapReduce-Simplified-Data-Processing-on-Large-Clusters"><a href="#读书笔记——MapReduce-Simplified-Data-Processing-on-Large-Clusters" class="headerlink" title="读书笔记——MapReduce: Simplified Data Processing on Large Clusters"></a>读书笔记——MapReduce: Simplified Data Processing on Large Clusters</h1><p>大型集群上的简化处理：MapReduce（两个主要操作）</p>
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto" id="post">
+            <!-- SEO header -->
+            <h1 style="display: none">分布式系统学习——MapReduce方法Paper翻译</h1>
+            
+            <div class="markdown-body" id="post-body">
+              <h1 id="读书笔记——MapReduce-Simplified-Data-Processing-on-Large-Clusters"><a href="#读书笔记——MapReduce-Simplified-Data-Processing-on-Large-Clusters" class="headerlink" title="读书笔记——MapReduce: Simplified Data Processing on Large Clusters"></a>读书笔记——MapReduce: Simplified Data Processing on Large Clusters</h1><p>大型集群上的简化处理：MapReduce（两个主要操作）</p>
 <p><a href="https://www.cnblogs.com/YaoDD/p/6017397.html" target="_blank" rel="noopener">原始翻译版本网址：《MapReduce: Simplified Data Processing on Large Cluster 》翻译</a></p>
 <h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>MapReduce 是一种编程模型和一种用来处理和产生大数据集的相关实现。用户定义 map 函数（map function）来处理 key/value 键值对来产生一系列的中间的 key/value 键值对。还要定义一个 reduce 函数(reduce function)用来合并有着相同中间 key 值的中间 value。许多现实世界中的任务都可以用这种模型来表达，就像下文所展示的那样。</p>
 <p>用这个风格（函数式）编写的程序可以自动并行地在大规模集群上工作。运行时系统会自动处理例如切割输入数据，在机器之间调度程序的执行，处理机器故障以及管理必要的机器间通信等细节问题。这可以让那些对于并行分布式系统<strong>没有任何经验</strong>的程序员也能<strong>很简单</strong>地利用起一个大的分布式系统的资源。</p>
@@ -515,10 +224,23 @@
 <p><strong>Map</strong>，是由用户编写的，取一个输入对，并且产生一系列中间的键值对。MapReduce 库将那些具有相同的中间键$I$的中间值聚集在一起，然后将它们传递给 Reduce 函数。</p>
 <p><strong>Reduce</strong>，同样是由用户编写的，接收一个中间键$I$和该键对应的一系列的中间值。Reduce 函数通过将这些值合并来组成一个可能更小的集合（值的集合）。通常每个 Reduce 函数只产生 0 个或 1 个输出值。Reduce 函数一般通过一个迭代器（via an iterator）来获取中间值，从而在中间值的数目远远大于内存容量时，我们也能够处理。</p>
 <h3 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h3><p>下面来考虑这样一个问题：统计大量文档中每一个单词出现的次数。对此，用户需要编写类似于如下的伪代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">　　map(String key, String value):</span><br><span class="line">　　　　// key: document name</span><br><span class="line">　　　　// value: document contents</span><br><span class="line">　　　　for each word w in value:</span><br><span class="line">　　　　　　EmitIntermediate(w, &quot;1&quot;);</span><br><span class="line"></span><br><span class="line">　　reduce(String key, Iterator values):</span><br><span class="line">　　　　// key: a word</span><br><span class="line">　　　　// values: a list of counts</span><br><span class="line">　　　　int result = 0;</span><br><span class="line">　　　　for each v in values:</span><br><span class="line">　　　　　　result += ParseInt(v);</span><br><span class="line">　　　　Emit(AsString(result));</span><br></pre></td></tr></table></figure>
+<pre><code class="hljs python">　　map(String key, String value):
+　　　　// key: document name
+　　　　// value: document contents
+　　　　<span class="hljs-keyword">for</span> each word w <span class="hljs-keyword">in</span> value:
+　　　　　　EmitIntermediate(w, <span class="hljs-string">"1"</span>);
+
+　　reduce(String key, Iterator values):
+　　　　// key: a word
+　　　　// values: a list of counts
+　　　　int result = <span class="hljs-number">0</span>;
+　　　　<span class="hljs-keyword">for</span> each v <span class="hljs-keyword">in</span> values:
+　　　　　　result += ParseInt(v);
+　　　　Emit(AsString(result));</code></pre>
 <p>Map 函数为在每一个单词出现的时候，为它加上一个计数（在这个简单的例子中就是加 1）。Reduce 函数对每个单词（作为中间键值对的键）的所有计数进行叠加。</p>
 <p>另外，用户需要用输入输出文件的名字，以及一个可选的 tuning paramete 去 fill in 一个叫 mapreduce specification 的对象。之后，用户调用 MapReduce 函数，将上述定义的对象传递进去。用户的代码将和 MapReduce 库相连（由 C++实现）。Appendix A 中有这个例子所有的代码文档。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">map     (k1,v1)  -&gt;  list(k2,v2)</span><br><span class="line">reduce  (k2,list(v2)) -&gt; list(v2)</span><br></pre></td></tr></table></figure>
+<pre><code class="hljs python">map     (k1,v1)  -&gt;  list(k2,v2)
+reduce  (k2,list(v2)) -&gt; list(v2)</code></pre>
 <p>需要注意的是，输入的 key 和 value 与输出的 key 和 value 是不同的类型，而中间的 key 和 value 与输出的 key 和 value 是相同的类型（用 k1 和 k2 表示）。我们的 C++实现都是以字符串的形式和用户代码进行交互的，至于将字符串类型转换成相应合适的类型的工作则由用户代码来完成了。</p>
 <h3 id="More-Example"><a href="#More-Example" class="headerlink" title="More Example"></a>More Example</h3><p>接下来是一些能够简单地用 MapReduce 计算模型进行表达的例子</p>
 <p>Distributed Grep（分布式查找）：Map 函数获取匹配提供的模式的行，Reduce 函数只是简单地将这些中间数据拷贝到输出。</p>
@@ -543,7 +265,7 @@
 </li>
 </ol>
 <h3 id="Execution-Overview"><a href="#Execution-Overview" class="headerlink" title="Execution Overview"></a>Execution Overview</h3><p>通过将输入数据自动分割成 M 份，Map 函数得以在多台机器上分布式执行。每一个输入块都能并行地在不同的机器上执行。通过划分函数(例如，hash(key) mod R)将中间键划分为 R 份，Reduce 函数也能被分布式地调用。其中划分的数目 R 和划分函数都是由用户指定的。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_3_1.png" alt="OS_3_1"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_3_1.png" srcset="/img/loading.gif" alt="OS_3_1"></p>
 <p>上图 1 展示了在我们的实现中 MapReduce 全部的流程。当用户程序调用 MapReduce 函数时，接下来的动作将按序发生（图 1 中标记的数字与下面的数字是一一对应的）：</p>
 <ol>
 <li><p>用户程序中的 MapReduce 库首先将输入文件划分为$M$片，每片大小一般在 16MB 到 64MB 之间（由用户通过一个可选的参数指定）。之后，它在集群的很多台机器上都启动了相同的程序拷贝。</p>
@@ -602,7 +324,14 @@
 <p>另外，顶层的状态页显示了那些 worker 出错了，以及在它们出错时正在执行哪些 Map 和 Reduce task。这些信息在诊断用户代码出现的 bug 时是非常有用的。</p>
 <p>MapReduce 库提供了一个叫 counter 的设施用于统计各种不同事件出现的次数。例如，用户可能想要统计已经处理过的单词的数目或者德国文件的索引数量。</p>
 <p>为了使用这一特性，用户代码创建一个命名的 counter 对象，并且在 Map 以及 Reduce 函数中对 counter 进行增加。例如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Counter* uppercase;</span><br><span class="line">uppercase = GetCounter(&quot;uppercase&quot;);</span><br><span class="line"></span><br><span class="line">map(String name, String contents):</span><br><span class="line">　　for each word w in contents:</span><br><span class="line">　　　　if(IsCapitalized(w)):</span><br><span class="line">　　　　　　uppercase-&gt;Increment();</span><br><span class="line">　　　　EmitIntermediate(w, &quot;1&quot;);</span><br></pre></td></tr></table></figure>
+<pre><code class="hljs python">Counter* uppercase;
+uppercase = GetCounter("uppercase");
+
+map(String name, String contents):
+　　for each word w in contents:
+　　　　if(IsCapitalized(w)):
+　　　　　　uppercase-&gt;Increment();
+　　　　EmitIntermediate(w, "1");</code></pre>
 <p>每个 worker 机器上 counter 的值会定期传给 master（捎带在给 master 的 ping 回复中）。master 将来自成功执行的 Map 和 Reduce task 的 counter 值聚集起来。然后在 MapReduce 操作完成之后返回给用户代码。当前的 counter 值也会显示在 master 的状态页上（前述的 state pages），所以用户能从实时观看计算的进行。在聚集 counter 的值的时候，master 会消除 Map 或者 Reduce task 的重复执行造成的重复计算。（重复执行可能由 backup tasks 或者因为错误重新执行的 task 引起）。</p>
 <p>有些 counter 的值是由 MapReduce 库自动维护的，例如已经处理的输入键值对数目以及已经产生的输出键值对数目。</p>
 <p>用户发现 counter 特性对于检查 MapReduce 操作的执行是非常有用的。例如，在有些 MapReduce 操作中，用户代码想要确保产生的输出对的数目和已经处理的输入对的数目是恰好相等的（比如检查满射），或者处理的德语文件的数目占总处理文件数目的比重在一个可容忍的范围内。</p>
@@ -615,7 +344,7 @@
 <h3 id="Sort"><a href="#Sort" class="headerlink" title="Sort"></a>Sort</h3><p>排序程序用于对 10 的十次方条记录（大概 1T 的数据）进行排序。程序以 TeraSort benchmark 为模型。</p>
 <p>排序程序由不超过 50 行用户代码组成，一个三行的 Map function 从 text 的一行中提取一个 10-byte 的排序 key，与原始的 text line 组合成一个中间 key/value pair。我们使用内置的 Identity 函数作为 Reduce 的运算符。这一函数将中间键值对传递出作为输出对。最终的排序输出是一个二路复制的 GFS 文件。</p>
 <p>输入被分成 64MB 份（M = 15000），而将输出分为 4000 份（R = 4000）。分割成许根据初始的 key 将其分割到 R 份中的一个。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_3_2.png" alt="OS_3_2"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_3_2.png" srcset="/img/loading.gif" alt="OS_3_2"></p>
 <p>图 3（a）展示了排序程序的正常执行，左上方的图表示读入的速率，在达到峰值 13GB/s 后迅速滑落因为所有的 map tasks 在 200 秒内就已经完成。值得注意的是，输入的速率慢于 grep 操作（对于相同的 M 划分），这是因为对于 sort 操作，花费了一半的事件以及 I/O 带宽用于将中间键值对结果写入本地磁盘，而 grep 操作对应的输出则可以小到忽略不计。</p>
 <p>中间左边的图表示经历 map tasks 后通过网络向 reduce tasks 传输数据的速率。这一混排在首个完成的 map task 后启动。第一个突起表示所有 reduce tasks 运行的第一个批次（R = 1700 nearly all），开始计算后 300 秒左右，第一批次的部分 reduce tasks 完成，我们开始向完成的机器进一步递送剩余 reduce tasks 的数据。</p>
 <p>左下的图表示排序好的数据向最终文件写出的速率。从第一批次 reduce tasks 完成到开始写数据有一段时间间隔，这是因为机器忙于对中间数据进行排序。</p>
@@ -651,566 +380,280 @@
 <li>冗余的任务执行（backup tasks）可以用于减少缓慢机器的影响，以及解决机器故障和数据丢失。</li>
 </ul>
 
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tag/论文/" rel="tag"> <i class="fa fa-tag"></i> 论文</a>
-          
-            <a href="/tag/操作系统/" rel="tag"> <i class="fa fa-tag"></i> 操作系统</a>
-          
-            <a href="/tag/分布式系统/" rel="tag"> <i class="fa fa-tag"></i> 分布式系统</a>
-          
-            <a href="/tag/MapReduce/" rel="tag"> <i class="fa fa-tag"></i> MapReduce</a>
-          
-        </div>
-      
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/post/86b562df.html" rel="next" title="分布式系统学习——状态机容错模型Paper翻译">
-                <i class="fa fa-chevron-left"></i> 分布式系统学习——状态机容错模型Paper翻译
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/post/7c86d8e8.html" rel="prev" title="分布式系统学习——GFS谷歌文件系统Paper翻译">
-                分布式系统学习——GFS谷歌文件系统Paper翻译 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-
-    <div class="post-spread">
-      
-    </div>
-  </div>
-
-
-          </div>
-          
-
-
-          
-
-  
-
-
-
-        </div>
-        
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <section class="site-overview-wrap sidebar-panel">
-        <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-            
-              <img class="site-author-image" itemprop="image"
-                src="/images/avatar.jpg"
-                alt="Edwardzcn" />
-            
-              <p class="site-author-name" itemprop="name">Edwardzcn</p>
-              <p class="site-description motion-element" itemprop="description">这是一个利用（可爱的）Hexo搭建的博客</p>
-          </div>
-
-          <nav class="site-state motion-element">
-
-            
-              <div class="site-state-item site-state-posts">
-              
-                <a href="/archives/">
-              
-                  <span class="site-state-item-count">366</span>
-                  <span class="site-state-item-name">日志</span>
-                </a>
-              </div>
-            
-
-            
-              
-              
-              <div class="site-state-item site-state-categories">
-                <a href="/categories/index.html">
-                  <span class="site-state-item-count">55</span>
-                  <span class="site-state-item-name">分类</span>
-                </a>
-              </div>
-            
-            
-            
-              
-              
-              <div class="site-state-item site-state-tags">
-                <a href="/tags/index.html">
-                  <span class="site-state-item-count">188</span>
-                  <span class="site-state-item-name">标签</span>
-                </a>
-              </div>
-            
-
-          </nav>
-
-          
-            <div class="feed-link motion-element">
-              <a href="/rss2.xml" rel="alternate">
-                <i class="fa fa-rss"></i>
-                RSS
-              </a>
             </div>
-          
-
-          
-            <div class="links-of-author motion-element">
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
                 
-                  <span class="links-of-author-item">
-                    <a href="https://github.com/Edwardzcn" target="_blank" title="GitHub">
-                      
-                        <i class="fa fa-fw fa-github"></i>GitHub</a>
-                  </span>
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/分布式系统/">分布式系统</a>
+                    
+                  </div>
                 
-                  <span class="links-of-author-item">
-                    <a href="mailto:edwardzcn98@gmail.com" target="_blank" title="E-Mail">
-                      
-                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
-                  </span>
                 
-                  <span class="links-of-author-item">
-                    <a href="https://www.google.com" target="_blank" title="Google">
-                      
-                        <i class="fa fa-fw fa-google"></i>Google</a>
-                  </span>
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/Paper/">Paper</a>
+                    
+                      <a class="hover-with-bg" href="/tag/分布式系统/">分布式系统</a>
+                    
+                  </div>
                 
-                  <span class="links-of-author-item">
-                    <a href="https://www.zhihu.com/people/decades-42/activities" target="_blank" title="Zhihu">
-                      
-                        <i class="fa fa-fw fa-globe"></i>Zhihu</a>
-                  </span>
-                
-                  <span class="links-of-author-item">
-                    <a href="https://www.instagram.com/edwardz98" target="_blank" title="Instagram">
-                      
-                        <i class="fa fa-fw fa-instagram"></i>Instagram</a>
-                  </span>
-                
-            </div>
-          
-
-          
-          
-
-          
-          
-            <div class="links-of-blogroll motion-element links-of-blogroll-block">
-              <div class="links-of-blogroll-title">
-                <i class="fa  fa-fw fa-link"></i>
-                Links
               </div>
-              <ul class="links-of-blogroll-list">
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="https://www.github.com" title="Github" target="_blank">Github</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="https://yangyangyang.cc" title="yyy的博客" target="_blank">yyy的博客</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="https://blog.mrcactus.cn" title="syx的博客" target="_blank">syx的博客</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="http://www.cnblogs.com/wawcac-blog" title="SHer_zfc的博客" target="_blank">SHer_zfc的博客</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="https://csuwangj.github.io/" title="DJ的博客" target="_blank">DJ的博客</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="https://blog.csdn.net/SSS_Benjamin" title="cx的博客" target="_blank">cx的博客</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="https://www.cnblogs.com/csu-lmw" title="吕少的博客" target="_blank">吕少的博客</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="https://ipads.se.sjtu.edu.cn/zh/index.html" title="SJTU_IPAD梦想" target="_blank">SJTU_IPAD梦想</a>
-                  </li>
-                
-              </ul>
-            </div>
-          
-
-          
-
-        </div>
-      </section>
-
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
               
-            
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/post/7c86d8e8.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">分布式系统学习——GFS谷歌文件系统Paper翻译</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/post/86b562df.html">
+                        <span class="hidden-mobile">分布式系统学习——状态机容错模型Paper翻译</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#读书笔记——MapReduce-Simplified-Data-Processing-on-Large-Clusters"><span class="nav-number">1.</span> <span class="nav-text">读书笔记——MapReduce: Simplified Data Processing on Large Clusters</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Abstract"><span class="nav-number">1.1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction"><span class="nav-number">1.2.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Programming-Model"><span class="nav-number">1.3.</span> <span class="nav-text">Programming Model</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Example"><span class="nav-number">1.3.1.</span> <span class="nav-text">Example</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#More-Example"><span class="nav-number">1.3.2.</span> <span class="nav-text">More Example</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Implementation"><span class="nav-number">1.4.</span> <span class="nav-text">Implementation</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Execution-Overview"><span class="nav-number">1.4.1.</span> <span class="nav-text">Execution Overview</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Master-Data-Structures"><span class="nav-number">1.4.2.</span> <span class="nav-text">Master Data Structures</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fault-Tolerance"><span class="nav-number">1.4.3.</span> <span class="nav-text">Fault Tolerance</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Worker-Failure"><span class="nav-number">1.4.3.1.</span> <span class="nav-text">Worker Failure</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Master-Failure"><span class="nav-number">1.4.3.2.</span> <span class="nav-text">Master Failure</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Semantics-in-the-Presence-of-Failures"><span class="nav-number">1.4.3.3.</span> <span class="nav-text">Semantics in the Presence of Failures</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Locality"><span class="nav-number">1.4.4.</span> <span class="nav-text">Locality</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Task-Granularity"><span class="nav-number">1.4.5.</span> <span class="nav-text">Task Granularity</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Backup-Tasks"><span class="nav-number">1.4.6.</span> <span class="nav-text">Backup Tasks</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Refinements"><span class="nav-number">1.5.</span> <span class="nav-text">Refinements</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Partitioning-Function"><span class="nav-number">1.5.1.</span> <span class="nav-text">Partitioning Function</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Ordering-Guarantees"><span class="nav-number">1.5.2.</span> <span class="nav-text">Ordering Guarantees</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Combiner-Function"><span class="nav-number">1.5.3.</span> <span class="nav-text">Combiner Function</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Input-and-Output-Types"><span class="nav-number">1.5.4.</span> <span class="nav-text">Input and Output Types</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Side-effects"><span class="nav-number">1.5.5.</span> <span class="nav-text">Side-effects</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Skipping-Bad-Records"><span class="nav-number">1.5.6.</span> <span class="nav-text">Skipping Bad Records</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Local-Execution"><span class="nav-number">1.5.7.</span> <span class="nav-text">Local Execution</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Status-Information"><span class="nav-number">1.5.8.</span> <span class="nav-text">Status Information</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Performance"><span class="nav-number">1.6.</span> <span class="nav-text">Performance</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Cluster-Configuration"><span class="nav-number">1.6.1.</span> <span class="nav-text">Cluster Configuration</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Grep"><span class="nav-number">1.6.2.</span> <span class="nav-text">Grep</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sort"><span class="nav-number">1.6.3.</span> <span class="nav-text">Sort</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Effect-of-Backup-Tasks"><span class="nav-number">1.6.4.</span> <span class="nav-text">Effect of Backup Tasks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Machine-Failures"><span class="nav-number">1.6.5.</span> <span class="nav-text">Machine Failures</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Experience"><span class="nav-number">1.7.</span> <span class="nav-text">Experience</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Large-Scale-Indexing"><span class="nav-number">1.8.</span> <span class="nav-text">Large-Scale Indexing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Related-Work"><span class="nav-number">1.9.</span> <span class="nav-text">Related Work</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Conclusion"><span class="nav-number">1.10.</span> <span class="nav-text">Conclusion</span></a></li></ol></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
-      
-
-      
-
-    </div>
-  </aside>
-
-
-        
+          </article>
+        </div>
       </div>
-    </main>
-
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
-  <span class="with-love">
-    <i class="fa fa-user"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">Edwardzcn</span>
-
-  
-    <span class="post-meta-divider">|</span>
-    <span class="post-meta-item-icon">
-      <i class="fa fa-area-chart"></i>
-    </span>
+    </div>
     
-      <span class="post-meta-item-text">Site words total count&#58;</span>
-    
-    <span title="Site words total count">451.2k</span>
-  
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
 </div>
 
-<div class="copyright">
-<span id="busuanzi_container_site_uv"><a class="theme-link" href="http://www.miitbeian.gov.cn">冀ICP备18024730号</a></span>
-<span id="bei_an"> <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641" ><img src="https://www.edwardzcn98yx.com/batb.png" />湘公网安备 43010402000641号</a></span>
+      </div>
+    
+  </div>
 </div>
 
-<div class="powered-by">
-<i class ="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
-    本站访客数：<span id="busuanzi_value_site_uv"></span></spam></div>
-
-<!--
-
-   <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+<!-- Custom -->
 
 
+    
+  </main>
 
-  <span class="post-meta-divider">|</span>
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
 
-
-
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
-
-
-
--->
-        
-
-
-
-
-
-
-
-        
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
-    </footer>
-
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
       </div>
-    
-
-    
-
+    </div>
   </div>
-
-  
-
-<script type="text/javascript">
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
-</script>
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-  
-  
-
-
-
-
-
-
-
-
-
-  
-  
-    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/three/three.min.js"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
-  
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
-
-
-
-  
-  
-
-
-  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
-
-
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
-
-
-
-  
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-  
-  
-  
-  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
-
-  
-  
-  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
-  
-
-  <script src="/js/src/algolia-search.js?v=5.1.4"></script>
-
-
-
+</div>
   
 
   
 
   
-<script>
-(function(){
-    var bp = document.createElement('script');
-    var curProtocol = window.location.protocol.split(':')[0];
-    if (curProtocol === 'https') {
-        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '#post-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "分布式系统学习——MapReduce方法Paper翻译&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
     }
-    else {
-        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
     }
-    var s = document.getElementsByTagName("script")[0];
-    s.parentNode.insertBefore(bp, s);
-})();
-</script>
+  </script>
 
 
-  
-  
 
-  
-  
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
         tex2jax: {
-          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
-          processEscapes: true,
-          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
         }
-      });
-    </script>
-
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for (i=0; i < all.length; i += 1) {
-          all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-      });
-    </script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-  
-
-
-  
-
-  
-
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </body>
 </html>
