@@ -1,7 +1,7 @@
+
+
 <!DOCTYPE html>
-<html lang="zh-CN">
-
-
+<html lang="zh-CN" data-default-color-scheme=&#34;dark&#34;>
 
 
 
@@ -26,23 +26,28 @@
   <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
   
-    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+    
   
 
   
 
 
 <!-- 主题依赖的图标库，不要自行修改 -->
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_pf9vaxs7x7b.css">
 
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
 
 <link  rel="stylesheet" href="/css/main.css" />
 
 <!-- 自定义样式保持在最底部 -->
 
 
-  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
 
 
@@ -125,8 +130,14 @@
         
         
           <li class="nav-item" id="search-btn">
-            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
-                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
           </li>
         
       </ul>
@@ -134,25 +145,33 @@
   </div>
 </nav>
 
-    <div class="view intro-2" id="background" parallax=true
+    <div class="banner intro-2" id="background" parallax=true
          style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-          <div class="container text-center white-text fadeInUp">
+          <div class="container page-header text-center fade-in-up">
             <span class="h2" id="subtitle">
               
             </span>
 
             
-              
-  <div class="mt-3 post-meta">
-    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2020-06-29 08:01">
-      2020年6月29日 早上
-    </time>
-  </div>
-
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      Edwardzcn
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-06-29 08:01" pubdate>
+        2020年6月29日 早上
+      </time>
+    </span>
+  
+</div>
 
 <div class="mt-1">
   
@@ -197,9 +216,11 @@
     <div class="col-lg-8 nopadding-md">
       <div class="container nopadding-md" id="board-ctn">
         <div class="py-5" id="board">
-          <div class="post-content mx-auto" id="post">
+          <article class="post-content mx-auto" id="post">
+            <!-- SEO header -->
+            <h1 style="display: none">密码技术学习——Keccak论文总结</h1>
             
-            <article class="markdown-body">
+            <div class="markdown-body" id="post-body">
               <h1 id="摘要部分"><a href="#摘要部分" class="headerlink" title="摘要部分"></a>摘要部分</h1><h1 id="理论部分"><a href="#理论部分" class="headerlink" title="理论部分"></a>理论部分</h1><h2 id="已有成果研究"><a href="#已有成果研究" class="headerlink" title="已有成果研究"></a>已有成果研究</h2><p>Keccak 自诞生以来，经历了密码学界广泛的分析，全世界各高校与机构的研究对有关 Keccak 算法（及其相关的衍生算法）的研究成果以及 Keccak 团队的密码学分析被汇总在 Team Keccak 网站中，以方便研究者们相互讨论学习。另外该网站上还长期开放着 Keccak 原像与碰撞攻击挑战赛（The Keccak Crunchy Crypto Collision and Pre-image Contest），目前最好的原像攻击成果是 4 轮指定像值的攻击 ，由新加坡南洋理工大学郭建博士的和中国科学院信息工程研究所刘美成副研究员于 2016 年 12 月提交。从目前看，现有的 Keccak 密码分析仍集中在缩减论述后的 Keccak 算法，并不能威胁到其实际应用时的安全性。由于本次赛题二是对具备前缀 0 特征的 Keccak256 哈希值求其原像，求解过程更接近于密码分析中的原像攻击，已有的研究成果如下：</p>
 <p>早期代表性的研究有，2011 年 Naya-Plasencia 等人提出了低轮 Keccak 算法的可行攻击方式，其中包括 2 轮 Keccak-256 第二原像的攻击方式（复杂度为$O(2^{33})$），以及 Morawiecki 等人于 2010 至 2013 年的一系列工作，包括基于 SAT 求解器的密码分析旋转密码分析，并据此完成了 Keccak 原像与碰撞攻击挑战赛中的 3 各 2 轮指定像值的原像攻击。</p>
 <p>通过构造满足一些代数性质的形式来进行密码攻击的方式在后来被开发出来，拓宽了 Keccak 密码分析的思路并推进了其他 Keccak 实例的原像攻击进程。2016 年 Guo，Liu 和 Song 提出了“线性结构”（Linear Structure）的原像攻击设计思路并发现了最高达 4 轮的 Keccak 攻击方法。应用该结构，可在现实时间内实现 2 轮 Keccak-256（即 Keccak[1088,512]）的原像攻击（复杂度为$O(1)$），3 轮 Keccak[640,160]的原像攻击（复杂度为$O(2^7)$）和 3 轮 Keccak[1440,160]的原像攻击（复杂度为$O(1)$），同时也使另外一些形式的 Keccak 实例的原像攻击理论复杂度降低，如 3 轮 Keccak-256（复杂度为$O(2^{192}$)），3 轮 Keccak-512（复杂度为$O(2^{482})$）以及 4 轮 Keccak[1440,160]（复杂度为$O(2^{54})$）。</p>
@@ -256,7 +277,7 @@
 <h1 id="结果部分"><a href="#结果部分" class="headerlink" title="结果部分"></a>结果部分</h1><!-- TODO -->
 <p>等待完善</p>
 
-            </article>
+            </div>
             <hr>
             <div>
               <div class="post-metas mb-3">
@@ -288,7 +309,7 @@
               
               
                 <div class="post-prevnext row">
-                  <div class="post-prev col-6">
+                  <article class="post-prev col-6">
                     
                     
                       <a href="/post/d49bb55.html">
@@ -297,8 +318,8 @@
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
-                  </div>
-                  <div class="post-next col-6">
+                  </article>
+                  <article class="post-next col-6">
                     
                     
                       <a href="/post/da77de95.html">
@@ -307,13 +328,13 @@
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
-                  </div>
+                  </article>
                 </div>
               
             </div>
 
             
-          </div>
+          </article>
         </div>
       </div>
     </div>
@@ -400,6 +421,10 @@
 
 
 
+  
+
+
+
   <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
   <script  src="/js/clipboard-use.js" ></script>
 
@@ -417,7 +442,7 @@
 
       tocbot.init({
         tocSelector: '#tocbot',
-        contentSelector: 'article.markdown-body',
+        contentSelector: '#post-body',
         headingSelector: 'h1,h2,h3,h4,h5,h6',
         linkClass: 'tocbot-link',
         activeLinkClass: 'tocbot-active-link',
