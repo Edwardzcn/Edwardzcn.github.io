@@ -1,7 +1,7 @@
+
+
 <!DOCTYPE html>
-<html lang="zh-CN">
-
-
+<html lang="zh-CN" data-default-color-scheme=&#34;dark&#34;>
 
 
 
@@ -26,23 +26,28 @@
   <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
   
-    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+    
   
 
   
 
 
 <!-- 主题依赖的图标库，不要自行修改 -->
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_pf9vaxs7x7b.css">
 
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
 
 <link  rel="stylesheet" href="/css/main.css" />
 
 <!-- 自定义样式保持在最底部 -->
 
 
-  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
 
 
@@ -125,8 +130,14 @@
         
         
           <li class="nav-item" id="search-btn">
-            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
-                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
           </li>
         
       </ul>
@@ -134,25 +145,33 @@
   </div>
 </nav>
 
-    <div class="view intro-2" id="background" parallax=true
+    <div class="banner intro-2" id="background" parallax=true
          style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-          <div class="container text-center white-text fadeInUp">
+          <div class="container page-header text-center fade-in-up">
             <span class="h2" id="subtitle">
               
             </span>
 
             
-              
-  <div class="mt-3 post-meta">
-    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2019-05-17 12:36">
-      2019年5月17日 下午
-    </time>
-  </div>
-
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      Edwardzcn
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2019-05-17 12:36" pubdate>
+        2019年5月17日 下午
+      </time>
+    </span>
+  
+</div>
 
 <div class="mt-1">
   
@@ -197,9 +216,11 @@
     <div class="col-lg-8 nopadding-md">
       <div class="container nopadding-md" id="board-ctn">
         <div class="py-5" id="board">
-          <div class="post-content mx-auto" id="post">
+          <article class="post-content mx-auto" id="post">
+            <!-- SEO header -->
+            <h1 style="display: none">密码技术学习——基于RSA的不可否认签名方案</h1>
             
-            <article class="markdown-body">
+            <div class="markdown-body" id="post-body">
               <p>本文主要内容主要来自Chaum van Antwerpen在89年发表的《Undeniable Signatures》一文以及Gennaro、Krawczyk和Rabin在97年发表的《RSA-Based Undeniable Signatures》一文，用来了解不可否认签名方案的相关知识。</p>
 <h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><h2 id="背景介绍"><a href="#背景介绍" class="headerlink" title="背景介绍"></a>背景介绍</h2><p>数字签名的复制属性不同于我们现实生活中的签名文件，在不考虑时间戳的前提下，我们基本上可以认为复制签名和原始签名是相同的。这种极易复制的性质在很多场合下是有利的，比如带签名公告的分发，开源软件的认证，这种性质多要求带签名的副本对分发无抵抗要求（甚至是希望分发）。</p>
 <p>但它不适合许多其他应用程序。对于在某种程度上对个人或商业敏感的所有书面或口头承诺的电子替代品。 在这种情况下，经核证的副本的扩散可能会导致勒索，或者工业间谍的非法利用。这种承诺的接受者当然应该能够确保发行人以后不能否认它，但未经发行人同意，接收方也不能向其他任何人展示承诺。</p>
@@ -283,7 +304,7 @@
 <h2 id="授权委派"><a href="#授权委派" class="headerlink" title="授权委派"></a>授权委派</h2><p>这个想法是希望能让签名者向第三方授权确认或否认能力，但不向其提供签名的能力。 在很多文献中，这一概念通常在签名的可转换性上下文中解释。但是，这两个概念是不同的。</p>
 <p>显然，如果公开的话，那会将该不可否认签名转化为可普遍验证的签名。然而，然而，反过来却未必正确。转换签名的信息如果秘密交给第三方，可能依旧不允许该方以不可转让的方式证明签名的真伪。在我们的设置中，签名者可以简单地给第三方密钥，这是唯一需要的信息，用来成功地执行拒绝和确认协议。且显然，$e$的接受方并不能自己签署文件，这基于常规RSA签名的性质。</p>
 <h2 id="分布式证明者（签署者）"><a href="#分布式证明者（签署者）" class="headerlink" title="分布式证明者（签署者）"></a>分布式证明者（签署者）</h2>
-            </article>
+            </div>
             <hr>
             <div>
               <div class="post-metas mb-3">
@@ -311,7 +332,7 @@
               
               
                 <div class="post-prevnext row">
-                  <div class="post-prev col-6">
+                  <article class="post-prev col-6">
                     
                     
                       <a href="/post/20d9890e.html">
@@ -320,8 +341,8 @@
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
-                  </div>
-                  <div class="post-next col-6">
+                  </article>
+                  <article class="post-next col-6">
                     
                     
                       <a href="/post/d6212e2f.html">
@@ -330,13 +351,13 @@
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
-                  </div>
+                  </article>
                 </div>
               
             </div>
 
             
-          </div>
+          </article>
         </div>
       </div>
     </div>
@@ -423,6 +444,10 @@
 
 
 
+  
+
+
+
   <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
   <script  src="/js/clipboard-use.js" ></script>
 
@@ -440,7 +465,7 @@
 
       tocbot.init({
         tocSelector: '#tocbot',
-        contentSelector: 'article.markdown-body',
+        contentSelector: '#post-body',
         headingSelector: 'h1,h2,h3,h4,h5,h6',
         linkClass: 'tocbot-link',
         activeLinkClass: 'tocbot-active-link',
