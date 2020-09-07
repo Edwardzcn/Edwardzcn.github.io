@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  <title>【AtCoder-4244】解题报告（暴力，DP） - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2018-08-22 00:01">
+      2018年8月22日 凌晨
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.4k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      24
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h1 id="原始题目"><a href="#原始题目" class="headerlink" title="原始题目"></a>原始题目</h1><h2 id="D-AtCoder-Express-2"><a href="#D-AtCoder-Express-2" class="headerlink" title="D - AtCoder Express 2"></a>D - AtCoder Express 2</h2><ul>
+<li>Time limit : 3sec / Memory limit : 1000MB</li>
+<li>Score: 400 points</li>
+</ul>
+<h3 id="Problem-Statement"><a href="#Problem-Statement" class="headerlink" title="Problem Statement"></a>Problem Statement</h3><p>In Takahashi Kingdom, there is a east-west railroad and N cities along it, numbered 1, 2, 3, …, N from west to east. A company called AtCoder Express possesses M trains, and the train i runs from City Li to City Ri (it is possible that Li=Ri). Takahashi the king is interested in the following Q matters:</p>
+<p>The number of the trains that runs strictly within the section from City pi to City qi, that is, the number of trains j such that pi≤Lj and Rj≤qi.</p>
+<p>Although he is genius, this is too much data to process by himself. Find the answer for each of these Q queries to help him.<br><a id="more"></a></p>
+<h3 id="Constraints"><a href="#Constraints" class="headerlink" title="Constraints"></a>Constraints</h3><ul>
+<li>N is an integer between 1 and 500 (inclusive).</li>
+<li>M is an integer between 1 and 200 000 (inclusive).</li>
+<li>Q is an integer between 1 and 100 000 (inclusive).</li>
+<li>1≤Li≤Ri≤N (1≤i≤M)</li>
+<li>1≤pi≤qi≤N (1≤i≤Q)</li>
+</ul>
+<h3 id="Input"><a href="#Input" class="headerlink" title="Input"></a>Input</h3><p>Input is given from Standard Input in the following format:</p>
+<pre><code>N M Q
+L1 R1
+L2 R2
+:
+LM RM
+p1 q1
+p2 q2
+:
+pQ qQ
+</code></pre><h3 id="Output"><a href="#Output" class="headerlink" title="Output"></a>Output</h3><p>Print Q lines. The i-th line should contain the number of the trains that runs strictly within the section from City pi to City qi.</p>
+<h3 id="Sample-Input-1"><a href="#Sample-Input-1" class="headerlink" title="Sample Input 1"></a>Sample Input 1</h3><pre><code>2 3 1
+1 1
+1 2
+2 2
+1 2
+</code></pre><h3 id="Sample-Output-1"><a href="#Sample-Output-1" class="headerlink" title="Sample Output 1"></a>Sample Output 1</h3><pre><code>3
+</code></pre><p>As all the trains runs within the section from City 1 to City 2, the answer to the only query is 3.</p>
+<h3 id="Sample-Input-2"><a href="#Sample-Input-2" class="headerlink" title="Sample Input 2"></a>Sample Input 2</h3><pre><code>10 3 2
+1 5
+2 8
+7 10
+1 7
+3 10
+</code></pre><h3 id="Sample-Output-2"><a href="#Sample-Output-2" class="headerlink" title="Sample Output 2"></a>Sample Output 2</h3><pre><code>1
+1
+</code></pre><p>The first query is on the section from City 1 to 7. There is only one train that runs strictly within that section: Train 1. The second query is on the section from City 3 to 10. There is only one train that runs strictly within that section: Train 3.</p>
+<h3 id="Sample-Input-3"><a href="#Sample-Input-3" class="headerlink" title="Sample Input 3"></a>Sample Input 3</h3><pre><code>10 10 10
+1 6
+2 9
+4 5
+4 7
+4 7
+5 8
+6 6
+6 7
+7 9
+10 10
+1 8
+1 9
+1 10
+2 8
+2 9
+2 10
+3 8
+3 9
+3 10
+1 10
+</code></pre><h3 id="Sample-Output-3"><a href="#Sample-Output-3" class="headerlink" title="Sample Output 3"></a>Sample Output 3</h3><pre><code>7
+9
+10
+6
+8
+9
+6
+7
+8
+10
+</code></pre><h1 id="题目大意"><a href="#题目大意" class="headerlink" title="题目大意"></a>题目大意</h1><p>在一条东西向的铁路上有 $1,2,3 \cdots N$ 个城市，列车公司有$M$列火车，每列火车从$L_i$行驶到 $R_i( L_i \le R_i)$，现在有$Q$个询问<br>每次询问$p_i,q_i$ 两个城市间有多少躺列车的行驶路程恰好再在两城市之间（包括端点）。</p>
+<h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><ul>
+<li><p>暴力：由于只需要计数，那么以每个城市为集合，统计该城市出发的列车的行使距离，对于每次询问，遍历pi到qi城市的集合判断距离是否小于终点到遍历点的距离即可。</p>
+</li>
+<li><p>DP：</p>
+<ul>
+<li>把列车行驶看作线段，很明显大的线段包含小的线段。由此联想可以由内向外扩展，考虑DP</li>
+<li>以终点作为集合，元素为起始点，预处理后对每个集合排序（代码实际应用vector而非set，因为set不支持迭代器随机访问而且可能会有重复线路）</li>
+<li>$dp[i][j]$表示从i城市到j城市包含的火车线路。</li>
+<li>则状态转移方程为$dp[i][j]=dp[i][j-1]+num[i][j]$ ，$num[i][j]$表示到达j城市且起点不在i城市之前的列车线路数。</li>
+<li>求$num[i][j]$，用二分查找lower_bound找到j城市集合中第一个大于等于i的位置，$num[i][j]$即为size减去前缀。</li>
+<li>预处理后直接可以输出答案</li>
+</ul>
+</li>
+</ul>
+<h1 id="解题代码"><a href="#解题代码" class="headerlink" title="解题代码"></a>解题代码</h1><ul>
+<li>暴力</li>
+</ul>
+<pre><code class="hljs C++"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cstdio&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cstring&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cmath&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;string&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;iostream&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;iomanip&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;sstream&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;set&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;map&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;queue&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;vector&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;bits/stdc++.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> INF 0x3f3f3f3f</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> eps 1e-8</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> mp make_pair</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> np next_permutation</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> pb push_back</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> all(x) (x.begin(),x.end())</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> rep(i,a,n) for(int i=a;i&lt;n;++i)</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> per(i,a,n) for(int i=n-1;i&gt;=a;--i)</span>
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> <span class="hljs-built_in">std</span>; 
+<span class="hljs-keyword">const</span> <span class="hljs-keyword">int</span> maxn=<span class="hljs-number">500</span>+<span class="hljs-number">5</span>;
+
+<span class="hljs-built_in">vector</span> &lt;<span class="hljs-keyword">int</span>&gt; v[maxn]; 
+<span class="hljs-keyword">bool</span> vis[maxn];
+ 
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">init</span><span class="hljs-params">()</span></span>&#123;
+	rep(i,<span class="hljs-number">0</span>,maxn) v[i].clear();
+	<span class="hljs-built_in">memset</span>(vis,<span class="hljs-number">0</span>,<span class="hljs-keyword">sizeof</span>(vis));
+&#125;
+ 
+ 
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">addedge</span><span class="hljs-params">(<span class="hljs-keyword">int</span> l,<span class="hljs-keyword">int</span> r)</span></span>&#123;
+	<span class="hljs-keyword">int</span> len=r-l;
+	v[l].pb(len);
+&#125;
+ 
+<span class="hljs-function"><span class="hljs-keyword">int</span>  <span class="hljs-title">checkedge</span><span class="hljs-params">(<span class="hljs-keyword">int</span> l,<span class="hljs-keyword">int</span> len)</span></span>&#123;
+<span class="hljs-comment">//	if(v[l].begin()!=v[l].end()) </span>
+<span class="hljs-comment">//		 cout&lt;&lt;*v[l].begin()&lt;&lt;endl; </span>
+	<span class="hljs-keyword">int</span> ans=upper_bound(v[l].begin(),v[l].end(),len)-v[l].begin();
+<span class="hljs-comment">//	cout&lt;&lt;"ans="&lt;&lt;ans&lt;&lt;endl;</span>
+	<span class="hljs-keyword">return</span> ans;
+&#125;
+<span class="hljs-keyword">int</span> n,m,q,li,ri,pi,qi;
+ 
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;
+	ios::sync_with_stdio(<span class="hljs-literal">false</span>);
+	<span class="hljs-keyword">while</span>(<span class="hljs-built_in">cin</span>&gt;&gt;n&gt;&gt;m&gt;&gt;q)&#123;
+		init(); 
+		rep(i,<span class="hljs-number">0</span>,m)&#123;
+			<span class="hljs-built_in">cin</span>&gt;&gt;li&gt;&gt;ri;
+			addedge(li,ri);
+			vis[li]=<span class="hljs-number">1</span>;
+		&#125;
+		rep(i,<span class="hljs-number">0</span>,maxn)&#123;
+			<span class="hljs-keyword">if</span>(vis[i])	sort(v[i].begin(),v[i].end()); 
+		&#125; 
+		rep(i,<span class="hljs-number">0</span>,q)&#123;
+			<span class="hljs-built_in">cin</span>&gt;&gt;pi&gt;&gt;qi;
+			<span class="hljs-keyword">int</span> cnt=<span class="hljs-number">0</span>;
+			<span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i=pi;i&lt;=qi;i++)&#123;
+				<span class="hljs-keyword">int</span> plen=qi-i;
+<span class="hljs-comment">//				cout&lt;&lt;"plen="&lt;&lt;plen&lt;&lt;endl;</span>
+				cnt+=checkedge(i,plen);
+			&#125;
+			<span class="hljs-built_in">cout</span>&lt;&lt;cnt&lt;&lt;<span class="hljs-built_in">endl</span>;
+		&#125;
+	&#125; 
+&#125;</code></pre>
+<ul>
+<li>DP</li>
+</ul>
+<pre><code class="hljs C++"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cstdio&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cstring&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cmath&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;string&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;iostream&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;iomanip&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;sstream&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;set&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;map&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;queue&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;vector&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;bits/stdc++.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> INF 0x3f3f3f3f</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> eps 1e-8</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> mp make_pair</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> np next_permutation</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> pb push_back</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> all(x) x.begin(),x.end()</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> rep(i,a,n) for(int i=a;i&lt;n;++i)</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> per(i,a,n) for(int i=n-1;i&gt;=a;--i)</span>
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> <span class="hljs-built_in">std</span>; 
+<span class="hljs-keyword">const</span> <span class="hljs-keyword">int</span> maxn=<span class="hljs-number">500</span>+<span class="hljs-number">5</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">long</span> <span class="hljs-keyword">long</span> ll;
+<span class="hljs-keyword">typedef</span> <span class="hljs-built_in">vector</span>&lt;<span class="hljs-keyword">int</span>&gt; vi;
+<span class="hljs-keyword">typedef</span> pair&lt;<span class="hljs-keyword">int</span>,<span class="hljs-keyword">int</span>&gt; pii;
+ 
+vi v[maxn];
+<span class="hljs-keyword">int</span> dp[maxn][maxn];
+<span class="hljs-keyword">int</span> n,m,q,li,ri,pi,qi;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">solve</span><span class="hljs-params">()</span></span>&#123;
+	rep(i,<span class="hljs-number">1</span>,n+<span class="hljs-number">1</span>) sort(v[i].begin(),v[i].end());
+	<span class="hljs-built_in">memset</span>(dp,<span class="hljs-number">0</span>,<span class="hljs-keyword">sizeof</span>(dp));
+	rep(l,<span class="hljs-number">1</span>,n+<span class="hljs-number">1</span>)&#123;
+		<span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> r=l;r&lt;=n;r++)&#123;
+			dp[l][r]=dp[l][r<span class="hljs-number">-1</span>];
+<span class="hljs-comment">//			if(r-1&lt;l) continue;</span>
+			dp[l][r]+=(v[r].size()-(lower_bound(v[r].begin(),v[r].end(),l)-v[r].begin()));
+		&#125;
+	&#125;
+&#125;
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;
+	ios::sync_with_stdio(<span class="hljs-literal">false</span>);
+	<span class="hljs-keyword">while</span>(<span class="hljs-built_in">cin</span>&gt;&gt;n&gt;&gt;m&gt;&gt;q)&#123;
+		rep(i,<span class="hljs-number">0</span>,m)&#123;
+			<span class="hljs-built_in">cin</span>&gt;&gt;li&gt;&gt;ri;
+			v[ri].pb(li);
+		&#125;
+		solve();
+		rep(i,<span class="hljs-number">0</span>,q)&#123;
+			<span class="hljs-built_in">cin</span>&gt;&gt;pi&gt;&gt;qi;
+			<span class="hljs-built_in">cout</span>&lt;&lt;dp[pi][qi]&lt;&lt;<span class="hljs-built_in">endl</span>;
+		&#125;
+	&#125;
+&#125;</code></pre>
+<h1 id="收获与反思"><a href="#收获与反思" class="headerlink" title="收获与反思"></a>收获与反思</h1><ul>
+<li>脑子里别老想着暴力，有重复计算又没有修改为什么不考虑记忆化搜索？不考虑DP？思维训练还不够</li>
+<li>很明显的时间差异。</li>
+</ul>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E3%80%90AtCoder-4244%E3%80%91%E8%A7%A3%E9%A2%98%E6%8A%A5%E5%91%8A%EF%BC%88%E6%9A%B4%E5%8A%9B%EF%BC%8CDP%EF%BC%89/1.jpg" srcset="/img/loading.gif" alt="1.jpg"></p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/ACM/">ACM</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/ACM/AtCoder/">AtCoder</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/ACM/">ACM</a>
+                    
+                      <a class="hover-with-bg" href="/tag/AtCoder/">AtCoder</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/post/e769f01f.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">【AtCoder-4242】解题报告（思维，水题）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/post/f3d9c661.html">
+                        <span class="hidden-mobile">【AtCoder-4245】解题报告（水题）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "【AtCoder-4244】解题报告（暴力，DP）&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

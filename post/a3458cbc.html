@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  <title>分布式系统学习——MIT6.824-Lecture4课程笔记 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2020-06-04 15:57">
+      2020年6月4日 下午
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.6k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      18
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h1 id="Replication-gt-Fault-Tolerance"><a href="#Replication-gt-Fault-Tolerance" class="headerlink" title="Replication -&gt; Fault Tolerance"></a>Replication -&gt; Fault Tolerance</h1><h2 id="Failures"><a href="#Failures" class="headerlink" title="Failures"></a>Failures</h2><ul>
+<li><p>Fail-stop faults</p>
+<p>更通用称呼， 他并不会计算出错误的答案，Just Stop（可能原因太多了，踢到机子，网络拥塞，CPU 过热）。备份设计对于 Bugs 没有帮助，更多情况下我们只能应对 Fail Stop。</p>
+<p>需要保证物理机器的独立性，否则再大数量的机群和备份策略都不能帮助我们，因为一旦出现相关性（co-related）错误，机器会一同挂掉。</p>
+</li>
+</ul>
+<h2 id="Worth-it"><a href="#Worth-it" class="headerlink" title="Worth it"></a>Worth it</h2><p>在 GFS 的设计中，需要三倍资源（三份 Replication），是否值得？严格意义上说，我们不能从技术上解释这个问题，它同时也是个经济问题，关系很多其他因素，比如备份策略所应用的 service 价值如何？</p>
+<h2 id="Approaches-to-Replication-（Replication-Scheme）"><a href="#Approaches-to-Replication-（Replication-Scheme）" class="headerlink" title="Approaches to Replication （Replication Scheme）"></a>Approaches to Replication （Replication Scheme）</h2><p>达成备份的方法。</p>
+<ul>
+<li><p>State transfer</p>
+<p>-&gt; send memory</p>
+<p>primary 传递它的状态（比如全部 RAM 内容）给备份，备份储存状态。考虑到效率，更想传递改变的那部分。</p>
+</li>
+<li><p>State machine replication</p>
+<p>-&gt; send operations</p>
+<p>我们主要讨论的 scheme。</p>
+<p>思路来源，发现很多机器可以拆分成内部确定的事件，和外部影响事件，仅受到内部运行事件影响（internal events）的状态机是确定的直到其受到外来信息的影响。</p>
+<p>状态机复制策略，不复制完整状态，而仅发送那些状态机会被影响的外部事件（external events）。</p>
+<p>所以状态机从同一状态起始，各自进行状态运转，和消息传递，仍能保持状态的一致性，这就达成了备份。</p>
+<p>想起来之前学习的那篇论文：<a href="https://www.edwardzcn98yx.com/post/86b562df.html">状态机容错模型</a></p>
+<p>人们喜欢 State machine 的原因，small，状态整体太大了，而操作往往很小。</p>
+</li>
+</ul>
+<h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><p>Q：如果 backup 和 primary 没有做到 identical，scheme 出错了，怎么办？</p>
+<p>A：以 GFS master 给两个 chunk 发 primary lease 为例。</p>
+<p>Q：如何保证状态机复制 Scheme 中，内部状态的运行结果的确是一致的。</p>
+<p>A：很多 internal instruction 看起来是确定的，不过也存在你指出的那一小部分，比如获取当前本地时间、获取 PID 等。一个标准答案（参考答案）是，根据指令，backup 并不是完全独立运行？还在听 primary 的指令（正确答案）？</p>
+<a id="more"></a>
+<h1 id="VMware-Shceme"><a href="#VMware-Shceme" class="headerlink" title="VMware Shceme"></a>VMware Shceme</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>我们注意到刚刚所提的状态机复制斌没有考虑到多核机器形式，状态机复制可以被推广到多核机器，不同核的内核指令交互是不确定的，so 不能简单的分发 primary 并在后台执行任务。</p>
+<p>VMware 设计一种可以跑在多核机器上的状态机复制模型。</p>
+<p>要解决的一系列问题</p>
+<ul>
+<li><p>What State</p>
+</li>
+<li><p>P/B Sync</p>
+<p>primary 和备份需要多接近（为实现一致性最大能容纳的差别？），一步一锁保证 backup 和 primary 始终同步的代价是昂贵的。</p>
+</li>
+<li><p>Cut over (switch over?)</p>
+</li>
+<li><p>Anomalies</p>
+<p>异常现象</p>
+</li>
+<li><p>New replicas</p>
+</li>
+</ul>
+<p>逐个解决问题</p>
+<h2 id="What-State"><a href="#What-State" class="headerlink" title="What State"></a>What State</h2><p>所有的内存和所有的寄存器。Replication schema 很少会 replica 特别底层，比如 GFS 的 Replica 是 chunk，属于应用级，考虑 chunk identifiers，机器的其他状态都不储存。</p>
+<p>大部分 Replication 走的路线都是 GFS 这样的，今天这篇文章不使用应用级别的 replication，更底层，更效率。并且不用保证应用 interrupt 在特定点。本文不考虑上面跑的什么软件，在 VMware 虚拟中运行任何类型的小程序，都能达到 Fault Tolerance。</p>
+<h3 id="VMware-FT"><a href="#VMware-FT" class="headerlink" title="VMware FT"></a>VMware FT</h3><p>两台物理机中运行 VMM，建立多个虚拟机（OS+APP），网络连接（LAN）。</p>
+<p>网络同时连接多个 Client 和 Server，在这个 Scheme 中，数据储存在网络上 Disk Server 中。</p>
+<p>过程简述：当 Client 向一台物理机发送包请求时，该物理机会将 hot package 传递给另一台物理机（另一台伪造一个包请求）。处理完成后，primary 物理机将 reply 包传递给 VMM 中的模拟 NIC（网卡），并发送回给 client，那 backup 的包也会相同的传递到模拟 NIC 中，但 VMM 会意识到这个是 backup 产生的 reply 包，丢弃掉。</p>
+<p>这就保证了只有 Primary 生成回复包。</p>
+<p>Paer 管上述过程的数据流称为 logging Channel（log events）。在 primary 和 backup 会发生频繁交流，如果备份发现不再接收到 primary 的 logging 后，一段时间后，便不再听候先前 primary 的 inputs，自由行动，且 VMM 不再限制其回复包。</p>
+<h3 id="Non-deterministic"><a href="#Non-deterministic" class="headerlink" title="Non-deterministic"></a>Non-deterministic</h3><p>存在着许多 non-deterministic events，在计算机运行过程中。设计者着重解决这些问题。</p>
+<p>Inputs-packet-data + interrupt</p>
+<p>Weired instructions</p>
+<p>multic-core parallelism（文章着重考虑，因为它允许多核机器的并行计算，并行的情况是不可确定的）</p>
+<p>Log entry：instruction num，type，data</p>
+<p>？？不大懂，计时器的中断，Primary 的中断还是 Backup 的中断。</p>
+<p>Q：每 millionth 条指令 CPU 中断一次？？</p>
+<p>A：硬件部分的知识，15 年前 Intel 就已经实现了相关内容。（好吧是真的听不懂了）</p>
+<p>Q：如果 Backup 跑在了 Primary 前面怎么办？</p>
+<p>A：Primary millionth 指令中断一次，Backup 多进行了一点指令，如果我们这种情况发生，那 backup 就太迟了！不能进行中断（在相同的位置）。我们不能让这种情况发生，所以 VMWare 处理了这种情况。他们的处理方式是，在备份机的 VMM 中设置一个 buffer，来储存所有来自于 Primary 的 inputs（events）。buffer 不为空才执行，这样就保证了 backup 至少慢 primary 一个 event，</p>
+<h3 id="Output-Rule"><a href="#Output-Rule" class="headerlink" title="Output Rule"></a>Output Rule</h3><p>假设架设的服务是一个 database，然后 client 希望进行 ADD 操作。</p>
+<p>问问自己，什么时候挂掉是最悲惨的：Primary 进行了 ADD 操作，没有返回给 Client，同时，也未能将该事件通知到 Backup，似乎这样导致了 Primary 和 Backup 上数据库的值不相等（差一次 ADD 操作）</p>
+<p>VMWare 的解决办法就是 Output Rule：Primary 不会讲 output 返回给 client （被 VMM 控制着）直至 backup 确认了它接收到了 all log records。</p>
+<p>不过这个机制导致了一个问题：相邻机架连接的机器，RTT 时间短，影响不大，而如果跨地区的数据中心的不同机器，RTT 时间长，又碰上了低延迟需求的应用，就不行了。</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/分布式系统/">分布式系统</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/分布式系统/">分布式系统</a>
+                    
+                      <a class="hover-with-bg" href="/tag/6-824/">6.824</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/post/510c7d2f.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">容器技术学习——非root用户管理Docker</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/post/ea4ba2a6.html">
+                        <span class="hidden-mobile">《有所不为的反叛者》读书摘录</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "分布式系统学习——MIT6.824-Lecture4课程笔记&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

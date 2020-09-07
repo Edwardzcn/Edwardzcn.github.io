@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  <title>密码技术学习——Keccak论文总结 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2020-06-29 08:01">
+      2020年6月29日 早上
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      22
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h1 id="摘要部分"><a href="#摘要部分" class="headerlink" title="摘要部分"></a>摘要部分</h1><h1 id="理论部分"><a href="#理论部分" class="headerlink" title="理论部分"></a>理论部分</h1><h2 id="已有成果研究"><a href="#已有成果研究" class="headerlink" title="已有成果研究"></a>已有成果研究</h2><p>Keccak 自诞生以来，经历了密码学界广泛的分析，全世界各高校与机构的研究对有关 Keccak 算法（及其相关的衍生算法）的研究成果以及 Keccak 团队的密码学分析被汇总在 Team Keccak 网站中，以方便研究者们相互讨论学习。另外该网站上还长期开放着 Keccak 原像与碰撞攻击挑战赛（The Keccak Crunchy Crypto Collision and Pre-image Contest），目前最好的原像攻击成果是 4 轮指定像值的攻击 ，由新加坡南洋理工大学郭建博士的和中国科学院信息工程研究所刘美成副研究员于 2016 年 12 月提交。从目前看，现有的 Keccak 密码分析仍集中在缩减论述后的 Keccak 算法，并不能威胁到其实际应用时的安全性。由于本次赛题二是对具备前缀 0 特征的 Keccak256 哈希值求其原像，求解过程更接近于密码分析中的原像攻击，已有的研究成果如下：</p>
+<p>早期代表性的研究有，2011 年 Naya-Plasencia 等人提出了低轮 Keccak 算法的可行攻击方式，其中包括 2 轮 Keccak-256 第二原像的攻击方式（复杂度为$O(2^{33})$），以及 Morawiecki 等人于 2010 至 2013 年的一系列工作，包括基于 SAT 求解器的密码分析旋转密码分析，并据此完成了 Keccak 原像与碰撞攻击挑战赛中的 3 各 2 轮指定像值的原像攻击。</p>
+<p>通过构造满足一些代数性质的形式来进行密码攻击的方式在后来被开发出来，拓宽了 Keccak 密码分析的思路并推进了其他 Keccak 实例的原像攻击进程。2016 年 Guo，Liu 和 Song 提出了“线性结构”（Linear Structure）的原像攻击设计思路并发现了最高达 4 轮的 Keccak 攻击方法。应用该结构，可在现实时间内实现 2 轮 Keccak-256（即 Keccak[1088,512]）的原像攻击（复杂度为$O(1)$），3 轮 Keccak[640,160]的原像攻击（复杂度为$O(2^7)$）和 3 轮 Keccak[1440,160]的原像攻击（复杂度为$O(1)$），同时也使另外一些形式的 Keccak 实例的原像攻击理论复杂度降低，如 3 轮 Keccak-256（复杂度为$O(2^{192}$)），3 轮 Keccak-512（复杂度为$O(2^{482})$）以及 4 轮 Keccak[1440,160]（复杂度为$O(2^{54})$）。</p>
+<p>在此之后 2017 年由 Li 等人提出“交叉线性结构”（Cross-Linear Structure），并将其应用在一些 Keccak 实例的原像攻击中，成功完成 3 轮 Keccak[240,160]的可行原像攻击（复杂度为$O(2^{45})$）。在这之后，Li 和 Sun 又发现了进一步优化复杂度的方法，将攻击过程划分为离线阶段与在线阶段两个子过程，成功实现 3 轮 Keccak-224 的可行原像攻击（复杂度为$O(2^{39.39})$）。</p>
+<a id="more"></a>
+<h1 id="工具部分"><a href="#工具部分" class="headerlink" title="工具部分"></a>工具部分</h1><h2 id="NTL-数论库"><a href="#NTL-数论库" class="headerlink" title="NTL 数论库"></a>NTL 数论库</h2><h3 id="NTL-数论库介绍"><a href="#NTL-数论库介绍" class="headerlink" title="NTL 数论库介绍"></a>NTL 数论库介绍</h3><p>NTL 是由纽约大学 Victor Shoup 主持编写并维护的一个高性能可移植 C++库，该库提供了相当多的数据结构和算法用于数论研究中矢量，矩阵和多项式的计算。NTL 库在性能上非常优秀，其实现的多项式算法是目前世界上最快的可用方法之一，并已经成为建立多项式分解和确定椭圆曲线的“世界纪录”。</p>
+<p>NTL 数论库使用<br>常用基本类</p>
+<ul>
+<li>ZZ: 大整数</li>
+<li>ZZ_p: 模 p 大整数</li>
+<li>GF2: 模 2 整数</li>
+<li>ZZX: ZZ 单变量多项式</li>
+<li>ZZ_pX: ZZ_p 大整数单变量多项式</li>
+<li>GF2X: GF2 单变量多项式</li>
+<li>ZZ_pE: 大整数环/域扩张</li>
+<li>GF2E: 模 2 整数环/域扩张</li>
+<li>ZZ_pEX: ZZ_pE 单变量多项式</li>
+<li>GF2EX: GF2E 单变量多项式<br>支持的运算符重载，其中%，%=只对大整数和其对应的多项式有意义。</li>
+</ul>
+<p>+， -， (unary) -， +=， -=， ++， —， *， *=， /， /=， %， %=</p>
+<p>向量和矩阵，NTL 向量与 C++ STL 中的向量实现类似，类命名方式为对应基本类前加‘vec<em>’前缀和‘mat</em>’前缀</p>
+<ul>
+<li>vec_ZZ</li>
+<li>vec_GF2</li>
+<li>mat_GF2</li>
+</ul>
+<p>多项式常用函数</p>
+<ul>
+<li>IsIdent 单元矩阵判断</li>
+<li>transpose 矩阵转置</li>
+<li>solve 解矩阵方程（高斯消元法）</li>
+<li>inv 矩阵求逆</li>
+</ul>
+<h2 id="并行编程"><a href="#并行编程" class="headerlink" title="并行编程"></a>并行编程</h2><h3 id="CUDA-并行编程"><a href="#CUDA-并行编程" class="headerlink" title="CUDA 并行编程"></a>CUDA 并行编程</h3><p>CUDA (Compute Unified Device Architecture，统一计算架构) 是 NVIDIA 提出，可在 NVIDIA 图形处理器进行并行计算的计算环境。程序设计这可以利用 CUDA 的 C 语言扩充 (extension) 直接编程，CUDA 会将运费算分配到大量线程(threads)以及图形处理器中数以百计的计算核心中(cores)。</p>
+<p>GPU 不是独立的计算平台，需要与 CPU 协同工作。我们常说的用 GPU 并行计算时，其实是指 CPU+GPU 的异构计算架构。CPU 所在位置为主机端（host），而 GPU 所在位置成为设备端（device）。</p>
+<p>典型的 CUDA 程序的执行流程如下：</p>
+<ol>
+<li>分配 host 内存，进行数据初始化（initalize）</li>
+<li>分配 device 内存，host =&gt; device 内存拷贝</li>
+<li>调用 CUDA 和函数，（GPU 上）完成指定运算</li>
+<li>讲 device 上的运算结果拷贝回 host</li>
+<li>释放 host 和 device 的内存。</li>
+</ol>
+<p>CUDA 这个异构模型通过函数类型限定词开区别 host 和 device 上的函数，主要的三个函数类型限定词如下:</p>
+<ul>
+<li><code>__global__</code>：在 device 上执行，从 host 中调用（一些特定的 GPU 也可以从 device 上调用），返回类型必须是 void，不支持可变参数，不能成为类成员函数。注意用<code>__global__</code>定义的 kernel 是异步的，这意味着 host 不会等待 kernel 执行完就执行下一步。</li>
+<li><code>__device__</code>：在 device 上执行，单仅可以从 device 中调用，不可以和<code>__global__</code>同时用。</li>
+<li><code>__host__</code>：在 host 上执行，仅可以从 host 上调用，一般省略不写，不可以和<code>__global__</code>同时用，但可和<code>__device__</code>同时使用，此时函数会在 device 和 host 都编译。</li>
+</ul>
+<h3 id="OpenMP-并行编程"><a href="#OpenMP-并行编程" class="headerlink" title="OpenMP 并行编程"></a>OpenMP 并行编程</h3><p>OpenMP（Open Multi-Processing）是一套支持跨平台共享内存方式的多线程并发的编程 API，使用 C,C++和 Fortran 语言，可以在大多数的处理器体系和操作系统中运行，包括 Solaris, AIX, HP-UX, GNU/Linux, Mac OS X, 和 Microsoft Windows。包括一套编译器指令、库和一些能够影响运行行为的环境变量。</p>
+<p>OpenMP 采用可移植的、可扩展的模型，为程序员提供了一个简单而灵活的开发平台，从标准桌面电脑到超级计算机的并行应用程序接口。</p>
+<p>混合并行编程模型构建的应用程序可以同时使用 OpenMP 和 MPI，或更透明地通过使用 OpenMP 扩展的非共享内存系统上运行的计算机集群。</p>
+<p>OpenMP 是由 OpenMP Architecture Review Board 牵头提出的，并已被广泛接受的，用于共享内存并行系统的多线程程序设计的一套指导性注释（Compiler Directive）。OpenMP 支持的编程语言包括 C 语言、C++和 Fortran；而支持 OpenMP 的编译器包括 Sun Studio 和 Intel Compiler，以及开放源码的 GCC 和 Open64 编译器。OpenMP 提供了对并行算法的高层的抽象描述，程序员通过在源代码中加入专用的 pragma 来指明自己的意图，由此编译器可以自动将程序进行并行化，并在必要之处加入同步互斥以及通信。当选择忽略这些 pragma，或者编译器不支持 OpenMP 时，程序又可退化为通常的程序（一般为串行），程序码仍然可以正常运作，只是不能利用多线程来加速程序执行。</p>
+<h1 id="结果部分"><a href="#结果部分" class="headerlink" title="结果部分"></a>结果部分</h1><!-- TODO -->
+<p>等待完善</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/密码学/">密码学</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/待完善/">待完善</a>
+                    
+                      <a class="hover-with-bg" href="/tag/密码学/">密码学</a>
+                    
+                      <a class="hover-with-bg" href="/tag/Keccak/">Keccak</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/post/d49bb55.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">《孤独六讲》读书笔记</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/post/da77de95.html">
+                        <span class="hidden-mobile">软件测试学习——期末复习汇总</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "密码技术学习——Keccak论文总结&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

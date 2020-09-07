@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  <title>CCFADL105——面向下一代计算的开源芯片与敏捷开发方法 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2019-09-09 18:57">
+      2019年9月9日 晚上
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.8k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      29
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h1 id="面向下一代计算的开源芯片与敏捷开发方法"><a href="#面向下一代计算的开源芯片与敏捷开发方法" class="headerlink" title="面向下一代计算的开源芯片与敏捷开发方法"></a>面向下一代计算的开源芯片与敏捷开发方法</h1><p>主讲人：包云岗老师（中科院计算所， 先进计算机系统研究中心）</p>
+<h1 id="Memory-Wall"><a href="#Memory-Wall" class="headerlink" title="Memory Wall"></a>Memory Wall</h1><h2 id="提出背景：System-Architecture"><a href="#提出背景：System-Architecture" class="headerlink" title="提出背景：System Architecture"></a>提出背景：System Architecture</h2><p>1995 年提出，成为体系结构研究的最重要问题之一</p>
+<ul>
+<li>多核处理器的流行</li>
+<li>延迟与带宽显得更为重要</li>
+</ul>
+<h2 id="应对思路"><a href="#应对思路" class="headerlink" title="应对思路"></a>应对思路</h2><ul>
+<li>工具模型：HMTT、C-MAT</li>
+<li>预取技术：Memory Hierarchy</li>
+<li>新型存储：3D Stack、HBM、NVM</li>
+<li>新架构： Process-in-Memory、Domain-Specific Architecture</li>
+</ul>
+<h2 id="HMTT-访存监控仪器"><a href="#HMTT-访存监控仪器" class="headerlink" title="HMTT 访存监控仪器"></a>HMTT 访存监控仪器</h2><p>包老师博士期间的工作，现在已经迭代了几个版本。</p>
+<ul>
+<li>需求<ul>
+<li>安捷伦等逻辑分析仪：<strong>无法检测</strong>到云计算环境下<strong>多应用混合</strong>后的数据通路中的应用访存行为（不具备对应用进行带语义的监控）</li>
+<li>提出<strong>软硬件协同</strong>监测新方法，研制<strong>HMTT 访存监控仪</strong></li>
+</ul>
+</li>
+<li>工作流程<ul>
+<li>物理地址追踪（Physical Address Trace）：作为硬件，不影响其性能，直插在内存槽获取其物理地址</li>
+<li>虚拟地址追踪（Virtual Address Trace）：转换成虚拟地址以了解进程相关的信息</li>
+<li>访问对象（Object Access Pattern）：通过对虚拟地址的再分析，与变量关联起来</li>
+</ul>
+</li>
+</ul>
+<p>工作示意图如下</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0007.jpg" srcset="/img/loading.gif" alt="HMTT1"></p>
+<a id="more"></a>
+<h3 id="软件挑战"><a href="#软件挑战" class="headerlink" title="软件挑战"></a>软件挑战</h3><p>虚拟地址到物理地址的重映射技术我们上课都学到过，可是如何从物理地址反过来获取虚拟地址呢？</p>
+<p><strong>如何物理地址翻译为进程的虚拟地址</strong>（物理地址-&gt;软件语义信息）</p>
+<p>解决：<strong>修改 Kernel</strong></p>
+<ul>
+<li>通过修改内核使得硬件可以获取到页表的 page table</li>
+<li>在导出的页表中反查物理地址，获得进程产生的虚拟地址</li>
+</ul>
+<p>问题：</p>
+<ul>
+<li>扫描当前页表</li>
+<li>缺页替换则对应不同进程信息</li>
+<li>如何同步更新 HMTT 硬件信息</li>
+</ul>
+<h3 id="同步挑战"><a href="#同步挑战" class="headerlink" title="同步挑战"></a>同步挑战</h3><p><strong>当 OS 内核发生页表更新时，如何通知 HMTT 硬件</strong></p>
+<p>解决：<strong>高层事件编码机制：High-Level Event Encoding Mechanism（HLE2M）</strong></p>
+<ul>
+<li>保留一段物理内存地址空间</li>
+<li>将高层事件映射到该空间</li>
+<li>侦听对该地址空间的访存请求</li>
+<li>将访存硬件转换为高层时间</li>
+</ul>
+<p>理解：将高层事件多一个<strong>分支</strong>结果，访问这一小块内存空间（相对集中），就如同一段标记数组，用来记录访存情况（次数）。</p>
+<p>图示:</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0009.jpg" srcset="/img/loading.gif" alt="HMTT2"></p>
+<p>以页表更新事件为例（举一反三，其他高层事件也可以比如 CPU/DMA 访问，加锁操作）：</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0010.jpg" srcset="/img/loading.gif" alt="HMTT3"></p>
+<h2 id="模型分析"><a href="#模型分析" class="headerlink" title="模型分析"></a>模型分析</h2><p>系统结构的并发度没有被充分利用或优化利用</p>
+<p>更多资料来源，刘宇航副研究员，中科院计算所</p>
+<p>基于并发的存储层间性能匹配（LPM），漏斗状，如下图</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0015.jpg" srcset="/img/loading.gif" alt="LPM"></p>
+<h2 id="数据预取"><a href="#数据预取" class="headerlink" title="数据预取"></a>数据预取</h2><p>何为数据预取？将未来所需要访问的数据提前取到更靠近处理器的 Cache 中，可以有效隐藏访存延迟</p>
+<p>需求：</p>
+<ul>
+<li>手机处理器对于敏捷反应，以及其他落地应用的需求</li>
+<li>苹果是个黑洞（闭环自研）</li>
+<li>华为与科研机构的合作使得需求更明晰</li>
+</ul>
+<p>学术界的研究情况：</p>
+<ul>
+<li>提出了多种预取策略，如顺序预取，Stride 预取，马尔科夫预取…</li>
+<li>主要针对 Memory Hierarchy 的某个特定层次，如 L1 Cache 或者 L2 Cache</li>
+</ul>
+<h2 id="领域专用体系结构-DSA"><a href="#领域专用体系结构-DSA" class="headerlink" title="领域专用体系结构 DSA"></a>领域专用体系结构 DSA</h2><p>Domain Specific Architecture（DSA，即针对应用领域做优化的处理器架构，区别于通用架构）。</p>
+<p>从普通码农用 python，到算法工程师从数据结构算法上优化，如果懂得并行化算法的人，还可以在并行度上优化，在往上还可以做内存优化和指令级优化，<strong>整体性能提升是惊人的</strong>。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0017.jpg" srcset="/img/loading.gif" alt="DSA"></p>
+<p>若将“人”的经验固化到芯片中去，是一件听起来很美妙的事情。</p>
+<p>性能差异来源分析</p>
+<ul>
+<li>并行度挖掘不够？</li>
+<li>数据移动开销太大？</li>
+</ul>
+<h2 id="DSA：是道，非术"><a href="#DSA：是道，非术" class="headerlink" title="DSA：是道，非术"></a>DSA：是道，非术</h2><ul>
+<li>DSA 是一种理念，尚未形成通用的技术方案</li>
+<li>DSA 未来可能的形态<ul>
+<li>每个解决方案对应一颗 SoC 与适配软件</li>
+<li>每颗 SoC 包括<ul>
+<li>一个通用的基础平台，如 RISC-V + AXI</li>
+<li>若干个领域加速器，如 APU、BPU、NPU</li>
+</ul>
+</li>
+<li>芯片敏捷开发工具<ul>
+<li>Chisel + OpenEDA + …</li>
+</ul>
+</li>
+<li>低门槛开发平台与制造渠道</li>
+</ul>
+</li>
+</ul>
+<h1 id="标签化体系结构"><a href="#标签化体系结构" class="headerlink" title="标签化体系结构"></a>标签化体系结构</h1><p>研究历程，拆解核尝试（失败），MicroBlaze（非开源，受挫），开源指令集 RISC-V 基础上实现（成功）</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0023.jpg" srcset="/img/loading.gif" alt="DSA"></p>
+<h2 id="背景介绍"><a href="#背景介绍" class="headerlink" title="背景介绍"></a>背景介绍</h2><p>如之前 HMTT 的思想，希望实现新的接口，使得高层软件的信息可以传递到底层硬件中去，底层对上层有意识而采取更具针对性的解决，提高效率（而非像现在一样，底层对上层完全 unawareness）。</p>
+<p>单任务稳定环境下性能波动与共享环境下的性能波动的两个实验：</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0028.jpg" srcset="/img/loading.gif" alt="DSA"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0030.jpg" srcset="/img/loading.gif" alt="DSA"></p>
+<h2 id="需求场景"><a href="#需求场景" class="headerlink" title="需求场景"></a>需求场景</h2><p>航空航天等实时场景</p>
+<ul>
+<li>机载计算机<strong>关闭多核</strong>以保证实时性</li>
+<li>美国联邦航空管理局 FAA<strong>出台相关白皮书</strong></li>
+</ul>
+<p>用户体验敏感场景</p>
+<ul>
+<li>手机芯片内部多部件<strong>竞争冲突</strong>，<strong>操作卡顿</strong>，影响用户体验</li>
+</ul>
+<p>亟需体系结构的创新</p>
+<h2 id="控制与弱化控制"><a href="#控制与弱化控制" class="headerlink" title="控制与弱化控制"></a>控制与弱化控制</h2><p>回顾历史，重新审视冯·诺依曼结构：</p>
+<ul>
+<li>体系结构中的控制<ul>
+<li>1953 年，图灵奖得主 Maurice Wikes 提出<strong>微程序</strong>来设计处理器的控制单元</li>
+</ul>
+</li>
+<li>控制被弱化<ul>
+<li>1980 年，RISC 成为主流，体系结构研究主要关注<strong>部件</strong>与<strong>数据通路</strong>的设计与优化，弱化了控制</li>
+</ul>
+</li>
+</ul>
+<p>但是弱化控制随着 CPU 核数，并行度要求的提高导致的问题越来越突出：性能不稳定。</p>
+<p>共享环境下，多应用共享硬件，弱化控制会导致硬件<strong>出现无序竞争</strong>，进而引起严重的性能波动，Data Shuffling 犹如一条无序竞争的马路。</p>
+<p>冯诺依曼瓶颈</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0038.jpg" srcset="/img/loading.gif" alt="Bottleneck1"></p>
+<h2 id="尝试方法"><a href="#尝试方法" class="headerlink" title="尝试方法"></a>尝试方法</h2><ul>
+<li>存储层次+多核<ul>
+<li>多核结构存储层次分化：核内+核外</li>
+<li>核内 L1/L2 复制多份，共享核外 L3/Mem/IO</li>
+</ul>
+</li>
+</ul>
+<h2 id="存在问题"><a href="#存在问题" class="headerlink" title="存在问题"></a>存在问题</h2><ul>
+<li><p>无序共享导致性能无法得到保障</p>
+<ul>
+<li><strong>性能不确定</strong>：三级缓存（L3）共享会造成高达 3 倍以上性能下降，引起云计算“<strong>吵闹的邻居</strong>”问题。</li>
+<li>L3 无从判断应用的紧急程度</li>
+</ul>
+</li>
+</ul>
+<p>图示：单独可以，一同使用就出问题</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0041.jpg" srcset="/img/loading.gif" alt="Bottleneck2"></p>
+<ul>
+<li>硬件上存在大量无序竞争<ul>
+<li>CPU、内存、网络、磁盘都会因为无序共享，造成用户体验差。</li>
+</ul>
+</li>
+</ul>
+<p>图示</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0042.jpg" srcset="/img/loading.gif" alt="Bottleneck3"></p>
+<h2 id="接口设计"><a href="#接口设计" class="headerlink" title="接口设计"></a>接口设计</h2><p>1973 年，Feustel 教授提出 Tagged Architecture</p>
+<ul>
+<li>核心思想是<strong>将高层语言信息传递到底层硬件</strong></li>
+<li>替代冯诺伊曼结构</li>
+</ul>
+<p>设计原理：</p>
+<ul>
+<li>所有数据赋予一个<strong>类型标签</strong></li>
+<li>标签<strong>存于内存</strong>中</li>
+<li>标签<strong>触发中断</strong>进行处理</li>
+</ul>
+<p>问题：</p>
+<ul>
+<li><strong>设计太复杂，难以实现</strong></li>
+</ul>
+<h2 id="SDN-到计算机"><a href="#SDN-到计算机" class="headerlink" title="SDN 到计算机"></a>SDN 到计算机</h2><p>2010-2012 在普林斯顿 PARSEC 研究内容：标签化网络、frenetic（一种网络编程语言）、P4</p>
+<p>从 SDN 网络架构借鉴思路，<strong>计算机即网络（Computer as a Network）</strong>，计算机本质上就是一个网络，内部的不同部件通过包进行通信——PCIe 包、QPI 包、NoC 包，……</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>SDN 核心原理</th>
+<th>标签化冯·诺依曼体系结构</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>细粒度对象</strong></td>
+<td>每个网络包增加一个标签（Label）</td>
+<td>每个内部请求（如访存请求）增加一个标签</td>
+</tr>
+<tr>
+<td><strong>关联语义</strong></td>
+<td>标签值与用户的网络需求关联</td>
+<td>标签值与上层 VM/进程/线程/变量等关联（高层信息）</td>
+</tr>
+<tr>
+<td><strong>携带传播</strong></td>
+<td>网络包传播过程中携带标签</td>
+<td>标签在计算机访问各个存储层次过程中全程携带</td>
+</tr>
+<tr>
+<td><strong>标签控制逻辑</strong></td>
+<td>网络设备基于标签控制网络包转发</td>
+<td>基于标签的请求区分处理（底层高效）</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>从 SDN 到计算机，从标签化网络到标签化冯诺依曼体系结构</p>
+<p>业界尝试：2016 年 Intel RDT 技术、PARD</p>
+<h2 id="最小污染原则"><a href="#最小污染原则" class="headerlink" title="最小污染原则"></a>最小污染原则</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>70 年代标签体系结构失败原因</th>
+<th>LvNA 的三条“最小污染”规则：</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>所有数据赋予一个<strong>类型标签</strong></td>
+<td>标签应尽可能简单</td>
+</tr>
+<tr>
+<td>标签<strong>存于内存</strong>中</td>
+<td>标签存于<strong>请求</strong>中</td>
+</tr>
+<tr>
+<td>标签<strong>触发中断</strong>进行处理</td>
+<td>控制逻辑放置在数据通路上</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>增加标签寄存器，标签关联硬件虚拟机，传播标签，可编程控制逻辑</p>
+<h2 id="尝试与实现"><a href="#尝试与实现" class="headerlink" title="尝试与实现"></a>尝试与实现</h2><ul>
+<li><p>尝试 1：基于 MCU（微控制单元）的控制逻辑，尝试 2：基于表的控制逻辑</p>
+</li>
+<li><p>尝试 2：基于表的控制逻辑</p>
+</li>
+<li><p>集中平台资源管理</p>
+<ul>
+<li>连接所有控制逻辑形成控制平面</li>
+<li>运行基于 Linux 的固件</li>
+<li>将控制逻辑抽象为文件</li>
+</ul>
+</li>
+<li><p>实现</p>
+<ul>
+<li>Full-system cycle-accurate simulator</li>
+<li>FPGA prototype on Xilinx VC709 evaluation board<ul>
+<li>MicroBlaze version $\times$</li>
+<li>RISC-V version $\checkmark$</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>演示</p>
+</li>
+</ul>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0066.jpg" srcset="/img/loading.gif" alt="Show"></p>
+<h2 id="硬件资源动态调整的共性问题"><a href="#硬件资源动态调整的共性问题" class="headerlink" title="硬件资源动态调整的共性问题"></a>硬件资源动态调整的共性问题</h2><p>本质问题：<strong>如何在混合环境下预测出应用单独运行时需要的资源？</strong></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0067.jpg" srcset="/img/loading.gif" alt="Source"></p>
+<ul>
+<li>解决方法 1：离线分析建模，预测动态资源需求</li>
+<li>解决方法 2：在线实时预测动态资源需求</li>
+<li>Shadow X 机制：针对不同资源设计一套<strong>影子资源模型，模拟推断应用单独运行时所需资源</strong></li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>共享模型</th>
+<th>Shadow X 机制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SMT</td>
+<td>利用<strong>Shadow Table</strong>获得 PTA 资源（ICS2019）</td>
+</tr>
+<tr>
+<td>LLC</td>
+<td>利用<strong>Shadow Tag</strong>来获得一条 hit rate 曲线</td>
+</tr>
+<tr>
+<td>Mem Bandwidth</td>
+<td>利用<strong>Shadow 感知机</strong>获得内存宽带</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>实现自动 LLC 管理和自动访存宽带管理</p>
+<p>芯片验证：与 771 所合作，正在开展 8 核 Labeled RISC-V 流片</p>
+<h2 id="同行进展"><a href="#同行进展" class="headerlink" title="同行进展"></a>同行进展</h2><p>ARM 正在研究基于标签的<strong>MPAM</strong>技术：Memory Partitioning and Monitoring</p>
+<h2 id="学习教程"><a href="#学习教程" class="headerlink" title="学习教程"></a>学习教程</h2><p><a href="http://sdc.ict.ac.cn/micro2018-tutorial/" target="_blank" rel="noopener">作者提供的教程 Labled ISC-V: A Case for Software-Defined Architecture</a></p>
+<p><a href="https://github.com/LvNA-system/labeled-RISC-V" target="_blank" rel="noopener">开源代码 Open-Sourced Codes</a></p>
+<h1 id="开源芯片与敏捷开发"><a href="#开源芯片与敏捷开发" class="headerlink" title="开源芯片与敏捷开发"></a>开源芯片与敏捷开发</h1><p>主要讲了当前局势和芯片开发学习的未来。</p>
+<ul>
+<li>中国高科技企业正面临美国技术“核打击”</li>
+<li>优秀人才储备严重不足<ul>
+<li>如果认为 ISCA 论文第一作者是行业专业技术佼佼者</li>
+<li>十年来 85%选择在美国就业，仅 4%在中国就业</li>
+</ul>
+</li>
+<li>芯片设计门槛高，大学无能力培养优秀人才<ul>
+<li>时间长</li>
+<li>成本高</li>
+</ul>
+</li>
+<li>降低芯片门槛是人才危机一种破解之道<ul>
+<li>美国经验：MISIS 项目，为大学提供流片服务。</li>
+</ul>
+</li>
+</ul>
+<h2 id="领域专用体系结构星期"><a href="#领域专用体系结构星期" class="headerlink" title="领域专用体系结构星期"></a>领域专用体系结构星期</h2><p><strong>如何弥补软硬件性能鸿沟？</strong></p>
+<ul>
+<li>硬件加速器</li>
+<li>领域专用体系结构（DSA Domain Specific Architecture)</li>
+</ul>
+<h2 id="开源芯片，降低芯片设计门槛"><a href="#开源芯片，降低芯片设计门槛" class="headerlink" title="开源芯片，降低芯片设计门槛"></a>开源芯片，降低芯片设计门槛</h2><p><a href="http://blog.sciencenet.cn/home.php?mod=space&amp;uid=414166&amp;do=blog&amp;id=1192579" target="_blank" rel="noopener">远景研讨会纪要：面向下一代计算的开源芯片与敏捷开发</a></p>
+<h2 id="RISC-V-国际开源实验室（RIOS）成立"><a href="#RISC-V-国际开源实验室（RIOS）成立" class="headerlink" title="RISC-V 国际开源实验室（RIOS）成立"></a>RISC-V 国际开源实验室（RIOS）成立</h2><p>大卫·帕特森（David Patternson）在瑞士宣布依托清华-伯克利深圳学院建设 RIOS（RISC-V International Open Source Laboratory）实验室，全面提升 RISC-V 生态系统至最先进水平。</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Research/">Research</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Research/讲座会议/">讲座会议</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/讲座会议/">讲座会议</a>
+                    
+                      <a class="hover-with-bg" href="/tag/CCFADL/">CCFADL</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/post/ac8faa8e.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">数论学习——Stirling数</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/post/f82955ec.html">
+                        <span class="hidden-mobile">CCFADL105——面向非易失性存储介质的文件系统设计、实现与形式化验证</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "CCFADL105——面向下一代计算的开源芯片与敏捷开发方法&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

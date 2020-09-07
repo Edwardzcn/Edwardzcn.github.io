@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  <title>CCFADL105——大数据系统的演化：理论、实践和愿望 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2019-09-09 18:52">
+      2019年9月9日 晚上
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.3k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      24
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h1 id="大数据系统的演化：理论、实践和展望"><a href="#大数据系统的演化：理论、实践和展望" class="headerlink" title="大数据系统的演化：理论、实践和展望"></a>大数据系统的演化：理论、实践和展望</h1><p>主讲人：周礼栋老师（微软亚洲研究院副院长，MSRA 被称为系统方向的黄埔军校，肇国老师评价其为非常 Perspective 的一位老师）</p>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>作为第一个 Talker，先做一个比较宏观的演讲，整个分为两部分。<br>除了必要的知识点以外，我们更需要以系统的视角，关注方法学（重新思考）。</p>
+<h1 id="回顾大数据系统的发展历程：Big-Data-Systems"><a href="#回顾大数据系统的发展历程：Big-Data-Systems" class="headerlink" title="回顾大数据系统的发展历程：Big Data Systems"></a>回顾大数据系统的发展历程：Big Data Systems</h1><p>强调了抽象的重要性，一个好的抽象，可以将要进行的任务很好的表达出来，同时还要具备高效性，可以被高效的实现。</p>
+<h2 id="2010-年以前的工作：Foudation"><a href="#2010-年以前的工作：Foudation" class="headerlink" title="2010 年以前的工作：Foudation"></a>2010 年以前的工作：Foudation</h2><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0003.jpg" srcset="/img/loading.gif" alt="初期 Fundation"></p>
+<p>对于 MapReduce 的横空出现，学界对于 MapReduce 存在一些争论，一些数据库的巨擘认为 MapReduce 是对数据库已经建立起来的一些规则也好，基石工作也好的破坏，技术上是一种倒退，而微软则在 Google MapReduce 的基础上尝试填补上述争论，微软认为数据库和 MapReduce 是存在结合点的，可以向上提供原有的 SQL relation algebra</p>
+<ul>
+<li>谷歌： MapReduce -&gt; 并行/分布式/优化 -&gt; 高效执行</li>
+<li>微软：数据流 -&gt; 原有数据库接口 -&gt; MapReduce -&gt; 并行/分布式/优化 -&gt; 高效执行</li>
+</ul>
+<a id="more"></a>
+<h2 id="2011-2012-的工作：Holisitic-Code-Optimization"><a href="#2011-2012-的工作：Holisitic-Code-Optimization" class="headerlink" title="2011-2012 的工作：Holisitic Code Optimization"></a>2011-2012 的工作：Holisitic Code Optimization</h2><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0005.jpg" srcset="/img/loading.gif" alt="Holisitic Code Optimization"></p>
+<p>数据库里面的优化和编译器的优化可以结合起来，思路：最优执行，优化执行。（当然整体还是建立在数据库的思维上）</p>
+<p><strong>PeriSCOPE 项目</strong>，出发点希望将 SQL-like code 进行编译优化。</p>
+<ul>
+<li>代码段是在多机器并发执行</li>
+<li>纯编译优化只是很小的局部</li>
+</ul>
+<p>SQL 生命力旺盛的一个原因是其隐藏了很多优化的细节。将 SQLize 的特性深入到全局概念，全局优化。</p>
+<p>全局优化关键是优化目标、关注点的改变：<strong>数据传输（Data Shuffling）消耗</strong>：</p>
+<ul>
+<li>Column Reduction：延迟产生列</li>
+<li>Early Filtering 提前合并减少列</li>
+<li>Smart Cut</li>
+</ul>
+<h3 id="Research-to-Production"><a href="#Research-to-Production" class="headerlink" title="Research to Production"></a>Research to Production</h3><p>从研究所的科研突破到是计划产品部署过程中还会存在着一些问题，不管是科研人员和业务部门人员思维上差异也好，工作环境也好，所以在转化过程中我们还需要做到以下几点：</p>
+<ul>
+<li>新颖与保守兼顾（考虑到业务部门的保守性）</li>
+<li>需要适应真正的工作（而非 Benchmark 或者模拟数据）</li>
+<li>无错、无不良影响、无不可预测行为（相较于成熟的旧技术，新技术如果以出错为代价，性能提升再多都是徒劳）</li>
+<li>必须是收敛且低开销的（泛用性强，经得起工作集的改变）</li>
+<li>后期维护的代价要小、复杂性低（方便迭代）</li>
+</ul>
+<h2 id="2013-2014-的工作：Scheduling-and-Resource"><a href="#2013-2014-的工作：Scheduling-and-Resource" class="headerlink" title="2013-2014 的工作：Scheduling and Resource"></a>2013-2014 的工作：Scheduling and Resource</h2><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0013.jpg" srcset="/img/loading.gif" alt="Scheduling and Resource"></p>
+<p>从单一 Job 的优化到多 Jobs 的优化，引入调度优化的角度。</p>
+<p>大规模集群的多任务调度优化已经不仅仅是一个算法上的问题，因为集群中机器状态未知是常态，而且各自完成任务的预期也是 Unpredictable 的。</p>
+<h2 id="2015-2016-的工作：Beyond-Batch-Processing"><a href="#2015-2016-的工作：Beyond-Batch-Processing" class="headerlink" title="2015-2016 的工作：Beyond Batch Processing"></a>2015-2016 的工作：Beyond Batch Processing</h2><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0017.jpg" srcset="/img/loading.gif" alt="Beyond Batch Processing"></p>
+<p>重新审视思考方式：图计算、机器学习、流等概念的推广。从先前的 Scope 发展衍生出 StreamScope：分布式大数据可靠流系统。</p>
+<ul>
+<li><p>微软内部商用大规模流系统</p>
+<ul>
+<li>从批处理大数据系统演化而来</li>
+<li>源于实际应用增强实时性的需求</li>
+<li>和批处理系统共存</li>
+</ul>
+</li>
+<li><p>系统设计理念和思路</p>
+<ul>
+<li><strong>抽象！抽象！！抽象！！！</strong></li>
+<li>先保证正确，再优化</li>
+<li>通过高层语言提高可用性</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0019.jpg" srcset="/img/loading.gif" alt="Stream Scope"></p>
+<p>在流处理的过程中，由于是阶段-&gt;阶段的，考虑出错的常态化，如果某个节点出错，且采取 Rebuild State（重建状态）的策略，最坏情况可能需要 Ref 的节点也处于出错状态，这样数据就在 Data Shuffling 的过程中丢失了。为了消除数据前后的<strong>空间依赖性</strong>，有必要构建新的抽象。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0022.jpg" srcset="/img/loading.gif" alt="rStream1"></p>
+<h3 id="抽象-1-可靠流管道抽象"><a href="#抽象-1-可靠流管道抽象" class="headerlink" title="抽象 1 可靠流管道抽象"></a>抽象 1 可靠流管道抽象</h3><p>可靠流管道（rStream）</p>
+<ul>
+<li>每个序列号码都有一个唯一值</li>
+<li>对于相同序列号，必须成功写后才可以读</li>
+<li>一个写操作$(seq,e)$完成后，后续对该位置读都会返回$(seq,e)$</li>
+</ul>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0023.jpg" srcset="/img/loading.gif" alt="rStream2"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0024.jpg" srcset="/img/loading.gif" alt="rStream3"></p>
+<h3 id="抽象-2-可恢复节点抽象"><a href="#抽象-2-可恢复节点抽象" class="headerlink" title="抽象 2 可恢复节点抽象"></a>抽象 2 可恢复节点抽象</h3><p>可恢复节点（rVertex）</p>
+<p>以快照形式作为状态记录，包含三个属性值：</p>
+<ul>
+<li>输入流序列号</li>
+<li>输出流序列号</li>
+<li>当前计算状态</li>
+</ul>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0025.jpg" srcset="/img/loading.gif" alt="rVertex1"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0026.jpg" srcset="/img/loading.gif" alt="rVertex2"></p>
+<p>出错恢复：根据快照记录回到过去状态，对于输入流进行重询问，由于 rStream 抽象，先前成功得读再后续读会返回相同的值，从而使用此性质可以完成成功得重询问，实现出错恢复。</p>
+<h3 id="抽象，抽象，抽象"><a href="#抽象，抽象，抽象" class="headerlink" title="抽象，抽象，抽象"></a>抽象，抽象，抽象</h3><p>抽象的要求：自身要简单、易于理解。</p>
+<p>合理的抽象使复杂的数据流可靠性和容错问题变得简单</p>
+<ul>
+<li>一目了然的正确性</li>
+<li>但是简单的实现是抵消的：需要同步写到高可靠存储系统</li>
+</ul>
+<p>保持抽象，但使用一个混合高效的实现</p>
+<ul>
+<li>把费时的写操作移出关键路径（critical path）</li>
+<li>但仍保持可靠管道的性质</li>
+</ul>
+<p>统一的抽象，不同的恢复策略选择</p>
+<ul>
+<li>Recomputaion using dependency tracking at runtime</li>
+<li>Checkpoint/log replay</li>
+<li>Persistent state/streams</li>
+<li>Hybrid</li>
+</ul>
+<p>合理的抽象简化系统开发、维护、调试和部署，分布式流处理从此变得简单。在微软的实践中，在这两个抽象的帮助下，整体业务可以达到：</p>
+<ul>
+<li>离线调试验证模式，无缝上线</li>
+<li>支持在线对每个节点的单独调试</li>
+<li>支持灵活的在线迁移和动态调整</li>
+<li>对过去的执行片段的审计</li>
+<li>系统维护过程中的无间断执行</li>
+</ul>
+<h1 id="审视人工智能系统的机会和挑战：From-Big-Data-Systems-to-AI-Systems"><a href="#审视人工智能系统的机会和挑战：From-Big-Data-Systems-to-AI-Systems" class="headerlink" title="审视人工智能系统的机会和挑战：From Big Data Systems to AI Systems"></a>审视人工智能系统的机会和挑战：From Big Data Systems to AI Systems</h1><p>系统的两大重器：<strong>编译</strong>，<strong>架构</strong></p>
+<p>AI 蓬勃发展带来了新的方法论，比如，深度学习+：</p>
+<ul>
+<li>Deep Learning Compiler Optimization 深度学习编译优化</li>
+<li>Deep Learning Training Job Scheduing 深度学习训练任务调度</li>
+</ul>
+<p>帮助上层应用更好的利用底层硬件技术革新的项目——卧龙计划（Project Wolong）。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0043.jpg" srcset="/img/loading.gif" alt="Project Wolong"></p>
+<h2 id="Project-Wolong-Distributed-Optimizer"><a href="#Project-Wolong-Distributed-Optimizer" class="headerlink" title="Project Wolong: Distributed Optimizer"></a>Project Wolong: Distributed Optimizer</h2><p>基于 RDMA（Remote Direct Memory Access）的快速分布式训练</p>
+<p>基于设备和服务器的自动化计算部署。</p>
+<p>利用 RDMA 实现 Zero-copy 设备沟通以提高效率，应用在：RPC、GPU 加速</p>
+<h2 id="Project-Wolong：Local-Optimizer"><a href="#Project-Wolong：Local-Optimizer" class="headerlink" title="Project Wolong：Local Optimizer"></a>Project Wolong：Local Optimizer</h2><p>对比 CPU 和 GPU 的架构</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>CPU</th>
+<th>GPU</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>少量的复杂核心</td>
+<td>大量的简单核心</td>
+</tr>
+<tr>
+<td>单线程表现</td>
+<td>成百上千的硬件线程</td>
+</tr>
+<tr>
+<td>晶体管空间致力于复杂的指令级并行（ILP）</td>
+<td>最大化浮点吞吐量</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0052.jpg" srcset="/img/loading.gif" alt="CPUvsGPU"></p>
+<p>优化方向：<strong>Operator Batching and Kernel Fusion</strong></p>
+<p>运算符的抽象粒度较低，导致一个真实的训练模型的数据流图往往会包括数千个节点，这些节点在 GPU 上的执行就会变成数千次 GPU 上的内核执行。这些粒度较小的内核函数在提供了灵活性的同时，其频繁的调用也成为当前影响许多深度学习框架性能的一个重要因素，其带来的性能开销主要体现在：数据流图的调度开销，GPU 内核函数的启动开销，以及内核函数之间的数据传输开销。</p>
+<p>解决这一问题的一个直接方法就是合并相同运算符操作和内核融合，以更好的利用 GPU 的并行特性。</p>
+<p>关于内核融合的详细介绍：<a href="https://www.msra.cn/zh-cn/news/features/kernel-fusion-20170925" target="_blank" rel="noopener">内核融合：GPU 深度学习的“加速神器”,薛继龙</a></p>
+<p>但是 操作符 Batch 的自动化，以及核的融合并非想象中简单，存在一些技术上的难题：</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0056.jpg" srcset="/img/loading.gif" alt="Automatic Operator Batching"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0057.jpg" srcset="/img/loading.gif" alt="Kernel Fusion"></p>
+<p>最后整体的工作流：</p>
+<ul>
+<li>图优化：硬件无关优化策略</li>
+<li>检测融合子图：找到一些可被融合的图节点</li>
+<li>代码生成：给定一个融合子图，生成相关内核函数代码</li>
+<li>图修改：将融合后的内核所对应的 Operator 替换之前的子图，并插入原来的数据流图中</li>
+<li>循环多次直至满足需求</li>
+</ul>
+<p>实现产品<strong>NNFusion</strong>：一个多功能深度学习编译器。</p>
+<h2 id="Deep-Learning-Training-vs-Big-Data-Processing"><a href="#Deep-Learning-Training-vs-Big-Data-Processing" class="headerlink" title="Deep Learning Training vs. Big Data Processing"></a>Deep Learning Training vs. Big Data Processing</h2><p>不考虑现在处理的问题和原来的问题有哪些不同，而照搬过去的方法是系统改良过程中一种不负责任的行为。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0062.jpg" srcset="/img/loading.gif" alt="Difference"></p>
+<p>对比目标，过程，表现三方面的不同，我们获得的启示：</p>
+<ul>
+<li>更多的并行工作会更好（The More Parallel Jobs the Better）</li>
+<li>使长期工作适应不断变化的环境（Adapt the long-running job to the changing environment）</li>
+<li>使深度学习进行时的微批处理（mini-batches）更加高效</li>
+</ul>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><ul>
+<li>系统创新和优化时大数据和人工智能的以打击时</li>
+<li>以独特的视角去发现和定义新的研究问题</li>
+<li>综合全面系统地解决方法</li>
+<li>大系统研究和创新的黄金时代</li>
+</ul>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Research/">Research</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Research/讲座会议/">讲座会议</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/讲座会议/">讲座会议</a>
+                    
+                      <a class="hover-with-bg" href="/tag/CCFADL/">CCFADL</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/post/f74c511d.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">CCFADL105——“智能在网计算”应用智能网卡技术加速数据中心</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/post/b1db88f.html">
+                        <span class="hidden-mobile">CCFADL105——大数据系统实践：从MapReduce到融合计算</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "CCFADL105——大数据系统的演化：理论、实践和愿望&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

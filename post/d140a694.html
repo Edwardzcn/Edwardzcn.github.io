@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  <title>数字图像处理——高斯滤波器与零填充避免DFT固有周期性影响 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2019-10-23 21:25">
+      2019年10月23日 晚上
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.5k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      23
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <p>2019.10.24 更新，与<a href="https://www.edwardzcn98yx.com/post/e371c683.html">数字图像处理——频率域平滑锐化图像常用滤波器</a>中滤波器公式保持一致，并更新填充函数的写法。</p>
+<h1 id="高斯滤波"><a href="#高斯滤波" class="headerlink" title="高斯滤波"></a>高斯滤波</h1><h2 id="高斯高通滤波-GaussianHPF"><a href="#高斯高通滤波-GaussianHPF" class="headerlink" title="高斯高通滤波 GaussianHPF"></a>高斯高通滤波 GaussianHPF</h2><p>频率域高斯高通滤波公式如下，注意公式$D$和$D_0$的区别</p>
+<script type="math/tex; mode=display">H(u,v) = 1-e^{\dfrac{-D^2(u,v)}{2D_0^2}}</script><h2 id="高斯低通滤波-GaussianLPF"><a href="#高斯低通滤波-GaussianLPF" class="headerlink" title="高斯低通滤波 GaussianLPF"></a>高斯低通滤波 GaussianLPF</h2><p>频率域高斯低通滤波公式如下</p>
+<script type="math/tex; mode=display">H(u,v) = e^{\dfrac{-D^2(u,v)}{2D_0^2}}</script><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getGaussianMask</span><span class="hljs-params">(mask_shape,filter_d0,hl_type)</span>:</span>
+    <span class="hljs-keyword">assert</span> hl_type <span class="hljs-keyword">in</span> (<span class="hljs-string">"lpf"</span>,<span class="hljs-string">"hpf"</span>)
+    rows,cols = mask_shape[<span class="hljs-number">0</span>],mask_shape[<span class="hljs-number">1</span>]
+    crow = rows/<span class="hljs-number">2</span>
+    ccol = cols/<span class="hljs-number">2</span>
+    mask = np.zeros((rows,cols))
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(rows):
+        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> range(cols):
+            dis = sqrt((i-crow)**<span class="hljs-number">2</span> + (j-ccol)**<span class="hljs-number">2</span>)
+            <span class="hljs-keyword">if</span> hl_type == <span class="hljs-string">"hpf"</span>:
+                mask[i,j] = <span class="hljs-number">1</span>-np.exp(-(dis**<span class="hljs-number">2</span>) / (<span class="hljs-number">2</span>*(filter_d0**<span class="hljs-number">2</span>)))
+            <span class="hljs-keyword">elif</span> hl_type == <span class="hljs-string">"lpf"</span>:
+                mask[i,j] = np.exp(-(dis**<span class="hljs-number">2</span>)/(<span class="hljs-number">2</span>*(filter_d0**<span class="hljs-number">2</span>)))
+    <span class="hljs-keyword">return</span> mask
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getGaussianFilterPassImg</span><span class="hljs-params">(input_img : np.array, filter_type : str , filter_d0  , size = None)</span>:</span>
+    <span class="hljs-keyword">assert</span> filter_type <span class="hljs-keyword">in</span> (<span class="hljs-string">"lpf"</span>,<span class="hljs-string">"hpf"</span>)
+    f_img = np.fft.fft2(input_img , s = size)
+    shift_img = np.fft.fftshift(f_img)
+    mask_shift_img = getGaussianMask(f_img.shape,filter_d0,filter_type)
+    new_shift_img = mask_shift_img*shift_img
+    new_manitude_img = <span class="hljs-number">20</span>*np.log(np.abs(new_shift_img+eps))
+    new_f_img = np.fft.ifftshift(new_shift_img)
+    new_img = np.fft.ifft2(new_f_img)
+    new_img = np.abs(new_img)
+    <span class="hljs-keyword">return</span> new_img,new_manitude_img,mask_shift_img</code></pre>
+<h1 id="DFT-固有周期影响"><a href="#DFT-固有周期影响" class="headerlink" title="DFT 固有周期影响"></a>DFT 固有周期影响</h1><p>实现方法，由于 numpy.fft.fft2 方法参数中可以指定输出图像的大小，官方描述如下：</p>
+<blockquote>
+<p>s : sequence of ints, optional</p>
+<p>_Shape (length of each transformed axis) of the output (s[0] refers to axis 0, s[1] to axis 1, etc.). This corresponds to n for fft(x, n). Along each axis, if the given shape is smaller than that of the input, the input is cropped. If it is larger, the input is padded with zeros. if s is not given, the shape of the input along the axes specified by axes is used._</p>
+</blockquote>
+<p>该参数默认为 DFT 变换后大小为原图大小，若指定输出大小大于原图大小，则进行 0 填充，我们可以利用该参数实现我们的测试。</p>
+<h2 id="不经填充裁剪"><a href="#不经填充裁剪" class="headerlink" title="不经填充裁剪"></a>不经填充裁剪</h2><p>直接以 s 的默认值（None）调用 numpy.fft.fft2 实际上就是进行的非 0 填充</p>
+<p>调用我之前写的方法，实现如下</p>
+<pre><code class="hljs python">lpf_cycle_img, manitude_cycle_img,mask_img = getGaussianFilterPassImg(cycle_img , <span class="hljs-string">"lpf"</span> , <span class="hljs-number">5</span> )</code></pre>
+<p>或者如下</p>
+<pre><code class="hljs python">lpf_cycle_img, manitude_cycle_img,mask_img = getGaussianFilterPassImg(cycle_img , <span class="hljs-string">"lpf"</span> , <span class="hljs-number">5</span> ,size = <span class="hljs-keyword">None</span>)</code></pre>
+<h2 id="进行填充裁剪"><a href="#进行填充裁剪" class="headerlink" title="进行填充裁剪"></a>进行填充裁剪</h2><p>根据教材 P157 解释以及 P159、P163 页，二维零填充避免缠绕错误的结论与一维相同，令$f(x)$和$h(x)$分别是大小为$A \times B$和$C \times D$像素的图像阵列。循环卷积中的缠绕错误可以通过下面函数进行零填充来避免，方法如下：</p>
+<script type="math/tex; mode=display">
+f_p(x,y)=\left \{
+\begin{aligned}
+f(x,y)  & , &  0 \le x \le A-1 和  0 \le y\le B-1 \\
+0 & , & A \le x \le P 或 B \le y \le Q
+\end{aligned}
+\right.</script><p>和</p>
+<script type="math/tex; mode=display">
+h_p(x,y)=\left \{
+\begin{aligned}
+h(x,y) & , & 0 \le x \le C-1 和 0 \le y\le D-1 \\
+0 & , & C \le x \le P 或 D \le y \le Q
+\end{aligned}
+\right.</script><p>其中，</p>
+<script type="math/tex; mode=display">P \ge A+C -1</script><p>和</p>
+<script type="math/tex; mode=display">Q \ge B+D-1</script><p>那么实现方法就有两种：</p>
+<ol>
+<li>通过其他方法进行补 0 后调用 s 为 None 的 DFT</li>
+<li>通过调整 s 为(P,Q)大小调用 DFT</li>
+</ol>
+<a id="more"></a>
+<p>填充的代码实现：</p>
+<pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getPaddingSize</span><span class="hljs-params">(shape1,shape2)</span>:</span>
+    <span class="hljs-keyword">return</span> shape1[<span class="hljs-number">0</span>]+shape2[<span class="hljs-number">0</span>]<span class="hljs-number">-1</span>,shape1[<span class="hljs-number">1</span>]+shape2[<span class="hljs-number">1</span>]<span class="hljs-number">-1</span>
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getPaddingImg</span><span class="hljs-params">(fimg,himg_shape, position = <span class="hljs-string">"corner"</span>)</span>:</span>
+    fimg = np.array(fimg)
+    himg = np.array(himg_shape)
+    <span class="hljs-keyword">assert</span> position <span class="hljs-keyword">in</span> (<span class="hljs-string">"corner"</span>,<span class="hljs-string">"middle"</span>)
+    fimg = np.array(fimg)
+    rows,cols = fimg.shape
+    prows,pcols = getPaddingSize(fimg.shape,himg_shape)
+    <span class="hljs-keyword">if</span> position == <span class="hljs-string">"corner"</span>:
+        new_img = np.pad(fimg,((<span class="hljs-number">0</span>,prows-rows),(<span class="hljs-number">0</span>,pcols-cols)),<span class="hljs-string">'constant'</span>, constant_values = <span class="hljs-number">0</span>)
+    <span class="hljs-keyword">else</span>:
+        cal = <span class="hljs-keyword">lambda</span> x,y: ((x-y)//<span class="hljs-number">2</span> , x-y-(x-y)//<span class="hljs-number">2</span>)
+        new_img = np.pad(fimg,(cal(prows,rows),cal(pcols,cols)),<span class="hljs-string">'constant'</span>, constant_values = <span class="hljs-number">0</span>)
+    <span class="hljs-keyword">return</span> new_img
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cutOriginalImg</span><span class="hljs-params">(pad_img,originalsize,position = <span class="hljs-string">"corner"</span>)</span>:</span>
+    <span class="hljs-keyword">assert</span> position <span class="hljs-keyword">in</span> (<span class="hljs-string">"corner"</span>,<span class="hljs-string">"middle"</span>)
+    <span class="hljs-keyword">if</span>(position == <span class="hljs-string">"corner"</span>):
+        <span class="hljs-keyword">return</span> pad_img[<span class="hljs-number">0</span>:originalsize[<span class="hljs-number">0</span>],<span class="hljs-number">0</span>:originalsize[<span class="hljs-number">1</span>]]
+    <span class="hljs-keyword">else</span>:
+        padsizer = pad_img.shape[<span class="hljs-number">0</span>]-originalsize[<span class="hljs-number">0</span>]
+        padsizec = pad_img.shape[<span class="hljs-number">1</span>]-originalsize[<span class="hljs-number">1</span>]
+        <span class="hljs-keyword">return</span> pad_img[padsizer//<span class="hljs-number">2</span>:padsizer//<span class="hljs-number">2</span>+originalsize[<span class="hljs-number">0</span>],padsizec//<span class="hljs-number">2</span>:padsizec//<span class="hljs-number">2</span>+originalsize[<span class="hljs-number">1</span>]]</code></pre>
+<pre><code class="hljs python">cycle_img = cv2.imread(<span class="hljs-string">'./DIP3E_Original_Images_CH04/Fig0432(a)(square_original).tif'</span>,<span class="hljs-number">0</span>)
+cycle_img_corner = getPaddingImg(cycle_img,(<span class="hljs-number">1000</span>,<span class="hljs-number">1000</span>),position = <span class="hljs-string">"corner"</span>)
+cycle_img_middle = getPaddingImg(cycle_img,(<span class="hljs-number">1000</span>,<span class="hljs-number">1000</span>),position = <span class="hljs-string">"middle"</span>)
+plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">8</span>))
+ax1 = plt.subplot(<span class="hljs-number">131</span>)
+ax1.imshow(cycle_img, cmap = <span class="hljs-string">"gray"</span>)
+ax1.set_title(<span class="hljs-string">"Original Test Img"</span>)
+ax2 = plt.subplot(<span class="hljs-number">132</span>)
+ax2.imshow(cycle_img_corner, cmap = <span class="hljs-string">"gray"</span>)
+ax2.set_title(<span class="hljs-string">"After Padding Img (Corner)"</span>)
+ax3 = plt.subplot(<span class="hljs-number">133</span>)
+ax3.imshow(cycle_img_middle, cmap = <span class="hljs-string">"gray"</span> )
+ax3.set_title(<span class="hljs-string">"After Padding Img (Middle)"</span>)
+plt.show()</code></pre>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/GaussianFilterAndDFTCycle/1.png" srcset="/img/loading.gif" alt="png"></p>
+<pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">showThreeImg</span><span class="hljs-params">(img1,img2,img3,img_name1 = None,img_name2 = None,img_name3 = None)</span>:</span>
+    plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">4</span>))
+    ax1 = plt.subplot(<span class="hljs-number">131</span>)
+    ax1.set_title(img_name1)
+    ax1.imshow(img1  , cmap = <span class="hljs-string">"gray"</span>)
+    ax2 = plt.subplot(<span class="hljs-number">132</span>)
+    ax2.imshow(img2, cmap = <span class="hljs-string">"gray"</span>)
+    ax2.set_title(img_name2)
+    ax3 = plt.subplot(<span class="hljs-number">133</span>)
+    ax3.imshow(img3,cmap = <span class="hljs-string">"gray"</span>)
+    ax3.set_title(img_name3)
+    plt.show()
+
+
+mfilter_size = <span class="hljs-number">8</span>
+<span class="hljs-comment"># 先构建mask</span>
+
+<span class="hljs-comment"># 尝试方法零（不填充）</span>
+<span class="hljs-comment"># 通过自编写方法补零后再进行DFT加高斯低通滤波</span>
+lpf_cycle_img_nopadding, manitude_cycle_img,mask_img = getGaussianFilterPassImg(cycle_img , <span class="hljs-string">"lpf"</span> , mfilter_size)
+showThreeImg(lpf_cycle_img_nopadding,manitude_cycle_img,mask_img,<span class="hljs-string">"Original Img Without Padding"</span>,<span class="hljs-string">"Manitude"</span>,<span class="hljs-string">"Mask"</span>)
+<span class="hljs-comment"># 尝试方法1 （预填充）</span>
+<span class="hljs-comment">## Corner</span>
+pad_cycle_img_corner = getPaddingImg(cycle_img,(mfilter_size,mfilter_size),<span class="hljs-string">"corner"</span>)
+lpf_cycle_img_padcorner_m1, manitude_cycle_img,mask_img = getGaussianFilterPassImg(pad_cycle_img_corner , <span class="hljs-string">"lpf"</span> , mfilter_size)
+cut_lpf_cycle_img_padcorner_m1 = cutOriginalImg(lpf_cycle_img_padcorner_m1,cycle_img.shape,<span class="hljs-string">"corner"</span>)
+showThreeImg(cut_lpf_cycle_img_padcorner_m1,manitude_cycle_img,mask_img,<span class="hljs-string">"Corner Padding Method 1 (After Cut)"</span>,<span class="hljs-string">"Manitude (No Cut)"</span>,<span class="hljs-string">"Mask (No Cut)"</span>)
+
+<span class="hljs-comment">## Middle</span>
+pad_cycle_img_middle = getPaddingImg(cycle_img,(mfilter_size,mfilter_size),<span class="hljs-string">"middle"</span>)
+lpf_cycle_img_padmiddle_m1, manitude_cycle_img,mask_img = getGaussianFilterPassImg(pad_cycle_img_middle , <span class="hljs-string">"lpf"</span> , mfilter_size)
+cut_lpf_cycle_img_padmiddle_m1 = cutOriginalImg(lpf_cycle_img_padmiddle_m1,cycle_img.shape,<span class="hljs-string">"middle"</span>)
+showThreeImg(cut_lpf_cycle_img_padmiddle_m1,manitude_cycle_img,mask_img,<span class="hljs-string">"Middle Padding Method 1 (After Cut)"</span>,<span class="hljs-string">"Manitude (No Cut)"</span>,<span class="hljs-string">"Mask (No Cut)"</span>)
+
+<span class="hljs-comment"># 尝试方法2 （限定s自动零填充）</span>
+<span class="hljs-comment">## 实现了相同的效果</span>
+lpf_cycle_img_padcorner_m2, manitude_cycle_img,mask_img = getGaussianFilterPassImg(cycle_img , <span class="hljs-string">"lpf"</span> , mfilter_size , size = getPaddingSize(cycle_img.shape,np.array([mfilter_size,mfilter_size])))
+cut_lpf_cycle_img_padcorner_m2 = cutOriginalImg(lpf_cycle_img_padcorner_m2,cycle_img.shape,<span class="hljs-string">"corner"</span>)
+showThreeImg(cut_lpf_cycle_img_padcorner_m2,manitude_cycle_img,mask_img,<span class="hljs-string">"Corner Padding Method 2 (After Cut)"</span>,<span class="hljs-string">"Manitude (No Cut)"</span>,<span class="hljs-string">"Mask (No Cut)"</span>)</code></pre>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/GaussianFilterAndDFTCycle/2.png" srcset="/img/loading.gif" alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/GaussianFilterAndDFTCycle/3.png" srcset="/img/loading.gif" alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/GaussianFilterAndDFTCycle/4.png" srcset="/img/loading.gif" alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/GaussianFilterAndDFTCycle/5.png" srcset="/img/loading.gif" alt="png"></p>
+<pre><code class="hljs python">print(lpf_cycle_img_padmiddle_m1.shape)
+print(cut_lpf_cycle_img_padmiddle_m1.shape)
+print(<span class="hljs-string">"Really Cut"</span>)
+
+print((cut_lpf_cycle_img_padcorner_m1==cut_lpf_cycle_img_padcorner_m2).all())
+print(<span class="hljs-string">"Method 2 has the same effect as Method 1 and generalize the same img."</span>)</code></pre>
+<pre><code class="hljs python">(<span class="hljs-number">775</span>, <span class="hljs-number">775</span>)
+(<span class="hljs-number">768</span>, <span class="hljs-number">768</span>)
+Really Cut
+<span class="hljs-keyword">True</span>
+Method <span class="hljs-number">2</span> has the same effect <span class="hljs-keyword">as</span> Method <span class="hljs-number">1</span> <span class="hljs-keyword">and</span> generalize the same img.</code></pre>
+<p>上述实验证明了 DFT 固有周期带来的一些影响，未进行零填充的 Original Img 由于固有周期亮色部分左右仍旧是亮色部分，所以使滤波器丧失了能力，在一些情况下我们希望避免这种固有周期带来的影响，因而才引入了零填充的方式。</p>
+<p>正如课本 P163 以及 P164 所讲：</p>
+<blockquote>
+<p>用 0 填充图像后，在周期序列的周围建立了一个平坦的边界。</p>
+<p>从这个例子可以看到，错误地填充一幅图像会导致错误的结果。</p>
+</blockquote>
+<p>当然，这种错误只存在于“ 边界”</p>
+<blockquote>
+<p>如果滤波的目的仅是粗糙的视觉分析，那么有时可以跳过填充步骤。</p>
+</blockquote>
+<p>根据两种方式 Padding 得到的最终裁减后图像的比较（All True），也证明了我使用的两种方法，Method 1：手动填充 0 金和 Method 2：利用<code>numpy.fft.fft2()</code>中自动 0 填充的方式确实都得到了相同的结果。</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/数字图像处理/">数字图像处理</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/数字图像处理/">数字图像处理</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/post/430a4378.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">数字图像处理——理想滤波器与振铃特性</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/post/e371c683.html">
+                        <span class="hidden-mobile">数字图像处理——频率域平滑锐化图像常用滤波器</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "数字图像处理——高斯滤波器与零填充避免DFT固有周期性影响&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

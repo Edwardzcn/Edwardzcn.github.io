@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  <title>分布式系统学习——Hadoop安装与单机模式调试 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2020-05-01 21:14">
+      2020年5月1日 晚上
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.1k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      28
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <p>系列文章主要记录自己在阿里云 ECS 配置安装 Hadoop，搭建伪分布式环境，学习 Hadoop、HDFS、Hbase 相关内容的过程。</p>
+<h1 id="系统安装"><a href="#系统安装" class="headerlink" title="系统安装"></a>系统安装</h1><h2 id="采取什么方式安装-Hadoop"><a href="#采取什么方式安装-Hadoop" class="headerlink" title="采取什么方式安装 Hadoop"></a>采取什么方式安装 Hadoop</h2><p>实际上我们有很多方式来安装 Hadoop，比如通过 Cloudera 图形化界面（就像 Anaconda Navigator 那样），不过网上许多教程都是通过命令行形式进行安装的（包括 Apache 官方网站），鉴于以后要进行服务器管理，分布式搭建，我们也按照官网推荐的方式通过命令行安装 Hadoop。</p>
+<h2 id="建立-Hadoop-用户并配置免密钥-SSH-登录"><a href="#建立-Hadoop-用户并配置免密钥-SSH-登录" class="headerlink" title="建立 Hadoop 用户并配置免密钥 SSH 登录"></a>建立 Hadoop 用户并配置免密钥 SSH 登录</h2><p>从安全角度触发，不要始终用 root 用户进行操作，我们一般会建立<code>hadoop</code>或者<code>hduser</code>等用户（日后很多时候网管也不会给你 root 权限）。</p>
+<p>建立用户过程简述</p>
+<pre><code class="hljs Bash">$ user add -m hadoop
+<span class="hljs-comment"># -m参数添加用户根目录</span>
+$ passwd hadoop
+<span class="hljs-comment"># 为hadoop用户设置密码</span>
+$ chsh -s /bin/zsh hadoop
+<span class="hljs-comment"># zsh为本人常使用shell 所以做一下更换</span>
+
+<span class="hljs-comment"># 接下来进行的是把hadoop添加到sudoers</span>
+$ chmod u+w /etc/sudoers
+$ vim /etc/sudoers
+<span class="hljs-comment"># 在里面增添 hadoop ALL=NOPASSWD:ALL</span>
+$ chmod u-w /etc/sudoers
+<span class="hljs-comment"># 测试</span>
+$ su hadoop
+$ sudo whoami
+<span class="hljs-comment"># 出现Root即ok</span></code></pre>
+<p>配置免密登录，检查/home/hadoop/.ssh 文件查看是否有公钥，没有的话通过<code>ssh-gen</code>进行生成。若可以直接<strong>免密</strong>登录本机<code>ssh localhost</code>则可以直接跳过本过程。</p>
+<p>如果不行的话需要将公钥加入授权</p>
+<pre><code class="hljs Bash">cat id_rsa.pub &gt;&gt; authorized_keys</code></pre>
+<a id="more"></a>
+<h1 id="Hadoop-节点存储节点为空"><a href="#Hadoop-节点存储节点为空" class="headerlink" title="Hadoop 节点存储节点为空"></a>Hadoop 节点存储节点为空</h1><p>看它的报错信息好像是节点没有启动，但是我的节点都启动起来了，使用 jps 也能查看到节点信息。<br>使用 hadoop dfsadmin -report 命令查看磁盘使用情况，发现出现以下问题：</p>
+<pre><code class="hljs Bash">Configured Capacity: 0 (0 B)
+Present Capacity: 0 (0 B)
+DFS Remaining: 0 (0 B)
+DFS Used: 0 (0 B)
+DFS Used%: 0.00%
+Replicated Blocks:
+        Under replicated blocks: 0
+        Blocks with corrupt replicas: 0
+        Missing blocks: 0
+        Missing blocks (with replication factor 1): 0
+        Low redundancy blocks with highest priority to recover: 0
+        Pending deletion blocks: 0
+Erasure Coded Block Groups:
+        Low redundancy block groups: 0
+        Block groups with corrupt internal blocks: 0
+        Missing block groups: 0
+        Low redundancy blocks with highest priority to recover: 0
+        Pending deletion blocks: 0</code></pre>
+<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><ol>
+<li><p>停止集群（切换到/sbin 目录下）</p>
+<pre><code class="hljs Bash">$ HADOOP_HOME/sbin/stop-all.sh</code></pre>
+</li>
+<li><p>删除在 hdfs 中配置的 data 目录（即在 core-site.xml 中配置的 hadoop.tmp.dir 对应文件件）下面的所有数据</p>
+<pre><code class="hljs Bash">$ rm -rf /home/hadoop/hdpdata/</code></pre>
+<p>参考<a href="https://www.cnblogs.com/lyr999736/p/9228752.html" target="_blank" rel="noopener">hdfs 默认数据存放路径</a>，在 core-site.xml 没有编辑 data 存放路径时，默认存放到<code>{hadoop.tmp.dir}:/tmp/hadoop-{user.name}</code>。删除以后更换 tmp 数据存储位置。</p>
+</li>
+</ol>
+<p>3、重新格式化 namenode(切换到 hadoop 目录下的 bin 目录下)<code>hadoop namenode -format</code></p>
+<p>4、重新启动 hadoop 集群（切换到 hadoop 目录下的 sbin 目录下）<code>$HADOOP_HOME/sbin/start-all.sh</code></p>
+<h1 id="单机测试流程"><a href="#单机测试流程" class="headerlink" title="单机测试流程"></a>单机测试流程</h1><ol>
+<li><p>格式化 namenode</p>
+<pre><code class="hljs Bash">$ hdfs namenode -format</code></pre>
+</li>
+<li><p>启动 NameNode 的守护进程和 DataNode 的守护进程</p>
+<pre><code class="hljs Bash">$ <span class="hljs-variable">$HADOOP_HOME</span>/sbin/start-dfs.sh</code></pre>
+</li>
+<li><p>通过 Web 浏览，若配置不出问题，应为 <code>https://ip地址:50070</code></p>
+</li>
+<li><p>建立 HDFS 的文件目录并启动 MapReduce 任务</p>
+<pre><code class="hljs Bash">hdfs dfs -mkdir /user
+hdfs dfs -mkdir /user/&lt;username&gt;</code></pre>
+<p>根据自己的用户名填充，我的是<code>user/hadoop</code></p>
+</li>
+<li><p>拷贝文件到分布式文件系统的 input 目录</p>
+<pre><code class="hljs Bash">hdfs dfs -mkdir input
+hdfs dfs -put etc/hadoop/*.xml input</code></pre>
+<p>如果出现节点未启动但是 jps 中进程存在的故障，注意查一下是不是上一点，然后再进行修复。</p>
+</li>
+<li><p>用一些样例程序进行测试</p>
+<pre><code class="hljs Bash"><span class="hljs-comment"># 正则</span>
+$ hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.2.1.jar grep input output_regex <span class="hljs-string">'dfs[a-z.]+'</span>
+<span class="hljs-comment"># 或者 wordcount</span>
+$ hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.2.1.jar wordcount input output_wordcount</code></pre>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Hadoop/hadoop1.png" srcset="/img/loading.gif" alt="Hadoop_1"></p>
+<p>计算完成后还需要通过 <code>-get</code>指令把文件从 HDFS 下载到本地。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Hadoop/hadoop2.png" srcset="/img/loading.gif" alt="Hadoop_2"></p>
+<p>最终结果见下图，证明测试成功。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Hadoop/hadoop4.png" srcset="/img/loading.gif" alt="Hadoop_3"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Hadoop/hadoop3.png" srcset="/img/loading.gif" alt="Hadoop_4"></p>
+</li>
+<li><p>完成全部任务后，停止进程</p>
+<pre><code class="hljs Bash">$ <span class="hljs-variable">$HADOOP_HOME</span>/sbin/stop-dfs.sh</code></pre>
+</li>
+</ol>
+<h1 id="Hadoop-Web-配置-bug"><a href="#Hadoop-Web-配置-bug" class="headerlink" title="Hadoop Web 配置 bug"></a>Hadoop Web 配置 bug</h1><h2 id="启动后无法-list-文件系统"><a href="#启动后无法-list-文件系统" class="headerlink" title="启动后无法 list 文件系统"></a>启动后无法 list 文件系统</h2><p>原因是 WebHDFS 没有完全启动，由于 Aliyun 防火墙的原因，需要自己开放 50070 与 50075 端口。</p>
+<p>访问 namenode 的 hdfs 使用 50070 端口，访问 datanode 的 webhdfs 使用 50075 端口。访问文件、文件夹信息使用 namenode 的 IP 和 50070 端口，访问文件内容或者进行打开、上传、修改、下载等操作使用 datanode 的 IP 和 50075 端口。要想不区分端口，直接使用 namenode 的 IP 和端口进行所有的 webhdfs 操作，就需要在所有的 datanode 上都设置 hefs-site.xml 中的 dfs.webhdfs.enabled 为 true。</p>
+<p>装了 jdk11 的锅</p>
+<p><a href="https://stackoverflow.com/questions/53562981/hadoop-hdfs-3-1-1-on-java-11-web-ui-crash-when-loading-the-file-explorer" target="_blank" rel="noopener">Hadoop/HDFS 3.1.1 (on Java 11) Web UI crash when loading the file explorer? [duplicate]
+</a></p>
+<blockquote>
+<p>Java 9 deprecated the java.activation module. Java 11 removed it completely.</p>
+<p>Java 9 and Java 10 users could add the module back on Hadoop’s classpath. Put this in $HADOOP_CONF_DIR/hadoop-env.sh(not tested):</p>
+<p>export HADOOP_OPTS=”${HADOOP_OPTS} —add-modules java.activation “<br>Java 11 users must first download the jar dependency and make it available on the classpath. But were does it go?</p>
+<p>I found that putting the jar in any one of these locations will make Hadoop automagically pick it up with the effect that the online file explorer start working:</p>
+</blockquote>
+<pre><code class="hljs Bash"><span class="hljs-variable">$HADOOP_HOME</span>/share/hadoop/common
+<span class="hljs-variable">$HADOOP_HOME</span>/share/hadoop/common/lib
+<span class="hljs-variable">$HADOOP_HOME</span>/share/hadoop/mapreduce
+<span class="hljs-variable">$HADOOP_HOME</span>/share/hadoop/mapreduce/lib</code></pre>
+<blockquote>
+<p>Not sure what exactly the consequences are putting the file in one or the other folder. But, I like to confine my hacks as much as possible and since I already have a separate configuration directory (i.e., not $HADOOP_HOME/etc/hadoop) I’d like to put it there. Having the jar file in any other location also requires of us to add this path to the HADOOP_CLASSPATH variable.</p>
+<p>So, copy-paste into your terminal:</p>
+</blockquote>
+<pre><code class="hljs Bash">URL=https://jcenter.bintray.com/javax/activation/javax.activation-api/1.2.0/javax.activation-api-1.2.0.jar
+wget <span class="hljs-variable">$URL</span> -P <span class="hljs-variable">$HADOOP_CONF_DIR</span>/lib
+<span class="hljs-built_in">echo</span> <span class="hljs-string">'export HADOOP_CLASSPATH+=" $HADOOP_CONF_DIR/lib/*.jar"'</span> &gt;&gt; <span class="hljs-variable">$HADOOP_CONF_DIR</span>/hadoop-env.sh</code></pre>
+<blockquote>
+<p>As a final note, I think it’s safe to say that one can not expect Hadoop to work well on anything but really old Java versions. Googling reveals that still open tickets exist for Java 9, 10 and 11. So essentially, this is a Hadoop problem. Having that said, although we solved one problem of getting the online file explorer to work, there will for sure be many other issues down the line.</p>
+</blockquote>
+<h2 id="Browse-Directory-但是无法上传下载文件"><a href="#Browse-Directory-但是无法上传下载文件" class="headerlink" title="Browse Directory 但是无法上传下载文件"></a>Browse Directory 但是无法上传下载文件</h2><p>上个问题解决完成，尝试上传/下载文件，</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Hadoop/hadoop5.png" srcset="/img/loading.gif" alt="Hadoop_5"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Hadoop/hadoop6.png" srcset="/img/loading.gif" alt="Hadoop_6"></p>
+<p>实际上是服务器端与客户端 ip 地址与名称映射的问题</p>
+<p>审查 WebUI，发现数据节点 Datanod 的地址是<code>localhost</code>开头而非以主机名<code>nn01</code>开头。修改服务器端 hosts 文件。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Hadoop/hadoop7.png" srcset="/img/loading.gif" alt="Hadoop_6"></p>
+<p>修改主机端 hosts 文件，添加 <code>nn01</code>与其 ip 地址的映射。</p>
+<p>但是修改完成 hosts 文件，50070 端口都不能访问了，哭了。</p>
+<p>查阅资料</p>
+<blockquote>
+<p>这个问题花费了我将近两天的时间，经过多次试错和尝试，现在想分享给大家来解决此问题避免大家入坑，以前都是在局域网上搭建的 hadoop 集群，并且是局域网访问的，没遇见此问题。</p>
+<p>因为阿里云上搭建的 hadoop 集群，需要配置映射集群经过内网访问，也就是局域网的 ip 地址。<br>如果配置为公网 IP 地址，就会出现集群启动不了，namenode 和 secondarynamenode 启动不了，如果将主机的映射文件配置为内网 IP 集群就可以正常启动了。但通过 eclipse 开发工具访问</p>
+<p>会出错，显示了阿里云内网的 ip 地址来访问 datanode，这肯定访问不了啊，这问题真实醉了，就这样想了找了好久一致没有思路。<br>最终发现需要在 hdfs-site.xml 中修改配置项<code>dfs.client.use.datanode.hostname</code>设置为 true，就是说客户端访问 datanode 的时候是通过主机域名访问，就不会出现通过内网 IP 来访问了</p>
+</blockquote>
+<p>上面这个也不管用</p>
+<blockquote>
+<p>在 vi /etc/hosts 里面配置公网和内网的 ip</p>
+<p>内网 IP 地址 你的 hostname<br>公网 IP 地址 别的 hostname</p>
+</blockquote>
+<p>但是对于单机/伪分布式 Hadoop 搭建，怎么解决，没有找到方法。</p>
+<p>换用阿里云内网 ip 地址，可以在 WebUI 中浏览 HDFS 文件目录，并下载、预览内容（不能上传）。</p>
+<p><a href="https://blog.csdn.net/caojianhua2018/article/details/99174958#%EF%BC%885%EF%BC%89Hadoop%E4%BC%AA%E5%88%86%E5%B8%83%E9%85%8D%E7%BD%AE" target="_blank" rel="noopener">伪分布式配置</a></p>
+<h2 id="ClusterID-不匹配导致-DataNode-无法启动"><a href="#ClusterID-不匹配导致-DataNode-无法启动" class="headerlink" title="ClusterID 不匹配导致 DataNode 无法启动"></a>ClusterID 不匹配导致 DataNode 无法启动</h2><p>hadoop 的升级功能需要 data-node 在它的版本文件里存储一个永久性的 clusterID，当 datanode 启动时会检查并匹配 namenode 的版本文件里的 clusterID，如果两者不匹配，就会出现”Incompatible clusterIDs”的异常。<br>　　每次格式化 namenode 都会生成一个新的 clusterID, 如果只格式化了 namenode，没有格式化此 datanode， 就会出现”java.io.IOException: Incompatible namespaceIDs“异常。</p>
+<h2 id="伪分布式运行时提示类缺失"><a href="#伪分布式运行时提示类缺失" class="headerlink" title="伪分布式运行时提示类缺失"></a>伪分布式运行时提示类缺失</h2><p>执行<code>hadoop classpath</code>，copy 到<code>yarn-site.xml</code>配置文件<code>yarn.capplication.clathpath</code>字段</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/分布式系统/">分布式系统</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/分布式系统/">分布式系统</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/post/b0d5859e.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">文献学习方法——如何高效的阅读学术论文（简）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/post/fcfa77c8.html">
+                        <span class="hidden-mobile">分布式系统学习——分布式存储与文件系统</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "分布式系统学习——Hadoop安装与单机模式调试&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

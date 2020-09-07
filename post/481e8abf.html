@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  <title>【POJ-3468】解题报告（线段树求和，区间维护） - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2018-04-26 01:56">
+      2018年4月26日 凌晨
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.1k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      19
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h1 id="原始题目"><a href="#原始题目" class="headerlink" title="原始题目"></a>原始题目</h1><h2 id="A-Simple-Problem-with-Integers"><a href="#A-Simple-Problem-with-Integers" class="headerlink" title="A Simple Problem with Integers"></a>A Simple Problem with Integers</h2><ul>
+<li>Time Limit: 5000MS        </li>
+<li>Memory Limit: 131072K</li>
+<li>Total Submissions: 129411        </li>
+<li>Accepted: 40139</li>
+<li>Case Time Limit: 2000MS</li>
+</ul>
+<h3 id="Description"><a href="#Description" class="headerlink" title="Description"></a>Description</h3><a id="more"></a>
+<p>You have N integers, A1, A2, … , AN. You need to deal with two kinds of operations. One type of operation is to add some given number to each number in a given interval. The other is to ask for the sum of numbers in a given interval.</p>
+<h3 id="Input"><a href="#Input" class="headerlink" title="Input"></a>Input</h3><p>The first line contains two numbers N and Q. 1 ≤ N,Q ≤ 100000.<br>The second line contains N numbers, the initial values of A1, A2, … , AN. -1000000000 ≤ Ai ≤ 1000000000.<br>Each of the next Q lines represents an operation.<br>“C a b c” means adding c to each of Aa, Aa+1, … , Ab. -10000 ≤ c ≤ 10000.<br>“Q a b” means querying the sum of Aa, Aa+1, … , Ab.</p>
+<h3 id="Output"><a href="#Output" class="headerlink" title="Output"></a>Output</h3><p>You need to answer all Q commands in order. One answer in a line.</p>
+<h3 id="Sample-Input"><a href="#Sample-Input" class="headerlink" title="Sample Input"></a>Sample Input</h3><pre><code>10 5
+1 2 3 4 5 6 7 8 9 10
+Q 4 4
+Q 1 10
+Q 2 4
+C 3 6 3
+Q 2 4
+</code></pre><h3 id="Sample-Output"><a href="#Sample-Output" class="headerlink" title="Sample Output"></a>Sample Output</h3><pre><code>4
+55
+9
+15
+</code></pre><h3 id="Hint"><a href="#Hint" class="headerlink" title="Hint"></a>Hint</h3><p>The sums may exceed the range of 32-bit integers.</p>
+<h3 id="Source"><a href="#Source" class="headerlink" title="Source"></a>Source</h3><p>POJ Monthly—2007.11.25, Yang Yi</p>
+<h1 id="题目大意"><a href="#题目大意" class="headerlink" title="题目大意"></a>题目大意</h1><p>对于一组序列A,有两种操作，询问：给出对应区间序列的和，增加：给出对应区间区间内所有点增加固定值。</p>
+<h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><p>线段树模板题，区间询问，区间修改，注意long long即可。</p>
+<h1 id="解题代码"><a href="#解题代码" class="headerlink" title="解题代码"></a>解题代码</h1><pre><code class="hljs C++"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cstdio&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cstring&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cmath&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cmath&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;iostream&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;iomanip&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;string&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;set&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;queue&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;vector&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;map&gt;</span></span>
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> <span class="hljs-built_in">std</span>;
+<span class="hljs-keyword">const</span> <span class="hljs-keyword">int</span> maxn=<span class="hljs-number">2e5</span>+<span class="hljs-number">5</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">long</span> <span class="hljs-keyword">long</span> ll;
+ll n,m;
+ll d,x;
+ll b,e;
+ll a[maxn];
+<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">node</span>
+&#123;</span>
+	ll l;
+	ll r;
+	ll sum;
+	ll tag;
+	ll maxnum;
+&#125;tree[maxn&lt;&lt;<span class="hljs-number">2</span>];
+
+<span class="hljs-keyword">char</span> ch[<span class="hljs-number">2</span>];
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">build</span><span class="hljs-params">(ll k,ll l,ll r)</span> <span class="hljs-comment">//k为线段树的角标 </span>
+</span>&#123;
+	tree[k].l=l;
+	tree[k].r=r;
+	<span class="hljs-keyword">if</span>(l==r)
+	&#123;
+		tree[k].sum=a[l]=a[r];  <span class="hljs-comment">//叶子节点，单点的sum即是本身 </span>
+		<span class="hljs-keyword">return</span> ; 
+	&#125;
+	ll mid=(l+r)&gt;&gt;<span class="hljs-number">1</span>;
+	build(k&lt;&lt;<span class="hljs-number">1</span>,l,mid); <span class="hljs-comment">//递归构建左线段（左子树） </span>
+	build(k&lt;&lt;<span class="hljs-number">1</span>|<span class="hljs-number">1</span>,mid+<span class="hljs-number">1</span>,r);	<span class="hljs-comment">//递归构建右线段（右子树） </span>
+	tree[k].sum=tree[k&lt;&lt;<span class="hljs-number">1</span>].sum+tree[k&lt;&lt;<span class="hljs-number">1</span>|<span class="hljs-number">1</span>].sum; 
+	<span class="hljs-keyword">return</span> ; 
+&#125;
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">change1</span><span class="hljs-params">(ll k,ll d,ll x)</span>
+</span>&#123;
+	<span class="hljs-keyword">if</span>(tree[k].l==tree[k].r&amp;&amp;tree[k].r==d) <span class="hljs-comment">//找到索引点 </span>
+	&#123;
+		tree[k].maxnum=x; <span class="hljs-comment">//修改最大值</span>
+		<span class="hljs-keyword">return</span> ; 
+		<span class="hljs-comment">//修改后再开始回溯 </span>
+	&#125; 
+	ll mid=(tree[k].l+tree[k].r)&gt;&gt;<span class="hljs-number">1</span>;
+	<span class="hljs-keyword">if</span>(d&gt;=tree[k].l&amp;&amp;d&lt;=mid) <span class="hljs-comment">//查找点在左子树</span>
+		change1(k&lt;&lt;<span class="hljs-number">1</span>,d,x); <span class="hljs-comment">//k&lt;&lt;1为左子树,</span>
+	<span class="hljs-keyword">else</span> <span class="hljs-comment">//查找点在右子树， </span>
+		change1(k&lt;&lt;<span class="hljs-number">1</span>|<span class="hljs-number">1</span>,d,x); <span class="hljs-comment">//k&lt;&lt;1|1为右子树</span>
+	tree[k].maxnum=max(tree[k&lt;&lt;<span class="hljs-number">1</span>].maxnum,tree[k&lt;&lt;<span class="hljs-number">1</span>|<span class="hljs-number">1</span>].maxnum);  <span class="hljs-comment">//递归从新计算非叶结点的值 </span>
+&#125;
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">change</span><span class="hljs-params">(ll k)</span> <span class="hljs-comment">//懒惰操作，有标记才操作一次，有记忆性 </span>
+</span>&#123;
+	<span class="hljs-keyword">if</span>(tree[k].l==tree[k].r)
+		tree[k].sum+=tree[k].tag;
+	<span class="hljs-keyword">else</span> 
+	&#123;
+		tree[k].sum+=(tree[k].r-tree[k].l+<span class="hljs-number">1</span>)*tree[k].tag;
+		tree[k&lt;&lt;<span class="hljs-number">1</span>].tag+=tree[k].tag;
+		tree[k&lt;&lt;<span class="hljs-number">1</span>|<span class="hljs-number">1</span>].tag+=tree[k].tag;
+		 
+	&#125;
+	tree[k].tag=<span class="hljs-number">0</span>; <span class="hljs-comment">//自身标记清零 </span>
+&#125;
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">add</span><span class="hljs-params">(ll k,ll l,ll r,ll x)</span>
+</span>&#123;
+	<span class="hljs-keyword">if</span>(tree[k].tag)
+	&#123;
+<span class="hljs-comment">//		printf("--");</span>
+		change(k);
+	&#125;
+	<span class="hljs-keyword">if</span>(tree[k].l==l&amp;&amp;tree[k].r==r)  <span class="hljs-comment">//在固定的区间打标记 </span>
+	&#123;
+		tree[k].tag+=x; <span class="hljs-comment">//向下打标记 </span>
+<span class="hljs-comment">//		printf("k=%lld l=%lld r=%lld tag=%lld\n",k ,l,r,tree[k].tag);</span>
+		<span class="hljs-keyword">return</span> ; 
+	&#125;
+<span class="hljs-comment">//	printf("1  %lld\n",tree[k].sum);</span>
+	tree[k].sum+=(r-l+<span class="hljs-number">1</span>)*x;
+<span class="hljs-comment">//	printf("2  %lld\n",tree[k].sum);</span>
+	ll mid=(tree[k].r+tree[k].l)&gt;&gt;<span class="hljs-number">1</span>;
+	<span class="hljs-keyword">if</span>(r&lt;=mid)
+		add(k&lt;&lt;<span class="hljs-number">1</span>,l,r,x);
+	<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(l&gt;=mid+<span class="hljs-number">1</span>)
+		add(k&lt;&lt;<span class="hljs-number">1</span>|<span class="hljs-number">1</span>,l,r,x);
+	<span class="hljs-keyword">else</span> 
+	&#123;
+		add(k&lt;&lt;<span class="hljs-number">1</span>,l,mid,x);
+		add(k&lt;&lt;<span class="hljs-number">1</span>|<span class="hljs-number">1</span>,mid+<span class="hljs-number">1</span>,r,x); 	
+	&#125;
+&#125;
+
+
+<span class="hljs-function">ll <span class="hljs-title">query</span><span class="hljs-params">(ll k,ll l,ll r)</span>
+</span>&#123;
+<span class="hljs-comment">//	printf("query %lld .tag=%lld\n",k,tree[k].tag);</span>
+	<span class="hljs-keyword">if</span>(tree[k].tag)
+	&#123;
+<span class="hljs-comment">//		printf("$");</span>
+		change(k); 
+	&#125;
+		
+
+	ll mid=(tree[k].l+tree[k].r)&gt;&gt;<span class="hljs-number">1</span>;
+	<span class="hljs-keyword">if</span>(tree[k].l==l&amp;&amp;tree[k].r==r)
+		<span class="hljs-keyword">return</span> tree[k].sum;
+	<span class="hljs-keyword">if</span>(r&lt;=mid)
+		<span class="hljs-keyword">return</span> query(k&lt;&lt;<span class="hljs-number">1</span>,l,r);
+	<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(l&gt;=mid+<span class="hljs-number">1</span>)
+		<span class="hljs-keyword">return</span> query(k&lt;&lt;<span class="hljs-number">1</span>|<span class="hljs-number">1</span>,l,r);
+	<span class="hljs-keyword">else</span> 
+		<span class="hljs-keyword">return</span> query(k&lt;&lt;<span class="hljs-number">1</span>,l,mid)+query(k&lt;&lt;<span class="hljs-number">1</span>|<span class="hljs-number">1</span>,mid+<span class="hljs-number">1</span>,r); <span class="hljs-comment">//中线跨区间 </span>
+
+&#125;
+
+
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>
+</span>&#123;
+	<span class="hljs-keyword">while</span>(~<span class="hljs-built_in">scanf</span>(<span class="hljs-string">"%lld%lld"</span>,&amp;n,&amp;m))
+	&#123;
+		<span class="hljs-built_in">memset</span>(tree,<span class="hljs-number">0</span>,<span class="hljs-keyword">sizeof</span>(tree));
+		<span class="hljs-keyword">for</span>(ll i=<span class="hljs-number">1</span>;i&lt;=n;i++)
+		&#123;
+			<span class="hljs-built_in">scanf</span>(<span class="hljs-string">"%lld"</span>,&amp;a[i]);
+		&#125;
+		build(<span class="hljs-number">1</span>,<span class="hljs-number">1</span>,n);
+		
+		<span class="hljs-keyword">for</span>(ll i=<span class="hljs-number">1</span>;i&lt;=m;i++)
+		&#123;
+			<span class="hljs-built_in">scanf</span>(<span class="hljs-string">"%s"</span>,ch);
+			<span class="hljs-keyword">if</span>(ch[<span class="hljs-number">0</span>]==<span class="hljs-string">'Q'</span>)
+			&#123;
+				<span class="hljs-built_in">scanf</span>(<span class="hljs-string">"%lld%lld"</span>,&amp;b,&amp;e);
+<span class="hljs-comment">//				printf("11");</span>
+				<span class="hljs-built_in">printf</span>(<span class="hljs-string">"%lld\n"</span>,query(<span class="hljs-number">1</span>,b,e));
+			&#125;
+			<span class="hljs-keyword">else</span> 
+			&#123;
+				<span class="hljs-built_in">scanf</span>(<span class="hljs-string">"%lld%lld%lld"</span>,&amp;b,&amp;e,&amp;x);
+				add(<span class="hljs-number">1</span>,b,e,x);
+			&#125;
+		&#125;
+		
+	&#125;
+&#125;</code></pre>
+<h1 id="收获与反思"><a href="#收获与反思" class="headerlink" title="收获与反思"></a>收获与反思</h1><ul>
+<li>注意数组不要越界，注意long long。</li>
+<li>写模板注意sum的写法和取最大值的写法略有不同。</li>
+<li>理解lazy（tag）标记，即访问到时才进行一次向下扩展，每次修改并不直接作用于叶子节点。</li>
+</ul>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/ACM/">ACM</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/ACM/POJ/">POJ</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/ACM/">ACM</a>
+                    
+                      <a class="hover-with-bg" href="/tag/POJ/">POJ</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/post/454c2118.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">【HDU-1166】解题报告（线段树求和，点维护）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/post/4e876bc2.html">
+                        <span class="hidden-mobile">【HDU-1754】解题报告（线段树最大值，点维护）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "【POJ-3468】解题报告（线段树求和，区间维护）&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

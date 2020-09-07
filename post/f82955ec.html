@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  <title>CCFADL105——面向非易失性存储介质的文件系统设计、实现与形式化验证 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2019-09-09 18:55">
+      2019年9月9日 晚上
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.3k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      27
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h1 id="面向非易失性存储介质的文件系统设计、实现与形式化验证"><a href="#面向非易失性存储介质的文件系统设计、实现与形式化验证" class="headerlink" title="面向非易失性存储介质的文件系统设计、实现与形式化验证"></a>面向非易失性存储介质的文件系统设计、实现与形式化验证</h1><p>主讲人：陈海波老师（上海交通大学教授， IPAD 小组导师，华为鸿蒙系统研发）</p>
+<h1 id="Background：How-to-Climb-Up-the-Memory-Hierarchy"><a href="#Background：How-to-Climb-Up-the-Memory-Hierarchy" class="headerlink" title="Background：How to Climb Up the Memory Hierarchy"></a>Background：How to Climb Up the Memory Hierarchy</h1><p>Jim Gray 对于存储层次（Memory Hierarchy）演进的经典论断：<strong>Tape is Dead, Disk is Tape, Flash is Disk, RAM Locality is King.</strong></p>
+<p>JG 论断提出的背景是 06 年 SSD 刚刚出来，那么随着硬件技术的发展，JG 的论断也该有新的诠释。</p>
+<h1 id="Non-volatile-Memory-NVM-Revolution"><a href="#Non-volatile-Memory-NVM-Revolution" class="headerlink" title="Non-volatile Memory(NVM) Revolution"></a>Non-volatile Memory(NVM) Revolution</h1><h2 id="产品化元年"><a href="#产品化元年" class="headerlink" title="产品化元年"></a>产品化元年</h2><p>非易失性存储硬件的出现，Non-volatile Memory（NVM），带来的数据可持久化是颠覆性的改变。从体系结构的角度，CPU 内部整合内存虽然还没有实际上发生，但是今年发生的一件事是，放了许多年鸽子的 NVM Memory 终于产品化了，今年三月份 Intel 开始对外出售，中文名傲腾系列。<a href="https://zh.wikipedia.org/wiki/3D_XPoint" target="_blank" rel="noopener">3D XPoint 维基百科</a></p>
+<p>先前为了实现 Persistence（持久化），NVDIM 技术是附加电容，在断电时通过电容，将 RAM 的数据刷到硬盘中，从而达到持久化的效果。</p>
+<p>抉择：Performance vs. Persistence，以传统结构来说，选择 Performance，我们减少写回磁盘的次数，而主要在 RAM 上操作，但是这就面临掉电丢失数据的风险，难以持久化，而若选择 Persistence，频繁写入磁盘，则在 IO 上就要耗费更多的时间，效率降低。</p>
+<p>Intel Optane DC Persistent Memory 性能表现</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0006.jpg" srcset="/img/loading.gif" alt="NVM1"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0007.jpg" srcset="/img/loading.gif" alt="NVM2"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0008.jpg" srcset="/img/loading.gif" alt="NVM3"></p>
+<p>在 NVM 产品化元年，真正的 Persistent Memory 到来时，如果针对其特性构建系统？</p>
+<a id="more"></a>
+<h2 id="改变-Memory-Hierarchy"><a href="#改变-Memory-Hierarchy" class="headerlink" title="改变 Memory Hierarchy"></a>改变 Memory Hierarchy</h2><p>改变了其中的易失/持久的边界</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0009.jpg" srcset="/img/loading.gif" alt="NVM4"></p>
+<h2 id="不成比例扩展效应-Incommensurate-scaling"><a href="#不成比例扩展效应-Incommensurate-scaling" class="headerlink" title="不成比例扩展效应 Incommensurate scaling"></a>不成比例扩展效应 Incommensurate scaling</h2><p>如果计算机体系结构某个部分突然快 10 倍，便会使人们重新审视整个系统，调度、Storage 管理</p>
+<blockquote>
+<p>As a system increases in size or speed, not all parts of it (&amp;human factors) follow the same scaling rules. — Saltzer &amp; Kaashoek</p>
+</blockquote>
+<p>考虑 NVM 带来的影响，如下图，非易失性设备访问速度提升了 1000-10000 倍，不仅系统本身，评测系统的 Benchmark，思考问题的角度，都需要重新调整。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0010.jpg" srcset="/img/loading.gif" alt="NVM5"></p>
+<h2 id="启发"><a href="#启发" class="headerlink" title="启发"></a>启发</h2><p>Tape is Dead, Disk is Tape, Flash is Disk, \sout{RAM Locality is King.}\par RAM is Flash, <strong>Cache Locality/Parallelism is King?</strong></p>
+<p>从硬件革新，重新审视系统的软件栈。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0012.jpg" srcset="/img/loading.gif" alt="Opportunities"></p>
+<h1 id="SoupFS"><a href="#SoupFS" class="headerlink" title="SoupFS"></a>SoupFS</h1><p>An NVM file system in Kernel(USENIX ATC’17)</p>
+<h2 id="为什么在乎文件系统"><a href="#为什么在乎文件系统" class="headerlink" title="为什么在乎文件系统"></a>为什么在乎文件系统</h2><ul>
+<li>文件系统储存我们所有的数据</li>
+<li>文件系统的表现是系统整体表现得关键</li>
+<li>文件系统是解决 Performance 和 Persistence 矛盾得关键</li>
+</ul>
+<p>现有得 NVMFS 使用日志（journaling）或者边复制边写（copy-on-write）的方式来实现崩溃时保持一致性（crash consistency），但由于 CPU cache 仍然是易失的，由此引发出明显的性能问题：</p>
+<ul>
+<li>同步 cache 和 NVM 导致 cache flushes 是必要的</li>
+<li>cache flushes 代价很大</li>
+</ul>
+<p>思考：不适用这两种方式，其他方式实现 crash consistency？</p>
+<p>有的，前人也做过研究：1999 年 Marshall 和 Gregory R. Ganger 在 USENIX 上发表论文介绍的方法：<strong>Soft Updates</strong></p>
+<h2 id="Soft-Updates"><a href="#Soft-Updates" class="headerlink" title="Soft Updates"></a>Soft Updates</h2><h3 id="What-Is-Soft-Updates"><a href="#What-Is-Soft-Updates" class="headerlink" title="What Is Soft Updates"></a>What Is Soft Updates</h3><p>主要思想：在磁盘中维护一个元数据，不和 DRAM 实时同步，但保证与 DRAM 的元数据的依赖关系相同（两地元数据都需要增加依赖关系的标识，这是新的要求）。</p>
+<p>带来的好处：异步操作、依赖关系保证一致性、无需磁盘检查。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0017.jpg" srcset="/img/loading.gif" alt="Soft Updates"></p>
+<h3 id="Soft-Updates-is-Complicated"><a href="#Soft-Updates-is-Complicated" class="headerlink" title="Soft Updates is Complicated"></a>Soft Updates is Complicated</h3><p>这一理念在学术界有所影响，但工业界影响微乎其微：依赖关系复杂，实现太过困难。</p>
+<blockquote>
+<p>Soft updates are, simply put, too hard to understand, implement,and maintain to be part of the mainstream of file system development — Valerie Aurora, Linux Kernel Developer</p>
+</blockquote>
+<p>海波老师的团队研究认为，这种复杂性的根本是：细粒度的 Cache 记录跟踪（Byte 级别）和粗粒度的磁盘读写（512K 或以上）接口之间的不匹配</p>
+<h3 id="Soft-Updates-Meets-NVM"><a href="#Soft-Updates-Meets-NVM" class="headerlink" title="Soft Updates Meets NVM"></a>Soft Updates Meets NVM</h3><p>Soft Updates</p>
+<ul>
+<li>没有同步 cache flushes 的消耗</li>
+<li>崩溃可即时恢复可用</li>
+</ul>
+<p>NVM</p>
+<ul>
+<li>Byte 级别且快速，原有粒度不匹配问题改善</li>
+<li>直写 NVM 没有延迟</li>
+<li>没有<a href="https://www.cnblogs.com/cyfonly/p/5800758.html" target="_blank" rel="noopener">伪共享（false sharing）</a> =&gt; no rolling back/forward</li>
+<li>简化了跟踪依赖的操作</li>
+</ul>
+<p>新的挑战：由于 NVM 是 M，Memory，那就存在着用户未预料的 CPU 将 Cache 数据刷回 NVM 的过程（cache eviction），这就带来了不一致性。</p>
+<h2 id="SoupFS-1"><a href="#SoupFS-1" class="headerlink" title="SoupFS"></a>SoupFS</h2><p>A simple and fast NVMFS derived from soft updates.</p>
+<ul>
+<li>哈希表目录（解决 false sharing）</li>
+<li>依赖指针的双视图（解决同步 cache flushes 开销）</li>
+<li>语义感知以来跟踪</li>
+</ul>
+<p>着重讲双视图一块的设计</p>
+<h3 id="Dual-Views"><a href="#Dual-Views" class="headerlink" title="Dual Views"></a>Dual Views</h3><p>哪两个视图</p>
+<ul>
+<li>Latest view in page cache（在 DRAM 中）</li>
+<li>Consistent view in disks</li>
+</ul>
+<p>为了避免两个视图两份拷贝的额外开销，进一步提高效率，通过 Pointer 指向，来复用元数据的数据结构来避免不必要的重复和刷新。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0023.jpg" srcset="/img/loading.gif" alt="Pointer-based"></p>
+<p>具体的数据结构设计不再赘述，可以参考 SoupFS 论文</p>
+<p>一个例子，从图示看很像 Data structure 中每个结点实现了一个双指针分别指向下一个 Consistent 节点（NVM View 中）和 Latest 节点（RAM View 中）。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0033.jpg" srcset="/img/loading.gif" alt="Pointer-based Example"></p>
+<h3 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h3><p>Q1. 使用 NVM 为什么还要使用 File System，数据库方式可以跳过直接操作底层的 metadata？<br>A1. 当然对于 NVM 下还要不要做 File System 业界是有争论的，我的看法是系统发展要有演化路径，File System 是一个通用的“范型”，可以利用 File System 实现更多基于 File System 的上层技术。</p>
+<p>Q2. NVMFS 有没有对垃圾回收机制带来新的要求和挑战？<br>A2. 之前学术界有相关研究比如 NV Allocate，主要研究在 NVM 上如何分配和管理空间，这样必然会涉及垃圾回收这一问题。我们这边也有涉及 Garbage Collector 的相关工作，主要关心掉电后数据流有/没有被分配</p>
+<p>Q3. 为什么考虑文件目录使用 HashTable 而非红黑树、B+树，这样的话范围查询效率不会很低吗？<br>A3. 首先考虑到实现简单，而且对于 NVM 来说，相较于之前的 Disk 访问速度已经很快了，范围查询拆成单点查询可能都要比原有设备的范围查询快，就是拖到内存里扫一遍的过程。</p>
+<h1 id="ZoFS"><a href="#ZoFS" class="headerlink" title="ZoFS"></a>ZoFS</h1><p>A truly user-space NVM file system (SOSP’19)</p>
+<h2 id="User-space-File-Systems"><a href="#User-space-File-Systems" class="headerlink" title="User-space File Systems"></a>User-space File Systems</h2><p>设计在用户空间（user space）活动的文件系统，一些优势</p>
+<ul>
+<li>更易开发，移植和维护<ul>
+<li>由于在用户空间，bug 不会影响整个系统</li>
+<li>可以利用更多的库和编程语言</li>
+</ul>
+</li>
+<li>灵活<ul>
+<li>可根据应用程序定制</li>
+</ul>
+</li>
+<li>由于内核旁路（kernel bypass），大多数都是高性能的<ul>
+<li>用户空间的库可以直接通过 NVM</li>
+</ul>
+</li>
+</ul>
+<p>早期的一些工作：Aerie， Strata，NOVA（有机会查阅文献自己了解一下）</p>
+<p>采取内核/用户空间分离强化了权限（许可？）和保护，任何文件的更改都需要经由内核同意，但是由于存储介质的改变，NVM user-space 的文件系统与 kernel 远超过去的交互频率会使得 kernel 处理权限（许可？）成为瓶颈。</p>
+<ul>
+<li>挑战：文件保护于隔离</li>
+<li>思考：将相同权限（许可？）的文件分组并一同管理</li>
+<li>再提及：<strong>抽象的重要性</strong></li>
+</ul>
+<h2 id="新的抽象：-Coffer"><a href="#新的抽象：-Coffer" class="headerlink" title="新的抽象： Coffer"></a>新的抽象： Coffer</h2><p>具体没有搞明白。。后续读论文吧。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0051.jpg" srcset="/img/loading.gif" alt="Coffer1"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0052.jpg" srcset="/img/loading.gif" alt="Coffer2"></p>
+<h2 id="Protection-and-Isolation"><a href="#Protection-and-Isolation" class="headerlink" title="Protection and Isolation"></a>Protection and Isolation</h2><p>App code 运行可能会导致某个 Coffer 出错，如何防止错误的蔓延，实现错误隔离？方式，内核将 VM pages 划分为 16 regions，非特权寄存器控制器每次最多接入一个 region，添加一些规则（guidelines）。</p>
+<ul>
+<li>G1. 一个 coffer 是可访问的当且仅当 uFS 正在访问这个 coffer。</li>
+<li>G2. 在任何时候，对于每个县城来说，用户空间中只有一个 coffer 是可访问的。</li>
+<li>G3. 对于任何一个 cross-coffer 的 reference，uFSs 应在使 coffer 变为可用状态前检查其标记。</li>
+</ul>
+<p>ZoFS 实现和一些实验验证。。。这里也不太懂。</p>
+<h1 id="AtomFS"><a href="#AtomFS" class="headerlink" title="AtomFS"></a>AtomFS</h1><p>The first verified concurrent file system (SOSP’19)</p>
+<p>第一个验证的并行文件系统。</p>
+<h2 id="对于并行文件系统验证的需求"><a href="#对于并行文件系统验证的需求" class="headerlink" title="对于并行文件系统验证的需求"></a>对于并行文件系统验证的需求</h2><ul>
+<li>并发错误很难消除</li>
+<li>应用程序需要并发执行的精确接口</li>
+<li>应用程序代码推理（code reasoning）的基础</li>
+</ul>
+<p>而最关键的是：<strong>形式化验证</strong>——证明系统没有错误的唯一方法。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0075.jpg" srcset="/img/loading.gif" alt="Formal verification"></p>
+<p>到这真的是听不懂了。。。。记一些重点名词然后贴 pdf 日后慢慢研究吧</p>
+<p>抽象化-&gt;形式化验证</p>
+<p>Atomicity, Linearizability</p>
+<p>Helper Mechanism（辅助机制）: Ghost state, Linearize-before relation, CRL-H</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0076.jpg" srcset="/img/loading.gif" alt="AtomFS1"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0077.jpg" srcset="/img/loading.gif" alt="AtomFS2"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0078.jpg" srcset="/img/loading.gif" alt="AtomFS3"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0079.jpg" srcset="/img/loading.gif" alt="AtomFS4"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0080.jpg" srcset="/img/loading.gif" alt="AtomFS5"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0081.jpg" srcset="/img/loading.gif" alt="AtomFS6"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0082.jpg" srcset="/img/loading.gif" alt="AtomFS7"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0083.jpg" srcset="/img/loading.gif" alt="AtomFS8"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0084.jpg" srcset="/img/loading.gif" alt="AtomFS9"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0085.jpg" srcset="/img/loading.gif" alt="AtomFS10"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0086.jpg" srcset="/img/loading.gif" alt="AtomFS11"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0087.jpg" srcset="/img/loading.gif" alt="AtomFS12"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0088.jpg" srcset="/img/loading.gif" alt="AtomFS13"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0089.jpg" srcset="/img/loading.gif" alt="AtomFS14"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0090.jpg" srcset="/img/loading.gif" alt="AtomFS15"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0091.jpg" srcset="/img/loading.gif" alt="AtomFS16"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0092.jpg" srcset="/img/loading.gif" alt="AtomFS17"></p>
+<p>耗费了相当大的精力，1.5 年的努力，包括学习理论，建立框架和形式化证明。</p>
+<p>AtomFS：2k 行代码表达，60k 行证明。</p>
+<h1 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h1><p>还是如之前所说，体系结构中某个部件的突发进步，会导致整个体系设计思路的改变。</p>
+<ul>
+<li>NVM 为系统软件带来了极大的便利</li>
+<li>我们需要重新思考系统软件的设计</li>
+<li>找到对于现有软件来说真正的痛点（<strong>real pain points</strong>）</li>
+<li>长远来看会改变整个软件栈，甚至存储层次也会被颠覆</li>
+</ul>
+<p><a href="https://ipads.se.sjtu.edu.cn/" target="_blank" rel="noopener">Institute of Parallel and Distributed Systems(IPADS)</a></p>
+<p><a href="https://ipads.se.sjtu.edu.cn/zh/" target="_blank" rel="noopener">IPADS 中文主页</a></p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Research/">Research</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Research/讲座会议/">讲座会议</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/讲座会议/">讲座会议</a>
+                    
+                      <a class="hover-with-bg" href="/tag/CCFADL/">CCFADL</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/post/e4eb9281.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">CCFADL105——面向下一代计算的开源芯片与敏捷开发方法</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/post/f74c511d.html">
+                        <span class="hidden-mobile">CCFADL105——“智能在网计算”应用智能网卡技术加速数据中心</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "CCFADL105——面向非易失性存储介质的文件系统设计、实现与形式化验证&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

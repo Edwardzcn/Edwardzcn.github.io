@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  <title>操作系统学习——文件系统崩溃一致性 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2020-07-19 13:41">
+      2020年7月19日 下午
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.8k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      19
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h1 id="文件系统的崩溃一致性"><a href="#文件系统的崩溃一致性" class="headerlink" title="文件系统的崩溃一致性"></a>文件系统的崩溃一致性</h1><p>待读文章：<a href="https://www.usenix.org/system/files/conference/osdi14/osdi14-paper-pillai.pdf" target="_blank" rel="noopener">All File Systems Are Not Created Equal</a></p>
+<p>基于先代文件系统之上的应用程序级崩溃一致性协议（crash-consistency protocol）。</p>
+<p>状态更新来持久化状态，依赖底层文件系统。</p>
+<p>主要贡献：</p>
+<ul>
+<li>BOB 工具</li>
+<li>ALICE 工具</li>
+</ul>
+<h2 id="BOB-工具"><a href="#BOB-工具" class="headerlink" title="BOB 工具"></a>BOB 工具</h2><p>BOB 工具，用来测试这种一致性的满足情况（不同应用文件系统的），测试方法解释，转自<a href="https://www.jianshu.com/p/4bd91c097c35" target="_blank" rel="noopener">文件系统天生就是不平等的-实现崩溃一致性应用的复杂性 | 简书</a>，整体看还是一种 testing 的方法（自底向上抓取）。</p>
+<blockquote>
+<p>BOB 主要是为了测试文件系统的 Persistence Properties。对于一个给定的文件系统，当在发生崩溃之后，有哪些可能的状态，这个就是用 Persistence Properties 来确定的。</p>
+<p>那这个 BOB 是怎么做的呢？首先 BOB 会一个简单的场景去压力测试 Persistence Properties（譬如，一批特定 size 的持续写入来验证 overwrite 的原子性）。BOB 会收集这个场景产生的 block I/O，然后重新排序这些收集的 blocks，选择性的将一些写入到磁盘去产生一个合法的磁盘 state。用这种方式，BOB 能产生一批在崩溃之后，多个对应不同 disk states 的唯一的磁盘 images 。然后 BOB 会在各自的 image 上面执行文件系统的 recovery ，并检查 Persistence Properites 是否继续满足（譬如 Write 是原子的）。</p>
+</blockquote>
+<p>抽取 I/O 操作，重新排列，构建磁盘映像（disk image）。这些磁盘映像是磁盘的物理状态，应对应 crash state 抽象模型的部分状态。然后在各个磁盘映像中执行恢复过程，如果操作是原子的？crash-consistency 的，则应该恢复成功。</p>
+<a id="more"></a>
+<h2 id="ALICE-工具"><a href="#ALICE-工具" class="headerlink" title="ALICE 工具"></a>ALICE 工具</h2><p>ALICE 的原理其实比较简单，就是通过 trace 应用程序的 system call 来直接构建文件的 state。</p>
+<h1 id="主流-Linux-Unix-文件系统架构简介"><a href="#主流-Linux-Unix-文件系统架构简介" class="headerlink" title="主流 Linux/Unix 文件系统架构简介"></a>主流 Linux/Unix 文件系统架构简介</h1><p>原文地址：<a href="http://blog.chinaunix.net/uid-28989651-id-3833383.html" target="_blank" rel="noopener">主流 Linux/Unix 文件系统架构简介</a></p>
+<p>(1) FFS-style 文件系统：代表文件系统有最初的 BerkeleyFFS 和 Ext2，具有的优点是简单、高性能、易于修复和恢复数据，但是每次系统崩溃需要全盘 fsck，无数据一致性保障，无正规的防御磁盘崩溃的措施。</p>
+<p>(2) 日志(Journaling)文件系统：最为流行的现代文件系统架构，典型代表文件系统有 Ext3、Reiserfs 以及其他多种文件系统。日志文件系统加入对近期提交到文件系统的事务的 log，log 顺序地写到磁盘上的一个保留的位置。文件系统的主体不会更改，直到事务完整地写到 log 中为止。日志使得文件系统可以快速从崩溃状态恢复，因为可以“回放”log，完成任意未半完成状态（文件系统的更改信息已经写到了 log 中，但是还没有写到文件系统中）的操作。日志文件系统存在的问题包括两次写问题（每个操作必须写磁盘两次，一次是写到 log 中，另一次是写到文件系统中最终的位置）以及受限的日志空间带来的多种性能问题。此外，日志文件系统也没有改善磁盘崩溃的情况。</p>
+<p>(3) 日志结构（Log-structured）文件系统：典型代表文件系统 LFS。Log-structured 文件系统在文件系统研究社区反响强烈，但是从未用于主流商业产品用途。Log-structured 的主要设计思想是：首先，以 log 的方式将更新写出，这将一组随机写 IO 转换成一个大的连续的写入流，写操作更为高效；其次，整个文件就是一个巨大的连续事务 log，对文件的更新直接追加到 log 中（解决了 Journaling 文件系统的两次写问题），数据的更新不会在本地覆盖写——从这个意义上看 log-structured 文件系统也是一种 Copy-on-write(COW)文件系统。Log-structured 文件系统的主要问题是系统需要大的空闲的 segments 磁盘空间，这些空闲的 segments 由“cleaner”线程创建。非完全空闲的 segments 中的已分配的 blocks 必须移出到其他的 segments 中。尽管对 cleaner 的优化进行了多年的研究，cleaner 线程的开销仍然非常高。此外，计算空闲空间的总数也很困难，因为 COW 文件系统直到数据块的新的拷贝写入成功的时候才会释放该数据块的旧的拷贝块，而一次操作需要完成的数据块拷贝的数量是不可预测的。最后，强制重分配数据块需要在每次写操作的时候做一个“good”的分配决策，而本地更新文件系统仅需要做一次的“good”分配决策。</p>
+<p>(4) 软更新（Soft updates）文件系统：Soft updates 是对 Berkeley FFS 的优化，在文件系统崩溃的时候，保留磁盘上的文件系统格式数据（也就是元数据），使得无需执行 fsck 程序就可挂载文件系统。Soft updates 仔细调整对文件系统的更新顺序，因而任意时刻文件系统发生崩溃，除去部分“leaked”（标记为已分配，实际上是空闲的）的 inodes 和 blocks 外，文件系统数据是一致的。后台 fsck 程序运行在文件系统的快照上，找出这些未引用的 blocks 并将其再次标记为空闲。Soft update 是的负面影响主要是极度复杂，难于理解和实现，并且每个文件系统操作需要其自己独特设计的 update 代码。当前已知的仅有一个实现的 soft updates 实例。</p>
+<p>(5) 写时拷贝（copy-on-write(COW)）文件系统：最新趋势的文件系统架构。COW 文件系统的典型代表是 WAFL (Write Anywhere File Layout, Network Appliance 的内部文件系统)、ZFS 以及 Btrfs。这些文件系统以树的方式组织文件 blocks。当一个 block 更新的时候，就分配一个新的 block，链接 block 的指针指向更新后的 block——当然也会引起这些指针所在的 block 的更新产生。当一组一致的更新写到磁盘之后，root block 自动更新为指向新的 blocks 树，该新的 blocks 树包含最新的分配信息。这种结构方式极其易于实现文件系统快照技术，而且集中了文件系统一致性代码。COW 文件系统的不足之处与 Log-structured 文件系统相似——每次写操作要强制重分配，同时不确定完成一次更新需要多少的磁盘空间。同时，好的同步性能需要加入某种 journal，使得 COW 文件系统的实现更复杂。</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/操作系统/">操作系统</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/操作系统/">操作系统</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/post/5943431e.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Coq学习——交互式定理证明工具Coq的产生与发展（转）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/post/9b82f934.html">
+                        <span class="hidden-mobile">分布式系统学习——NVM717会议记录</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "操作系统学习——文件系统崩溃一致性&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

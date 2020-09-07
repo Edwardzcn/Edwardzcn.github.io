@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  <title>软件测试学习——黑盒测试实验报告 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2020-06-09 13:00">
+      2020年6月9日 下午
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.5k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      20
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h1 id="软件测试课程作业三"><a href="#软件测试课程作业三" class="headerlink" title="软件测试课程作业三"></a>软件测试课程作业三</h1><h2 id="实验内容"><a href="#实验内容" class="headerlink" title="实验内容"></a>实验内容</h2><ul>
+<li>编写一个实现两数相除的函数，并基于此，采用划分法和边界值法，设计相应的测试用例。请注意：程序的逻辑，以及测试用例和套件设计的合理性。</li>
+<li>另外测试用例用表哥形式（简单形式），即用一个表，列出针对同一段代码的所有测试用例，通常要标明一个测试用例的编号、既定输入和预期输出（即测试所涉及的人机交互流程），以及相关注意事项。</li>
+</ul>
+<h2 id="实验过程"><a href="#实验过程" class="headerlink" title="实验过程"></a>实验过程</h2><a id="more"></a>
+<h3 id="两数相除的函数"><a href="#两数相除的函数" class="headerlink" title="两数相除的函数"></a>两数相除的函数</h3><p>采用同作业二类似的程序框架，由于在黑盒测试中着重试错，对于非数值不合法输入的编写同样重要。代码如下</p>
+<pre><code class="hljs C++"><span class="hljs-comment">/*
+** 程序名：testDevide
+** 程序功能：从input输入文件中逐行输入两个值，第一个值做被除数，第二个值做除数，
+**         在输入合法的情况下（范围-100～100）打印运算成功并输出商值。
+**         否则打印错误信息
+** 作者：Edwardzcn
+*/</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;bits/stdc++.h&gt;</span></span>
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> <span class="hljs-built_in">std</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">long</span> <span class="hljs-keyword">long</span> ll;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> <span class="hljs-keyword">long</span> ull;
+<span class="hljs-keyword">typedef</span> pair&lt;<span class="hljs-keyword">int</span>, <span class="hljs-keyword">int</span>&gt; pii;
+<span class="hljs-keyword">typedef</span> pair&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">string</span>&gt; pss;
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> rep(i, a, n) for (int i = a; i &lt; n; ++i)</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> per(i, a, n) for (int i = n - 1; i &gt;= a; --i)</span>
+
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> DEBUG_INPUT DEBUG_INPUT</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> LOW_BOUND -100.0</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> UP_BOUND 100.0</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> EPS 1e-10</span>
+
+<span class="hljs-comment">/*
+** 函数名：isNum
+** 函数功能：用来检测是否为合法输入数
+** 参数名称与类型：
+**  string s
+** 返回值：
+**  bool
+*/</span>
+<span class="hljs-function"><span class="hljs-keyword">bool</span> <span class="hljs-title">isNum</span><span class="hljs-params">(<span class="hljs-built_in">string</span> s)</span>
+</span>&#123;
+    <span class="hljs-keyword">bool</span> flag = <span class="hljs-literal">false</span>;
+    <span class="hljs-keyword">if</span> (s == <span class="hljs-string">""</span>)
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    rep(i, <span class="hljs-number">0</span>, s.size())
+    &#123;
+        <span class="hljs-keyword">if</span> (i == <span class="hljs-number">0</span> &amp;&amp; s[i] == <span class="hljs-string">'-'</span>)
+            <span class="hljs-keyword">continue</span>;
+        <span class="hljs-keyword">if</span> (s[i] == <span class="hljs-string">'.'</span>)
+        &#123;
+            <span class="hljs-keyword">if</span> (!flag)
+                flag = <span class="hljs-literal">true</span>;
+            <span class="hljs-keyword">else</span>
+                <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+        &#125;
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (s[i] &lt; <span class="hljs-string">'0'</span> || s[i] &gt; <span class="hljs-string">'9'</span>)
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    &#125;
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+&#125;
+
+<span class="hljs-comment">/*
+** 函数名：getDevide
+** 函数功能：根据两输入值获取商值
+** 参数名称与类型：
+**  double a
+**  double b
+** 返回值类型：
+**  double
+*/</span>
+<span class="hljs-function"><span class="hljs-keyword">double</span> <span class="hljs-title">getDevide</span><span class="hljs-params">(<span class="hljs-keyword">double</span> a, <span class="hljs-keyword">double</span> b)</span>
+</span>&#123;
+    <span class="hljs-keyword">return</span> a / b;
+&#125;
+
+<span class="hljs-comment">/*
+** 函数名：main
+** 函数功能：主函数，入口
+** 参数名称与类型：
+**  int argc
+**  char* argv[]
+** 返回值类型：
+**  int
+*/</span>
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span> *argv[])</span>
+</span>&#123;
+    <span class="hljs-built_in">cout</span> &lt;&lt; (<span class="hljs-string">"======= Start Program: testLeapYear ==========\n"</span>);
+
+<span class="hljs-meta">#<span class="hljs-meta-keyword">ifdef</span> DEBUG_INPUT</span>
+    freopen(<span class="hljs-string">"input"</span>, <span class="hljs-string">"r"</span>, <span class="hljs-built_in">stdin</span>);
+    <span class="hljs-comment">// freopen("output", "w", stdout);</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span> <span class="hljs-comment">// DEBUG_INPUT</span></span>
+    <span class="hljs-built_in">string</span> a, b;
+    <span class="hljs-keyword">int</span> parseNum;
+    <span class="hljs-keyword">while</span> (<span class="hljs-built_in">cin</span> &gt;&gt; a &gt;&gt; b)
+    &#123;
+        <span class="hljs-comment">// cout &lt;&lt; "# " &lt;&lt; a &lt;&lt; " " &lt;&lt; b &lt;&lt; endl;</span>
+        <span class="hljs-comment">// 调用</span>
+        <span class="hljs-keyword">bool</span> a_type = isNum(a);
+        <span class="hljs-keyword">bool</span> b_type = isNum(b);
+        <span class="hljs-keyword">double</span> a_double, b_double;
+        <span class="hljs-keyword">int</span> flag = <span class="hljs-literal">true</span>;
+        <span class="hljs-comment">// 判断非数字的情况</span>
+        <span class="hljs-keyword">if</span> (!a_type)
+        &#123;
+            flag = <span class="hljs-literal">false</span>;
+            <span class="hljs-built_in">cout</span> &lt;&lt; <span class="hljs-string">"Error: a="</span> &lt;&lt; a &lt;&lt; <span class="hljs-string">" is not a num."</span> &lt;&lt; <span class="hljs-built_in">endl</span>;
+        &#125;
+        <span class="hljs-keyword">if</span> (!b_type)
+        &#123;
+            flag = <span class="hljs-literal">false</span>;
+            <span class="hljs-built_in">cout</span> &lt;&lt; <span class="hljs-string">"Error: b="</span> &lt;&lt; b &lt;&lt; <span class="hljs-string">" is not a num."</span> &lt;&lt; <span class="hljs-built_in">endl</span>;
+        &#125;
+        <span class="hljs-keyword">if</span> (!flag)
+        &#123;
+            <span class="hljs-built_in">cout</span> &lt;&lt; <span class="hljs-string">"Try Again."</span> &lt;&lt; <span class="hljs-built_in">endl</span>;
+            <span class="hljs-keyword">continue</span>;
+        &#125;
+        <span class="hljs-built_in">stringstream</span> ss;
+        <span class="hljs-comment">// ss.clear();</span>
+        <span class="hljs-comment">// ss &lt;&lt; a;</span>
+        <span class="hljs-comment">// ss &gt;&gt; a_double;</span>
+        <span class="hljs-comment">// ss.clear();a.size()</span>
+        <span class="hljs-comment">// ss &lt;&lt; b;</span>
+        <span class="hljs-comment">// ss &gt;&gt; b_double;</span>
+        a_double = stod(a, <span class="hljs-built_in">string</span>::size_type());
+        b_double = stod(b, <span class="hljs-built_in">string</span>::size_type());
+        <span class="hljs-comment">// cout &lt;&lt; "# " &lt;&lt; a_double &lt;&lt; " " &lt;&lt; b_double &lt;&lt; endl;</span>
+        <span class="hljs-comment">// 判断超出数字限制</span>
+        <span class="hljs-keyword">if</span> (a_double &lt; LOW_BOUND + EPS || a_double &gt; UP_BOUND - EPS)
+        &#123;
+            flag = <span class="hljs-literal">false</span>;
+            <span class="hljs-built_in">cout</span> &lt;&lt; <span class="hljs-string">"Error a="</span> &lt;&lt; a_double &lt;&lt; <span class="hljs-string">" out of bound."</span> &lt;&lt; <span class="hljs-built_in">endl</span>;
+        &#125;
+        <span class="hljs-keyword">if</span> (b_double &lt; LOW_BOUND + EPS || b_double &gt; UP_BOUND - EPS)
+        &#123;
+            flag = <span class="hljs-literal">false</span>;
+            <span class="hljs-built_in">cout</span> &lt;&lt; <span class="hljs-string">"Error b="</span> &lt;&lt; b_double &lt;&lt; <span class="hljs-string">" out of bound."</span> &lt;&lt; <span class="hljs-built_in">endl</span>;
+        &#125;
+        <span class="hljs-comment">// 对0的判断</span>
+        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">abs</span>(b_double) &lt; EPS)
+        &#123;
+            flag = <span class="hljs-literal">false</span>;
+            <span class="hljs-built_in">cout</span> &lt;&lt; <span class="hljs-string">"Error b="</span> &lt;&lt; <span class="hljs-number">0</span> &lt;&lt; <span class="hljs-string">" undevisable."</span> &lt;&lt; <span class="hljs-built_in">endl</span>;
+        &#125;
+        <span class="hljs-keyword">if</span> (!flag)
+        &#123;
+            <span class="hljs-built_in">cout</span> &lt;&lt; <span class="hljs-string">"Try Again."</span> &lt;&lt; <span class="hljs-built_in">endl</span>;
+            <span class="hljs-keyword">continue</span>;
+        &#125;
+        <span class="hljs-comment">// 进行运算</span>
+        <span class="hljs-keyword">double</span> ans = getDevide(a_double, b_double);
+        <span class="hljs-built_in">cout</span> &lt;&lt; <span class="hljs-string">"Correct! The value is "</span> &lt;&lt; ans &lt;&lt; <span class="hljs-string">" ."</span> &lt;&lt; <span class="hljs-built_in">endl</span>;
+    &#125;
+
+    <span class="hljs-built_in">cout</span> &lt;&lt; <span class="hljs-string">"=============================================="</span> &lt;&lt; <span class="hljs-built_in">endl</span>;
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+&#125;</code></pre>
+<h3 id="等价类划分法检测"><a href="#等价类划分法检测" class="headerlink" title="等价类划分法检测"></a>等价类划分法检测</h3><ul>
+<li><p>等价类划分</p>
+<p>主要采用数值类型划分，和区间划分，这里还需要考虑除数特殊值情况的划分。（由于有效/无效对于同一测例是互斥的），这里我们保持行的原子性，所以将有效无效合并为一列。</p>
+</li>
+<li><p>等价类划分表格</p>
+<p>| 划分原则 | 情况                          | 有效/无效等价类 | 编号 |<br>| :———- | :—————————————— | :——————— | :—- |<br>| 数值类型 | a 为数值，b 为数值            | 有              | 1    |<br>| 数值类型 | a，b 至少有一个为非数值       | 无              | 2    |<br>| 区间     | -100&lt; a &lt;100, -100&lt; b &lt;100    | 有              | 3    |<br>| 区间     | a，b 至少有一个不在要求区间内 | 无              | 4    |<br>| 特殊值   | b 不为 0                      | 有              | 5    |<br>| 特殊值   | b 为 0                        | 无              | 6    |</p>
+</li>
+<li><p>测例表格</p>
+<p>| 测例编号 | 输入            | 预计输出 | 实际输出  | 划分覆盖     |<br>| :———- | :——————— | :———- | :———— | :—————- |<br>| 1        | a=-51 b=0.00005 | -1020000 | -1.02e+06 | 覆盖 1，3，5 |<br>| 2        | a=100 b=0       | 2 Error  | 2 Error   | 覆盖 1，4，6 |<br>| 3        | a=1823kja1 b=34 | 1 Error  | 1 Error   | 覆盖 2       |</p>
+</li>
+<li><p>程序测试</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/SoftwareTesting/Lab3_1.png" srcset="/img/loading.gif" alt="Lab3_1"></p>
+<p>实验结果符合预期，填入上面测例表格的实际输出中。</p>
+</li>
+</ul>
+<h3 id="边界值法检测"><a href="#边界值法检测" class="headerlink" title="边界值法检测"></a>边界值法检测</h3><ul>
+<li><p>边界值</p>
+<p>主要考虑输入符合数值规范下，是否控制在限定区间内。在本题程序中，限定</p>
+<ul>
+<li>被除数： $(-100,100)$</li>
+<li>除数： $(-100,0) \cup (0,100)$</li>
+</ul>
+<p>除数为 0 的检测在上面等价类划分中做过了，这里就不再重复测试了，主要针对-100，100 上下边界进行测试中，在程序中我定义了宏名<code>LOW_BOUND</code>和<code>UP_BOUND</code>方便表示。</p>
+</li>
+<li><p>边界值测例表格</p>
+<p>| 测例编号 | 输入          | 预计输出 | 实际输出 |<br>| :———- | :—————— | :———- | :———- |<br>| 1        | a=-100 b=-100 | 2 Error  | 2 Error  |<br>| 2        | a=-100 b=100  | 2 Error  | 2 Error  |<br>| 3        | a=100 b=-100  | 2 Error  | 2 Error  |<br>| 4        | a=100 b=100   | 2 Error  | 2 Error  |</p>
+</li>
+<li><p>健壮性边界值测例补充</p>
+<p>| 测例编号 | 输入         | 预计输出 | 实际输出 |<br>| ———— | —————— | ———— | ———— |<br>| 5        | a=-102 b=-98 | 1 Error  | 1 Error  |<br>| 5        | a=105 b=106  | 2 Error  | 2 Error  |</p>
+</li>
+<li><p>程序检测</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/SoftwareTesting/Lab3_2.png" srcset="/img/loading.gif" alt="Lab3_2"></p>
+<p>实验结果符合预期，填入上面测例表格的实际输出中。</p>
+</li>
+</ul>
+<h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><p>见上一节两种测试方法的程序检测截图。</p>
+<h2 id="实验总结"><a href="#实验总结" class="headerlink" title="实验总结"></a>实验总结</h2><p>本次实验亲手编程体验了黑盒子测试的过程，深刻体会到其与白盒测试的不同，从功能性上和试错角度进行测试，而非从程序结构角度。在编写测例的过程中，我完全没有回过头看程序结构，这就很好的说明了“黑盒”的含义。</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/软件测试/">软件测试</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/软件测试/">软件测试</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/post/bafae70a.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">软件测试学习——TDD流程实验报告</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/post/bdb73106.html">
+                        <span class="hidden-mobile">软件测试学习——白盒测试实验报告</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "软件测试学习——黑盒测试实验报告&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

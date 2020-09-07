@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  <title>分布式系统学习——MIT6.824-Lecture2课堂笔记 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2020-05-31 17:29">
+      2020年5月31日 下午
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.8k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      20
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <p>课堂笔记</p>
+<h1 id="Go-语言"><a href="#Go-语言" class="headerlink" title="Go 语言"></a>Go 语言</h1><h2 id="Why-use-Go"><a href="#Why-use-Go" class="headerlink" title="Why use Go"></a>Why use Go</h2><p>很多系统风格的语言可以选择，比如 Java、C#、Python、C++。Go 像其它语言一样，提供了很多许多 features，比如 thread 线程、locking、synchronization，尤其是 RPC（remote procedure call）包，非常方便实用。</p>
+<p>与 C++不同，Go Type safe and memory safe，编程内存问题会少很多，垃圾回收机制也会帮助我们进行内存管理避免错误。<strong>Combination of threads and garbage collection is particularly important</strong>。没有如此特性的 C++，需要找出最后一个线程利用完对象后再 free，但这很困难，也很麻烦。</p>
+<p>Go 还很简单，比起 C++更难出错，编译器给出的错误提示也更有帮助，C++还要去想 error message 实际表示哪里出错了。</p>
+<h1 id="Threads"><a href="#Threads" class="headerlink" title="Threads"></a>Threads</h1><p>多线程，我们进行并发编程最常用到的。并发性是分布式程序中非常重要的特性。需要一种更简单的方式进行一对多的交流。<code>go routines</code>和<code>threads</code>一码事。</p>
+<p>一个 Box 表示的 Address space 地址空间。</p>
+<ul>
+<li>串行程序：1 个 pc、1 组寄存器、1 个栈</li>
+<li>并行程序：每一个程序都有一个 separate pc、寄存器和栈。</li>
+</ul>
+<p>实际上串行程序的栈等都集中在一个地址空间。</p>
+<p>使用 Threads 的主要原因</p>
+<h2 id="IO-concurrency"><a href="#IO-concurrency" class="headerlink" title="IO concurrency"></a>IO concurrency</h2><p>使用这个称呼是来源于单机的并发（同时等待或操作 IO），在分布式中，用来描述处理请求（launched or removed RPCs）的同时等待着其他机器的回复（waiting for many replies）。使用 Threads，可以让其中一部分等待，一部分执行。</p>
+<h2 id="Multi-core-parallelism"><a href="#Multi-core-parallelism" class="headerlink" title="Multi-core parallelism"></a>Multi-core parallelism</h2><p>多核机器，在不同核上进行计算会提供 Threads 物理上真正的并行运行。</p>
+<h2 id="Convenience"><a href="#Convenience" class="headerlink" title="Convenience"></a>Convenience</h2><p>A little bit less important</p>
+<p>一些工作不需要始终 running，只是阶段性的进行，比如 Master Server 检查其他 Workers 是否 alive，间隔固定实践发送某些消息。</p>
+<a id="more"></a>
+<h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><p>Q：Threads 所带来的 overhead 是否值得？<br>A：负担是有的，但是很多线程不是持续运行，或许经常 Sleep，所以 Probably 负担不大。（后面听不懂了）</p>
+<p>Q：提到 asynchronous program（教授称为 eventdriven programming，事件驱动编程）<br>A：如果不想采用 threads 的方式，却要满足一台 server 同时与多台 clients 交流的需求？那么可以采用 asynchronous program 或者 event-driven programing。单一 thread，单一循环，以不同事件相应。编程比较方便，不能解决的问题。无法达到 parallelism 的特性，单一 loop 并不能完全体现出多核机器的优势。不过通常来说其 overhead 要比多线程编程小一些。</p>
+<p>为什么说 threads 的 overhead 略大，虽然线程都是轻量级的，但每一个线程都有自己的栈，如果有百万个线程，那代价是庞大的。</p>
+<p>Q：Threads 与 Process 的区别，即线程与进程的区别<br>A：Threads inside process，是操作系统的概念了，unix process 具备一个大的地址空间，而线程（threads、go routines 在其内部），一些操作系统并不 care 线程内部用的编程语言？操作系统级会将不同进程的地址空间隔离开，不同 processes 之间的交流是极少的。同一进程内部的线程可以共享一些内存空间，或者根据 channel 进行同步，或者 mutex 信号量。进程间达不到这样的能力。</p>
+<p>Q：带线程的进程间 switch 是怎么操作的？<br>A：比较复杂。可能会从中选择一个。</p>
+<p>一个最主要特点，share memory。同时也容易产生 bug。</p>
+<h2 id="Race-问题"><a href="#Race-问题" class="headerlink" title="Race 问题"></a>Race 问题</h2><p>以 n=n+1 为例，多个线程同时进行，可能答案并不正确。RACE 名字是源于，后来的 Process 是否能看到先来的 Process 的修改，像一场赛跑。（ATOMIC 涉及到指令涉及），Go 语言提供的锁机制（mu.lock() mu.unlock()）可以帮助我们“锁住”共享变量。</p>
+<p>Q：Go 如何知道锁住哪些变量，mutex 变量和需要被“锁”的变量有哪些联系<br>A：<strong>实际上，Go have no idea.（hhhh）。这是编程人员的工作，keep in head the relationship to the data。</strong>变量相互间结构是复杂的（Programming language），里面可能携带有多个锁，根据操作可能会 allowcate 新的 data structure，这都要编程人员自己去想。</p>
+<h2 id="Coordination-问题"><a href="#Coordination-问题" class="headerlink" title="Coordination 问题"></a>Coordination 问题</h2><p>方便线程之间交流协调，Go 提供了下面的工具</p>
+<ul>
+<li>channels：收发信息</li>
+<li>sync.Cond：条件锁，更好地知道是要条件性等待，还是继续执行线程</li>
+<li>wait group：lauch 一组线程并等待完成</li>
+</ul>
+<h2 id="Deadlock-问题"><a href="#Deadlock-问题" class="headerlink" title="Deadlock 问题"></a>Deadlock 问题</h2><p>老生常谈，死锁。</p>
+<h2 id="例子：Web-Crawler"><a href="#例子：Web-Crawler" class="headerlink" title="例子：Web Crawler"></a>例子：Web Crawler</h2><p>爬虫会启动很多个线程进行 URLs 的爬取，希望知道爬取的 URLs 是刚刚 fetch for 还是已经完成，爬虫希望避免重复爬取。Serial fetch 时间很长，我们希望 Parallel fetch，一个最终的问题，如何确定爬虫停止，获取全部的爬虫信息。</p>
+<p>提供的 serial fetch，采取 DFS 爬取树形网页结构，并且用 map、set 储存状态。只有一个 fetch map，递归的 fetch 通过传递该 map 的引用（copy 代价太大了）来确定状态。</p>
+<h3 id="Serial-Crawler"><a href="#Serial-Crawler" class="headerlink" title="Serial Crawler"></a>Serial Crawler</h3><p>迅速建立一批 go routines 就停止了。</p>
+<h3 id="Concurrent-Crawler"><a href="#Concurrent-Crawler" class="headerlink" title="Concurrent Crawler"></a>Concurrent Crawler</h3><p>（<strong>感觉 wait group 实现用到了整型信号量的思路</strong>）加入了 mutex 和 wait group，可以保证 routines 不会 fetch 相同的 url， 如果不加入 42-45 行锁，当两个线程同时尝试两个 url 时候，会同时设定为 true，从而导致重复 fetch。所以读共享 table 操作要加入锁。</p>
+<p>！的确应该用<code>defer done.Done()</code>，否则不能保证函数调用执行完后再释放。</p>
+<p>Q：如何保证 done.Done 操作不会产生 Race 问题？<br>A：有内部锁保证。（可以理解成 sync.WaitGroup 操作都是线程安全的）。</p>
+<p>关于变量 u 的解释没太听懂。</p>
+<p>Q：如果 inner function，作为 go routine 启动并且 refer 了 surrounding function 的变量，那当 surrounding function 返回时，refer 的变量怎么办？<br>A：答案时 Go 的实现会意识外部的 closure 并会分析，编译器会分配<code>heat memory</code>（热内存）来 hold 住这些变量的值，从栈中转移到堆中，这样 inner function 仍能到他们，最后垃圾处理机制会处理这些变量。</p>
+<p>编程中 race 问题是常见的</p>
+<p>Go 提供了优秀的工具，race 检测工具<code>go run -race</code>，检测不同 routines 先读后写又无锁的情况。</p>
+<p>Q：静态分析？<br>A：并不是，race editor 并不是静态分析，是对 run 过程中进行的检测。</p>
+<p>一共多少并发线程可以同时运行</p>
+<p>样例中看起来 5，实际工程中并没有 limit</p>
+<h3 id="Concurrent-Channel"><a href="#Concurrent-Channel" class="headerlink" title="Concurrent Channel"></a>Concurrent Channel</h3><p>使用 Channel 而不是共享变量的形式，channel 是线程安全的（Q&amp;A 里顺便提了一下）。感觉这种形式有点像事件驱动？</p>
+<ul>
+<li>worker 控制 channel 压入（urls 或者 strings 切片）</li>
+<li>master 是个 loop 对 channel 弹出，根据弹出内容执行新建 worker，还是其他。</li>
+</ul>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/分布式系统/">分布式系统</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/分布式系统/">分布式系统</a>
+                    
+                      <a class="hover-with-bg" href="/tag/6-824/">6.824</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/post/b6bdfc04.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">分布式系统学习——MIT6.824-Lecture3课堂笔记</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/post/a2116e6d.html">
+                        <span class="hidden-mobile">ReadingGroup——Supporting-Very-Large-Models</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "分布式系统学习——MIT6.824-Lecture2课堂笔记&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

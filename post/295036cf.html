@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  <title>数据分析与融合——粗糙集理论算法优化 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2019-11-29 15:02">
+      2019年11月29日 下午
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.4k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      42
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h1 id="粗糙集理论算法优化研究"><a href="#粗糙集理论算法优化研究" class="headerlink" title="粗糙集理论算法优化研究"></a>粗糙集理论算法优化研究</h1><h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>本文回顾了 Pawlak 粗糙集理论的基础知识，对该理论框架下如等价类划分，相对正域计算，约简过程等问题朴素算法的复杂度进行分析，介绍并总结了前人针对上述问题提出的各种优化算法。</p>
+<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>20 世纪 80 年代，波兰的 Pawlak 教授提出了粗糙集的概念，并用数学形式明确了粗糙集的定义以及计算规则[@Pawlak]，为描述系统的不确定性并计算规约相关决策规则提供了一项新的工具。粗糙集理论引起了许多数学家、逻辑学家和计算机学家的兴趣，在过去的二十年中，他们在 Pawlak 提出的粗糙集理论基础上进行了大量的研究工作。主要包括粗糙集数学性质[@]、基于其他关系的粗糙集拓展模型、多属性决策分析理论和应用[@安利平]、粗糙集理论与其他不确定方法的关系和结合[@]、粗糙集上的高效算法等。其中《基于粗集理论的多属性决策分析》[@安利平]</p>
+<p>相较于 Zadeh 于 1965 年提出的模糊集理论[@Zadeh]，粗糙集给出了可计算的，更准确的描述模糊边界的方式以及量化边界模糊元素的方法。在智能计算、数据挖掘领域，有效且可行的数学描述带来的一大便利便是可以通过计算的方式从数据中抽取有效的经验和知识，粗糙集理论也因此成为数据科学家的有效工具。对于多属性决策分析，粗糙集理论引入了集合近似、约简、核、确定性和可能性规则等新型概念及计算方法，不仅对决策分析问题提供了解释机制，如发现重要的事实和关系，而且利用决策规则形式的偏好模型可以表示决策者的决策政策，提供决策支持。</p>
+<p>《数据分析与融合》课程中对粗糙集进行了较为系统的讲解，但是课程避开了粗糙集相关算法的具体实现和复杂度分析。事实上，现有粗糙集算法计算的低效性在一定程度上限制了粗糙集理论的广泛应用，因此寻求高效的粗糙集算法具有重要的意义，也自然成为粗糙集理论研究的一个主要研究分支。</p>
+<p>本文首先对粗糙集理论主要内容及其相关数学性质进行回顾，总结前人的相关文献成果，分析了算法低效性的根源 ，解释并实现一种高效的粗糙集基本算法。</p>
+<h2 id="粗糙集的基本概念"><a href="#粗糙集的基本概念" class="headerlink" title="粗糙集的基本概念"></a>粗糙集的基本概念</h2><p>经典粗集理论是基于不可分辨关系的，下面首先介绍粗糙集的基本概念。</p>
+<h3 id="信息表和不可分辨关系"><a href="#信息表和不可分辨关系" class="headerlink" title="信息表和不可分辨关系"></a>信息表和不可分辨关系</h3><p>定义 2.1 一个信息系统可以表示为</p>
+<script type="math/tex; mode=display">S = \langle U,A,V,f \rangle \tag{2-1}</script><p>其中, $U$ 是一非空有限对象集（即论域），$U = \{ x_1,x_2, \cdots , x_n  \}$ ，$A$ 是非空有限属性集 ，$A = \{  a_1,a_2,a_3 \}$，$V_a$表示属性 $a$ 的值域 ，$V = \bigcup_{a \in A} V_a$ ，$f : U \times A \rightarrow V$ 是信息函数。它指定 $U$ 中每一个对象 $x$ 的属性值, 即对 $x \in U , a \in A$ ，有 $f(x , a) \in  V_a$。</p>
+<p>在粗集理论中，信息系统也被称为信息表、属性值表、数据表，可简记为$S = \langle U,A\rangle$，或者$S = \langle U,A,V \rangle$。粗集理论利用信息表（决策表）来描述论域对象及其属性，它是一个二维表，每一行表示一个对象，每一列表示对象的一个属性。与数据库的“表”概念不同，粗集理论所研究的表并不要求两个对象可完全区分，即至少存在一个属性列使得两个对象对应的属性值不同。粗糙集关注的是粒度，而非单个元素。</p>
+<a id="more"></a>
+<p>定义 2.2 在信息系统 S 中 ,对于每个属性子集$B \subseteq A$ ,可以定义一个不可分辨关系 $IND(B)$（在不引起歧义的情况下可简写为$I_B$）:</p>
+<script type="math/tex; mode=display">IND(B) = \{ (x,y) \in U \times U : f(x,a) = f(y,a) , \forall a \in B \} \tag{2-2}</script><p>如果$(x,y) \in I_B$，则$x$和$y$称为$B$不可分辨，显然$I_B$满足自反性、对称性和传递性，根据离散数学的内容我们知道，$I_B$是以等价关系，$I_B$的所有等价类族，即由$B$决定的划分，用$U/I_B$表示，包含元素$x$的等价类用$I_B(x)$ 表示</p>
+<!-- ，或者 $[ x ]_{I(B)}$。 -->
+<h3 id="相容关系表述和转化探究"><a href="#相容关系表述和转化探究" class="headerlink" title="相容关系表述和转化探究"></a>相容关系表述和转化探究</h3><p>在考虑决策表时，常常会考虑是否有如下情况出现：决策表元素出现属性相同（即具备不可分辨关系）的多个元素，却有不同的决策属性值。我们常常将这样类似的性质描述为决策表的相容性。若要通过决策表为自动化程序或者固定流程提供指导，我们希望决策表是相容的，在不断约简决策表过程中，我们也希望决策表保持原有的相容性，否则，具备不可分辨关系的两元素就会出现决策差异，这与程序设计与工业流程中要求的“确定性”产生了根本的对立。当然，若是考虑引入新的知识项（属性）、关联上下文等方法，我们或许可以将不相容的决策表转化为新的相容决策表且决策能力不变，但这已经超出了基本粗糙集和决策表约简的讨论范围，在此也不考虑这种拓展情形。</p>
+<p>相容性的刻画有很多方法，从定义上划分可以在不同资料</p>
+<p>设$S = \langle U,C \cup D \rangle$为一决策表，不可分辨关系$I_C$将论域划分为$U/C$，称为条件分类（条件粒度），不可分辨关系$I_D$将论域划分为$U/D$，称为决策分类（决策粒度）。对于单属性决策，则$D = {d}$，若非单属性决策，则$D$表示所有决策属性列的集合，决策表的相容关系有如下两种表述。</p>
+<p>定义 2.3 设$S = \langle U,C \cup D \rangle$为一决策表，对于其条件分类$U/C$与决策分类$U/D$，若有$U/C$细分$U/D$，则称$S$为相容决策表，否则成$S$为不相容决策表。</p>
+<p>相关文献讨论了通过决策值归纳函数来描述决策表相容性的方法，不过讨论局限在$D = {d}$，即决策属性单一的情况。为了与定义 2.3 保持等价性，这里给出拓展$D$不仅为单属性列情况下的定义。</p>
+<p>定义 2.4 设$S = \langle U,C \cup D \rangle$为一决策表，$B \subseteq C$，定义$S$的$B$决策值归纳函数为</p>
+<script type="math/tex; mode=display">\partial_B : U \times D \rightarrow P(V_d) \tag{2-3}</script><script type="math/tex; mode=display">\partial_B (x,d) = \{ i: \exists x_0 \in I_B(x) , f(x,d) = i \} \tag{2-4}</script><p>其中$P(V_d))$表示对应属性列取值$V_d$的幂集。</p>
+<p>如果$\forall x \in U, \forall d \in D ,|\partial_C (x,d)| = 1$，则$S$称为相容决策表，否则，$S$称为不相容决策表。</p>
+<p>下面证明两定义的等价性，即证$U/C$细分$U/D$是$\forall x \in U, \forall d \in D ,|\partial_C (x,d)| = 1$的充要条件</p>
+<p>证明 2.1 充分性</p>
+<p>应用反证法：</p>
+<p>假设$\exists x_0 \in U, \exists d_0 \in D, | \partial_C (x_0,d_0) | \geq 2$。由细分关系$I_C \subseteq I_D$。因为$|\partial_C (x_0,d_0) | \geq 2$，不妨设$\partial_C (x_0,d_0) = \{r_0,r_1, \cdots \}$，同时我们假设$r_0$表示为$x_0$在属性$d_0$上的值（即信息函数值），$f(x_0,d_0) = r_0$，则由决策归纳函数定义，必然$\exists x_1 \in I_C(X_0), f(x_1,d_0) = r_1$。</p>
+<p>因为$f(x_1,d_0)$不等于$f(x_0,d_0)$，所以明显$x_0$不等于$x_1$，即表示两个论域元素。又因为决策归纳函数的限制，$(x_0,x_1)\in I_C$也即（$x_0 I_C x_1$）。而根据定义 2.2，因为$f(x_1,d_0)$不等于$f(x_0,d_0)$，则对于$I_D$，$(x_0,x_1) \notin I_D$，与$I_C \subseteq I_D$相矛盾，充分性得证。</p>
+<p>所以$U/C$细分$U/D$是$\forall x \in U, \forall d \in D ,|\partial_C (x,d)| = 1$的充分条件。</p>
+<p>证明 2.2 必要性</p>
+<p>因为$\forall x \in U, \forall d \in D, |\partial_C(x,d)| = 1$，那么对于$\forall (x_0,x_1) \in I_C$，我们可以得到，$\forall d \in D, |\partial_C(x_0,d)| = |\partial_C(x_1,D)| = 1$。</p>
+<p>对于决策属性族的任意属性$d$，不妨设此时$f(x_0,d) = r, f(x_1,d) = r’$，因为$\partial_C(x_0,d) = \{ r \}$，根据决策归纳函数定义，应有$f(x_1,d) = r$，故$r = r’$。综合前述，即$\forall (x_0,x_1) \in I_C, \forall d \in D, f(x_0,d) = f(x_1,d)$，根据定义 2.2，则$(x_0,x_1) \in I_D$。即退出$I_C \subseteq I_D$，由等价关系性质可得$U/C$细分$U/D$，必要性得证，证毕。</p>
+<p>不相容决策表可以通过决策值归纳函数转化为相容决策表$S = \langle U, C\cup (\bigcup_{d \in D} \partial(d))$。</p>
+<h3 id="集合的近似和相关性质"><a href="#集合的近似和相关性质" class="headerlink" title="集合的近似和相关性质"></a>集合的近似和相关性质</h3><p>由于不同文献中所用的习惯表示方法不尽相同，所以这里我们用原作者 Pawlak 在[@Pawlak1982]使用的定义方式来表示集合的近似及其相关性质，并根据原文献补充部分课上未涉及的概念。</p>
+<p>定义 2.5 设$S$未信息表,$X$为$U$的非空子集，属性$A$下$X$包含的最大粒度集合被称为$X$的$A$下近似$\underline{\mathrm{Apr}_A}(X)$，属性$A$下包含$X$的最小粒度集合被称为$X$的$A$上近似$\overline{\mathrm{Apr}_A}(X)$，当$A$均已知的时候可以省略。</p>
+<script type="math/tex; mode=display">\underline{\mathrm{Apr}_A}(X) = \{ x\in U: I_A(x) \subseteq X \} \tag{2-5}</script><script type="math/tex; mode=display">\overline{\mathrm{Apr}_A}(X) = \{ x\in U: I_A(x) \cap X \not ={\emptyset} \tag{2-6}</script><p>在集合近似的基础上，我们可以给出拓展的论域元素与集合近似成员关系的定义，$\underline{\in}_{A}$与$\overline{\in}_{A}$，具体定义如下：</p>
+<p>定义 2.6</p>
+<script type="math/tex; mode=display">x \underline{\in}_{A} X \quad \mathrm{iff} \quad x \in \underline{\mathrm{Apr}_A}(X) \tag{2-7}</script><script type="math/tex; mode=display">x \overline{\in}_{A} X \quad \mathrm{iff} \quad x \in \overline{\mathrm{Apr}_A}(X) \tag{2-8}</script><p>如果$x \underline{\in}_{A} X$，我们称“在属性$A$下$x$ <strong>必然</strong> 属于$X$”，而如果$x \overline{\in}_{A} X$，我们称“在属性$A$下$x$，<strong>可能</strong> 属于$X$”。如此通过模态逻辑中的必然性和可能性来解释近似性。</p>
+<p>在集合近似的基础上，我们还可以根据属性$B$，将论域$U$中的所有元素针对给定的集合$X$划分到不同域中。$\underline{\mathrm{Apr}_A}(X)$实际上是由根据已知的属性划分出的知识粒度，判断肯定属于$X$的论域元素所构成的最大集合，所以也被称为$X$的$A$正域，记为$POS_A(X)$。而根据已有知识推断的必然不属于$X$的论域元素称为$X$的$A$负域，记为$NEG_A(X)$，$\overline{\mathrm{Apr}_A}(X)$应为可能属于$X$的论域元素构成的最大集合。根据当前已有知识，既不能推断属于$POS_A(X)$也不能推断属于$NEG_A(X)$的元素则属于边界域（可域）$BND_A(X)$（部分资料上写为$Bn_A(X)$），不能肯定其中的元素是否属于$X$，具体定义如下：</p>
+<p>定义 2.7</p>
+<script type="math/tex; mode=display">POS_A(X) = \underline{\mathrm{Apr}_A}(X) \tag{2-9}</script><script type="math/tex; mode=display">NEG_A(X) = U - \overline{\mathrm{Apr}_A}(X) \tag{2-10}</script><script type="math/tex; mode=display">BND_A(X) =  \overline{\mathrm{Apr}_A}(X) - \underline{\mathrm{Apr}_A}(X) \tag{2-11}</script><p>容易得出在各属性域限制下，论域元素集合$X,Y \subseteq U$，符合下述性质：</p>
+<script type="math/tex; mode=display">\underline{\mathrm{Apr}}(X) \subseteq X \subseteq \overline{\mathrm{Apr}}(X) \tag{2-12}</script><script type="math/tex; mode=display">\underline{\mathrm{Apr}}(\emptyset) = \overline{\mathrm{Apr}}(\emptyset) = \emptyset \tag{2-13}</script><script type="math/tex; mode=display">\underline{\mathrm{Apr}}(U) = \overline{\mathrm{Apr}}(U) = U \tag{2-14}</script><script type="math/tex; mode=display">\underline{\mathrm{Apr}}(X \cap Y) = \underline{\mathrm{Apr}}(X) \cap \underline{\mathrm{Apr}}(Y)  \tag{2-15}</script><script type="math/tex; mode=display">\overline{\mathrm{Apr}}(X \cup Y) = \overline{\mathrm{Apr}}(X) \cup \overline{\mathrm{Apr}}(Y)  \tag{2-16}</script><script type="math/tex; mode=display">\underline{\mathrm{Apr}}(X \cup Y) \supseteq \underline{\mathrm{Apr}}(X) \cup \underline{\mathrm{Apr}}(Y)  \tag{2-17}</script><script type="math/tex; mode=display">\overline{\mathrm{Apr}}(X \cap Y) \subseteq \overline{\mathrm{Apr}}(X) \cap \overline{\mathrm{Apr}}(Y) \tag{2-18}</script><script type="math/tex; mode=display">\underline{\mathrm{Apr}}(-X) = - \overline{\mathrm{Apr}}(X) \tag{2-19}</script><script type="math/tex; mode=display">\overline{\mathrm{Apr}}(-X) = - \underline{\mathrm{Apr}}(X) \tag{2-20}</script><script type="math/tex; mode=display">\underline{\mathrm{Apr}}(\underline{\mathrm{Apr}}(X)) = \overline{\mathrm{Apr}}(\underline{\mathrm{Apr}}(X)) = \underline{\mathrm{Apr}}(X)  \tag{2-21}</script><script type="math/tex; mode=display">\overline{\mathrm{Apr}}(\overline{\mathrm{Apr}}(X)) = \underline{\mathrm{Apr}}(\overline{\mathrm{Apr}}(X)) = \overline{\mathrm{Apr}}(X)  \tag{2-22}</script><p>其中$-X$ 表示$U - X$，即以论域元素集合为全集得补集。</p>
+<p>上述列出为常见的性质，其中性质$\tag{2-12}$表示，如果严肃$x$属于$\underline{\mathrm{Apr}}(X)$时，则$x$一定属于$X$，而当$x$属于$\overline{\mathrm{Apr}}(X)$时，$x$可能属于$X$，而性质$\tag{2-17}$与性质$\tag{2-18}$则表明，不同集合近似的分布计算要慎重，并集的上近似等于上近似的并集，交集的下近似等于下近似的交集，但是如果考虑交集的上近似、并集的下近似，则会出现忽略粒度和过度包含粒度的情况出现，等式关系不再成立，转而变为包含与被包含的关系，证明这里从略。在实际应用中，这提醒我们如果信息表被分成几个部分先行计算近似与整体计算近似，可能得到不同的结果。</p>
+<p>当然，由近似引出的性质还可以继续深入研究，比如满足德摩根定律形式的一些性质，以及不同集合差集近似的性质，</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/数据分析与融合/">数据分析与融合</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/数据分析与融合/">数据分析与融合</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/post/1cc3e298.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">计算机图形学——复习</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/post/bba0ae0d.html">
+                        <span class="hidden-mobile">人机交互——总结笔记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "数据分析与融合——粗糙集理论算法优化&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

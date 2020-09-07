@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  <title>Go学习——《Go语言程序设计》Chap1 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2019-11-04 20:11">
+      2019年11月4日 晚上
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.4k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      27
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h1 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h1><h2 id="编辑、编译与运行"><a href="#编辑、编译与运行" class="headerlink" title="编辑、编译与运行"></a>编辑、编译与运行</h2><p>Go 语言的官方编译器被称为 gc，包括编译工具<code>5g</code>、<code>6g</code>和<code>8g</code>，链接工具<code>5l</code>、<code>6l</code>和<code>8l</code>，以及文档查看工具<code>godoc</code>，这些古怪的命名习惯源自 Plan 9 操作系统，例如用数字来表示处理器的架构（5 代表 ARM，6 代表包括 Intel 64 位处理器在内的 AMD64 架构，而 8 则代表 Intel 386）</p>
+<p>Go 语言针对的处理单元是包而非文件，这意味着我们可以将包拆分成任意数量的文件。在 Go 编译器看来，如果所有这些文件的包声明都是一样的，那么它们就同样属于一个包，这跟把所有内容放在一个单一的文件里是一样的。</p>
+<p>执行顺序：init()-&gt;main()，如果一个包里包含了一个或多个 init()函数，那么它们会在 main()函数之前被自动执行，而且 init()函数不能被显示调用。</p>
+<p><code>:=</code>操作符，在 Go 语言中叫做快速变量声明，这条语句同时声明并初始化了一个变量，也就是说我们不必声明一个<strong>具体类型</strong>的变量，因为 Go 语言可以从其初始化值中推导出其类型，但需要强调的是，<strong>Go 是强类型的语言</strong>，即便使用了快速变量声明，后续也只能将对应识别类型的值赋给该变量。</p>
+<h2 id="切片"><a href="#切片" class="headerlink" title="切片"></a>切片</h2><pre><code class="hljs Go"><span class="hljs-keyword">var</span> lowPrimes = []<span class="hljs-keyword">int</span>&#123;<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">5</span>,<span class="hljs-number">7</span>,<span class="hljs-number">11</span>,<span class="hljs-number">13</span>,<span class="hljs-number">17</span>,<span class="hljs-number">19</span>&#125;</code></pre>
+<h2 id="循环"><a href="#循环" class="headerlink" title="循环"></a>循环</h2><p>C、C++、Java 习惯的<code>for row := 0; row&lt; len; row++</code>可以，同时也提供<code>for ... range</code>的语法，与 P<br>ython 类似，更短更方便。(<code>++</code>在 Go 中只可用于语句而非表达式，更进一步，只可用做后缀操作符而非前缀操作府）</p>
+<h2 id="自定义类型及其方法"><a href="#自定义类型及其方法" class="headerlink" title="自定义类型及其方法"></a>自定义类型及其方法</h2><h3 id="一些-7788"><a href="#一些-7788" class="headerlink" title="一些 7788"></a>一些 7788</h3><p>虽然 Go 语言支持面向对象变成，但它既没有类也没有继承（is-a 关系）这样的概念。但是 Go 语言支持创建自定义类型，而且很容易创建聚合（has-a 关系）结构。Go 语言也支持将其数据和行为完全分离，同时也支持鸭子类型（一种抽象机制）。</p>
+<p>所有这些一起，提供了一种游离于类和继承之外的更加灵活强大的选择，但如果要从 Go 语言的面向对象特性中获益，习惯于传统方法的我们必须在概念上做一些重大调整。</p>
+<p>Go 语言使用内置的基础类型如 bool、int 和 string 等类型来表示数据，或者使用 struct 来对基本类型进行聚合 （不同于 C++，Go 的 struct 不是伪类）。</p>
+<p>接口也是一种类型，可以通过指定一组方法的方式定义。接口是抽象的，因此不可以实例化。如果某个具体类型实现了某个接口所有的方法，那么这个类型就被认为实现了该接口。</p>
+<p>空接口（没有定义方法的接口）用<code>interfae{}</code>来表示，可以用来表示任意值（效果上相当于一个指向任意类型的指针，类似 Java 中的<code>Object</code>或者 C/C++中的<code>void*</code>）。</p>
+<a id="more"></a>
+<h3 id="自定义类型的导入"><a href="#自定义类型的导入" class="headerlink" title="自定义类型的导入"></a>自定义类型的导入</h3><p>一个 Go 语言程序或者包的导入语句会首先搜索<code>GOPATH</code>定义的路径，然后再搜索<code>GOROOT</code>定义的路径。</p>
+<p>包导入路径使用 Unix 风格的“/”来声明。</p>
+<pre><code class="hljs Go"><span class="hljs-keyword">import</span> &#123;
+    <span class="hljs-string">"fmt"</span>
+    <span class="hljs-string">"stacker/stack"</span>
+&#125;</code></pre>
+<h3 id="自定义类型的定义使用"><a href="#自定义类型的定义使用" class="headerlink" title="自定义类型的定义使用"></a>自定义类型的定义使用</h3><p>按照管理，该文件开始处生命包，然后导入使用的包</p>
+<pre><code class="hljs Go"><span class="hljs-keyword">package</span> stack
+<span class="hljs-keyword">import</span> <span class="hljs-string">"errors"</span>
+
+<span class="hljs-comment">// 下面每个export的类型或者方法按照VScode golint的要求需要附上注释说明，以方法/类型名开头</span>
+
+<span class="hljs-comment">// Stack is a type</span>
+<span class="hljs-keyword">type</span> Stack []<span class="hljs-keyword">interface</span>()
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(stack Stack)</span> <span class="hljs-title">Len</span><span class="hljs-params">()</span> <span class="hljs-title">int</span></span> &#123;
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(stack)
+&#125;</code></pre>
+<p>函数和方法都用关键字<code>func</code>定义。但是，定义方法的时候，方法所作用的值的类型需写在<code>func</code>关键字之后方法名之前，并用圆括号包围起来（如上面代码段的<code>stack Stack</code>）。函数或方法名之后，则是小括号包围起来的参数列表，每个参数用逗号分隔（每个参数以<code>variableName type</code>这种形式命名，和 C/C++/Java 类型在前的形式有差别）。参数后面，可以直接是左大括号，或者一个单一返回之，也可以是一对圆括号包围起来的返回值列表之后再紧跟一个作大括号。</p>
+<p>调用该方法的值命名，Go 术语为“接收器”，<strong>接收器命名与包名并不冲突</strong>，区分按值（对原接收器不作改变）、按地址、按引用传递。</p>
+<p>Go 语言使用<code>nil</code>来表示空指针（以及空引用），与 C/C++中的 NULL 或 0，Java 中的 null，Objective-C 中的 nil 是等价的。</p>
+<h2 id="文件、映射和闭包"><a href="#文件、映射和闭包" class="headerlink" title="文件、映射和闭包"></a>文件、映射和闭包</h2><h3 id="I-O-处理包"><a href="#I-O-处理包" class="headerlink" title="I/O 处理包"></a>I/O 处理包</h3><ul>
+<li><code>buffio</code>包提供了带缓冲的 I/O 处理的功能，包括从 UTF-8 编码文件中读写字符串的能力。</li>
+<li><code>io</code>包提供了底层的 I/O 功能</li>
+<li><code>io/ioutil</code>包提供了一系列高级文件处理函数</li>
+<li><code>regexp</code>包提供了强大的正则表达式支持</li>
+</ul>
+<h3 id="panic-异常"><a href="#panic-异常" class="headerlink" title="panic 异常"></a>panic 异常</h3><p>在 Go 语言中，<code>panic</code>是一个运行时错误（很像其他语言中的异常，本书将<code>panic</code>直接翻译为“异常”）。我们可以使用内置的<code>panic()</code>函数来触发一个异常，还可以使用<code>recover()</code>函数来在其调用栈上阻止该异常的传播。理论上，Go 语言的<code>panic/recover</code>功能可以用于多用途的错误处理机制，但我们并不推荐这么用。更合理的错误处理方式是让函数或者方法返回一个<code>error</code>值作为其最后或者唯一的返回值（如果没错就返回<code>nil</code>），并让其他调用方式来检查所收到的错误值。<code>panic/recover</code>机制的目的是用来处理<strong>真正的异常</strong>（即不可预料的异常）而非常规错误。</p>
+<h2 id="并发简述"><a href="#并发简述" class="headerlink" title="并发简述"></a>并发简述</h2><p>Go 语言的一个关键特性在于其充分利用现代计算机的多处理器和多核的功能，且无需给程序员带来太大负担。完全无需任何显式锁 🔓 就可写出许多并发程序（虽然 Go 语言也提供了锁原语以便在底层代码需要用到时使用，我们将在第 7 章中详细阐述）。</p>
+<p>Go 语言有两个特性使得用它座并发编程非常轻松。</p>
+<ul>
+<li>无需继承什么“线程”（thread）类，就可创建 goroutine（实际上是非常轻量级的县城或者协程）。</li>
+<li>通道（channel）为 goroutine 之间提供了类型安全的单项或者双向通信，这也可以用来同步 goroutine。</li>
+</ul>
+<p>示例：极坐标到笛卡尔坐标交互程序</p>
+<p>引入的包</p>
+<pre><code class="hljs Go"><span class="hljs-keyword">import</span> (
+    <span class="hljs-string">"bufio"</span>
+    <span class="hljs-string">"fmt"</span>
+    <span class="hljs-string">"math"</span>
+    <span class="hljs-string">"os"</span>
+    <span class="hljs-string">"runtime"</span>
+)</code></pre>
+<ul>
+<li><code>math</code>包提供了操作浮点数的数学函数</li>
+<li><code>runtime</code>包提供了一些运行时控制</li>
+</ul>
+<pre><code class="hljs Go"><span class="hljs-keyword">type</span> polar <span class="hljs-keyword">struct</span> &#123;
+    radius <span class="hljs-keyword">float64</span>
+    θ      <span class="hljs-keyword">float64</span>
+&#125;
+
+<span class="hljs-keyword">type</span> cartesian <span class="hljs-keyword">struct</span> &#123;
+    x   <span class="hljs-keyword">float64</span>
+    y   <span class="hljs-keyword">float64</span>
+&#125;</code></pre>
+<p>聚合两个内置类型 float64 来构建自定义类型，Go 语言的结构体是一种能够用来保存（聚合或者嵌入）一个或者多个通道据字段的类型。</p>
+<blockquote>
+<p>需要注意通道是，虽然这两个结构体恰好包含了<strong>完全相同</strong>的通道段类型，但它们仍属不同类型，两者之间也不能自通道地相互转换（这符合我们对强类型语言的印象）。通道</p>
+</blockquote>
+<h3 id="通道"><a href="#通道" class="headerlink" title="通道"></a>通道</h3><p>基于 Unix 上管道思想被设计出来的，FIFO 队列行为，保序，通道内数据不可被删除。</p>
+<p>通道创建</p>
+<pre><code class="hljs Go">msessages := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">string</span>, <span class="hljs-number">10</span>)</code></pre>
+<p>利用<code>make()</code>创建通道，语法为<code>chan Type, num</code>，表示通道接受的数据类型和缓冲区大小。</p>
+<ul>
+<li><p>向通道发送</p>
+<p><code>&lt;-</code>做二元运算符，左操作数必须是一个通道，右操作数必须是发往该通道的数据。I</p>
+<pre><code class="hljs Go">messages &lt;- <span class="hljs-string">"Leader"</span></code></pre>
+</li>
+<li><p>从通道接受</p>
+<p><code>&lt;-</code>做一元运算符，左操作数必须是一个通道，是一个接收器，一直阻塞知道获得一个可以返回的数据。</p>
+</li>
+</ul>
+<pre><code class="hljs Go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+    questions := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> polar)
+    <span class="hljs-keyword">defer</span> <span class="hljs-built_in">close</span>(questions)
+    answers := createSolver(questions)
+    <span class="hljs-keyword">defer</span> <span class="hljs-built_in">close</span>(answers)
+    interact(questions, answers)
+&#125;
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">createSolver</span><span class="hljs-params">(questions <span class="hljs-keyword">chan</span> polar)</span> <span class="hljs-title">chan</span> <span class="hljs-title">cartesian</span></span> &#123;
+    answers := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> cartesian)
+    <span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;
+        <span class="hljs-keyword">for</span> &#123;
+            polarCoord := &lt;-questions
+            θ := polarCoord.θ * math.Pi / <span class="hljs-number">180.0</span> <span class="hljs-comment">// degrees to radians</span>
+            x := polarCoord.radius * math.Cos(θ)
+            y := polarCoord.radius * math.Sin(θ)
+            answers &lt;- cartesian&#123;x, y&#125;
+        &#125;
+    &#125;()
+    <span class="hljs-keyword">return</span> answers
+&#125;
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">interact</span><span class="hljs-params">(questions <span class="hljs-keyword">chan</span> polar, answers <span class="hljs-keyword">chan</span> cartesian)</span></span> &#123;
+    reader := bufio.NewReader(os.Stdin)
+    fmt.Println(prompt)
+    <span class="hljs-keyword">for</span> &#123;
+        fmt.Printf(<span class="hljs-string">"Radius and angle: "</span>)
+        line, err := reader.ReadString(<span class="hljs-string">'\n'</span>)
+        <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;
+            <span class="hljs-keyword">break</span>
+        &#125;
+        <span class="hljs-keyword">var</span> radius, θ <span class="hljs-keyword">float64</span>
+        <span class="hljs-keyword">if</span> _, err := fmt.Sscanf(line, <span class="hljs-string">"%f %f"</span>, &amp;radius, &amp;θ); err != <span class="hljs-literal">nil</span> &#123;
+            fmt.Fprintln(os.Stderr, <span class="hljs-string">"invalid input"</span>)
+            <span class="hljs-keyword">continue</span>
+        &#125;
+        questions &lt;- polar&#123;radius, θ&#125;
+        coord := &lt;-answers
+        fmt.Printf(result, radius, θ, coord.x, coord.y)
+    &#125;
+    fmt.Println()
+&#125;</code></pre>
+<p>原理解释：</p>
+<blockquote>
+<p>用户输入了合法数字并已经以<code>polar</code>结构体的格式发送到<code>questions</code>通道，那么就会阻塞主<code>goroutine</code>，等待 answers 通道的响应。<code>createSolver()</code>函数额外创建的一个<code>goroutine</code>会阻塞等待<code>questions</code>通道接收到一个<code>polar</code>类型的数据，因此当我们发送<code>polar</code>数据后，这个<code>goroutine</code>将会执行计算，并将计算结果发送会<code>answer</code>通道，然后等待另一个问题的输入（在开始阻塞自身），而一旦<code>interact()</code>函数在<code>answers</code>通道上接收到<code>cartesian</code>，就不再阻塞，这样就会打印出相关信息。</p>
+</blockquote>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/Go/">Go</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/Go/">Go</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/post/7ac02bb8.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">机器学习——支持向量机</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/post/8278c2d3.html">
+                        <span class="hidden-mobile">记第二次百里毅行</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "Go学习——《Go语言程序设计》Chap1&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  <title>分布式系统学习——阶段性总结2 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2019-09-06 12:48">
+      2019年9月6日 下午
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.5k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      27
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h1 id="感受"><a href="#感受" class="headerlink" title="感受"></a>感受</h1><p>这篇阶段性总结写于乘高铁从长沙前往北京参加讲习会议的路途中，主要目的是回顾一下已经阅读完成的四篇分布式系统（Distributed System）相关论文的重点概念，相关实践（虽然很小），以及自我感受和后面的想法。</p>
+<h1 id="Paper3——The-Google-File-System"><a href="#Paper3——The-Google-File-System" class="headerlink" title="Paper3——The Google File System"></a>Paper3——The Google File System</h1><p>关键词：<strong>集群存储</strong>、<strong>分布式存储</strong>、<strong>高可用性</strong>、<strong>一致性原则</strong></p>
+<p>回忆梳理重点词：<strong>单 master</strong>、<strong>chunk 和 chunkserver</strong>、<strong>追加 append</strong>、</p>
+<p>坦白讲这篇文章是四篇中读的时间最长的一篇文章，概念性比较强导致我不能通过代码或者公式的方式去直观的理解。</p>
+<p>这篇总结主要写我印象深刻的点，更多的细节还要回去翻自己的翻译修改版本。</p>
+<h2 id="Design-Motivation"><a href="#Design-Motivation" class="headerlink" title="Design Motivation"></a>Design Motivation</h2><p>应用需求/系统发展带来的一些对应的设计模式观念上的转变。</p>
+<ul>
+<li>对于计算机集群，<strong>故障是常态</strong></li>
+<li>存储超大量</li>
+<li>追加（append）而非覆盖（overwrite）</li>
+<li>尽可能并行化操作</li>
+<li>带宽重要性大于时延，要考虑网络带宽和负载</li>
+</ul>
+<h2 id="Architecture"><a href="#Architecture" class="headerlink" title="Architecture"></a>Architecture</h2><h3 id="GFS-chunkserver"><a href="#GFS-chunkserver" class="headerlink" title="GFS chunkserver"></a>GFS chunkserver</h3><p>在 GFS chunkserver 中，文件都是分成固定大小的 chunk（64MB）来存储的，每个 chunk 通过全局唯一的 64 位的 chunk handle 来标识。handle 由 master 分配。多台备份（GFS 中默认是 3 台）。</p>
+<h3 id="GFS-master"><a href="#GFS-master" class="headerlink" title="GFS master"></a>GFS master</h3><p>GFS master 管理所有的元数据信息（metadata），包括 namespaces，访问控制信息，文件到 chunk 的映射信息，以及 chunk 的地址信息（即 chunk 存放在哪台 GFS chunkserver 上）。</p>
+<h3 id="GFS-client"><a href="#GFS-client" class="headerlink" title="GFS client"></a>GFS client</h3><p>GFS client 是 GFS 应用端使用的 API 接口，client 和 GFS master 交互来获取元数据信息，但是所有和数据相关的信息都是直接和 GFS chunkserver 来交互的。</p>
+<h3 id="Application"><a href="#Application" class="headerlink" title="Application"></a>Application</h3><p>Application 为使用 gfs 的应用，应用通过 GFS client 与 GFS 系统打交道，系统有一些必要的性质（以适应在 GFS 上的高效利用）。</p>
+<h2 id="Strategies"><a href="#Strategies" class="headerlink" title="Strategies"></a>Strategies</h2><h3 id="Single-Master"><a href="#Single-Master" class="headerlink" title="Single Master"></a>Single Master</h3><p>单 Master 很容易导致 Master 成为性能瓶颈和单点故障。对于前者，GFS 的解决策略是 client 对 master 返回的请求 chunk 位置具备短暂记忆性（60s），下放部分职能给 chunkserver（包括指派 private 来保证数据的一致性）。</p>
+<p>对于后者，才有心跳线备份 Master 是可行的。</p>
+<h3 id="Consistency-Model"><a href="#Consistency-Model" class="headerlink" title="Consistency Model"></a>Consistency Model</h3><p>GFS 论文介绍中写明了：采用了一种简化的一致性模型，可以高效服务于所需应用。</p>
+<p>模型中的一致的（consistent）和定义的（defined）概念如下：</p>
+<ul>
+<li>consistent：所有的客户端都能看到一样的数据，不管它们从哪个副本读取。</li>
+<li>defined：当一个文件区域发生操作后，client 可以看到刚刚操作和所有数据，那么说这次操作是 defined。</li>
+</ul>
+<p>可以确定 defined 要求更强，在实际应用中会有不同情况出现，在原论文中用表格的形式直观化了。</p>
+<p>我的感受：<strong>GFS 的保证是成功操作一次</strong>，由于所适应的应用以追加（append）为主。这样的策略和一致性模型保证操作会出现但是非幂等的冗余操作会导致结果错误，GFS 通过要求在应用层面上加过滤（filter）或者唯一话来解决这一问题。一言以蔽之：“宁滥勿缺”。</p>
+<h3 id="Master-Operation-Namespace-Management-and-Locking"><a href="#Master-Operation-Namespace-Management-and-Locking" class="headerlink" title="Master Operation-Namespace Management and Locking"></a>Master Operation-Namespace Management and Locking</h3><ul>
+<li>快照对本层和对应的快照层都加写锁。</li>
+<li>写操作对所写文件加写锁而对文件所在目录加读锁。</li>
+</ul>
+<p>这样的分配策略既保证了一定程度上的并发许可（比如同一目录下的多个文件写），也保证了快照操作和写文件操作在相同目录下的串行化从而避免冲突。</p>
+<h3 id="Master-Operation-Replica-Placement"><a href="#Master-Operation-Replica-Placement" class="headerlink" title="Master Operation-Replica Placement"></a>Master Operation-Replica Placement</h3><p>对于 Creation , Rebalancing 策略都是相近的。</p>
+<ul>
+<li>利用率低于平均水平的磁盘优先，平均化磁盘利用。</li>
+<li>低频读写的 chunkserver 优先，平均化网络带宽利用，避免单点拥塞。</li>
+<li>跨机架，防止整架挂掉。</li>
+</ul>
+<p>对于 Re-replication，则要考虑对于备份更紧迫的情况：</p>
+<ul>
+<li>丢失两个副本的 chunk 比丢失一个副本的 chunk 的复制认为优先级高</li>
+<li>文件正在使用比文件已被删除的 chunk 的优先级高</li>
+<li>阻塞了 client 进程的 chunk 的优先级高</li>
+</ul>
+<p>但是实现中如何让 master 高效查询 client 阻塞进程，以及副本数量（涉及到计数），我觉得也是个算法上可以研究的地方。</p>
+<h2 id="读后感受"><a href="#读后感受" class="headerlink" title="读后感受"></a>读后感受</h2><p>GFS 的介绍应该是四篇文章中目前读的最慢的一篇了，太多概念都是通过文字方式讲述的，需要一点点在大脑里构建 GFS 中 Master，chunk，chunkserver 的关系。而且并列的概念关系我也没抓住重点（可能这也是我读论文的不足之处），所以这篇总结主要写了一些几个构成和我理解整理以后他们的工作策略，还请老师能指点我以后该怎样读这种文字多，新概念多的论文。</p>
+<h1 id="Paper4——MapReduce-Simplified-Data-Processing-on-Large-Clusters"><a href="#Paper4——MapReduce-Simplified-Data-Processing-on-Large-Clusters" class="headerlink" title="Paper4——MapReduce: Simplified Data Processing on Large Clusters"></a>Paper4——MapReduce: Simplified Data Processing on Large Clusters</h1><p>关键词：<strong>Map 函数</strong>、<strong>Reduce 函数</strong></p>
+<p>啥是 MapReduce？——一种编程模型，适于处理大规模数据集</p>
+<p>为啥叫 MapReduce？——核心就是两个函数，分别叫 Map、Reduce</p>
+<p>如果前述 GFS 系统实现了文件，那 MapReduce 则是利用了这个文件系统和其他底层实现，规划出一种编程范型，提供了对外便捷的接口，可以让程序员忽略分布式算法/并行/容错/数据分发的细节，而达到分布式计算的目的。</p>
+<p>下面回顾一下核心 Model：</p>
+<h2 id="Model"><a href="#Model" class="headerlink" title="Model"></a>Model</h2><p><strong>Map</strong>，是由用户编写的，取一个输入对，并且产生一系列中间的键值对。MapReduce 库将那些具有相同的中间键 I 的中间值聚集在一起，然后将它们传递给 Reduce 函数。</p>
+<p><strong>Reduce</strong>，同样是由用户编写的，接收一个中间键 I 和该键对应的一系列的中间值。Reduce 函数通过将这些值合并来组成一个可能更小的集合（值的集合）。通常每个 Reduce 函数只产生 0 个或 1 个输出值。Reduce 函数一般通过一个迭代器（via an iterator）来获取中间值，从而在中间值的数目远远大于内存容量时，我们也能够处理。</p>
+<h3 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h3><ul>
+<li>Distributed Grep（分布式查找）：Map 函数获取匹配提供的模式的行，Reduce 函数只是简单地将这些中间数据拷贝到输出。</li>
+<li>Count of URL Access Frequency（计算 URL 访问频率）：Map 函数处理 web 请求的日志，并且输出<url, 1="">。Reduce 函数将拥有相同 URL 的 value 相加，得到<url, total="" count="">对</url,></url,></li>
+<li>Reverse Web-Link Graph：Map 函数输出<target, source="">对，其中 source 所在的 page 都有连向 target 这个 URL 的链接。Reduce 函数将给定 target 的所有的 source URL 连接起来，输出<target, list(source)="">对</target,></target,></li>
+<li>Term-Vector per Host：一个 term vector 表示一系列<word, frequency="">的键值对，word 表示一篇或者一系列文章中出现的比较重要的单词，frequency 表示它们出现的次数。Map 函数对于每篇输入的文章输出<hostname, term="" vector="">键值对（其中 hostname 是从文章所在的 URL 中抽取出来的）Reduce 函数获取给定 host 的 term vectors。它将这些 term vectors 累加起来，丢弃非频繁出现的 term，并产生一个最终的<hostname, term="" vector="">对。</hostname,></hostname,></word,></li>
+<li>Inverted Index：Map 函数对每篇文章进行处理，并输出一系列的<word, document="" id="">对。Reduce 函数接收给定 word 的所有键值对，对相应的 document ID 进行排序并且输出<word, list="">对。所有输出对的集合构成了一个简单的倒排索引。用了 MapReduce 模型，对单词位置的追踪就变得非常简单了。</word,></word,></li>
+<li>Distributed Sort：Map 函数从每个 record 中抽取出 key，产生<key, record="">键值对。Reduce 函数只是简单地将所有对输出。这个计算模型依赖于 Section 4.1 中描述的划分技巧以及 Section 4.2 中描述的排序特性。</key,></li>
+</ul>
+<h2 id="Implement"><a href="#Implement" class="headerlink" title="Implement"></a>Implement</h2><p>实现的细节不再赘述，在翻译文档中翻译过切理解了，M 份 Map 操作的 Worker 和 R 份 Reduce 操作的 Worker。</p>
+<h3 id="Fault-Tolerance"><a href="#Fault-Tolerance" class="headerlink" title="Fault Tolerance"></a>Fault Tolerance</h3><ul>
+<li>Worker Failure：不在响应 master 而被 master 标记为 failure 状态后，其任务会被分摊至其他 wordker。对于 M 任务，需要重做前面已经完成的（因为 Map 产生的中间结果本地存储，而此时“本地”是 failure 的），而对于 R 任务，继续完成即可。</li>
+<li>Master Failure：我们可以很快地根据最新的快照来重新启动一个 master task。但是，因为我们只有一个 master，因此故障的概率比较低。所以，在我们的实现中如果 master 出现了故障就只是简单地停止 MapReduce 操作。用户可以检测到这种情况，并且如果他们需要的话可以重新开始一次 MapReduce 操作。</li>
+<li>Semantics in the Presence of Failures：针对非确定性执行，是解集空间中的一个。</li>
+</ul>
+<h2 id="Refinements"><a href="#Refinements" class="headerlink" title="Refinements"></a>Refinements</h2><p>此外还有一些有用的扩展：</p>
+<ul>
+<li>Hash 之前的划分操作</li>
+<li>划分产生文件的顺序性</li>
+<li>Map 和 Reduce 之间加 Combiner 操作合并简化（C 和 R 操作很像，只是输出到哪有了差别）</li>
+<li>跳过故障点</li>
+<li>Status 动态显示</li>
+</ul>
+<h2 id="读后感受-1"><a href="#读后感受-1" class="headerlink" title="读后感受"></a>读后感受</h2><p>很神奇的一种编程范式，相当于做了一个介于应用和分布式环境中间的接口，按照这种编程范式去编程便可以充分利用下面的分布式资源而忽略其具体实现细节。</p>
+<p>实现方案理解起来也是非常巧妙，给人的感觉更像是从大的集合中抽出键值相同的小集合，再做合并。</p>
+<p>希望后续可以读到更多关于分布式有趣的想法！</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/分布式系统/">分布式系统</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/分布式系统/">分布式系统</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/post/b1db88f.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">CCFADL105——大数据系统实践：从MapReduce到融合计算</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/post/86266eca.html">
+                        <span class="hidden-mobile">数论学习——欧拉函数与中国剩余定理</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "分布式系统学习——阶段性总结2&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

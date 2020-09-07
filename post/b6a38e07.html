@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  <title>分布式系统学习——Lamport时钟经典论文Paper翻译 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2019-08-15 09:49">
+      2019年8月15日 上午
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.9k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      32
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <p>阅读笔记参考：<a href="https://www.jianshu.com/p/0c79d650d13f" target="_blank" rel="noopener">小强zju的读书笔记</a></p>
+<p><a href="https://www.jianshu.com/p/0d49b1811203" target="_blank" rel="noopener">分布式系统基础－Lamport Clock</a></p>
+<p><a href="https://www.microsoft.com/en-us/research/publication/time-clocks-ordering-events-distributed-system/" target="_blank" rel="noopener">Lamport本人评述</a></p>
+<h1 id="读书笔记——Time-Clocks-and-the-Ordering-of-Events-in-a-Distributed-System"><a href="#读书笔记——Time-Clocks-and-the-Ordering-of-Events-in-a-Distributed-System" class="headerlink" title="读书笔记——Time, Clocks, and the Ordering of Events in a Distributed System"></a>读书笔记——Time, Clocks, and the Ordering of Events in a Distributed System</h1><h2 id="摘要部分"><a href="#摘要部分" class="headerlink" title="摘要部分"></a>摘要部分</h2><p>本文研究了分布式系统中一个事件先于另一个事件发生的概念，并展示了如何定义事件的偏序，同时给出了一种可以对时间完全排序的分布式时钟同步算法。通过一种解决同步问题的方法来描述对全体事件的同步。</p>
+<p>然后介绍专门用于同步物理时钟的情况，并推导出时钟不同步的界限。</p>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>时间概念是我们思维方式的基础，更基本的源于事件发生顺序，其贯穿我们对系统（system）的思考。然而在分布式系统中我们应<strong>重新审视</strong>这一基本概念。</p>
+<blockquote>
+<p>A system is distributed if the message transmission delay is not negligible compared to the time between events in a single process.</p>
+</blockquote>
+<p><strong>如果与单个进程中的事件之间的时间相比，消息传输延迟不可忽略，那么该系统就是分布式的。</strong><br>（无论是在单机系统还是多机系统上，上述情况都要考虑）</p>
+<p>本文重点关注空间分离的系统，但是单机多处理器系统涉及一些相类似的问题，因为某些事件可能以不可预测的顺序发生。“之前发生”只是系统中事件的部分排序。（事实上整体事件呈现一个偏序集合 No happen before）。</p>
+<a id="more"></a>
+<h2 id="The-Partial-Ordering"><a href="#The-Partial-Ordering" class="headerlink" title="The Partial Ordering"></a>The Partial Ordering</h2><blockquote>
+<p>We will therefore define the “happened before” relation without using physical clocks.</p>
+</blockquote>
+<p>我们将不依赖物理时钟定义“happen before”规则。</p>
+<p>因应用的不同，我们可以将一个子程序（或是一条机器指令的执行）当作某个process里的一个event。</p>
+<p>我们假定某个process的所有events构成一个序列，这个序列是线序（或许应该说不包含相等的情况），用文中的话说是具有<strong>先验总排序</strong>。我们根据process中event的发生顺序定义“happen before”</p>
+<p>定义“happen before”关系，用（→表示）</p>
+<blockquote>
+<ol>
+<li><p>如果a，b是相同进程的两个事件，且a出现在b之前，那么$a \rightarrow b$。</p>
+</li>
+<li><p>如果a是某进程消息发送的一方，b是另一进程接收该消息的一方，则$a \rightarrow b$。</p>
+</li>
+<li><p>该关系具备传递性，即$a \rightarrow b$ ，$b \rightarrow c$，则$a \rightarrow c$。如果$a \nrightarrow b$，$b \nrightarrow a$，那我们称a，b是并发（concurrent）的。</p>
+</li>
+<li><p>另外补充，该关系是反自反的，即，对任意a，$a \nrightarrow a$，（系统中一个时间可以在它自身之前发生没有实际意义）。</p>
+</li>
+</ol>
+</blockquote>
+<p>在图中$a \rightarrow b$即表示可以从a通过波浪线（消息传播途径），或者纵向的进程轴线（事件发生途径）走到b。</p>
+<p>另一种方式解读该图像，我们也可以说，并发的进程是不会不经意间相互影响的。</p>
+<blockquote>
+<p>Happened Before的理论和狭义相对论中的物理世界中的观念十分的类似，即event的先后是相对的，在实际世界中的不同惯性坐标系下，2个event的先后关系可能发生变化。不过Paper中没有深入的对比，我会在感想部分中深入讨论下</p>
+</blockquote>
+<h2 id="Logical-Clocks"><a href="#Logical-Clocks" class="headerlink" title="Logical Clocks"></a>Logical Clocks</h2><p>现在考虑引入时钟，先以数学的方式为每个事件分配一个数字来代表其事件发生的时间。以时钟函数$C_i$表示$P_i$进程，其中$C_i \langle a \rangle$表示该进程a事件的值。$C$ 函数表示整个系统的时钟，如果b是进程$P_i$的事件之一，则$C \langle b \rangle = C_i \langle b \rangle$。</p>
+<p>由于当前没有将函数值和物理事件关联起来，所以我们将其认为是逻辑时间。</p>
+<p>考虑该逻辑时钟的合理性，我们无法根据物理时间验证（这会要求基于物理时间的时钟引入），考虑一个强合理性的条件，如果事件a发生在另一个事件b之前，则a应该在比b更早的时间发生。 我们更正式地陈述这种情况如下。</p>
+<blockquote>
+<p>Clock Condition</p>
+<p>For any events a, b:<br>if $a \rightarrow b$ then $C \langle a \rangle &lt; C \langle b \rangle$</p>
+</blockquote>
+<p>其逆命题不成立（否则会要求所有并发事件同时发生，易证否），即只具备充分性。</p>
+<p>满足下面两条件时，时钟条件（Clock Condition）是满足的。</p>
+<blockquote>
+<p><strong>C1.</strong> 如果a和b是同一进程的两个事件且a发生在b之前，则$C_i \langle a \rangle &lt; C_i \langle b \rangle$。</p>
+<p><strong>C2.</strong> 如果a是i进程消息发送方，而b是j进程中该消息的接收方，则$C_i \langle a \rangle &lt; C_j \langle b \rangle$。</p>
+</blockquote>
+<p>  Condition）。</p>
+<p>通过算法来为上述构建的时钟函数赋值，为满足C1和C2，分别设定两条规则：</p>
+<blockquote>
+<p><strong>IR1.</strong> 同一个process的相邻event，其时钟值是递增的。</p>
+<p><strong>IR2.</strong> i进程a活动发送的消息会携带一个时间戳$T_m = C_i \langle a \rangle$，则接收方b进程活动b设定其时钟值为$C_j \langle b \rangle = MAX(T_m,C_j \langle b \rangle)+1$。</p>
+</blockquote>
+<p>两条分别对应两条规则，所以时钟条件也得到满足，保证了具备逻辑时钟的合理系统。</p>
+<h2 id="Ordering-the-Events-Totally"><a href="#Ordering-the-Events-Totally" class="headerlink" title="Ordering the Events Totally"></a>Ordering the Events Totally</h2><p>在规定进程间一个顺序后，通过以下规则，我们从事件的偏序构建全序，我们便可得到新的“全序关系”（用$\Rightarrow$）来表示：</p>
+<blockquote>
+<ol>
+<li>若对于a，b两事件，有$C_i \langle a \rangle &lt; C_j \langle b \rangle$，则$a \Rightarrow b$</li>
+<li>若$C_i \langle a \rangle = C_j \langle b \rangle$ 且 $P_i &lt; P_j$，则$a \Rightarrow b$</li>
+</ol>
+</blockquote>
+<p>可以说“$\Rightarrow$”是将“happen before”偏序关系“$\rightarrow$”拓展成的全序关系。</p>
+<p>该全序依赖与系统时钟的确定，是不唯一的，相反，唯一确定的是事件发生的偏序关系。</p>
+<p>对事件进行全排序的有用性将通过解决下列情况下的互斥问题来说明，考虑一个共享单个资源的固定过程集合的系统：</p>
+<blockquote>
+<p>Q1. 已被授予资源的进程必须先释放它，然后才能将其授予另一个进程。<br>Q2. 必须按照它们的顺序授予对资源的不同请求。<br>Q3. 如果授予资源的每个进程最终都会释放该资源，那么每一个请求都后被授权。</p>
+</blockquote>
+<p>通过一个中心化的进程通过请求抵达的时刻来安排资源是不可行的（后抵达该进程的消息可能先需求了资源）。</p>
+<p>为了解决该问题，我们实行一个满足了IR1和IR2的系统，并且通过其定义出所有事件的全序，具备全局序后，问题就变得相当简单了，只需要确保每个进程清楚其他进程得操作即可。</p>
+<h3 id="分布式算法细节"><a href="#分布式算法细节" class="headerlink" title="分布式算法细节"></a>分布式算法细节</h3><p>每个进程维护自己的<strong>请求队列</strong>，规定请求队列初始包含单一的消息$T_0$：$P_0$请求资源，其中$P_0$是初始占据资源的进程（根据假设，所有资源初始归同一进程占据），且$T_0$小于任何时钟的初始值。</p>
+<p>该算法由以下五条规则定义。为了方便起见，假定每个规则定义的操作构成一个单一事件。</p>
+<ol>
+<li>为了请求资源，请求方进程$P_i$将消息“$T_m$：$P_i$请求资源”递送至所有其他进程，并把该消息加入自己的请求队列。$T_m$表示该消息的时间戳。</li>
+<li>当$P_j$收到消息“$T_m$：$P_i$请求资源”，将其加入自己的请求队列并向$P_i$发送一个带时间戳的确认消息。</li>
+<li>为了释放资源，进程$P_i$将所有“$T_m$：$P_i$请求资源”消息移出队列，并把一个带时间戳的释放消息递送给所有其他进程。</li>
+<li>当$P_j$收到消息“$P_i$释放资源”，将所有“$T_m$：$P_i$请求资源”消息移出队列。</li>
+<li>当满足下列两条件时，进程$P_i$占据该资源：<ol>
+<li>存在一个“$T_m$：$P_i$请求资源”消息在其请求队列中并且序优先于其他的所有请求。</li>
+<li>$P_i$收到了所有其他进程发来的时间戳晚于$T_m$的消息。</li>
+</ol>
+</li>
+</ol>
+<p>易于说明该算法满足该系统的三个要求。</p>
+<p>这是一个分布式算法，每个进程独立遵循这些规则，没有集中的同步进程或是中央存储。</p>
+<p>根据算法1-&gt;5构建可以证明Q1，Q2，Q3是满足要求的。</p>
+<p>对于Q1，反证法：</p>
+<p>假设Q1不成立，则意味着在资源分配给某进程后，假设该进程为$P_j$，存在至少一个进程，假设为$P_i$，未释放该资源。但是根据3、4点，这意味着，$P_i$没有发出“释放”的消息，也就应导致着进程$P_j$维护的队列中，仍存在“$T_{m_1}$：$P_i$请求资源”这一消息并未移出（第四点），且$T_{m_1}$是最早的。现在我们审查第五点，上述未删除的消息存在队列，便不会使“$T_{m_2}$：$P_j$请求资源”这条满足最先（5.1点），那$P_j$维护队列中不满足其占有资源的条件，矛盾。</p>
+<p>对于Q2，时间戳是一个全序，由于5.2点要求收到所有其他进程法来的更晚的消息，所以可以保证先前消息是完全的，可以确定是最早的，根据全序顺序，可保证。</p>
+<p>对于Q3，反证法：</p>
+<p>假设在均释放的情况下，存在至少一个请求没有被授权（批准），不妨设最早的是$P_j$的请求，则在其自身队列以及所有其他进程队列中都应在某一时间后都存在着这样一条“$T_{m_2}$：$P_j$请求资源”，由于始终未被授权，假设5.1不被满足，则应存在“$T_{m_1}$：$P_i$请求资源”始终存在，且$T_{m_1}&lt;T_{m_2}$但是我们设定$P_j$是最早的不被授权的，所以前者必定在某个时间释放，$P_i$请求资源的记录会随释放消息的到达被撤，不可能始终存在，不成立。若5.2始终不能被满足，在5.1成立后，由于没有fail的机器，必然会收到确认消息，不成立。所以5.1，5.2总会在一定时间后被满足，矛盾。</p>
+<h2 id="Anomalous-Behavior"><a href="#Anomalous-Behavior" class="headerlink" title="Anomalous Behavior"></a>Anomalous Behavior</h2><p>异常情况，上面定义的Logical Clocks有一些反常的行为，例如我们定义的Total Ordering是$b&lt;a$，但事实上a事件的操作员执行之后通过电话告诉b事件的操作员开始执行，那么Logical Clocks给出的全序就明显违背了客观情况。</p>
+<p>这种情况的出现是由于系统不知道“电联”这一要求，因为这种先后顺序是在系统外定义的。<br>为避免这种反常，有2中解法：</p>
+<ol>
+<li>将外部的happened before关系手动的引入到系统内（event b产生是强调依赖 event a）</li>
+<li>引入实际物理时钟</li>
+</ol>
+<h2 id="Physical-Clocks"><a href="#Physical-Clocks" class="headerlink" title="Physical Clocks"></a>Physical Clocks</h2><p>对物理始终两条限制，</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_1_1.png" srcset="/img/loading.gif" alt="OS_1_1"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E8%AE%BA%E6%96%87%E6%88%AA%E5%9B%BE/OS_1_2.png" srcset="/img/loading.gif" alt="OS_1_2"></p>
+<p>实际上时限制增速尽可能贴近1，以及各时钟的同步性。</p>
+<p>后面保证物理时钟一致性以及满足C1，C2的算法暂时没有看懂，所以后面再补吧，数学功底差一些。</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/分布式系统/">分布式系统</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/Paper/">Paper</a>
+                    
+                      <a class="hover-with-bg" href="/tag/分布式系统/">分布式系统</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/post/86b562df.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">分布式系统学习——状态机容错模型Paper翻译</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/post/3d51fca5.html">
+                        <span class="hidden-mobile">TOFEL写作</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "分布式系统学习——Lamport时钟经典论文Paper翻译&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

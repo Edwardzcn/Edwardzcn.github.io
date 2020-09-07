@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  <title>【HDU-1430】解题报告（数论，康拓展开逆展开，简单哈希，BFS） - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2018-08-22 01:14">
+      2018年8月22日 凌晨
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.7k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      24
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h1 id="原始题目"><a href="#原始题目" class="headerlink" title="原始题目"></a>原始题目</h1><h2 id="魔板"><a href="#魔板" class="headerlink" title="魔板"></a>魔板</h2><ul>
+<li>Time Limit: 10000/5000 MS (Java/Others)    </li>
+<li>Memory Limit: 65536/32768 K (Java/Others)</li>
+<li>Total Submission(s): 4318    </li>
+<li>Accepted Submission(s): 1033</li>
+</ul>
+<h3 id="Problem-Description"><a href="#Problem-Description" class="headerlink" title="Problem Description"></a>Problem Description</h3><p>在魔方风靡全球之后不久，Rubik先生发明了它的简化版——魔板。魔板由8个同样大小的方块组成，每个方块颜色均不相同，可用数字1-8分别表示。任一时刻魔板的状态可用方块的颜色序列表示：从魔板的左上角开始，按顺时针方向依次写下各方块的颜色代号，所得到的数字序列即可表示此时魔板的状态。例如，序列(1,2,3,4,5,6,7,8)表示魔板状态为：</p>
+<p>1 2 3 4<br>8 7 6 5</p>
+<p>对于魔板，可施加三种不同的操作，具体操作方法如下：</p>
+<ul>
+<li>A: 上下两行互换,如上图可变换为状态87654321</li>
+<li>B: 每行同时循环右移一格,如上图可变换为41236785</li>
+<li>C: 中间4个方块顺时针旋转一格,如上图可变换为17245368</li>
+</ul>
+<p>给你魔板的初始状态与目标状态，请给出由初态到目态变换数最少的变换步骤，若有多种变换方案则取字典序最小的那种。</p>
+<a id="more"></a>
+<h3 id="Input"><a href="#Input" class="headerlink" title="Input"></a>Input</h3><p>每组测试数据包括两行，分别代表魔板的初态与目态。</p>
+<h3 id="Output"><a href="#Output" class="headerlink" title="Output"></a>Output</h3><p>对每组测试数据输出满足题意的变换步骤。</p>
+<h3 id="Sample-Input"><a href="#Sample-Input" class="headerlink" title="Sample Input"></a>Sample Input</h3><pre><code>12345678
+17245368
+12345678
+82754631
+</code></pre><h3 id="Sample-Output"><a href="#Sample-Output" class="headerlink" title="Sample Output"></a>Sample Output</h3><pre><code>C
+AC
+</code></pre><h3 id="Author"><a href="#Author" class="headerlink" title="Author"></a>Author</h3><p>LL</p>
+<h3 id="Source"><a href="#Source" class="headerlink" title="Source"></a>Source</h3><p>ACM暑期集训队练习赛（三）</p>
+<h3 id="Recommend"><a href="#Recommend" class="headerlink" title="Recommend"></a>Recommend</h3><p>linle</p>
+<h1 id="题目大意"><a href="#题目大意" class="headerlink" title="题目大意"></a>题目大意</h1><p>如题</p>
+<h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><ul>
+<li>先考虑暴力，对于每个初态，按A，B，C的顺序BFS，到末态，输出。</li>
+<li>不过，似乎有些问题。</li>
+<li>问题1：如何表示状态？</li>
+<li>问题2：多组数据每次都BFS的话，会T，咋办？</li>
+</ul>
+<p>对于问题1，我们不难发现，不同状态其实对应了1-8的一个排列，很明显根据常识我们知道排列是有顺序的（逆序数逐渐增大）<br>那么我们可否根据排列的数组得到他对应全排列里的序号？其实这和康托展开就搭上关系了。</p>
+<ul>
+<li>康拓展开：康托展开是一个全排列到一个自然数的双射，常用于构建哈希表时的空间压缩。 康托展开的实质是计算当前排列在所有由小到大全排列中的顺序，因此是可逆的。</li>
+</ul>
+<p>稍微详细点的介绍放在收获与反思里。</p>
+<p>这样我们就解决了表示状态的问题。</p>
+<p>那么对于问题2呢。我们会发现，魔板从初态到末态，重要的是每个板子相对位置的变化，而不是板子的数。换言之，我们可以做一个初态到’12345678’的映射，重新给板子标号，<br>再将末态各板子按映射关系对应新的标号，即末态按照映射对应一个新标号的末态。</p>
+<pre><code>初态        末态
+75621483 -&gt; 13846572
+↓ 映射
+12345678 -&gt; 58763214
+</code></pre><p>代码为</p>
+<pre><code>rep(i,0,len1){
+    hhash[raw1[i]-&#39;0&#39;]=i+1;
+}
+rep(i,0,len1){
+    b[i]=hhash[raw2[i]-&#39;0&#39;];    
+}
+</code></pre><p>保留板子相对移动的位置不变化即可，这样我们只要预处理一下’12345678’到各个排列的末态，然后对每组输入，做映射到’12345678’，输出新末态的结果即可。   </p>
+<h1 id="解题代码"><a href="#解题代码" class="headerlink" title="解题代码"></a>解题代码</h1><pre><code class="hljs C++"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cstdio&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cstring&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cmath&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;string&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;iostream&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;iomanip&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;sstream&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;set&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;map&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;queue&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;vector&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;bits/stdc++.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> INF 0x3f3f3f3f</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> eps 1e-8</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> mp make_pair</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> np next_permutation</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> pb push_back</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> all(x) x.begin(),x.end()</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> rep(i,a,n) for(int i=a;i&lt;n;++i)</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> per(i,a,n) for(int i=n-1;i&gt;=a;--i)</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> ms(x,a) memset((x),a,sizeof((x))) </span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> mod 998244353 </span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> gapline  cout&lt;&lt;<span class="hljs-meta-string">"##---------------##"</span>&lt;&lt;endl</span>
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> <span class="hljs-built_in">std</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">long</span> <span class="hljs-keyword">long</span> ll;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> <span class="hljs-keyword">long</span> ull;
+<span class="hljs-keyword">typedef</span> <span class="hljs-built_in">vector</span>&lt;<span class="hljs-keyword">int</span>&gt; vi;
+<span class="hljs-keyword">typedef</span> pair&lt;<span class="hljs-keyword">int</span>,<span class="hljs-keyword">int</span>&gt; pii;
+<span class="hljs-keyword">const</span> <span class="hljs-keyword">int</span> maxl=<span class="hljs-number">8</span>;
+<span class="hljs-keyword">const</span> <span class="hljs-keyword">int</span> maxn=<span class="hljs-number">1e5</span>+<span class="hljs-number">5</span>;
+<span class="hljs-keyword">int</span> A[maxl];<span class="hljs-comment">//阶乘； </span>
+<span class="hljs-keyword">int</span> ans_cantor[maxl];<span class="hljs-comment">//康托展开数组 </span>
+<span class="hljs-keyword">int</span> next_cantor[maxl];
+<span class="hljs-keyword">bool</span> vis_cantor[maxl];<span class="hljs-comment">//康托标记数组 </span>
+<span class="hljs-keyword">bool</span> vis[maxn];
+<span class="hljs-keyword">int</span> hhash[<span class="hljs-number">20</span>],b[<span class="hljs-number">20</span>];
+<span class="hljs-built_in">string</span> ans[maxn];
+<span class="hljs-built_in">string</span> raw1,raw2;
+<span class="hljs-built_in">queue</span> &lt;ll&gt; q;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">prechange</span><span class="hljs-params">()</span></span>&#123;
+	<span class="hljs-keyword">int</span> len1=raw1.length();
+	rep(i,<span class="hljs-number">0</span>,len1)&#123;
+		hhash[raw1[i]-<span class="hljs-string">'0'</span>]=i+<span class="hljs-number">1</span>;
+	&#125;
+	rep(i,<span class="hljs-number">0</span>,len1)&#123;
+		b[i]=hhash[raw2[i]-<span class="hljs-string">'0'</span>];	
+	&#125;
+&#125;
+<span class="hljs-comment">//contar展开，逆展开，数组标号都是从0开始 </span>
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">cantor</span><span class="hljs-params">(<span class="hljs-keyword">int</span> contar_s[], ll num, <span class="hljs-keyword">int</span> contar_k)</span></span>&#123;<span class="hljs-comment">//康托展开，把一个数字num展开成一个数组contar_s，contar_k是数组长度</span>
+    <span class="hljs-keyword">int</span> t;
+    <span class="hljs-built_in">memset</span>(vis_cantor, <span class="hljs-number">0</span>, <span class="hljs-keyword">sizeof</span>(vis_cantor)); 
+    <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; contar_k; i ++)&#123;
+        t = num / A[contar_k-i<span class="hljs-number">-1</span>];
+        num%=A[contar_k-i<span class="hljs-number">-1</span>];
+		<span class="hljs-keyword">int</span> cnt_cantor=<span class="hljs-number">0</span>;
+		rep(j,<span class="hljs-number">0</span>,contar_k)&#123;	<span class="hljs-comment">//计算每位的逆序数 </span>
+			<span class="hljs-keyword">if</span>(vis_cantor[j]) <span class="hljs-keyword">continue</span>;
+			<span class="hljs-keyword">if</span>(cnt_cantor==t)&#123;
+				contar_s[i]=j+<span class="hljs-number">1</span>,vis_cantor[j]=<span class="hljs-number">1</span>;<span class="hljs-keyword">break</span>;	
+			&#125; 
+			++cnt_cantor;
+			
+		&#125;
+    &#125;
+<span class="hljs-comment">//    rep(i,0,contar_k) cout&lt;&lt;contar_s[i]&lt;&lt;' '; //输出康拖展开的结果 </span>
+<span class="hljs-comment">//    cout&lt;&lt;endl;</span>
+<span class="hljs-comment">//    gapline;</span>
+&#125;
+<span class="hljs-function">ll <span class="hljs-title">inv_cantor</span><span class="hljs-params">(<span class="hljs-keyword">int</span> contar_s[], <span class="hljs-keyword">int</span> contar_k)</span></span>&#123;<span class="hljs-comment">//康托逆展开，把一个数组contar_s换算成一个数字num </span>
+    <span class="hljs-keyword">int</span> cnt;ll num=<span class="hljs-number">0</span>;
+    num = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; contar_k; i ++)&#123;
+        cnt = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> j = i + <span class="hljs-number">1</span>; j &lt; contar_k; j ++)&#123;
+            <span class="hljs-keyword">if</span>(contar_s[i] &gt; contar_s[j]) cnt ++;<span class="hljs-comment">//判断几个数小于它,即求逆序数。 </span>
+        &#125;
+        num += A[contar_k-i<span class="hljs-number">-1</span>] * cnt;
+    &#125;
+    <span class="hljs-keyword">return</span> num;
+&#125;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">change</span><span class="hljs-params">(<span class="hljs-keyword">int</span> i)</span></span>&#123;
+	<span class="hljs-keyword">switch</span>(i)&#123;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">0</span>: <span class="hljs-comment">//操作A </span>
+			rep(j,<span class="hljs-number">0</span>,<span class="hljs-number">4</span>) swap(next_cantor[j],next_cantor[maxl<span class="hljs-number">-1</span>-j]);
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">1</span>: <span class="hljs-comment">//操作B</span>
+			per(j,<span class="hljs-number">1</span>,<span class="hljs-number">4</span>) swap(next_cantor[(j+<span class="hljs-number">1</span>)%<span class="hljs-number">4</span>],next_cantor[j]);
+			swap(next_cantor[<span class="hljs-number">4</span>],next_cantor[<span class="hljs-number">7</span>]);
+			swap(next_cantor[<span class="hljs-number">5</span>],next_cantor[<span class="hljs-number">4</span>]);
+			swap(next_cantor[<span class="hljs-number">6</span>],next_cantor[<span class="hljs-number">5</span>]); 
+			<span class="hljs-keyword">break</span>;
+		<span class="hljs-keyword">case</span> <span class="hljs-number">2</span>: <span class="hljs-comment">//操作C</span>
+			swap(next_cantor[<span class="hljs-number">1</span>],next_cantor[<span class="hljs-number">2</span>]);
+			swap(next_cantor[<span class="hljs-number">1</span>],next_cantor[<span class="hljs-number">6</span>]);
+			swap(next_cantor[<span class="hljs-number">6</span>],next_cantor[<span class="hljs-number">5</span>]);
+			<span class="hljs-keyword">break</span>; 
+	&#125;
+&#125;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">bfs</span><span class="hljs-params">()</span></span>&#123;
+	A[<span class="hljs-number">0</span>]=A[<span class="hljs-number">1</span>]=<span class="hljs-number">1</span>;
+	A[<span class="hljs-number">2</span>]=<span class="hljs-number">2</span>;
+	rep(i,<span class="hljs-number">3</span>,maxl+<span class="hljs-number">1</span>) A[i]=A[i<span class="hljs-number">-1</span>]*i;
+	<span class="hljs-keyword">while</span>(!q.empty()) q.pop();
+	q.push(<span class="hljs-number">0</span>);
+	vis[<span class="hljs-number">0</span>]=<span class="hljs-number">1</span>;
+	<span class="hljs-keyword">while</span>(!q.empty())&#123;
+		ll temp1=q.front();q.pop();
+		cantor(ans_cantor,temp1,maxl);
+		rep(i,<span class="hljs-number">0</span>,<span class="hljs-number">3</span>)&#123;
+			rep(j,<span class="hljs-number">0</span>,maxl) next_cantor[j]=ans_cantor[j];
+			change(i);
+			ll temp2=inv_cantor(next_cantor,maxl);
+			<span class="hljs-keyword">if</span>(!vis[temp2])&#123;
+				q.push(temp2);
+				vis[temp2]=<span class="hljs-number">1</span>;
+				ans[temp2]=ans[temp1]+(<span class="hljs-keyword">char</span>)(<span class="hljs-string">'A'</span>+i);
+			&#125;
+		&#125;
+	&#125;
+&#125;
+
+ 
+
+
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;
+	ios::sync_with_stdio(<span class="hljs-literal">false</span>);
+	bfs();
+	<span class="hljs-keyword">while</span>(<span class="hljs-built_in">cin</span>&gt;&gt;raw1&gt;&gt;raw2)&#123;
+		prechange();
+		<span class="hljs-comment">//b[]为最终目标态 </span>
+		ll cnt=inv_cantor(b,maxl);
+		<span class="hljs-built_in">cout</span>&lt;&lt;ans[cnt]&lt;&lt;<span class="hljs-built_in">endl</span>;
+	&#125; 
+&#125;</code></pre>
+<h1 id="收获与反思"><a href="#收获与反思" class="headerlink" title="收获与反思"></a>收获与反思</h1><ul>
+<li>本题综合应用了数论里的康托展开（用于找到状态数和排列之间的联系），hash到相同情况讨论，以及BFS，值得深入考虑</li>
+<li><p>关于康托展开<br>  <a href="https://www.cnblogs.com/linyujun/p/5205760.html" target="_blank" rel="noopener">https://www.cnblogs.com/linyujun/p/5205760.html</a><br>  大部分是通过这篇博客以及其他资料学习的，感谢原作者！</p>
+<p>  公式为 <script type="math/tex">X = a_n \times (n-1)! + a_{n-1} \times (n-2)! + \cdots + a_2 \times 1! + a_1 \times 0!</script></p>
+<p>  其中$a_n$表示第i个元素在未出现的元素中排列第几（从0开始）<br>  ，也可以理解成$a_n$表示该位的逆序数。</p>
+<p>  康托展开得到的X，就是该排列在全排列中的顺序（从0开始）。</p>
+<p>  逆展开就是循环除以(n-1)!，商为第n位在未出现元素排列第几（从0开始）。模为下一位的被除数。</p>
+<p>  在详细的等开个数论专题（挖坑）。</p>
+</li>
+</ul>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/ACM/">ACM</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/ACM/HDU/">HDU</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/ACM/">ACM</a>
+                    
+                      <a class="hover-with-bg" href="/tag/HDU/">HDU</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/post/c37095b9.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">【CodeForces-579A】解题报告（二进制）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/post/f0b23c5b.html">
+                        <span class="hidden-mobile">【AtCoder-4247】解题报告（水题）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "【HDU-1430】解题报告（数论，康拓展开逆展开，简单哈希，BFS）&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

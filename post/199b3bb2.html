@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  <title>数字图像处理——图像复原与重建初步 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2019-10-30 20:34">
+      2019年10月30日 晚上
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      24
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h1 id="图像复原与重建初步"><a href="#图像复原与重建初步" class="headerlink" title="图像复原与重建初步"></a>图像复原与重建初步</h1><p>梳理所学重点知识</p>
+<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>前面所接触的图像增强是一个，已知原图像，经处理后，得到增强图像的一个过程，而这一章将要深入的图像复原（重建），则是希望从（被污染）过的图像，经处理后，得到原图像的过程，是以<strong>预先确定的目标</strong>来改善图像。图像复原试图利用退化现象的某种<strong>先验知识</strong>来复原被退化的图像。因而，复原技术时面向退化模型的，并且采用相反的过程进行处理，以便恢复出原图像。虽然图像增强和图像复原两者在覆盖的领域和使用的技术栈有所重叠，其中还是有几点区别我们还是要提起注意的。</p>
+<ul>
+<li><p>形象化的描述</p>
+<p>图像增强主要是一个主观的过程，而图像复原大部分是一个客观的过程。</p>
+</li>
+<li><p>已知与未知的区别</p>
+<p>图像增强已知原始图像与变换（卷积核或者其频率域的谱），对于增强效果是未知且非预先确定的（只有一个大概方向，比如模糊还是锐化），而图像复原则已知污染图像，且对原始图像是预先确定的（测试条件下甚至是有标准比对的原始图像，是已知的），对于复原变换（污染变换的逆）常常是未知的，这就要求我们在做图像处理时常常需要“估计”我们的复原变换。</p>
+</li>
+<li><p>期望与探索的区别<br>由于两者已知和未知上的差距，这就导致图像复原通常会涉及设立一个<strong>最佳准则</strong>来产生期望结果的最佳估计。相比之下，图像增强技术基本上是一个<strong>探索性过程</strong>，即根据人类视觉系统的生理特点来设计改善图像的方法。</p>
+</li>
+</ul>
+<h2 id="背景知识"><a href="#背景知识" class="headerlink" title="背景知识"></a>背景知识</h2><h3 id="线性系统"><a href="#线性系统" class="headerlink" title="线性系统"></a>线性系统</h3><p>可加性，$x_1(t)+x_2(t) = y_1(t)+y_2(t)$，从而有$a \times x_1(t) = a \times y_1(t)$</p>
+<p>平移不变性</p>
+<h3 id="卷积"><a href="#卷积" class="headerlink" title="卷积"></a>卷积</h3><p>卷积、离散二维卷积</p>
+<p>从而可以利用卷积这个工具。</p>
+<p>冲激响应：输入为一个脉冲信号，输出是一个冲激响应$h(x)$，实际上可以就是之前接触过的卷积核。</p>
+<h3 id="图形复原"><a href="#图形复原" class="headerlink" title="图形复原"></a>图形复原</h3><p>复原</p>
+<ul>
+<li>试图利用退化过程的先验知识使已退化的图像恢复本来面目</li>
+<li>根据退化的原因，分析引起退化的环境因素</li>
+<li>建立相应的数学模型</li>
+<li>沿着使图像降质的逆过程回复图像</li>
+</ul>
+<p>目的</p>
+<ul>
+<li>在于消除或减轻退化的影响</li>
+</ul>
+<p>方法</p>
+<ul>
+<li>由于退化系统是黑盒的，盲复原往往很困难，噪声干扰也为复原过程带来了困难和不确定性</li>
+<li>图像复原是寻求在一定优化准则下的原始图象的最有估计。因此，不同的优化准则会获得不同的图像复原。评价指标的选择目前也是研究的方向之一，如峰值信号比等。</li>
+</ul>
+<h2 id="图像退化-复原过程模型"><a href="#图像退化-复原过程模型" class="headerlink" title="图像退化/复原过程模型"></a>图像退化/复原过程模型</h2><p>退化过程（污染过程）的描述：建模为一个退化函数和一个加性噪声项，对于输入图像（原图像）$f(x,y)$进行处理，产生一副退化后的图像$g(x,y)$，图像复原目的就是已知$g(x,y)$的前提下，希望得到原图像的一个估计，这个估计越接近原始输入图像越好。空间域中的退化图像可由下式给出：</p>
+<script type="math/tex; mode=display">g(x,y) = h(x,y)  \star f(x,y) + \eta(x,y)</script><p>上式中$h(x,y)$是退化函数的空间表示，由第四章内容，我们可以将上式的模型写成等价的频率域表示：</p>
+<script type="math/tex; mode=display">g(u,v) = H(u,v) F(u,v) + N(u,v)</script><p>这两个式子是本章后面大部分复原内容的基础。</p>
+<h2 id="噪声模型"><a href="#噪声模型" class="headerlink" title="噪声模型"></a>噪声模型</h2><h3 id="噪声的空间和频率特性"><a href="#噪声的空间和频率特性" class="headerlink" title="噪声的空间和频率特性"></a>噪声的空间和频率特性</h3><p>一些重要概念：</p>
+<p>当噪声的傅里叶谱是常量时，噪声通常成为<strong>白噪声</strong>，这个术语是从白光的物理特性派生出来的，它以相等的比例包含可见光谱中的几乎所有频率。</p>
+<p>除了空间周期噪声之外，本章假设其他噪声与空间坐标无关，并且噪声与图像本身不想管（即像素值与噪声成分的值之间不相关）。虽然这些假设至少在某些应用中（例如 X 射线和医学成像的有限量子成像就是一个很好的例子）是无效的，但处理空间相关和相关性噪声的复杂性超出了我们讨论的范围。</p>
+<h3 id="一些重要的噪声概率密度函数"><a href="#一些重要的噪声概率密度函数" class="headerlink" title="一些重要的噪声概率密度函数"></a>一些重要的噪声概率密度函数</h3><p>概率论回顾</p>
+<ol>
+<li><p>高斯（正态）噪声</p>
+<p>其 PDF 由下式给出：</p>
+<script type="math/tex; mode=display">p(z) = \dfrac{1}{\sqrt{2 \pi} \sigma} e^{ \frac{ {(z- \overline{z})}^2 }{2 \sigma^2} }</script><p>$\overline{z}$表示$z$的均值，$\sigma$表示$z$的标准差。</p>
+</li>
+<li><p>瑞利噪声</p>
+<p>其 PDF 由下式给出：</p>
+</li>
+</ol>
+
+
+$$
+p(z)=\left \{
+\begin{aligned}
+\frac{2}{b}(z-a)e^{ \frac{-{(z-a)}^2}{b} }  & , &   z  \ge a \\
+0 & , & z < a
+\end{aligned}
+\right.
+$$
+
+
+<p>概率密度的均值与方差的给出：$\overline{z} = a + \sqrt{ \pi b / 4}$，$\sigma ^2 = \dfrac{b(4-\pi)}{4}$</p>
+<ol>
+<li><p>爱尔兰（伽马）噪声</p>
+<p>其 PDF 由下式给出：</p>
+</li>
+</ol>
+
+
+$$
+p(z)=\left \{
+\begin{aligned}
+\dfrac{a^b z^ {b-1} } { (b-1)!}e^{ -az}  & , &   z  \ge a \\
+0 & , & z < a
+\end{aligned}
+\right.
+$$
+
+
+<p>概率密度的均值与方差的给出：$\overline{z} = \dfrac{b}{a}$ ，$\sigma ^2 = \dfrac{b}{a^2}$</p>
+<ol>
+<li><p>指数噪声</p>
+<p>其 PDF 由下式给出：</p>
+</li>
+</ol>
+<script type="math/tex; mode=display">
+p(z)=\left \{
+\begin{aligned}
+ae^{ -az}  & , &   z  \ge a \\
+0 & , & z < a
+\end{aligned}
+\right.</script><p>可以看作是$b=1$时爱尔兰 PDF 的特殊情况。概率密度的均值和方差是：$\overline{z} = \dfrac{1}{a}$，$\sigma^2 = \dfrac{1}{a^2}$</p>
+<ol>
+<li><p>均匀噪声</p>
+<p>其 PDF 由下式给出：</p>
+</li>
+</ol>
+<script type="math/tex; mode=display">
+p(z)=\left \{
+\begin{aligned}
+\dfrac{1}{b-a}  & , &   a \le z \le b \\
+0 & , & 其他
+\end{aligned}
+\right.</script><p>概率密度的均值与方差的给出：$\overline{z} = \dfrac{a+b}{2}$，$\sigma^2 = \dfrac {  {  (b-a)}^2}{12}$</p>
+<ol>
+<li><p>脉冲（椒盐）噪声</p>
+<p>其 PDF 由下式给出：</p>
+</li>
+</ol>
+<script type="math/tex; mode=display">
+p(z)=\left \{
+\begin{aligned}
+P_a  & , &   z = a \\
+P_b & , &  z = b \\
+1-P_a-P_b & , & 其他
+\end{aligned}
+\right.</script><a id="more"></a>
+<pre><code class="hljs python"><span class="hljs-comment"># 编写 添加噪声函数 并显示噪声情况</span>
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getGaussianNoise</span><span class="hljs-params">(loc,scale,size = None)</span>:</span>
+    <span class="hljs-keyword">return</span> np.random.normal(loc,scale,size)
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getRayleighNoise</span><span class="hljs-params">(scale,size = None)</span>:</span>
+    <span class="hljs-comment"># b = 2 scle^2 这里统一根据使用 scale</span>
+    <span class="hljs-keyword">return</span> np.random.rayleigh(scale,size)
+
+<span class="hljs-comment"># 测试，展示高斯和瑞利的分布直方图</span>
+mu = <span class="hljs-number">0.5</span>
+sigma = <span class="hljs-number">0.1</span>
+sigma2 = <span class="hljs-number">0.2</span>
+
+gnoise = getGaussianNoise(mu,sigma,<span class="hljs-number">1000</span>)
+rnoise = getRayleighNoise(sigma2,<span class="hljs-number">1000</span>)
+plt.figure(figsize=(<span class="hljs-number">10</span>,<span class="hljs-number">7</span>))
+ax1 = plt.subplot(<span class="hljs-number">111</span>)
+ax1.hist(gnoise,<span class="hljs-number">80</span>,density = <span class="hljs-keyword">True</span>,histtype = <span class="hljs-string">'stepfilled'</span>,edgecolor = <span class="hljs-string">"white"</span>,label = <span class="hljs-string">"Gaussian Noise"</span>,alpha = <span class="hljs-number">0.7</span>)
+ax1.hist(rnoise,<span class="hljs-number">80</span>,density = <span class="hljs-keyword">True</span>,histtype = <span class="hljs-string">'stepfilled'</span>,edgecolor = <span class="hljs-string">"white"</span>, label = <span class="hljs-string">"Rayleigh Noise"</span> , alpha = <span class="hljs-number">0.7</span>)
+ax1.legend()
+plt.show()</code></pre>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_1_1.png" srcset="/img/loading.gif" alt="png"></p>
+<pre><code class="hljs python"><span class="hljs-comment"># 给图像加噪声</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getGaussianNoiseImg</span><span class="hljs-params">(input_img, loc, scale,rate = <span class="hljs-number">1</span>)</span>:</span>
+    <span class="hljs-string">"""
+    getGaussianNoiseImg 获得被高斯白噪声污染的图像
+
+    :param input_img: 输入原始图像
+    :param loc: 高斯分布均值
+    :param scale: 高斯分布标准差
+    :return: 加噪的图像
+    """</span>
+    float_img = np.array(input_img/<span class="hljs-number">255</span>, dtype = np.float64)
+    noise = np.random.normal(loc,scale,float_img.shape)
+    output_img = float_img+noise*rate
+    output_img = np.clip(output_img,<span class="hljs-number">0</span>,<span class="hljs-number">1.0</span>)
+    output_img = np.uint8(output_img*<span class="hljs-number">255</span>)
+    <span class="hljs-keyword">return</span> output_img
+
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getRayleighNoiseImg</span><span class="hljs-params">(input_img, scale,rate = <span class="hljs-number">1</span>)</span>:</span>
+    <span class="hljs-string">"""
+    getRayleighNoiseImg 获得被瑞利白噪声污染的图像
+
+    :param input_img: 输入原始图像
+    :param scale: 瑞利分布的scale 与b相关 a为0（没找到调整方法）
+    :return: 加噪的图像
+    """</span>
+    float_img = np.array(input_img/<span class="hljs-number">255</span>, dtype = np.float64)
+    noise = np.random.rayleigh(scale,float_img.shape)
+    output_img = float_img+noise*rate
+    output_img = np.clip(output_img,<span class="hljs-number">0</span>,<span class="hljs-number">1.0</span>)
+    output_img = np.uint8(output_img*<span class="hljs-number">255</span>)
+    <span class="hljs-keyword">return</span> output_img
+
+mu = <span class="hljs-number">0.5</span>
+sigma1 = <span class="hljs-number">0.1</span>
+sigma2 = <span class="hljs-number">0.2</span>
+
+
+img1 = cv2.imread(<span class="hljs-string">'./5_1Photo/Fig0503.tif'</span>,<span class="hljs-number">0</span>)
+gnoise_img1 = getGaussianNoiseImg(img1,mu,sigma1,<span class="hljs-number">0.3</span>)
+rnoise_img1 = getRayleighNoiseImg(img1,sigma2,<span class="hljs-number">0.5</span>)
+
+img2 = getRGB(<span class="hljs-string">'./5_1Photo/4.tif'</span>)
+gnoise_img2 = getGaussianNoiseImg(img2,mu,sigma1,<span class="hljs-number">0.3</span>)
+rnoise_img2 = getRayleighNoiseImg(img2,sigma2,<span class="hljs-number">0.5</span>)
+
+showThreeImg(img1,gnoise_img1,rnoise_img1,<span class="hljs-string">"Original Img1"</span>,<span class="hljs-string">"Gaussian Noise with rate = 0.3"</span>,<span class="hljs-string">"Rayleigh Noise with rate = 0.5"</span>)
+showThreeImg(img2,gnoise_img2,rnoise_img2,<span class="hljs-string">"Original Img2"</span>,<span class="hljs-string">"Gaussian Noise with rate = 0.3"</span>,<span class="hljs-string">"Rayleigh Noise with rate = 0.5"</span>)</code></pre>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_1_2.png" srcset="/img/loading.gif" alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/ImageRestoration/5_1_3.png" srcset="/img/loading.gif" alt="png"></p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/数字图像处理/">数字图像处理</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/数字图像处理/">数字图像处理</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/post/c7192b31.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">数字图像处理——图像复原（空间域）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/post/be292322.html">
+                        <span class="hidden-mobile">数据分析与融合——偏序格角度看决策系统代数约简</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "数字图像处理——图像复原与重建初步&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
