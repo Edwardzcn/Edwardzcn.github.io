@@ -160,8 +160,8 @@
               
   <div class="mt-3 post-meta">
     <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2020-09-27 14:13">
-      2020年9月27日 下午
+    <time datetime="2020-09-28 14:13">
+      2020年9月28日 下午
     </time>
   </div>
 
@@ -171,7 +171,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      678 字
+      1.2k 字
     </span>
   
 
@@ -181,7 +181,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      9
+      17
        分钟
     </span>
   
@@ -271,9 +271,73 @@ val strings : string Core.Std.List.t = [<span class="hljs-string">"one"</span>; 
 <span class="hljs-comment"># strings;;</span>
 - : string Core.Std.List.t = [<span class="hljs-string">"one"</span>; <span class="hljs-string">"two"</span>; <span class="hljs-string">"three"</span>]</code></pre>
 <p><code>let</code>绑定使用模式对于 irrefutable 的模式最有意义，也就是说，当前类型中所有值都能与该模式匹配。<strong>元组</strong>tuple 和<strong>记录模式</strong>record 就是 irrefutable 的（这个很好理解），列表模式则并非。</p>
-<h2 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h2><p>既然 OCaml 是一个函数式语言，毫无疑问<strong>函数</strong>重中之重。</p>
-<h3 id="匿名函数"><a href="#匿名函数" class="headerlink" title="匿名函数"></a>匿名函数</h3><p><code>fun</code>关键字声明（初看觉得和<code>lambda</code>有些相似）</p>
 <a id="more"></a>
+<h2 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h2><p>既然 OCaml 是一个函数式语言，毫无疑问<strong>函数</strong>重中之重。</p>
+<h3 id="匿名函数"><a href="#匿名函数" class="headerlink" title="匿名函数"></a>匿名函数</h3><p><code>fun</code>关键字声明（初看觉得和<code>lambda</code>有些相似），匿名函数处理，传入另一函数、填入数据结构。下面是做的一些实验：</p>
+<pre><code class="hljs OCaml"><span class="hljs-type">List</span>.map ~f:(<span class="hljs-keyword">fun</span> x -&gt; x+<span class="hljs-number">1</span>) [<span class="hljs-number">1</span>;<span class="hljs-number">2</span>;<span class="hljs-number">3</span>] ;; <span class="hljs-comment">(* 传入另一个函数 *)</span>
+
+<span class="hljs-keyword">let</span> increments = [ (<span class="hljs-keyword">fun</span> x -&gt; x +<span class="hljs-number">1</span>) ; (<span class="hljs-keyword">fun</span> x -&gt; x+<span class="hljs-number">2</span>) ];; <span class="hljs-comment">(* 嵌入list *)</span>
+<span class="hljs-keyword">let</span> get_head_func func_lists  =
+  <span class="hljs-keyword">match</span> func_lists <span class="hljs-keyword">with</span>
+  | <span class="hljs-literal">[]</span> -&gt; (<span class="hljs-keyword">fun</span> x -&gt; <span class="hljs-number">0</span>)
+  | hd::tl -&gt; hd
+;;
+<span class="hljs-keyword">let</span> testfunc = get_head_func increments;;
+testfunc <span class="hljs-number">4</span>;;</code></pre>
+<p>输出结果</p>
+<pre><code class="hljs Bash"><span class="hljs-comment"># List.map ~f:(fun x -&gt; x+1) [1;2;3];;</span>
+- : int Core.Std.List.t = [2; 3; 4]
+<span class="hljs-comment"># let increments = [ (fun x -&gt; x +1) ; (fun x -&gt; x+2) ];;</span>
+val increments : (int -&gt; int) list = [&lt;fun&gt;; &lt;fun&gt;]
+<span class="hljs-comment"># let get_head_func func_lists  =</span>
+  match func_lists with
+  | [] -&gt; (fun x -&gt; 0)
+  | hd::tl -&gt; hd;;
+      val get_head_func : (<span class="hljs-string">'a -&gt; int) list -&gt; '</span>a -&gt; int = &lt;fun&gt;
+<span class="hljs-comment"># let testfunc = get_head_func increments;;</span>
+val testfunc : int -&gt; int = &lt;fun&gt;</code></pre>
+<h3 id="多参数函数"><a href="#多参数函数" class="headerlink" title="多参数函数"></a>多参数函数</h3><p>定义命名函数的语法糖，下述两种定义方式等价：</p>
+<pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> plusone = (<span class="hljs-keyword">fun</span> x -&gt; x+<span class="hljs-number">1</span>);;
+<span class="hljs-keyword">let</span> plusone  x = x+<span class="hljs-number">1</span>;;</code></pre>
+<p>多参数函数的语法糖，以及重写版本。</p>
+<pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> abs_diff   x  y = abs(x-y);;
+<span class="hljs-keyword">let</span> abs_diff =
+  (<span class="hljs-keyword">fun</span> x -&gt;
+    (<span class="hljs-keyword">fun</span> y -&gt;
+  abs (x-y)));;</code></pre>
+<p>！从重写版本易看出，<code>abs_diff</code>是有单个参数的函数，返回另一个有单个函数的参数。</p>
+<blockquote>
+<p>这种函数称为柯里（curried）函数[柯里化（Curring）得名于 Haskell Curry，他是一位逻辑学家，对编程语言的设计和理论有重要的影响]。要解释一个柯里函数类型签名，关键是<code>-&gt;</code>具有右结合性。因此可以为<code>abs_diff</code>的类型签名加上小括号，如下所示：</p>
+<pre><code class="hljs OCaml">&gt; <span class="hljs-keyword">val</span> abs_diff : <span class="hljs-built_in">int</span> -&gt; (nt -&gt; <span class="hljs-built_in">int</span>)
+&gt;</code></pre>
+</blockquote>
+<p>&gt;</p>
+<blockquote>
+<p>这些小括号没有改变签名的含义，不过这样可以更容易地看出柯里化。</p>
+</blockquote>
+<p><code>fun</code> 支持自己的柯里化，<code>fun</code>匿名函数可以直接按柯里化语法写出。</p>
+<p><strong>部分应用</strong>，给柯里函数传入部分参数构成新函数。</p>
+<pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> my_mod x y =
+  <span class="hljs-keyword">if</span> x <span class="hljs-keyword">mod</span> y = <span class="hljs-number">0</span> <span class="hljs-keyword">then</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">else</span> <span class="hljs-literal">false</span>;; <span class="hljs-comment">(* 与下面柯里化展开的函数等价  *)</span>
+<span class="hljs-keyword">let</span> my_mod =
+  (<span class="hljs-keyword">fun</span> x -&gt; ( <span class="hljs-keyword">fun</span> y -&gt; <span class="hljs-keyword">if</span> x <span class="hljs-keyword">mod</span> y = <span class="hljs-number">0</span> <span class="hljs-keyword">then</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">else</span> <span class="hljs-literal">false</span>))
+;;
+<span class="hljs-keyword">let</span> my_mod_3 = my_mod <span class="hljs-number">3</span>;;</code></pre>
+<p>测试结果</p>
+<pre><code class="hljs Bash"><span class="hljs-comment"># let my_mod x y =</span>
+  <span class="hljs-keyword">if</span> x mod y = 0 <span class="hljs-keyword">then</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">else</span> <span class="hljs-literal">false</span>;;
+  val my_mod : int -&gt; int -&gt; bool = &lt;fun&gt;
+<span class="hljs-comment"># let my_mod =</span>
+  (fun x -&gt; ( fun y -&gt; <span class="hljs-keyword">if</span> x mod y = 0 <span class="hljs-keyword">then</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">else</span> <span class="hljs-literal">false</span>));;
+  val my_mod : int -&gt; int -&gt; bool = &lt;fun&gt;
+<span class="hljs-comment"># let my_mod_3 = my_mod 3;;</span>
+val my_mod_3 : int -&gt; bool = &lt;fun&gt;
+<span class="hljs-comment"># my_mod 10 2;;</span>
+- : bool = <span class="hljs-literal">true</span>
+<span class="hljs-comment"># my_mod 10 3;;</span>
+- : bool = <span class="hljs-literal">false</span>
+<span class="hljs-comment"># my_mod_3 10;;</span>
+- : bool = <span class="hljs-literal">false</span></code></pre>
 
             </article>
             <hr>
