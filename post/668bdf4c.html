@@ -171,7 +171,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      32 字
+      678 字
     </span>
   
 
@@ -181,7 +181,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      1
+      9
        分钟
     </span>
   
@@ -213,6 +213,66 @@
             
             <article class="markdown-body">
               <h1 id="Chap2-变量和函数"><a href="#Chap2-变量和函数" class="headerlink" title="Chap2 变量和函数"></a>Chap2 变量和函数</h1><p>预计 1 天内推进两章（不过今晚和 CSU F8 去庆祝，估计要拖一下了。）</p>
+<h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><p>变量，标识符，将含义绑定到一个特定的值。在 OCaml 中，通常使用<code>let</code>关键字引入。变量名必须以小写字母或者下划线开头。</p>
+<pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> &lt;variable&gt; = &lt;expr&gt;</code></pre>
+<p>作用域，let 创建有限作用域的变量，将其限定在某个特定的表达式。</p>
+<pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> &lt;variable&gt; = &lt;expr1&gt; <span class="hljs-keyword">in</span> &lt;expr2&gt;</code></pre>
+<p>将<code>let</code>的变量限制在<code>in</code>之后的<code>&lt;expr2&gt;</code>中，脱离后回归顶层，访问该变量是不允许的，例子：</p>
+<p>代码</p>
+<pre><code class="hljs OCaml"><span class="hljs-keyword">open</span> <span class="hljs-type">Core</span>.<span class="hljs-type">Std</span>;;
+
+<span class="hljs-comment">(* 作用域 非掩盖的例子 *)</span>
+<span class="hljs-keyword">let</span> languages = <span class="hljs-string">"OCaml,Perl,C++,C"</span>;;
+<span class="hljs-keyword">let</span> dashed_languages =
+  <span class="hljs-keyword">let</span> language_list = <span class="hljs-type">String</span>.split languages ~on:<span class="hljs-string">','</span>  <span class="hljs-keyword">in</span> <span class="hljs-type">String</span>.concat ~sep:<span class="hljs-string">"-"</span> language_list
+;;
+language_list;;
+
+
+<span class="hljs-comment">(* 作用域 掩盖外层定义的例子 *)</span>
+<span class="hljs-keyword">let</span> languages = <span class="hljs-string">"OCaml,Perl,C++,C"</span>;;
+<span class="hljs-keyword">let</span> dashed_languages =
+  <span class="hljs-keyword">let</span> languages = <span class="hljs-type">String</span>.split languages ~on:<span class="hljs-string">','</span> <span class="hljs-keyword">in</span> <span class="hljs-type">String</span>.concat ~sep:<span class="hljs-string">"-"</span> languages
+;;
+languages;;</code></pre>
+<p>顶层环境运行结果</p>
+<pre><code class="hljs Bash"><span class="hljs-comment"># let dashed_languages =</span>
+  <span class="hljs-built_in">let</span> language_list = String.split languages ~on:<span class="hljs-string">','</span>  <span class="hljs-keyword">in</span> String.concat ~sep:<span class="hljs-string">"-"</span> language_list;;
+  val dashed_languages : Core.Std.String.t = <span class="hljs-string">"OCaml-Perl-C++-C"</span>
+<span class="hljs-comment"># language_list;;</span>
+Characters 0-13:
+  language_list;;
+  ^^^^^^^^^^^^^
+Error: Unbound value language_list</code></pre>
+<p>掩盖外层定义，输出对比</p>
+<pre><code class="hljs Bash"><span class="hljs-comment"># let languages = "OCaml,Perl,C++,C";;</span>
+val languages : string = <span class="hljs-string">"OCaml,Perl,C++,C"</span>
+<span class="hljs-comment"># let dashed_languages =</span>
+  <span class="hljs-built_in">let</span> languages = String.split languages ~on:<span class="hljs-string">','</span> <span class="hljs-keyword">in</span> String.concat ~sep:<span class="hljs-string">"-"</span> languages;;
+  val dashed_languages : Core.Std.String.t = <span class="hljs-string">"OCaml-Perl-C++-C"</span>
+<span class="hljs-comment"># languages;;</span>
+- : string = <span class="hljs-string">"OCaml,Perl,C++,C"</span></code></pre>
+<blockquote>
+<p><strong>关于 OCaml 中变量不能改变这件事</strong></p>
+<p>Ocaml（以及一般的函数式语言）中的变量更像是等是中的变量，而非命令中的变量。考虑数学恒等式$x(y+z) = xy + xz$，这里没有提到变量$x$、$y$和$z$本身要改变。但可以为这些变量提供不同的数来实例化这个等式，而等式依然成立，从这个意义上讲它们是变化的。</p>
+<p>函数式语言中也是一样。可以为一个函数提供不同的输入，所以它的变量可以有不同的值，不过变量本身没有改变。</p>
+</blockquote>
+<p><code>let</code>绑定的另一个特性是允许在绑定的左边使用模式。Example:</p>
+<pre><code class="hljs OCaml"><span class="hljs-comment">(* 模式匹配和let  *)</span>
+
+<span class="hljs-keyword">let</span> (ints,strings) = <span class="hljs-type">List</span>.unzip [(<span class="hljs-number">1</span>,<span class="hljs-string">"one"</span>) ; (<span class="hljs-number">2</span>,<span class="hljs-string">"two"</span>); (<span class="hljs-number">3</span>,<span class="hljs-string">"three"</span>)];;
+ints;;
+strings;;</code></pre>
+<pre><code class="hljs Bash"><span class="hljs-comment"># let (ints,strings) = List.unzip [(1,"one") ; (2,"two"); (3,"three")];;</span>
+val ints : int Core.Std.List.t = [1; 2; 3]
+val strings : string Core.Std.List.t = [<span class="hljs-string">"one"</span>; <span class="hljs-string">"two"</span>; <span class="hljs-string">"three"</span>]
+<span class="hljs-comment"># ints;;</span>
+- : int Core.Std.List.t = [1; 2; 3]
+<span class="hljs-comment"># strings;;</span>
+- : string Core.Std.List.t = [<span class="hljs-string">"one"</span>; <span class="hljs-string">"two"</span>; <span class="hljs-string">"three"</span>]</code></pre>
+<p><code>let</code>绑定使用模式对于 irrefutable 的模式最有意义，也就是说，当前类型中所有值都能与该模式匹配。<strong>元组</strong>tuple 和<strong>记录模式</strong>record 就是 irrefutable 的（这个很好理解），列表模式则并非。</p>
+<h2 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h2><p>既然 OCaml 是一个函数式语言，毫无疑问<strong>函数</strong>重中之重。</p>
+<h3 id="匿名函数"><a href="#匿名函数" class="headerlink" title="匿名函数"></a>匿名函数</h3><p><code>fun</code>关键字声明（初看觉得和<code>lambda</code>有些相似）</p>
 <a id="more"></a>
 
             </article>
@@ -245,6 +305,12 @@
                 <div class="post-prevnext row">
                   <div class="post-prev col-6">
                     
+                    
+                      <a href="/post/5ed09799.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">《战争时期的日本精神史》读书笔记</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </div>
                   <div class="post-next col-6">
