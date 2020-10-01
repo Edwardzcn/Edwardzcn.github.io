@@ -171,7 +171,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.2k 字
+      3.1k 字
     </span>
   
 
@@ -181,7 +181,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      17
+      44
        分钟
     </span>
   
@@ -338,6 +338,184 @@ val my_mod_3 : int -&gt; bool = &lt;fun&gt;
 - : bool = <span class="hljs-literal">false</span>
 <span class="hljs-comment"># my_mod_3 10;;</span>
 - : bool = <span class="hljs-literal">false</span></code></pre>
+<h3 id="递归函数"><a href="#递归函数" class="headerlink" title="递归函数"></a>递归函数</h3><blockquote>
+<p>OCaml 区分了非递归定义（使用<code>let</code>）和递归（使用<code>let rec</code>）这很大程度上是技术上的原因：<strong>如果一组函数定义是相互递归的，类型推断算法需要知道这一点，另外出于某些原因（这些援引对 Haskell 等纯语言不适用），必须由程序员显式地标志函数是否是递归的。</strong></p>
+</blockquote>
+<pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> find_first_stutter <span class="hljs-built_in">list</span> =
+  <span class="hljs-keyword">match</span> <span class="hljs-built_in">list</span> <span class="hljs-keyword">with</span>
+  | <span class="hljs-literal">[]</span> | [_] -&gt; <span class="hljs-type">None</span>
+  | x :: y :: tl -&gt; <span class="hljs-keyword">if</span> x =y <span class="hljs-keyword">then</span> <span class="hljs-type">Some</span> x <span class="hljs-keyword">else</span> find_first_stutter (y::tl)
+;;
+find_first_stutter [<span class="hljs-number">1</span>;<span class="hljs-number">2</span>;<span class="hljs-number">3</span>;<span class="hljs-number">4</span>;<span class="hljs-number">5</span>;<span class="hljs-number">6</span>;<span class="hljs-number">1</span>;<span class="hljs-number">2</span>];;
+find_first_stutter [<span class="hljs-number">1</span>;<span class="hljs-number">2</span>;<span class="hljs-number">2</span>;<span class="hljs-number">3</span>;<span class="hljs-number">3</span>;<span class="hljs-number">4</span>;<span class="hljs-number">4</span>;<span class="hljs-number">4</span>;];;</code></pre>
+<h3 id="优先级和结合性"><a href="#优先级和结合性" class="headerlink" title="优先级和结合性"></a>优先级和结合性</h3><p>操作符前缀和结合性有关（详细见表），比如后面例子中<code>|</code>前缀为左结合，<code>^</code>前缀为右结合。另外由于不同于 C 等语言，传入参数至函数时没有括号分隔，所以要注意<code>-</code>作为减法操作符合（中缀），以及负号（前缀）使用情况，比如传参时负数要括起来。</p>
+<pre><code class="hljs OCaml"><span class="hljs-type">Int</span>.max <span class="hljs-number">3</span> (-<span class="hljs-number">4</span>);;</code></pre>
+<p>后面是关于<code>|&gt;</code>和<code>^&gt;</code>自定义操作符有意思的例子。行为很大程度上取决于前面描述的优先级规则.</p>
+<pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> (|&gt;) x f = f x;;
+<span class="hljs-keyword">let</span> path = <span class="hljs-string">"/usr/bin:/usr/local/bin:/bin:/sbin"</span>;;
+<span class="hljs-type">String</span>.split ~on:<span class="hljs-string">':'</span> path       <span class="hljs-comment">(* |&gt;是左结合的，从path运算内层到外层始终是字符串 *)</span>
+|&gt; <span class="hljs-type">List</span>.dedup ~compare:<span class="hljs-type">String</span>.compare
+|&gt; <span class="hljs-type">List</span>.iter ~f:print_endline
+;;</code></pre>
+<pre><code class="hljs Bash"><span class="hljs-comment"># let (|&gt;) x f = f x;;</span>
+val ( |&gt; ) : <span class="hljs-string">'a -&gt; ('</span>a -&gt; <span class="hljs-string">'b) -&gt; '</span>b = &lt;fun&gt;
+<span class="hljs-comment"># let path = "/usr/bin:/usr/local/bin:/bin:/sbin";;</span>
+val path : string = <span class="hljs-string">"/usr/bin:/usr/local/bin:/bin:/sbin"</span>
+<span class="hljs-comment"># String.split ~on:':' path       (* |&gt;是左结合的，从path运算内层到外层始终是字符串 *)</span>
+|&gt; List.dedup ~compare:String.compare
+|&gt; List.iter ~f:print_endline;;
+    Characters 108-118:
+  |&gt; List.dedup ~compare:String.compare
+     ^^^^^^^^^^
+Warning 3: deprecated: Core.Std.List.dedup
+[since 2017-04] Use [dedup_and_sort] instead
+/bin
+/sbin
+/usr/bin
+/usr/<span class="hljs-built_in">local</span>/bin
+- : unit = ()</code></pre>
+<p><code>|&gt;</code>这个操作符被定义为，接受一个值和一个函数为输入，得到函数作用于该值的结果（从柯里展开更容易看出）。注意由于<code>|</code>前缀是左结合的，可以正常运行并得到最终结果。下面我们看另一个：</p>
+<pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> (^&gt;) x f = f x;;
+<span class="hljs-type">String</span>.split ~on:<span class="hljs-string">':'</span> path
+^&gt; <span class="hljs-type">List</span>.dedup ~compare:<span class="hljs-type">String</span>.compare
+^&gt; <span class="hljs-type">List</span>.iter ~f:print_endline
+;;</code></pre>
+<pre><code class="hljs Bash"><span class="hljs-comment"># let (^&gt;) x f = f x;;</span>
+val ( ^&gt; ) : <span class="hljs-string">'a -&gt; ('</span>a -&gt; <span class="hljs-string">'b) -&gt; '</span>b = &lt;fun&gt;
+<span class="hljs-comment"># String.split ~on:':' path</span>
+^&gt; List.dedup ~compare:String.compare
+^&gt; List.iter ~f:print_endline;;
+    Characters 29-39:
+  ^&gt; List.dedup ~compare:String.compare
+     ^^^^^^^^^^
+Warning 3: deprecated: Core.Std.List.dedup
+[since 2017-04] Use [dedup_and_sort] instead
+Characters 67-93:
+  ^&gt; List.iter ~f:print_endline;;
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This expression has <span class="hljs-built_in">type</span> string Core.Std.List.t -&gt; unit
+       but an expression was expected of <span class="hljs-built_in">type</span>
+         (Core.Std.String.t Core.Std.List.t -&gt;
+          Core.Std.String.t Core.Std.List.t) -&gt;
+         <span class="hljs-string">'a
+       Type string Core.Std.List.t = string list is not compatible with type
+         Core.Std.String.t Core.Std.List.t -&gt;
+         Core.Std.String.t Core.Std.List.t</span></code></pre>
+<p>发现报 Error，由于<code>^&gt;</code>右结合的而在最右边 expression，接受的两个参数都是函数而没有字符串，所以出现了类型不匹配。那既然由于语言限制，不好改变<code>^&gt;</code>的结合性，我们改变一下写法：</p>
+<pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> (^&gt;) x f = f x;;
+((<span class="hljs-type">String</span>.split ~on:<span class="hljs-string">':'</span> path
+^&gt; <span class="hljs-type">List</span>.dedup ~compare:<span class="hljs-type">String</span>.compare)
+^&gt; <span class="hljs-type">List</span>.iter ~f:print_endline)
+;;</code></pre>
+<pre><code class="hljs Bash"><span class="hljs-comment"># ((String.split ~on:':' path</span>
+^&gt; List.dedup ~compare:String.compare)
+^&gt; List.iter ~f:print_endline);;
+    Characters 31-41:
+  ^&gt; List.dedup ~compare:String.compare)
+     ^^^^^^^^^^
+Warning 3: deprecated: Core.Std.List.dedup
+[since 2017-04] Use [dedup_and_sort] instead
+/bin
+/sbin
+/usr/bin
+/usr/<span class="hljs-built_in">local</span>/bin
+- : unit = ()</code></pre>
+<p>手动加了括号控制结合就可以正常运行了。</p>
+<h3 id="用函数声明函数"><a href="#用函数声明函数" class="headerlink" title="用函数声明函数"></a>用函数声明函数</h3><p>定义函数的另一种方法是使用<code>function</code>关键字。<code>function</code>内置了模式匹配，而不是为声明多参数（柯里）函数提供语法支持，不过我们可以使用将不同的函数声明组合在一起，声明多参数柯里函数，并对其中一些参数进行模式匹配。</p>
+<pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> some_or_default default = <span class="hljs-keyword">function</span>
+  | <span class="hljs-type">Some</span> x -&gt; x
+  | <span class="hljs-type">None</span> -&gt; default
+;;
+some_or_default <span class="hljs-string">"default"</span> (<span class="hljs-type">Some</span> <span class="hljs-string">"test"</span>);;
+some_or_default <span class="hljs-string">"test"</span> <span class="hljs-type">None</span>;;
+<span class="hljs-type">List</span>.map ~f:(some_or_default <span class="hljs-string">"t"</span>) [<span class="hljs-type">Some</span> <span class="hljs-string">"test"</span>;<span class="hljs-type">Some</span> <span class="hljs-string">"default"</span>;<span class="hljs-type">None</span>];;
+some_or_default <span class="hljs-number">3</span> (<span class="hljs-type">Some</span> <span class="hljs-number">5</span>);;</code></pre>
+<h3 id="标签参数"><a href="#标签参数" class="headerlink" title="标签参数"></a>标签参数</h3><p>按名称标识一个函数参数，可以按任意顺序提供参数。标签参数由前面的一个波浪线标志，并把标签（后面有一个冒号）放在要加标签的变量前面（实际上这里使用了标签双关，所以省略了冒号和后面的同名变量）。</p>
+<pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> ratio ~num ~denom = <span class="hljs-built_in">float</span> num /. <span class="hljs-built_in">float</span> denom;;</code></pre>
+<pre><code class="hljs Bash"><span class="hljs-comment"># let ratio ~num ~denom = float num /. float denom;;</span>
+val ratio : num:int -&gt; denom:int -&gt; <span class="hljs-built_in">float</span> = &lt;fun&gt;
+<span class="hljs-comment"># ratio ~num:3 ~denom:4;;</span>
+- : <span class="hljs-built_in">float</span> = 0.75
+<span class="hljs-comment"># ratio ~denom:4 ~num:3;;</span>
+- : <span class="hljs-built_in">float</span> = 0.75</code></pre>
+<p>常见使用情况</p>
+<ul>
+<li>定义一个有很多参数的函数时</li>
+<li>仅从类型无法清楚地了解某个特定参数的含义时</li>
+<li>定义有多个参数的函数，参数可能相互混淆时</li>
+<li>如果希望传递参数的顺序具有灵活性</li>
+</ul>
+<p>高阶函数和标签</p>
+<p>关于标签参数有一个奇怪的问题，尽管调用有标签参数的函数时参数的顺序并不重要，但是对于高阶函数，这个顺序却是有影响的。例子：</p>
+<pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> apply_to_tuple f (first,second) = f ~first ~second;;   <span class="hljs-comment">(* 这里f作为参数传入apply *)</span>
+<span class="hljs-keyword">let</span> apply_to_tuple2 f (first,second) = f ~second ~first;;   <span class="hljs-comment">(* 我们改变标签参数列出的顺序 *)</span></code></pre>
+<pre><code class="hljs Bash"><span class="hljs-built_in">let</span> apply_to_tuple f (first,second) = f ~first ~second;;
+val apply_to_tuple : (first:<span class="hljs-string">'a -&gt; second:'</span>b -&gt; <span class="hljs-string">'c) -&gt; '</span>a * <span class="hljs-string">'b -&gt; '</span>c = &lt;fun&gt;
+<span class="hljs-comment">#   let apply_to_tuple2 f (first,second) = f ~second ~first;;</span>
+val apply_to_tuple2 : (second:<span class="hljs-string">'a -&gt; first:'</span>b -&gt; <span class="hljs-string">'c) -&gt; '</span>b * <span class="hljs-string">'a -&gt; '</span>c = &lt;fun&gt;</code></pre>
+<p>从函数定义看，有影响。比如我们分别传递下面函数到上述两函数中，一个可行一个不可行。</p>
+<pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> apply_to_tuple f (first,second) = f ~first ~second;;   <span class="hljs-comment">(* 这里f作为参数传入apply *)</span>
+<span class="hljs-keyword">let</span> apply_to_tuple2 f (first,second) = f ~second ~first;;   <span class="hljs-comment">(* 我们改变标签参数列出的顺序 *)</span>
+<span class="hljs-keyword">let</span> divide ~first ~second = first / second;;
+apply_to_tuple divide (<span class="hljs-number">3</span>,<span class="hljs-number">4</span>);;   <span class="hljs-comment">(* 可以正常工作 *)</span>
+apply_to_tuple2 divide (<span class="hljs-number">3</span>,<span class="hljs-number">4</span>);;  <span class="hljs-comment">(* 类别不符 *)</span></code></pre>
+<pre><code class="hljs Bash"><span class="hljs-comment"># let apply_to_tuple f (first,second) = f ~first ~second;;</span>
+val apply_to_tuple : (first:<span class="hljs-string">'a -&gt; second:'</span>b -&gt; <span class="hljs-string">'c) -&gt; '</span>a * <span class="hljs-string">'b -&gt; '</span>c = &lt;fun&gt;
+<span class="hljs-comment"># let apply_to_tuple2 f (first,second) = f ~second ~first;;</span>
+val apply_to_tuple2 : (second:<span class="hljs-string">'a -&gt; first:'</span>b -&gt; <span class="hljs-string">'c) -&gt; '</span>b * <span class="hljs-string">'a -&gt; '</span>c = &lt;fun&gt;
+<span class="hljs-comment"># let divide ~first ~second = first / second;;</span>
+val divide : first:int -&gt; second:int -&gt; int = &lt;fun&gt;
+<span class="hljs-comment"># apply_to_tuple divide (3,4);;</span>
+- : int = 0
+<span class="hljs-comment"># apply_to_tuple2 divide (3,4);;</span>
+Characters 16-22:
+  apply_to_tuple2 divide (3,4);;
+                  ^^^^^^
+Error: This expression has <span class="hljs-built_in">type</span> first:int -&gt; second:int -&gt; int
+       but an expression was expected of <span class="hljs-built_in">type</span> second:<span class="hljs-string">'a -&gt; first:'</span>b -&gt; <span class="hljs-string">'c</span></code></pre>
+<p>做个改变，如果我们调整<code>divide</code>的声明，似乎两边都不行了，跟人猜测和标签名“绑定”有关，但是书中没有给出解答。</p>
+<pre><code class="hljs Bash"><span class="hljs-comment">#   apply_to_tuple divide (3,4);;</span>
+Characters 16-22:
+  apply_to_tuple divide (3,4);;
+                 ^^^^^^
+Error: This expression has <span class="hljs-built_in">type</span> <span class="hljs-keyword">fi</span>:int -&gt; se:int -&gt; int
+       but an expression was expected of <span class="hljs-built_in">type</span> first:<span class="hljs-string">'a -&gt; second:'</span>b -&gt; <span class="hljs-string">'c
+# apply_to_tuple2 divide (3,4);;
+Characters 16-22:
+  apply_to_tuple2 divide (3,4);;
+                  ^^^^^^
+Error: This expression has type fi:int -&gt; se:int -&gt; int
+       but an expression was expected of type second:'</span>a -&gt; first:<span class="hljs-string">'b -&gt; '</span>c</code></pre>
+<h3 id="可选参数"><a href="#可选参数" class="headerlink" title="可选参数"></a>可选参数</h3><p>可以选择是否提供这个参数，可选参数也可以按任意的顺序提供。</p>
+<pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> concat ?sep x y =
+  <span class="hljs-keyword">let</span> sep = <span class="hljs-keyword">match</span> sep <span class="hljs-keyword">with</span>
+    | <span class="hljs-type">None</span> -&gt; <span class="hljs-string">""</span>
+    | <span class="hljs-type">Some</span> x -&gt; x <span class="hljs-keyword">in</span>
+  x ^ sep ^ y;;
+concat <span class="hljs-string">"foo"</span> <span class="hljs-string">"bar"</span>;;
+concat ?sep:(<span class="hljs-type">Some</span> <span class="hljs-string">"what"</span>) <span class="hljs-string">"foo"</span> <span class="hljs-string">"bar"</span>;;</code></pre>
+<pre><code class="hljs Bash"><span class="hljs-comment"># let concat ?sep x y =</span>
+  <span class="hljs-built_in">let</span> sep = match sep with
+    | None -&gt; <span class="hljs-string">""</span>
+    | Some x -&gt; x <span class="hljs-keyword">in</span>
+  x ^ sep ^ y;;
+        val concat : ?sep:string -&gt; string -&gt; string -&gt; string = &lt;fun&gt;
+<span class="hljs-comment"># concat "foo" "bar";;</span>
+- : string = <span class="hljs-string">"foobar"</span>
+<span class="hljs-comment"># concat ?sep:(Some "what") "foo" "bar";;</span>
+- : string = <span class="hljs-string">"foowhatbar"</span></code></pre>
+<p>可选参数优缺点：</p>
+<ul>
+<li>优点<ul>
+<li>编写有多个参数的函数，弹性扩展功能而不影响默认使用</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>调用者不清楚还有选择，可能会盲目（错误地）选择默认行为。</li>
+<li>带来简介性，损失明确性</li>
+</ul>
+</li>
+</ul>
 
             </article>
             <hr>
