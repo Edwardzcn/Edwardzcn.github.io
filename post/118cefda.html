@@ -171,7 +171,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      403 字
+      2.1k 字
     </span>
   
 
@@ -181,7 +181,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      6
+      26
        分钟
     </span>
   
@@ -265,6 +265,116 @@ drop_value [<span class="hljs-number">1</span>;<span class="hljs-number">2</span
 #   drop_value [1;2;3;4;5;] 5;;
 - : int list = [1; 2; 3; 4]</span></code></pre>
 <a id="more"></a>
+<p>模式匹配的优劣，基于<code>match</code>的实现比基于<code>if</code>的实现快很多倍。之所以存在这个差别，是因为我们实际上需要把相同的工作做很多次。</p>
+<ul>
+<li><p>性能：</p>
+<p>模式匹配要比手工编写的其他代码更为高效。不过，字符串的匹配有所例外，实际上这会顺序地进行测试，所以如果匹配包含一个很长的字符串序列，这些匹配可能还不如散列表。但大多数情况下，模式匹配在性能上都明显有优势。</p>
+</li>
+<li><p>检测错误：</p>
+<p>OCaml 能够查找模式匹配中的问题：在<code>drop_value</code>的错误实现中，OCaml 提醒我们最后一个情况是多余的。</p>
+<p>OCaml 还会检查<code>match</code>语句的完备性，编译器对于缺少的情况会产生警告，还会给出无法匹配的模式的一个例子。对于涉及用户自定义类型的例子，这种完备性检查的意义更重大。</p>
+<p>还相当于一种重构工具。可以指导你哪些地方需要调整代码来处理不断变化的类型。</p>
+</li>
+</ul>
+<h2 id="有效使用-List-模块"><a href="#有效使用-List-模块" class="headerlink" title="有效使用 List 模块"></a>有效使用 List 模块</h2><ul>
+<li><code>List.map</code> 取一个列表和一个函数，对于列表每个元素使用<code>map</code>。</li>
+<li><code>List.map2_exn</code> 取两个列表和一个函数，用函数结合两列表，<code>_exn</code>则是因为两个列表长度不一致，该函数会报错。</li>
+<li><code>List.fold</code> 取一个要处理的列表，一个初始化的迭代器<code>~init</code>，以及用来更新这个累加器的函数。该函数遍历列表更新迭代器，返回最终迭代器的值。</li>
+</ul>
+<pre><code class="hljs OCaml"><span class="hljs-type">List</span>.fold ~init:<span class="hljs-literal">[]</span> ~f:(<span class="hljs-keyword">fun</span> biao x -&gt; x :: biao) [<span class="hljs-number">1</span>;<span class="hljs-number">2</span>;<span class="hljs-number">3</span>;<span class="hljs-number">4</span>];; <span class="hljs-comment">(* List.fold 实验 *)</span></code></pre>
+<pre><code class="hljs Bash"><span class="hljs-comment"># List.fold ~init:[] ~f:(fun biao x -&gt; x :: biao) [1;2;3;4];;</span>
+- : int list = [4; 3; 2; 1]</code></pre>
+<p>结合上述三个函数，计算列的最大宽度。</p>
+<pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> max_width header rows =     <span class="hljs-comment">(* 计算列的最大宽度 *)</span>
+  <span class="hljs-keyword">let</span> lengths l = <span class="hljs-type">List</span>.map ~f:<span class="hljs-type">String</span>.length l <span class="hljs-keyword">in</span>
+  <span class="hljs-type">List</span>.fold rows
+    ~init:(lengths header)
+    ~f:(<span class="hljs-keyword">fun</span> acc row -&gt; <span class="hljs-type">List</span>.map2_exn  ~f:<span class="hljs-type">Int</span>.max acc (lengths row));;</code></pre>
+<p>代码解释，利用<code>List.map</code>定义限制作用域的函数<code>lengths</code>,利用<code>List.fold</code>迭代每一行，迭代函数是利用<code>List.map2_exn</code>取最大值，初始化为标题行的长度。</p>
+<p>后续代码示例中包括了根据获取长度利用<code>String.make</code>生成长度适当的短横线字符串。以及字符串连接，在字符串两边增加定界符。以及根据 padding 渲染每一行。</p>
+<pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> render_separator widths =   <span class="hljs-comment">(* width是数值列表，由上面maxwidth得到 *)</span>
+  <span class="hljs-keyword">let</span> pieces = <span class="hljs-type">List</span>.map widths
+                 ~f:(<span class="hljs-keyword">fun</span> w -&gt; <span class="hljs-type">String</span>.make (w+<span class="hljs-number">2</span>) <span class="hljs-string">'-'</span>)
+  <span class="hljs-keyword">in</span>
+  <span class="hljs-string">"|"</span> ^ <span class="hljs-type">String</span>.concat ~sep:<span class="hljs-string">"+"</span> pieces ^ <span class="hljs-string">"|"</span>;;
+
+<span class="hljs-keyword">let</span> pad s length = <span class="hljs-comment">(* 编写代码显示这些数据行 *)</span>
+  <span class="hljs-string">" "</span> ^ s ^ <span class="hljs-type">String</span>.make(length - <span class="hljs-type">String</span>.length s + <span class="hljs-number">1</span>) <span class="hljs-string">' '</span>;;
+pad <span class="hljs-string">"hello"</span> <span class="hljs-number">10</span>;;
+
+<span class="hljs-keyword">let</span> render_row row widths =
+  <span class="hljs-keyword">let</span> padded = <span class="hljs-type">List</span>.map2_exn row widths ~f:pad <span class="hljs-keyword">in</span>
+  <span class="hljs-string">"|"</span> ^ <span class="hljs-type">String</span>.concat ~sep:<span class="hljs-string">"|"</span> padded ^ <span class="hljs-string">"|"</span>
+;;
+render_row [<span class="hljs-string">"Hello"</span>;<span class="hljs-string">"World"</span>] [<span class="hljs-number">10</span>;<span class="hljs-number">15</span>];;</code></pre>
+<blockquote>
+<p>关于 <code>String.concat</code> 和<code>^</code>的性能</p>
+<p>由于<code>^</code>是一个成对处理字符串的操作符。要避免使用<code>^</code>来连接大量字符串，因为每次运行时，它都会分配一个新的字符串。组装大字符串时，<code>^</code>可能带来严重的性能问题。</p>
+</blockquote>
+<p>最终汇集整个工作</p>
+<pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> render_table header rows = <span class="hljs-comment">(* 汇集整个工作建立表格 *)</span>
+  <span class="hljs-keyword">let</span> widths = max_width header rows <span class="hljs-keyword">in</span> <span class="hljs-comment">(* 利用max_width获取梅列宽的widths *)</span>
+  <span class="hljs-type">String</span>.concat ~sep:<span class="hljs-string">"\n"</span>               <span class="hljs-comment">(* 插入换行分隔符号 *)</span>
+    ( render_row header widths          <span class="hljs-comment">(* 渲染header *)</span>
+      :: render_separator widths        <span class="hljs-comment">(* 渲染分界 *)</span>
+    :: <span class="hljs-type">List</span>.map rows ~f:(<span class="hljs-keyword">fun</span> row -&gt; render_row row widths) <span class="hljs-comment">(* 为了渲染每一行，需要再次使用List.map *)</span>
+    );;</code></pre>
+<pre><code class="hljs OCaml"><span class="hljs-comment">(* 测试一下最初的例子 *)</span>
+printf <span class="hljs-string">"\n%s\n"</span>
+  (render_table
+      [ <span class="hljs-string">"language"</span>;<span class="hljs-string">"architect"</span>;<span class="hljs-string">"first class"</span>]
+      [ [<span class="hljs-string">"Lisp"</span>;<span class="hljs-string">"John McCarthy"</span>;<span class="hljs-string">"1958"</span>];
+        [<span class="hljs-string">"C"</span>;<span class="hljs-string">"Dennis Ritchie"</span>;<span class="hljs-string">"1969"</span>];
+        [<span class="hljs-string">"ML"</span>;<span class="hljs-string">"Robin Milner"</span>;<span class="hljs-string">"1973"</span>];
+        [<span class="hljs-string">"OCaml"</span>;<span class="hljs-string">"Xavier Leroy"</span>;<span class="hljs-string">"1996"</span>];
+      ]);;</code></pre>
+<pre><code class="hljs Bash">| language | architect      | first class |
+|----------+----------------+-------------|
+| Lisp     | John McCarthy  | 1958        |
+| C        | Dennis Ritchie | 1969        |
+| ML       | Robin Milner   | 1973        |
+| OCaml    | Xavier Leroy   | 1996        |
+- : Base.unit = ()</code></pre>
+<p>其他有用的列表函数，参考在线文档（现在 page not found 了）</p>
+<ul>
+<li><code>List.reduce</code> 特殊版本的<code>fold</code>，不需要一个明确的初始值 init。</li>
+<li><code>List.filter</code>,<code>List.filter_map</code> 对列表中一个子集进行操作。</li>
+<li><code>List.append</code> 进行列表的连接，合并,<code>@</code>运算符与函数等价。</li>
+<li><code>List.concat</code> 用来连接一个由列表组成的列表。</li>
+</ul>
+<h2 id="尾递归"><a href="#尾递归" class="headerlink" title="尾递归"></a>尾递归</h2><p>Tail Recursion，计算一个 OCaml 的长度，唯一的办法是从头到尾遍历整个列表。因此，计算列表长度花费的时间与列表的大小成正比。考虑下面两种写法，分别是简单函数和尾递归函数。</p>
+<pre><code class="hljs OCaml"><span class="hljs-comment">(* 非尾递归 *)</span>
+<span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> length = <span class="hljs-keyword">function</span>       <span class="hljs-comment">(* 无名函数接受一个列表为参数 *)</span>
+  | <span class="hljs-literal">[]</span> -&gt; <span class="hljs-number">0</span>
+  | _ :: tl -&gt; <span class="hljs-number">1</span> + length tl
+;;
+
+<span class="hljs-comment">(* 尾递归 *)</span>
+<span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> length_plus_n l n =     <span class="hljs-comment">(* 接受列表和数值两个参数 *)</span>
+  <span class="hljs-keyword">match</span> l <span class="hljs-keyword">with</span>
+  | <span class="hljs-literal">[]</span> -&gt; n
+  | _ :: tl -&gt; length_plus_n tl (n+<span class="hljs-number">1</span>)
+;;
+
+<span class="hljs-keyword">let</span> make_list n  = <span class="hljs-type">List</span>.init n ~f:(<span class="hljs-keyword">fun</span> x -&gt; x);;
+length_plus_n (make_list <span class="hljs-number">500000</span>) <span class="hljs-number">0</span>;;
+length (make_list <span class="hljs-number">500000</span>);;</code></pre>
+<pre><code class="hljs Bash"><span class="hljs-comment"># length_plus_n (make_list 500000) 0;;</span>
+- : int = 500000
+<span class="hljs-comment"># length (make_list 500000);;</span>
+Stack overflow during evaluation (looping recursion?).
+Raised by primitive operation at file <span class="hljs-string">"//toplevel//"</span>, line 51, characters 19-28</code></pre>
+<p>函数调用需要一些空间来跟踪与这个调用相关联的信息，<strong>如传入函数的参数</strong>，<strong>或者函数调用完成后开始执行的那个代码的位置</strong>。为了支持嵌套函数调用，常用一个堆栈来组织，对于各个嵌套的函数调用会分别分配一个新的栈帧，成功是再释放。非尾递归的函数会分配很多数量的栈帧，耗尽空间。而尾递归中的调用是一个尾调用可以巧妙避开这问题，不需要分配新的栈帧。</p>
+<p>什么时候一个调用是尾调用？函数（调用者）调用另一个函数（被调用者）。<strong>被调用者的返回的值，如果调用者除了返回这个值不做任何其他处理，则认为这个调用是一个尾调用</strong>。尾调用优化很有意义，因为调用者完成一个尾调用时，调用者的栈帧不再使用，<strong>所以不用保留这个栈帧</strong>。因此，不用为被调用者分配一个新栈帧，<strong>编译器完全可以重用调用者的栈帧</strong>。</p>
+<p>当嵌套调用序列深度与数据规模基本相同时，通常都应当使用尾递归。</p>
+<h2 id="更简洁更快速的模式"><a href="#更简洁更快速的模式" class="headerlink" title="更简洁更快速的模式"></a>更简洁更快速的模式</h2><p>利用<code>as</code>模式减少分配，<code>function</code>可以替代显式的<code>match</code>，<code>when</code>子句可以让代码更为简介，为模式增加一个额外的前置条件。</p>
+<p>练习</p>
+<pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> destutter = <span class="hljs-keyword">function</span>
+  | <span class="hljs-literal">[]</span> | [_] <span class="hljs-keyword">as</span> l -&gt; l
+  | hd::(hd :: _ <span class="hljs-keyword">as</span> tl) <span class="hljs-keyword">when</span>  hd =hd' -&gt; destutter tl
+  | hd:: tl -&gt; hd :: destutter tl
+;;</code></pre>
+<p>有关<code>=</code>的多态比较，类似的还有<code>&lt;</code>,<code>&gt;=</code>,<code>compare</code>，内置于运行时库的底层，基础是对于所比较的值的类型<strong>几乎完全忽略这些类型的有关信息</strong>，而只考虑<strong>值在内存中的结构</strong>。我们无法自行构建这些函数。另外注意一些使用限制，比如函数值的<code>=</code>比较会在运行时Fail。</p>
 
             </article>
             <hr>
