@@ -7,8 +7,8 @@
 
 <head>
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
-  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -51,7 +51,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -123,18 +123,6 @@
             </li>
           
         
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/links/">
-                <i class="iconfont icon-link-fill"></i>
-                友链
-              </a>
-            </li>
-          
-        
         
           <li class="nav-item" id="search-btn">
             <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
@@ -147,7 +135,7 @@
 </nav>
 
     <div class="view intro-2" id="background" parallax=true
-         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+         style="background: url('/img/default.png') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
@@ -171,7 +159,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      460 字
+      529 字
     </span>
   
 
@@ -181,7 +169,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      5
+      6
        分钟
     </span>
   
@@ -212,26 +200,37 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <h1 id="Chap4-文件、模块和程序"><a href="#Chap4-文件、模块和程序" class="headerlink" title="Chap4 文件、模块和程序"></a>Chap4 文件、模块和程序</h1><p>（本章很多内容 15 年中文版不适用，需要 2nd Edition 英文版）</p>
+              <h1 id="Chap4-文件、模块和程序"><a href="#Chap4-文件、模块和程序" class="headerlink" title="Chap4 文件、模块和程序"></a>Chap4 文件、模块和程序</h1><p>（本章很多内容 15 年中文版不适用，需要 2nd Edition 英文版，现在已经转向<a href="https://dev.realworldocaml.org/files-modules-and-programs.html#single-file-programs" target="_blank" rel="noopener">英文版</a>学习）</p>
 <p>从练习转向实践，抛开顶层环境，由文件来构建程序。</p>
 <p>文件不只是存储和管理代码的一种方便方式，在 OCaml 中，文件还与<strong>模块</strong>对应，相当于边界，可以把程序划分为不同的概念单元。</p>
-<h2 id="单文件程序"><a href="#单文件程序" class="headerlink" title="单文件程序"></a>单文件程序</h2><blockquote>
+<h2 id="单文件程序"><a href="#单文件程序" class="headerlink" title="单文件程序"></a>单文件程序</h2><p>实际例子，从<code>stdin</code>读入输入行，并计算各行的频数，最后，会写出频数最高的行。构建<code>freq.ml</code>:</p>
+<pre><code class="hljs OCaml"><span class="hljs-keyword">open</span> <span class="hljs-type">Base</span>
+<span class="hljs-keyword">open</span> <span class="hljs-type">Stdio</span>
+
+<span class="hljs-keyword">let</span> build_counts <span class="hljs-literal">()</span> =
+  <span class="hljs-type">In_channel</span>.fold_lines <span class="hljs-type">In_channel</span>.stdin ~init:<span class="hljs-literal">[]</span> ~f:(<span class="hljs-keyword">fun</span> counts line -&gt;
+    <span class="hljs-keyword">let</span> count =
+      <span class="hljs-keyword">match</span> <span class="hljs-type">List</span>.<span class="hljs-type">Assoc</span>.find ~equal:<span class="hljs-type">String</span>.equal counts line <span class="hljs-keyword">with</span>
+      | <span class="hljs-type">None</span> -&gt; <span class="hljs-number">0</span>
+      | <span class="hljs-type">Some</span> x -&gt; x
+
+    <span class="hljs-keyword">in</span>
+    <span class="hljs-type">List</span>.<span class="hljs-type">Assoc</span>.add ~equal:<span class="hljs-type">String</span>.equal counts line (count + <span class="hljs-number">1</span>)
+  )
+
+<span class="hljs-keyword">let</span> <span class="hljs-literal">()</span> =
+  build_counts <span class="hljs-literal">()</span>
+  |&gt; <span class="hljs-type">List</span>.sort ~compare:(<span class="hljs-keyword">fun</span> (_,x) (_,y) -&gt; <span class="hljs-type">Int</span>.descending x y)
+  |&gt; (<span class="hljs-keyword">fun</span> l -&gt; <span class="hljs-type">List</span>.take l <span class="hljs-number">10</span>)
+  |&gt; <span class="hljs-type">List</span>.iter ~f:(<span class="hljs-keyword">fun</span> (line,count) -&gt; printf <span class="hljs-string">"%3d: %s\n"</span> count line)</code></pre>
+<blockquote>
 <p>Main 函数？</p>
 <p>OCaml 与 C 不同，程序并没有一个唯一的<code>main</code>函数。执行程序时，实现文件中的所有语句会按其链接的顺序进行计算。某种程度上，整个代码基都是一个庞大的 main 函数。</p>
 <p>写<code>let () =</code>是一个惯用法，这里 let 绑定是对一个 unit 类型值的模式匹配，它是为了确保右边的表达式返回 unit，对于主要为得到副作用的函数来说，这个用法很常见。</p>
 </blockquote>
-<p>实际例子，从<code>stdin</code>读入输入行，并计算各行的频数，最后，会写出频数最高的 10 行。（不过这个程序在实验过程中一直报 Error）</p>
-<pre><code class="hljs Bash">The Std sub-module is no longer needed
-File <span class="hljs-string">"chap4-freq.ml"</span>, line 5, characters 22-27:
-Warning 3: deprecated: Core.Std.stdin
-[since 2016-04] Use [In_channel.stdin]
-File <span class="hljs-string">"chap4-freq.ml"</span>, line 8, characters 2-6:
-Error: This pattern matches values of <span class="hljs-built_in">type</span> <span class="hljs-string">'a option
-       but a pattern was expected which matches values of type
-         equal:(Base.string -&gt; Base.string -&gt; bool) -&gt; '</span>b option</code></pre>
-<p>先进行后面的实验吧。</p>
+<p>直接使用<code>ocamlopt freq.ml freq</code>编译该文件会出现 Error，因为无法链接到<code>Base</code>和<code>Stdio</code>。使用<code>ocamlfind</code>找寻依赖或者使用<code>dune</code>。</p>
 <a id="more"></a>
-<h2 id="多文件程序和模块"><a href="#多文件程序和模块" class="headerlink" title="多文件程序和模块"></a>多文件程序和模块</h2><p>模块系统，每个文件编译为一个模块。</p>
+<h2 id="多文件程序和模块"><a href="#多文件程序和模块" class="headerlink" title="多文件程序和模块"></a>多文件程序和模块</h2><p>模块系统，每个文件编译为一个模块。将之前的<code>freq.ml</code>拆分进行练习。拆分出<code>counter.ml</code>，会编译为名为<code>Counter</code>的模块。</p>
 <h2 id="签名和抽象类型"><a href="#签名和抽象类型" class="headerlink" title="签名和抽象类型"></a>签名和抽象类型</h2><p>签名（signature），在<code>.mli</code>中。例如<code>filename.ml</code>定义的模块会受文件<code>filename.mli</code>中签名的约束。</p>
 <p>语法</p>
 <pre><code class="hljs OCaml"><span class="hljs-keyword">val</span> &lt;identifier&gt; : &lt;<span class="hljs-keyword">type</span>&gt;</code></pre>
@@ -475,50 +474,11 @@ Error: This pattern matches values of <span class="hljs-built_in">type</span> <s
         $(this).wrap(element);
       }
     );
-  </script>
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
 
 
 
-
-  
-
-  
-    <!-- MathJax -->
-    <script>
-      MathJax = {
-        tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']]
-        },
-        options: {
-          renderActions: {
-            findScript: [10, doc => {
-              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
-                const display = !!node.type.match(/; *mode=display/);
-                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
-                const text = document.createTextNode('');
-                node.parentNode.replaceChild(text, node);
-                math.start = { node: text, delim: '', n: 0 };
-                math.end = { node: text, delim: '', n: 0 };
-                doc.math.push(math);
-              });
-            }, '', false],
-            insertedScript: [200, () => {
-              document.querySelectorAll('mjx-container').forEach(node => {
-                let target = node.parentNode;
-                if (target.nodeName.toLowerCase() === 'li') {
-                  target.parentNode.classList.add('has-jax');
-                }
-              });
-            }, '', false]
-          }
-        }
-      };
-    </script>
-
-    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-
-  
 
 
 
