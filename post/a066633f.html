@@ -17,7 +17,7 @@
   <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
-  <title>形式化方法学习——形式化验证方法概述 - Edward&#39;s blog</title>
+  <title>OCaml学习——Configuration-for-merlin - Edward&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
@@ -160,8 +160,8 @@
               
   <div class="mt-3 post-meta">
     <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2020-07-20 19:23">
-      2020年7月20日 晚上
+    <time datetime="2020-10-20 16:40">
+      2020年10月20日 下午
     </time>
   </div>
 
@@ -171,7 +171,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      587 字
+      809 字
     </span>
   
 
@@ -181,7 +181,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      6
+      11
        分钟
     </span>
   
@@ -212,35 +212,102 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <h1 id="形式化验证方法概述"><a href="#形式化验证方法概述" class="headerlink" title="形式化验证方法概述"></a>形式化验证方法概述</h1><blockquote>
-<p>Formal verification: the only way to guarantee that a system is free of programming errors.</p>
-</blockquote>
-<p>按照陈海波老师 Lecture 中所讲，<strong>形式化验证是确保系统无编程错误的唯一方法</strong>。</p>
-<p>形式化验证为构建正确、可靠的系统提供了系统化手段。基于这种方式构建起来的系统，具备高可信度，由于目前经验证的只是系统局部，由于环境因素必须无条件信任一些未经证明数学完备的构件，所以可以理解为，形式化验证可以达到 99%正确。</p>
-<p>根据现在的发展，形式化验证方法主要分为三大类<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="SOSP 2019——SJTU-IPADS 的集体见闻（Day-2）
-">[1]</span></a></sup>：</p>
+              <h1 id="Configuration-for-merlin"><a href="#Configuration-for-merlin" class="headerlink" title="Configuration for merlin"></a>Configuration for merlin</h1><p>Emacs+Spacemacs+ocaml layer 进行 OCaml 语法学习，刷题过程，调用外部库和自建模块时 Merlin 检测一直报错，并且 auto-completension 也会随之失效。今天在 Merlin Issue 查阅一些信息后，遵循<a href="https://github.com/ocaml/merlin/wiki" target="_blank" rel="noopener">Github Wiki</a>，算是弄明白问题的原因，也了解了<code>.merlin</code>的配置。</p>
+<h2 id="Unbound-module-XXX"><a href="#Unbound-module-XXX" class="headerlink" title="Unbound module XXX"></a>Unbound module XXX</h2><p>正确安装并加载<code>tuareg-mode</code>（提供语法高亮）以及<code>merlin-mode</code>后，Merlin 每次在<code>C-x C-s</code>保存时检查错误，比如在一个<code>factorial</code>目录中，我们创建了<code>factorial.ml</code>和<code>test.ml</code>文件。</p>
 <ul>
-<li>交互式证明（interactive verification）</li>
-<li>半自动化证明（auto-active verification）</li>
-<li>一键证明（push-button verification）</li>
+<li><p><code>factorial.ml</code></p>
+<p>模块内包含一个计算累乘的函数。</p>
+<pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> factorial =
+<span class="hljs-comment">(* Because we have a closure, `ht` persists across calls to `factorial`. *)</span>
+<span class="hljs-keyword">let</span> ht = <span class="hljs-built_in">ref</span> (<span class="hljs-type">Hashtbl</span>.create <span class="hljs-number">100</span>) <span class="hljs-keyword">in</span>
+<span class="hljs-keyword">let</span> _ = <span class="hljs-type">Hashtbl</span>.add (!ht) <span class="hljs-number">0</span> (<span class="hljs-type">Big_int</span>.big_int_of_int <span class="hljs-number">1</span>) <span class="hljs-keyword">in</span>
+<span class="hljs-keyword">let</span> max = <span class="hljs-built_in">ref</span> <span class="hljs-number">1</span> <span class="hljs-keyword">in</span>
+<span class="hljs-keyword">fun</span> (n:<span class="hljs-built_in">int</span>) -&gt;
+    <span class="hljs-keyword">if</span> n &lt; <span class="hljs-number">0</span> <span class="hljs-keyword">then</span>
+    failwith <span class="hljs-string">"n &lt; 0"</span>
+    <span class="hljs-keyword">else</span>
+    <span class="hljs-keyword">let</span> ht = !ht <span class="hljs-keyword">in</span>
+    <span class="hljs-keyword">try</span>
+        <span class="hljs-comment">(* Check if `ht` contains the value of `factorial n`. Return it
+        if so. *)</span>
+        <span class="hljs-type">Hashtbl</span>.find ht n
+    <span class="hljs-keyword">with</span> <span class="hljs-type">Not_found</span> -&gt;
+        <span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> aux i n =
+        <span class="hljs-keyword">let</span> x = <span class="hljs-type">Big_int</span>.mult_int_big_int i (<span class="hljs-type">Hashtbl</span>.find ht (i - <span class="hljs-number">1</span>)) <span class="hljs-keyword">in</span>
+        <span class="hljs-keyword">if</span> i = n <span class="hljs-keyword">then</span>
+            x
+        <span class="hljs-keyword">else</span>
+            <span class="hljs-keyword">let</span> <span class="hljs-literal">()</span> = <span class="hljs-type">Hashtbl</span>.add ht i x <span class="hljs-keyword">in</span>
+            aux (i + <span class="hljs-number">1</span>) n <span class="hljs-keyword">in</span>
+        <span class="hljs-keyword">let</span> result = aux !max n <span class="hljs-keyword">in</span>
+        <span class="hljs-comment">(* Update `max`, and return the `result`. *)</span>
+        <span class="hljs-keyword">let</span> _ = max := n <span class="hljs-keyword">in</span>
+        result</code></pre>
+</li>
+<li><p><code>test.ml</code></p>
+<p>用于单元测试</p>
+<pre><code class="hljs OCaml"><span class="hljs-keyword">open</span> <span class="hljs-type">Big_int</span>
+<span class="hljs-keyword">open</span> <span class="hljs-type">Factorial</span>
+<span class="hljs-keyword">open</span> <span class="hljs-type">OUnit2</span>
+
+<span class="hljs-keyword">let</span> <span class="hljs-literal">()</span> = run_test_tt_main (<span class="hljs-string">"factorial n"</span> &gt;::: [
+
+<span class="hljs-string">"n &lt; 0"</span> &gt;:: (<span class="hljs-keyword">fun</span> _ -&gt;
+    assert_raises (<span class="hljs-type">Failure</span> <span class="hljs-string">"n &lt; 0"</span>) (<span class="hljs-keyword">fun</span> <span class="hljs-literal">()</span> -&gt; factorial (-<span class="hljs-number">1</span>))
+);
+
+<span class="hljs-string">"n = 0"</span> &gt;:: (<span class="hljs-keyword">fun</span> _ -&gt;
+    <span class="hljs-keyword">assert</span> (eq_big_int (big_int_of_int <span class="hljs-number">1</span>) (factorial <span class="hljs-number">0</span>))
+);
+
+<span class="hljs-string">"n = 1"</span> &gt;:: (<span class="hljs-keyword">fun</span> _ -&gt;
+    <span class="hljs-keyword">assert</span> (eq_big_int (big_int_of_int <span class="hljs-number">1</span>) (factorial <span class="hljs-number">1</span>))
+);
+
+<span class="hljs-string">"n = 2"</span> &gt;:: (<span class="hljs-keyword">fun</span> _ -&gt;
+    <span class="hljs-keyword">assert</span> (eq_big_int (big_int_of_int <span class="hljs-number">2</span>) (factorial <span class="hljs-number">2</span>))
+);
+
+<span class="hljs-string">"n = 3"</span> &gt;:: (<span class="hljs-keyword">fun</span> _ -&gt;
+    <span class="hljs-keyword">assert</span> (eq_big_int (big_int_of_int <span class="hljs-number">6</span>) (factorial <span class="hljs-number">3</span>))
+);
+
+<span class="hljs-string">"n = 10"</span> &gt;:: (<span class="hljs-keyword">fun</span> _ -&gt;
+    <span class="hljs-keyword">assert</span> (eq_big_int (big_int_of_int <span class="hljs-number">3628800</span>) (factorial <span class="hljs-number">10</span>))
+);
+
+])</code></pre>
+</li>
 </ul>
-<h2 id="交互式证明"><a href="#交互式证明" class="headerlink" title="交互式证明"></a>交互式证明</h2><p>交互式证明（interactive verification），借助 Coq、Isabelle 等交互式证明工具，耗费相当多时间构建证明，一步一进。</p>
-<h2 id="半自动化证明"><a href="#半自动化证明" class="headerlink" title="半自动化证明"></a>半自动化证明</h2><p>半自动化证明（auto-active verification），借助如 Dafny、Verifast 等半自动化证明器这样的工具。这需要开发人员提供证明注释，包括前置条件和后置条件、循环变量和框架注释来指导验证器。虽然与交互验证器相比，自动激活验证器可以减少证明负担，但它们仍然需要大量的工作<sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote"><span class="hint--top hint--rounded" aria-label="Helgi Sigurbjarnarson. Push-Button Verification of Systems Software. PhD thesis, University of Washington, Apr 2020.
-">[2]</span></a></sup>。</p>
-<h2 id="一键证明"><a href="#一键证明" class="headerlink" title="一键证明"></a>一键证明</h2><p>基于 symbolic evaluation 等技术的一键验证，是 UNSAT 一系列工作的研究成果。文献<sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote"><span class="hint--top hint--rounded" aria-label="Helgi Sigurbjarnarson. Push-Button Verification of Systems Software. PhD thesis, University of Washington, Apr 2020.
-">[2]</span></a></sup>是该实验室 2020 年一篇硕士论文，总结了近几年的成果。简言之，<strong>最小化</strong>验证系统软件所需的手动证明负担。</p>
-<p>思路构想，就验证的复杂性、技术或工具而言，并不是所有的系统设计都能平等地验证其正确性。与交互式或自动验证相比，按钮方法将手工校对和注释的负担转移到设计阶段，而设计阶段必须满足三个关键需求<sup id="fnref:2" class="footnote-ref"><a href="#fn:2" rel="footnote"><span class="hint--top hint--rounded" aria-label="Helgi Sigurbjarnarson. Push-Button Verification of Systems Software. PhD thesis, University of Washington, Apr 2020.
-">[2]</span></a></sup>。</p>
-<p>下面两个核心要点保证了可用符号执行的方式自动化验证实现是否符合抽象规范。</p>
+<p>我们发现，虽然顶层环境中可以进行简单的函数测试，但是保存<code>test.ml</code>时 Merlin 检测每次都会报如下错误，自动检测也随之失效了。</p>
+<pre><code class="hljs Bash">Error: Unbound module Factorial
+Error: Unbound module OUnit2</code></pre>
+<p>而实际上，我们已经通过<code>opam install ounit2</code>安装了 OUnit2，并且构造完成 Factorial 模块，只是 Merlin 没有感知到。merlin 只能感知到编译完成的文件（严格地说应该是编译好接口）的文件，所以多文件（模块）下，没有编译时 Merlin 就会报 Error</p>
+<h2 id="Configuration-for-merlin-files"><a href="#Configuration-for-merlin-files" class="headerlink" title="Configuration for .merlin files"></a>Configuration for <code>.merlin</code> files</h2><p><code>ocamlbuild xxx.cmi</code>编译自己编写的模块，然后<code>C-c C-f &lt;RET&gt; .merlin</code>编辑<code>.merlin</code>配置文件如下。</p>
+<pre><code class="hljs txt">B _build
+PKG lwt lwt.unix ounit2</code></pre>
+<p>简单说一下<code>.merlin</code>文件的配置规则，更完整的文件配置见<a href="https://github.com/ocaml/merlin/wiki/project-configuration" target="_blank" rel="noopener">Merlin Wiki Project configuration</a></p>
 <ul>
-<li>first-order logic</li>
-<li>finite interface</li>
+<li><p>S: Source path</p>
+<p><code>S</code>指定目录让 Merlin 感知到其他源文件。如果项目文件分布在不同文件中，使用<code>S</code>来告知 Merlin。</p>
+</li>
+<li><p>B: Build path</p>
+<p><code>B</code>为了让 Merlin 能够从其他文件来提供 type of identifiers 以及补全，它需要知道在哪里可以找到项目的其他模块的<code>.cmi</code>文件（这也是本文解决的点）。</p>
+</li>
+<li><p>PKG: Packages</p>
+<p>如果使用了外部库，需要 findlib package，我们只需要在<code>.merlin</code>中添加 PKG，比如<code>ounit2</code>，需要小写（与传递给<code>ocamlfind</code>保持一致）。</p>
+</li>
 </ul>
-<p>使用的核心工具 SMT Z3。</p>
+<h2 id="Basic-call"><a href="#Basic-call" class="headerlink" title="Basic call"></a>Basic call</h2><p>一些 Emacs 编辑<code>.ml</code>文件常用的快捷键</p>
+<ul>
+<li><code>C-c C-e</code> tuareg-eval-phrase 传递语句到终端（OCaml 顶层环境），最常用</li>
+<li><code>C-c C-t</code> merlin-type-enclosing 类型查询（配合<code>C-</code>和上下方向键控制包括区域）</li>
+<li><code>C-c C-x</code> merlin-error-next 下一个 error</li>
+<li><code>C-c [</code>: ocaml-open-module 打开模块</li>
+<li><code>C-c ]</code>: ocaml-close-module 关闭模块</li>
+</ul>
 <a id="more"></a>
-<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a href="https://mp.weixin.qq.com/s/s_P2FZf3uhuPlxliuSTQ0w" target="_blank" rel="noopener">SOSP 2019——SJTU-IPADS 的集体见闻（Day-2）</a>
-<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a href="https://unsat.cs.washington.edu/papers/sigurbjarnarson-phd-thesis.pdf" target="_blank" rel="noopener">Helgi Sigurbjarnarson. Push-Button Verification of Systems Software. PhD thesis, University of Washington, Apr 2020.</a>
-<a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
+
             </article>
             <hr>
             <div>
@@ -251,7 +318,7 @@
                     
                       <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
                     
-                      <a class="hover-with-bg" href="/categories/Computer-Science/形式化方法/">形式化方法</a>
+                      <a class="hover-with-bg" href="/categories/Computer-Science/OCaml/">OCaml</a>
                     
                   </div>
                 
@@ -259,7 +326,7 @@
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tag/形式化方法/">形式化方法</a>
+                      <a class="hover-with-bg" href="/tag/OCaml/">OCaml</a>
                     
                   </div>
                 
@@ -272,9 +339,9 @@
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/post/c501e3de.html">
+                      <a href="/post/8b5886df.html">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">一路向楠——2020夏南行记第一站（合肥）</span>
+                        <span class="hidden-mobile">形式化方法——Proofs-and-Algorithms-Part1</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -282,8 +349,8 @@
                   <div class="post-next col-6">
                     
                     
-                      <a href="/post/3eb11354.html">
-                        <span class="hidden-mobile">读《与学生合作开展研究的体会》感受</span>
+                      <a href="/post/e2d84ceb.html">
+                        <span class="hidden-mobile">Coq学习——《Software-Foundation》Volume1</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -422,7 +489,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "形式化方法学习——形式化验证方法概述&nbsp;",
+        "OCaml学习——Configuration-for-merlin&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,
