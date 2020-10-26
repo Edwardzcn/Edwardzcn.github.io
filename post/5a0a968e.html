@@ -171,7 +171,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      475 字
+      770 字
     </span>
   
 
@@ -181,7 +181,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      8
+      14
        分钟
     </span>
   
@@ -274,6 +274,55 @@
   | <span class="hljs-type">stop</span>
   | <span class="hljs-type">tick</span> (foo : nat').</code></pre>
 <p>[nat] compare to [rgb] and [color]（理解之前的<code>rgb</code>拆开的原因，这样控制 primary 生成的链有限）。</p>
+<p>Coq provides a tiny bit of built-in magic for parsing and printing nat (unary base 1 &lt;-&gt;decimal base 10):</p>
+<ul>
+<li>Ordinary decimal numerals canbe used as an alternative to the “unary” notation.</li>
+<li>Coq prints numbers in decimal form by default.</li>
+</ul>
+<p>For convinience.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Check</span> (S (S (S (S O)))).
+<span class="hljs-comment">(* ===&gt; 4 : nat *)</span>
+
+<span class="hljs-keyword">Definition</span> minustwo (n : nat) : nat :=
+  <span class="hljs-keyword">match</span> n <span class="hljs-built_in">with</span>
+    | <span class="hljs-type">O</span> =&gt; O
+    | <span class="hljs-type">S</span> O =&gt; O
+    | <span class="hljs-type">S</span> (S n') =&gt; n'
+  <span class="hljs-keyword">end</span>.
+
+<span class="hljs-keyword">Compute</span> (minustwo <span class="hljs-number">4</span>).
+<span class="hljs-comment">(* Equal to minustwo S(S(S(S(O)))) *)</span>
+<span class="hljs-keyword">Compute</span> (minustwo (S(S(S(S O))))).
+<span class="hljs-comment">(* ===&gt; 2 : nat *)</span></code></pre>
+<p>Pattern matching with recursion. Introoduced with the keyword [Fixpoint] instead of [Definition].</p>
+<h2 id="Proof-by-Simplification"><a href="#Proof-by-Simplification" class="headerlink" title="Proof by Simplification"></a>Proof by Simplification</h2><p>The proofs of examples claimed before were always the same: use [simpl] [reflexivity] to check that both sides contain identical values.</p>
+<p>[reflexivity] is more powerful than I have expected. It automatically perfoem some simplification.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> plus_O_n' : <span class="hljs-keyword">forall</span> n : nat, <span class="hljs-number">0</span> + n = n.
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span> n. <span class="hljs-built_in">reflexivity</span>. <span class="hljs-keyword">Qed</span>.
+
+<span class="hljs-keyword">Theorem</span> plus_O_n'' : <span class="hljs-keyword">forall</span> n : nat, <span class="hljs-number">0</span> + n = n.
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span> m. <span class="hljs-built_in">reflexivity</span>. <span class="hljs-keyword">Qed</span>.</code></pre>
+<ul>
+<li>[Theorem] instead of [Example] (for style)</li>
+<li>[forall n:nat] talks all nat.</li>
+<li>[intros] from the quantifier in the goal to a _context_ of current assumptions.</li>
+</ul>
+<p>A _tactics_ is a command that is used between [Proof] and [Qed] to guide the process.</p>
+<h2 id="Proof-by-Rewriting"><a href="#Proof-by-Rewriting" class="headerlink" title="Proof by Rewriting"></a>Proof by Rewriting</h2><p>Without universal claim about all nat, talk about a specialized property only holds when [n = m].</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> plus_id_example : <span class="hljs-keyword">forall</span> n m:nat,
+  n = m -&gt;
+  n + n = m + m.</code></pre>
+<p>After [intros] we get [n] [m] are arbitrary numbers. We can’t just use simplification to prove (absolutely imposibble) but need to use the hypothesis.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Proof</span>.
+  <span class="hljs-comment">(* move both quantifiers into the context: *)</span>
+  <span class="hljs-built_in">intros</span> n m.
+  <span class="hljs-comment">(* move the hypothesis into the context: *)</span>
+  <span class="hljs-built_in">intros</span> H.
+  <span class="hljs-comment">(* rewrite the goal using the hypothesis: *)</span>
+  <span class="hljs-built_in">rewrite</span> -&gt; H.
+  <span class="hljs-built_in">reflexivity</span>.  <span class="hljs-keyword">Qed</span>.</code></pre>
 
             </article>
             <hr>
