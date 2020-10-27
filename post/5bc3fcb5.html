@@ -160,8 +160,8 @@
               
   <div class="mt-3 post-meta">
     <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2020-10-16 15:14">
-      2020年10月16日 下午
+    <time datetime="2020-10-27 10:14">
+      2020年10月27日 上午
     </time>
   </div>
 
@@ -171,7 +171,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      717 字
+      948 字
     </span>
   
 
@@ -181,7 +181,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      14
+      18
        分钟
     </span>
   
@@ -318,6 +318,42 @@ evenb n&apos; = negb match n&apos; with
 </blockquote>
 <h2 id="Proofs-Within-proofs"><a href="#Proofs-Within-proofs" class="headerlink" title="Proofs Within proofs"></a>Proofs Within proofs</h2><p>In Coq, as in informal mathematics, large proofs are often broken into a sequence of theorems. But sometimes, give a proof its own top-level name is trivial.</p>
 <p>For convenience, simply state and prove the needed “sub-theorem” right at the point where it is used with tactic [assert].</p>
+<p>[assert] introduces two sub-goals</p>
+<ul>
+<li>The first goal -&gt; [H:] itself</li>
+<li>The second goal -&gt; the origin goal at the point we invoke [assert]</li>
+</ul>
+<h3 id="Tell-Coq-where-to-rewrite"><a href="#Tell-Coq-where-to-rewrite" class="headerlink" title="Tell Coq where to rewrite"></a>Tell Coq where to rewrite</h3><p>When the positions where we can use the same [rewrite] tactic appears more than once, the [rewrite] tactic is <strong>not very smart</strong> about _where_ it applies the rewrite.</p>
+<p>We can tell Coq with [assert] and sub-proof. Like this:</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> plus_rearrange : <span class="hljs-keyword">forall</span> n m p q : nat,
+  (n + m) + (p + q) = (m + n) + (p + q).
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span> n m p q.
+  <span class="hljs-built_in">assert</span> (H: n + m = m + n).
+  &#123; <span class="hljs-built_in">rewrite</span> -&gt; plus_comm. <span class="hljs-built_in">reflexivity</span>. &#125;
+  <span class="hljs-built_in">rewrite</span> -&gt; H. <span class="hljs-built_in">reflexivity</span>.  <span class="hljs-keyword">Qed</span>.</code></pre>
+<h2 id="Formal-vs-Informal-Proof"><a href="#Formal-vs-Informal-Proof" class="headerlink" title="Formal vs. Informal Proof"></a>Formal vs. Informal Proof</h2><blockquote>
+<p>“Informal proofs are algorithms; formal proofs are code.”</p>
+</blockquote>
+<h3 id="A-rough-and-ready-definition-of-proof"><a href="#A-rough-and-ready-definition-of-proof" class="headerlink" title="A rough and ready definition of proof"></a>A rough and ready definition of proof</h3><blockquote>
+<p>A proof of a mathematical proposition [P] is a written (or spoken) text that instills in the reader or hearer the certainty that [P] is true — an unassailable argument for the truth of [P].  That is, a proof is an act of communication.</p>
+</blockquote>
+<h3 id="Communication-and-readers"><a href="#Communication-and-readers" class="headerlink" title="Communication and readers"></a>Communication and readers</h3><p>Acts of communication may involve different sorts of readers.</p>
+<ul>
+<li>program<ul>
+<li>Like Coq,Isabel…</li>
+<li>Mechanically derived from a certain set of formal logic rules.</li>
+<li><strong>Formal proofs</strong></li>
+</ul>
+</li>
+<li>human being<ul>
+<li>in natural language</li>
+<li>convince readers</li>
+<li><strong>Informal proofs</strong></li>
+</ul>
+</li>
+</ul>
+<h3 id="Differences"><a href="#Differences" class="headerlink" title="Differences"></a>Differences</h3><p>Coq has been designed so tha its [induction] tactic generates the same sub-goals, in the same order, as the bullet points that a mathematician would write.</p>
 
             </article>
             <hr>
@@ -350,18 +386,12 @@ evenb n&apos; = negb match n&apos; with
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/post/a066633f.html">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">OCaml学习——Configuration-for-merlin</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </div>
                   <div class="post-next col-6">
                     
                     
-                      <a href="/post/58822979.html">
-                        <span class="hidden-mobile">Coq学习——《Software-Foundation》Volume1.0-Preface</span>
+                      <a href="/post/5a0a968e.html">
+                        <span class="hidden-mobile">Coq学习——《Software-Foundation》Volume1.1-Basic</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
