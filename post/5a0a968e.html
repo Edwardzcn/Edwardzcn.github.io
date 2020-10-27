@@ -171,7 +171,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      770 字
+      1k 字
     </span>
   
 
@@ -181,7 +181,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      14
+      19
        分钟
     </span>
   
@@ -323,6 +323,53 @@
   <span class="hljs-comment">(* rewrite the goal using the hypothesis: *)</span>
   <span class="hljs-built_in">rewrite</span> -&gt; H.
   <span class="hljs-built_in">reflexivity</span>.  <span class="hljs-keyword">Qed</span>.</code></pre>
+<p>With [rewrite &lt;- / -&gt;] tactics we can use previously proved theorems or hypothesis to <strong>rewrite</strong> our goal.</p>
+<h2 id="Proof-by-Case-Analysis"><a href="#Proof-by-Case-Analysis" class="headerlink" title="Proof by Case Analysis"></a>Proof by Case Analysis</h2><p>Not everything can be proved by simple calculation and rewriting.</p>
+<p>Block like this.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> plus_1_neq_0_firsttry : <span class="hljs-keyword">forall</span> n : nat,
+  (n + <span class="hljs-number">1</span>) =? <span class="hljs-number">0</span> = false.
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span> n.
+  <span class="hljs-built_in">simpl</span>.  <span class="hljs-comment">(* does nothing! *)</span>
+<span class="hljs-keyword">Abort</span>.</code></pre>
+<p>Reason: [n] and [n + 1] (Notation of plus n 1) lie on each side of [=?]. [equ] [plus] begins by performing match on first argument. Both unknown number [n]! Match fail.</p>
+<blockquote>
+<p>The reason for this is that the definitions of both [eqb] and [+] begin by performing a [match] on their first argument. But here, the first argument to [+] is the unknown number [n] and the argument to [eqb] is the compound expression [n + 1]; neither can be simplified.</p>
+</blockquote>
+<p>Tells Coq to consider seprately, the cases where [n = O] and where [n = S n’] is called _destruct_.</p>
+<p>Exercise</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> andb_true_elim2 : <span class="hljs-keyword">forall</span> b c : bool,
+  andb b c = true -&gt; c = true.
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span> b c.
+  <span class="hljs-built_in">destruct</span> b eqn:Eb.
+  &#123;
+    <span class="hljs-built_in">simpl</span>.
+    <span class="hljs-built_in">intros</span> H.
+    <span class="hljs-built_in">rewrite</span> &lt;- H.
+    <span class="hljs-built_in">reflexivity</span>.
+  &#125;
+  &#123;
+    <span class="hljs-built_in">simpl</span>.
+    <span class="hljs-built_in">destruct</span> c eqn:Ec.
+    - <span class="hljs-built_in">simpl</span>. <span class="hljs-built_in">reflexivity</span>.
+    - <span class="hljs-built_in">intros</span> H. <span class="hljs-built_in">rewrite</span> -&gt; H. <span class="hljs-built_in">reflexivity</span>.
+  &#125;
+<span class="hljs-keyword">Qed</span>.</code></pre>
+<p>If there are no constructor arguments that need names, we can just write [[]] to get the case analysis.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> andb_commutative'' :
+  <span class="hljs-keyword">forall</span> b c, andb b c = andb c b.
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span> [] [].
+  - <span class="hljs-built_in">reflexivity</span>.
+  - <span class="hljs-built_in">reflexivity</span>.
+  - <span class="hljs-built_in">reflexivity</span>.
+  - <span class="hljs-built_in">reflexivity</span>.
+<span class="hljs-keyword">Qed</span>.</code></pre>
+<h2 id="Fixpoints-and-Structural-Recursion-Optional"><a href="#Fixpoints-and-Structural-Recursion-Optional" class="headerlink" title="Fixpoints and Structural Recursion (Optional)"></a>Fixpoints and Structural Recursion (Optional)</h2><p>decreasing and _structural recursion_</p>
+<p>Coq demands that some argument of _every_ [Fixpoint] definition is “decreasing”.</p>
+<h2 id="Tests"><a href="#Tests" class="headerlink" title="Tests"></a>Tests</h2><p>Not to intros. at the very begining.</p>
+<p>All passed. 14/14.</p>
 
             </article>
             <hr>
