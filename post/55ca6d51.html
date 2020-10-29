@@ -171,7 +171,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      172 字
+      583 字
     </span>
   
 
@@ -181,7 +181,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      3
+      11
        分钟
     </span>
   
@@ -245,6 +245,82 @@
                      (<span class="hljs-built_in">at</span> level <span class="hljs-number">60</span>, <span class="hljs-built_in">right</span> associativity).
 <span class="hljs-keyword">Notation</span> <span class="hljs-string">"[ ]"</span> := nil.
 <span class="hljs-keyword">Notation</span> <span class="hljs-string">"[ x ; .. ; y ]"</span> := (cons x .. (cons y nil) ..).</code></pre>
+<p>[++] as (which even has a prettied version) is a notation of “(app x y)”</p>
+<h3 id="Advanced-exercise-alternate"><a href="#Advanced-exercise-alternate" class="headerlink" title="Advanced exercise (alternate)"></a>Advanced exercise (alternate)</h3><pre><code class="hljs Coq"><span class="hljs-keyword">Fixpoint</span> alternate (l1 l2 : natlist) : natlist :=
+  <span class="hljs-comment">(* This solution cannot guess decreasing argument of fix *)</span>
+  <span class="hljs-comment">(* match l1 with *)</span>
+  <span class="hljs-comment">(* | [] =&gt; l2 *)</span>
+  <span class="hljs-comment">(* | h :: m =&gt; h :: alternate l2 m *)</span>
+
+  <span class="hljs-comment">(* Another solution Give defination by proof *)</span>
+  <span class="hljs-keyword">match</span> l1, l2 <span class="hljs-built_in">with</span>
+  | <span class="hljs-type">[] , [] =&gt; []
+  | [] , l2</span> =&gt;  l2
+  | <span class="hljs-type">l1</span> , [] =&gt; l1
+  | <span class="hljs-type">h1</span>::t1 , h2::t2 =&gt; h1::h2::(alternate t1 t2)
+  <span class="hljs-keyword">end</span>.</code></pre>
+<p>根据 mentor，处理这种 Fixpoint 找不到，Coq 自己很憨憨的问题，后面会有 Definition by proof 来解决。</p>
+<p>[induction] 策略根据外层 match 来尝试。师兄指导下迷迷糊糊写了 add_inc_count 的证明。</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Require</span> <span class="hljs-keyword">Import</span> Omega.
+<span class="hljs-keyword">Theorem</span> add_inc_count : <span class="hljs-keyword">forall</span> bg : bag  ,<span class="hljs-keyword">forall</span> num:nat,
+      count num (num::bg) = (count num  bg) + <span class="hljs-number">1.</span>
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-keyword">Search</span> <span class="hljs-string">"eqb"</span>.
+  <span class="hljs-keyword">Print</span> eqb_refl.
+  <span class="hljs-keyword">Print</span> count.
+  <span class="hljs-keyword">Print</span> bag.
+  <span class="hljs-built_in">intros</span>. <span class="hljs-built_in">destruct</span> bg.
+  - <span class="hljs-built_in">simpl</span>. <span class="hljs-built_in">rewrite</span> &lt;- eqb_refl. <span class="hljs-built_in">reflexivity</span>.
+  - <span class="hljs-built_in">assert</span> (n=num\/  n &lt;&gt; num).
+    <span class="hljs-built_in">omega</span>.
+    <span class="hljs-built_in">destruct</span> H.
+    <span class="hljs-built_in">rewrite</span> H.
+    <span class="hljs-built_in">simpl</span>. <span class="hljs-built_in">rewrite</span> &lt;- eqb_refl. <span class="hljs-built_in">simpl</span>. <span class="hljs-built_in">omega</span>.
+    <span class="hljs-built_in">simpl</span>. <span class="hljs-built_in">rewrite</span> &lt;- eqb_refl.
+    <span class="hljs-built_in">intuition</span>.
+    <span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.
+ <span class="hljs-keyword">Qed</span>.</code></pre>
+<p>有时间再做修改吧。</p>
+<h2 id="Reasoning-About-Lists"><a href="#Reasoning-About-Lists" class="headerlink" title="Reasoning About Lists."></a>Reasoning About Lists.</h2><p>Consider whether match the param can be sustituted into the definition.</p>
+<p>The easiest situation as app’s def is:</p>
+<pre><code class="hljs txt">app =
+fix app (l1 l2 : natlist) &#123;struct l1&#125; : natlist :=
+  match l1 with
+  | [ ] =&gt; l2
+  | h :: t =&gt; h :: app t l2
+  end
+     : natlist -&gt; natlist -&gt; natlist</code></pre>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> nil_app : <span class="hljs-keyword">forall</span> l : natlist,
+  [] ++ l = l.
+<span class="hljs-keyword">Proof</span>. <span class="hljs-built_in">reflexivity</span>. <span class="hljs-keyword">Qed</span>.</code></pre>
+<p>Sometimes helpful to perform case analysis.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> tl_length_pred : <span class="hljs-keyword">forall</span> l:natlist,
+  pred (length l) = length (tl l).
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span> l. <span class="hljs-built_in">destruct</span> l <span class="hljs-built_in">as</span> [| <span class="hljs-type">n</span> l'].
+  - <span class="hljs-comment">(* l = nil *)</span>
+    <span class="hljs-built_in">reflexivity</span>.
+  - <span class="hljs-comment">(* l = cons n l' *)</span>
+    <span class="hljs-built_in">reflexivity</span>.  <span class="hljs-keyword">Qed</span>.</code></pre>
+<h3 id="Induction-on-Lists"><a href="#Induction-on-Lists" class="headerlink" title="Induction on Lists"></a>Induction on Lists</h3><p>Just like Induction on nat is usually from O, Lists usually from nil.</p>
+<h3 id="Search"><a href="#Search" class="headerlink" title="Search"></a>Search</h3><p>What if you forget the theorem name but only knows its basic form.</p>
+<p>Use [Search]</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Search</span> rev.
+
+<span class="hljs-comment">(** Or say you've forgotten the name of the theorem showing that plus
+    is commutative.  You can use a pattern to search for all theorems
+    involving the equality of two additions. *)</span>
+
+<span class="hljs-keyword">Search</span> (<span class="hljs-keyword">_</span> + <span class="hljs-keyword">_</span> = <span class="hljs-keyword">_</span> + <span class="hljs-keyword">_</span>).
+
+<span class="hljs-comment">(** You'll see a lot of results there, nearly all of them from the
+    standard library.  To restrict the results, you can search inside
+    a particular module: *)</span>
+
+<span class="hljs-keyword">Search</span> (<span class="hljs-keyword">_</span> + <span class="hljs-keyword">_</span> = <span class="hljs-keyword">_</span> + <span class="hljs-keyword">_</span>) inside Induction.</code></pre>
+<p>More useful param with search pattern.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Search</span> (?x + ?y = ?y + ?x).</code></pre>
+<h3 id="List-Exercises"><a href="#List-Exercises" class="headerlink" title="List Exercises"></a>List Exercises</h3><p>Refer to my github repo.</p>
 
             </article>
             <hr>
@@ -276,6 +352,12 @@
                 <div class="post-prevnext row">
                   <div class="post-prev col-6">
                     
+                    
+                      <a href="/post/4c71877.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">《对青年数学家的建议》摘录的摘录</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </div>
                   <div class="post-next col-6">
