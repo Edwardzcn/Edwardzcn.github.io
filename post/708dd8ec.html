@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  <title>Coq学习——《Software-Foundation》Volume1.4-Poly - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2020-11-02 10:24">
+      2020年11月2日 上午
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      20
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h1 id="Poly"><a href="#Poly" class="headerlink" title="Poly"></a>Poly</h1><h2 id="Polymorphism"><a href="#Polymorphism" class="headerlink" title="Polymorphism"></a>Polymorphism</h2><p>Continue basic concepts of <strong>functional programming</strong>. Begin with polymoriphism.</p>
+<h3 id="Polymorphic-Lists"><a href="#Polymorphic-Lists" class="headerlink" title="Polymorphic Lists"></a>Polymorphic Lists</h3><p>List elements: One type -&gt; Other types.</p>
+<p>The natlist defined in the last chap.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> natlist : <span class="hljs-keyword">Type</span> :=
+  | <span class="hljs-type">nil</span>
+  | <span class="hljs-type">cons</span> (n : nat) (l : natlist).</code></pre>
+<p>Coq supports _polymorphic_ inductive type definitions.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> list (X:<span class="hljs-keyword">Type</span>) : <span class="hljs-keyword">Type</span> :=
+  | <span class="hljs-type">nil</span>
+  | <span class="hljs-type">cons</span> (x : X) (l : list X).</code></pre>
+<p>A binding for [X] has been added to the function header.</p>
+<p>What sort of thing is [list] itself? A good way to think about it is that the definition of [list] is a _function_ from [Type]s to [Inductive] definitions.</p>
+<p>Now when we use them, we must provide a first argu. that is the type of the list they are building.</p>
+<p>WHAT TYPE?</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Check</span> (nil nat) : list nat.
+
+<span class="hljs-keyword">Check</span> (cons nat <span class="hljs-number">3</span> (nil nat)) : list nat.
+
+<span class="hljs-keyword">Check</span> nil : <span class="hljs-keyword">forall</span> X : <span class="hljs-keyword">Type</span>, list X.
+
+<span class="hljs-keyword">Check</span> cons : <span class="hljs-keyword">forall</span> X : <span class="hljs-keyword">Type</span>, X -&gt; list X -&gt; list X.</code></pre>
+<a id="more"></a>
+<p>Always a type argument. No! Reducing this annotation burden.</p>
+<h4 id="Type-Argument-Synthesis"><a href="#Type-Argument-Synthesis" class="headerlink" title="Type Argument Synthesis"></a>Type Argument Synthesis</h4><p>Thanks to _type inference_, we don’t always have to write explicit type annotations everywhere (including [Type] when we use polymoriphism).</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Fixpoint</span> <span class="hljs-built_in">repeat</span>' X x count : list X :=
+  <span class="hljs-keyword">match</span> count <span class="hljs-built_in">with</span>
+  | <span class="hljs-type">0</span>        =&gt; nil X
+  | <span class="hljs-type">S</span> count' =&gt; cons X x (<span class="hljs-built_in">repeat</span>' X x count')
+  <span class="hljs-keyword">end</span>.</code></pre>
+<p>[X] use as the first argu. of cons. So it must be a Type. We don’t have to write its annotation in the first line.</p>
+<h4 id="Type-Argument-Synthesis-1"><a href="#Type-Argument-Synthesis-1" class="headerlink" title="Type Argument Synthesis"></a>Type Argument Synthesis</h4><p>Second argu must be an element of [X] (the first element). Let Coq do it. Write a “hole” [_]. “Please try to figure out for yourself what belongs here.”</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Definition</span> list123 :=
+  cons nat <span class="hljs-number">1</span> (cons nat <span class="hljs-number">2</span> (cons nat <span class="hljs-number">3</span> (nil nat))).
+
+<span class="hljs-comment">(** ...we can use holes to write this: *)</span>
+
+<span class="hljs-keyword">Definition</span> list123' :=
+  cons <span class="hljs-keyword">_</span> <span class="hljs-number">1</span> (cons <span class="hljs-keyword">_</span> <span class="hljs-number">2</span> (cons <span class="hljs-keyword">_</span> <span class="hljs-number">3</span> (nil <span class="hljs-keyword">_</span>))).</code></pre>
+<h4 id="Implicit-Arguments"><a href="#Implicit-Arguments" class="headerlink" title="Implicit Arguments."></a>Implicit Arguments.</h4><p>In fact, we can go further and even avoid writing [_]’s in most cases by telling Coq _always_ to infer the type argument(s) of a given function.</p>
+<p>Curly braces around any arguments to be treated as implicit.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Arguments</span> nil &#123;X&#125;.
+<span class="hljs-keyword">Arguments</span> cons &#123;X&#125; <span class="hljs-keyword">_</span> <span class="hljs-keyword">_</span>.
+<span class="hljs-keyword">Arguments</span> <span class="hljs-built_in">repeat</span> &#123;X&#125; x count.
+
+<span class="hljs-comment">(** Now, we don't have to supply type arguments at all: *)</span>
+
+<span class="hljs-keyword">Definition</span> list123'' := cons <span class="hljs-number">1</span> (cons <span class="hljs-number">2</span> (cons <span class="hljs-number">3</span> nil)).</code></pre>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Fixpoint</span> <span class="hljs-built_in">repeat</span>''' &#123;X : <span class="hljs-keyword">Type</span>&#125; (x : X) (count : nat) : list X :=
+  <span class="hljs-keyword">match</span> count <span class="hljs-built_in">with</span>
+  | <span class="hljs-type">0</span>        =&gt; nil
+  | <span class="hljs-type">S</span> count' =&gt; cons x (<span class="hljs-built_in">repeat</span>''' x count')
+  <span class="hljs-keyword">end</span>.</code></pre>
+<p>We will use the latter style whenever possible, but we will continue to use explicit [Argument] declarations for [Inductive] constructors. The reason for this is that marking the parameter of an inductive type as implicit causes it to become implicit for the type itself, not just for its constructors. For instance, consider the following alternative definition of the [list] type:</p>
+<h4 id="Supplying-Type-Arguments-Explicitly"><a href="#Supplying-Type-Arguments-Explicitly" class="headerlink" title="Supplying Type Arguments Explicitly"></a>Supplying Type Arguments Explicitly</h4><p>For enough local information to determine a type argument.</p>
+<p><code>@</code> prefix the function name.</p>
+<p>Exercise: re-proof the theorm in Pilymorphism.</p>
+<h3 id="Polymorphic-Pairs"><a href="#Polymorphic-Pairs" class="headerlink" title="Polymorphic Pairs"></a>Polymorphic Pairs</h3><p>Polymorphic Pairs, often called _Products_.</p>
+<p>annotation type_scope?</p>
+<p>Tells Coq that this abbreviation should only be used when <strong>parsing types</strong>, not when <strong>parsing expressions</strong>. This avoids a clash with the multiplication symbol.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Check</span> (bool,bool).
+<span class="hljs-keyword">Notation</span> <span class="hljs-string">"X * Y"</span> := (prod X Y) : type_scope.
+<span class="hljs-keyword">Check</span> (bool,bool).</code></pre>
+<p>We can find the differences.</p>
+<p>From</p>
+<pre><code class="hljs txt">(bool, bool)
+     : prod Set Set</code></pre>
+<p>To</p>
+<pre><code class="hljs Coq">(bool, bool)
+     : <span class="hljs-keyword">Set</span> * <span class="hljs-keyword">Set</span></code></pre>
+<p>Becareful to [(x,y)] and [X<em>Y]. Remeber the first is a _value_ built from two other values, while [X</em>Y] is a _type_ built from two other types.</p>
+<p>First use <code>let...in</code> in Coq, remember to use <code>:=</code> instead of <code>=</code> which is usually used in OCaml.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Fixpoint</span> <span class="hljs-built_in">split</span> &#123;X Y : <span class="hljs-keyword">Type</span>&#125; (l : list (X*Y))
+  : (list X) * (list Y) :=
+  <span class="hljs-keyword">match</span> l <span class="hljs-built_in">with</span>
+  | <span class="hljs-type">nil</span> =&gt; ([],[])
+  <span class="hljs-comment">(* First time use let...in in Coq *)</span>
+  | <span class="hljs-type">(x</span>,y) :: tl =&gt; <span class="hljs-keyword">let</span> (x',y') := <span class="hljs-built_in">split</span> tl
+                 <span class="hljs-built_in">in</span>
+                 (x::x',y::y')
+  <span class="hljs-keyword">end</span>.</code></pre>
+<h3 id="Polymorphic-Options"><a href="#Polymorphic-Options" class="headerlink" title="Polymorphic Options"></a>Polymorphic Options</h3><p>After polymorphic lists and pairs, now options.</p>
+<h2 id="Functions-as-Data"><a href="#Functions-as-Data" class="headerlink" title="Functions as Data"></a>Functions as Data</h2><p><strong>Functions as first-class citizens.</strong></p>
+<blockquote>
+<p>Like most modern programming languages — especially other “functional” languages, including OCaml, Haskell, Racket, Scala, Clojure, etc. — Coq treats functions as first-class citizens, allowing them to be passed as arguments to other functions, returned as results, stored in data structures, etc.</p>
+</blockquote>
+<h3 id="Higher-Order-Functions"><a href="#Higher-Order-Functions" class="headerlink" title="Higher-Order Functions"></a>Higher-Order Functions</h3><p>Manipulate other functions are often called _higher-order_ functions.</p>
+<p>操作其他的函数——高阶函数。</p>
+<p>Learning this sub-chap is similar to the learning of functional programming in OCaml.</p>
+<h3 id="Filter"><a href="#Filter" class="headerlink" title="Filter"></a>Filter</h3><p>过滤器</p>
+<p>“Filtering” the list.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Fixpoint</span> filter &#123;X:<span class="hljs-keyword">Type</span>&#125; (test: X-&gt;bool) (l:list X) : (list X) :=
+  <span class="hljs-keyword">match</span> l <span class="hljs-built_in">with</span>
+  | <span class="hljs-type">[] =&gt; []
+  | h</span> :: t =&gt;
+    <span class="hljs-keyword">if</span> test h <span class="hljs-keyword">then</span> h :: (filter test t)
+    <span class="hljs-keyword">else</span> filter test t
+  <span class="hljs-keyword">end</span>.
+
+<span class="hljs-comment">(** For example, if we apply [filter] to the predicate [evenb]
+    and a list of numbers [l], it returns a list containing just the
+    even members of [l]. *)</span>
+
+
+<span class="hljs-keyword">Example</span> test_filter1: filter evenb [<span class="hljs-number">1</span>;<span class="hljs-number">2</span>;<span class="hljs-number">3</span>;<span class="hljs-number">4</span>] = [<span class="hljs-number">2</span>;<span class="hljs-number">4</span>].
+<span class="hljs-keyword">Proof</span>. <span class="hljs-built_in">reflexivity</span>. <span class="hljs-keyword">Qed</span>.
+
+<span class="hljs-comment">(* My exercise *)</span>
+<span class="hljs-keyword">Theorem</span> filter_false_nil :<span class="hljs-keyword">forall</span> X : <span class="hljs-keyword">Type</span>, <span class="hljs-keyword">forall</span> l: list X,
+      filter (<span class="hljs-keyword">fun</span> n =&gt; false) l = nil.
+  <span class="hljs-built_in">intros</span>.
+  <span class="hljs-built_in">induction</span> l.
+  - <span class="hljs-built_in">simpl</span>. <span class="hljs-built_in">reflexivity</span>.
+  - <span class="hljs-built_in">simpl</span>. <span class="hljs-built_in">rewrite</span> IHl. <span class="hljs-built_in">reflexivity</span>.
+<span class="hljs-keyword">Qed</span>.</code></pre>
+<h3 id="Anonymous-Functions"><a href="#Anonymous-Functions" class="headerlink" title="Anonymous Functions"></a>Anonymous Functions</h3><p>Construct a function “on the fly” without declaring it at the top or giving it a name.</p>
+<p>随时使用，用完即扔（逃</p>
+<p>Exercise: partition.</p>
+<p>(Github repo)</p>
+<h3 id="Map"><a href="#Map" class="headerlink" title="Map"></a>Map</h3><p>Map apply the function to each ele. in the lists.</p>
+<p>About <code>map_rev</code>, first prove the lemma about map and app.</p>
+<p>Here.</p>
+<pre><code class="hljs Coq"><span class="hljs-comment">(** **** Exercise: 3 stars, standard (map_rev)
+
+    Show that [map] and [rev] commute.  You may need to define an
+    auxiliary lemma. *)</span>
+
+<span class="hljs-keyword">Lemma</span> map_app : <span class="hljs-keyword">forall</span> (X Y:<span class="hljs-keyword">Type</span>) (f : X -&gt; Y)  (l1 l2 : list X),
+    map f l1 ++ map f l2 = map f (l1 ++ l2).
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span>.
+  <span class="hljs-built_in">induction</span> l1.
+  - <span class="hljs-built_in">simpl</span>. <span class="hljs-built_in">reflexivity</span>.
+  - <span class="hljs-built_in">simpl</span>. <span class="hljs-built_in">rewrite</span> IHl1. <span class="hljs-built_in">reflexivity</span>.
+<span class="hljs-keyword">Qed</span>.
+
+<span class="hljs-keyword">Theorem</span> map_rev : <span class="hljs-keyword">forall</span> (X Y : <span class="hljs-keyword">Type</span>) (f : X -&gt; Y) (l : list X),
+  map f (rev l) = rev (map f l).
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">induction</span> l.
+  - <span class="hljs-built_in">simpl</span>. <span class="hljs-built_in">reflexivity</span>.
+  - <span class="hljs-built_in">simpl</span>. <span class="hljs-built_in">rewrite</span> &lt;- IHl. <span class="hljs-built_in">simpl</span>.
+    <span class="hljs-comment">(* we need a lemma to proof the map_app *)</span>
+    <span class="hljs-built_in">rewrite</span> &lt;- map_app. <span class="hljs-built_in">simpl</span>. <span class="hljs-built_in">reflexivity</span>.
+<span class="hljs-keyword">Qed</span>.</code></pre>
+<h3 id="Fold"><a href="#Fold" class="headerlink" title="Fold"></a>Fold</h3><p>An even more powerful higher-order function is called [fold]. This function is the inspiration for the “[reduce]” operation that lies at the heart of Google’s map/reduce distributed programming framework.</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/形式化验证/">形式化验证</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/形式化验证/">形式化验证</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/post/4c71877.html">
+                        <span class="hidden-mobile">《对青年数学家的建议》摘录的摘录</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "Coq学习——《Software-Foundation》Volume1.4-Poly&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

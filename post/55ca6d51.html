@@ -171,7 +171,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      583 字
+      671 字
     </span>
   
 
@@ -181,7 +181,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      11
+      12
        分钟
     </span>
   
@@ -321,6 +321,23 @@ fix app (l1 l2 : natlist) &#123;struct l1&#125; : natlist :=
 <p>More useful param with search pattern.</p>
 <pre><code class="hljs Coq"><span class="hljs-keyword">Search</span> (?x + ?y = ?y + ?x).</code></pre>
 <h3 id="List-Exercises"><a href="#List-Exercises" class="headerlink" title="List Exercises"></a>List Exercises</h3><p>Refer to my github repo.</p>
+<p>Like <code>plus_n_Sm</code> , lemma <code>leb_n_Sn</code> might be helpful in the next exercise.</p>
+<p>Leave the <code>bag_count_sum</code> (3 stars) and <code>rev_injective</code> (4 stars).</p>
+<p>About <code>if else</code>, we could use [destruct] tactics to analysis different cases like this.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> bag_count_sum : <span class="hljs-keyword">forall</span>(b1 b2: bag) (n : nat),
+    count n (<span class="hljs-built_in">sum</span> b1 b2) = (count n b1) + (count n b2).
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span>.
+  <span class="hljs-built_in">induction</span> b1.
+  - <span class="hljs-built_in">simpl</span>. <span class="hljs-built_in">reflexivity</span>.
+  - <span class="hljs-built_in">simpl</span>. <span class="hljs-built_in">rewrite</span> -&gt; IHb1.
+    <span class="hljs-comment">(* use case_eqn or destruct *)</span>
+    <span class="hljs-built_in">destruct</span> (n0 =? n) <span class="hljs-built_in">as</span> []eqn:?.
+    <span class="hljs-comment">(* case_eq (n0 =? n). *)</span>
+    + <span class="hljs-built_in">simpl</span>. <span class="hljs-built_in">reflexivity</span>.
+    + <span class="hljs-built_in">reflexivity</span>. 
+<span class="hljs-keyword">Qed</span>.</code></pre>
+<h2 id="Paritial-Maps"><a href="#Paritial-Maps" class="headerlink" title="Paritial Maps"></a>Paritial Maps</h2><p>How data structures can be defined in Coq.</p>
 
             </article>
             <hr>
