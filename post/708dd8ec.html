@@ -171,7 +171,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1k 字
+      1.6k 字
     </span>
   
 
@@ -181,7 +181,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      20
+      31
        分钟
     </span>
   
@@ -357,6 +357,93 @@
     <span class="hljs-built_in">rewrite</span> &lt;- map_app. <span class="hljs-built_in">simpl</span>. <span class="hljs-built_in">reflexivity</span>.
 <span class="hljs-keyword">Qed</span>.</code></pre>
 <h3 id="Fold"><a href="#Fold" class="headerlink" title="Fold"></a>Fold</h3><p>An even more powerful higher-order function is called [fold]. This function is the inspiration for the “[reduce]” operation that lies at the heart of Google’s map/reduce distributed programming framework.</p>
+<h3 id="Functions-That-Construct-Functions"><a href="#Functions-That-Construct-Functions" class="headerlink" title="Functions That Construct Functions"></a>Functions That Construct Functions</h3><p>Curring Functions.</p>
+<p>The function with type $\forall X, X \rightarrow nat \rightarrow X$ is, in fact, same to $\forall X, X \rightarrow (nat \rightarrow X)$. So we can def a func with one argu and return a $\nat \rightarrow X$ func.</p>
+<p>When we only give the first argu, we get a new func. This kind of usage is also named as _partial application_.</p>
+<blockquote>
+<p>In Coq, a function [f : A -&gt; B -&gt; C] really has the type [A -&gt; (B -&gt; C)]. That is, if you give [f] a value of type [A], it will give you function [f’ : B -&gt; C]. If you then give [f’] a value of type [B], it will return a value of type [C]. This allows for partial application, as in [plus3]. Processing a list of arguments with functions that return functions is called _currying_, in honor of the logician Haskell Curry.</p>
+</blockquote>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Definition</span> constfun &#123;X: <span class="hljs-keyword">Type</span>&#125; (x: X) : nat-&gt;X :=
+  <span class="hljs-keyword">fun</span> (k:nat) =&gt; x.
+
+<span class="hljs-comment">(* The type of function forall X :X-&gt;nat-&gt;X,
+   Actually, it is same to X-&gt;(nat-&gt;X).
+   So we can organize it with one argu [X] and
+   return a nat-&gt;X function.
+
+   There exists another use for currying function
+   named "Partial Application". *)</span>
+
+<span class="hljs-keyword">Check</span> plus : nat -&gt; nat -&gt; nat.
+
+<span class="hljs-comment">(** Each [-&gt;] in this expression is actually a _binary_ operator
+    on types.  This operator is _right-associative_, so the type of
+    [plus] is really a shorthand for [nat -&gt; (nat -&gt; nat)] -- i.e., it
+    can be read as saying that "[plus] is a one-argument function that
+    takes a [nat] and returns a one-argument function that takes
+    another [nat] and returns a [nat]."  In the examples above, we
+    have always applied [plus] to both of its arguments at once, but
+    if we like we can supply just the first.  This is called _partial
+    application_. *)</span>
+
+<span class="hljs-keyword">Definition</span> plus3 := plus <span class="hljs-number">3.</span>
+<span class="hljs-keyword">Check</span> plus3 : nat -&gt; nat.
+
+<span class="hljs-keyword">Example</span> test_plus3 :    plus3 <span class="hljs-number">4</span> = <span class="hljs-number">7.</span>
+<span class="hljs-keyword">Proof</span>. <span class="hljs-built_in">reflexivity</span>. <span class="hljs-keyword">Qed</span>.
+<span class="hljs-keyword">Example</span> test_plus3' :   doit3times plus3 <span class="hljs-number">0</span> = <span class="hljs-number">9.</span>
+<span class="hljs-keyword">Proof</span>. <span class="hljs-built_in">reflexivity</span>. <span class="hljs-keyword">Qed</span>.
+<span class="hljs-keyword">Example</span> test_plus3'' :  doit3times (plus <span class="hljs-number">3</span>) <span class="hljs-number">0</span> = <span class="hljs-number">9.</span>
+<span class="hljs-keyword">Proof</span>. <span class="hljs-built_in">reflexivity</span>. <span class="hljs-keyword">Qed</span>.</code></pre>
+<h1 id="Additional-Exercise"><a href="#Additional-Exercise" class="headerlink" title="Additional Exercise"></a>Additional Exercise</h1><p>[reflexivity] simplifies expressions a bit more aggressively than [simpl] does.</p>
+<p>Currying and uncrrying with the proof of equ.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Definition</span> prod_curry &#123;X Y Z : <span class="hljs-keyword">Type</span>&#125;
+  (f : X * Y -&gt; Z) (x : X) (y : Y) : Z := f (x, y).
+<span class="hljs-keyword">Check</span> @prod_curry.
+<span class="hljs-comment">(** As an exercise, define its inverse, [prod_uncurry].  Then prove
+    the theorems below to show that the two are inverses. *)</span>
+
+
+<span class="hljs-keyword">Definition</span> prod_uncurry &#123;X Y Z : <span class="hljs-keyword">Type</span>&#125;
+           (f : X -&gt; Y -&gt; Z) (p : X * Y) : Z :=
+  <span class="hljs-keyword">let</span> (x,y) := p <span class="hljs-built_in">in</span>
+  f x y.
+
+<span class="hljs-comment">(** As a (trivial) example of the usefulness of currying, we can use it
+    to shorten one of the examples that we saw above: *)</span>
+
+<span class="hljs-keyword">Example</span> test_map1': map (plus <span class="hljs-number">3</span>) [<span class="hljs-number">2</span>;<span class="hljs-number">0</span>;<span class="hljs-number">2</span>] = [<span class="hljs-number">5</span>;<span class="hljs-number">3</span>;<span class="hljs-number">5</span>].
+<span class="hljs-keyword">Proof</span>. <span class="hljs-built_in">reflexivity</span>. <span class="hljs-keyword">Qed</span>.
+
+<span class="hljs-comment">(** Thought exercise: before running the following commands, can you
+    calculate the types of [prod_curry] and [prod_uncurry]? *)</span>
+
+<span class="hljs-keyword">Check</span> @prod_curry.
+<span class="hljs-keyword">Check</span> @prod_uncurry.
+
+<span class="hljs-comment">(* the interpretation of curry or uncurring *)</span>
+
+<span class="hljs-keyword">Theorem</span> uncurry_curry : <span class="hljs-keyword">forall</span> (X Y Z : <span class="hljs-keyword">Type</span>)
+                        (f : X -&gt; Y -&gt; Z)
+                        x y,
+  prod_curry (prod_uncurry f) x y = f x y.
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span>.
+  <span class="hljs-built_in">simpl</span>.
+  <span class="hljs-built_in">reflexivity</span>.
+<span class="hljs-keyword">Qed</span>.
+
+<span class="hljs-keyword">Theorem</span> curry_uncurry : <span class="hljs-keyword">forall</span> (X Y Z : <span class="hljs-keyword">Type</span>)
+                        (f : (X * Y) -&gt; Z) (p : X * Y),
+  prod_uncurry (prod_curry f) p = f p.
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span>.
+  <span class="hljs-built_in">unfold</span> prod_curry.
+  <span class="hljs-built_in">destruct</span> p <span class="hljs-built_in">as</span> (x,y).
+  <span class="hljs-comment">(* Here we nned destruct p *)</span>
+  <span class="hljs-built_in">simpl</span>.
+  <span class="hljs-built_in">reflexivity</span>.
+<span class="hljs-keyword">Qed</span>.</code></pre>
 
             </article>
             <hr>
@@ -388,6 +475,12 @@
                 <div class="post-prevnext row">
                   <div class="post-prev col-6">
                     
+                    
+                      <a href="/post/81ffeeed.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Learning-Transition-System</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </div>
                   <div class="post-next col-6">
