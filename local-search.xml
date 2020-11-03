@@ -4,11 +4,38 @@
   
   
   <entry>
+    <title>Coq学习——《Software-Foundation》Volume1.4-Tactics</title>
+    <link href="/post/fbf4a20e.html"/>
+    <url>/post/fbf4a20e.html</url>
+    
+    <content type="html"><![CDATA[<h1 id="Tactics"><a href="#Tactics" class="headerlink" title="Tactics"></a>Tactics</h1><p>More tactics and more properties of functional programs.</p><ul><li>how to use auxiliary lemmas in both “forward-“ and “backward-style” proofs; “正推”“逆推”中使用辅助引理；</li><li>how to reason about data constructors — in particular, how to use the fact that they are injective and disjoint; 如何对数据构造子进行论证，特别是，如何利用它们单射且不交的事实；</li><li>how to strengthen an induction hypothesis, and when such strengthening is required; 如何增强归纳假设，以及何时需要增强；</li><li>more details on how to reason by case analysis. 还有通过分类讨论进行论证的更多细节。</li></ul><a id="more"></a><h2 id="The-apply-Tactic"><a href="#The-apply-Tactic" class="headerlink" title="The [apply] Tactic"></a>The [apply] Tactic</h2><p>The goal to be proved is the same as some hypothesis in the context or some proved lemma, so we can <strong>apply</strong> them to finish the proof.</p><p>Finish with [apply H.] instead of [rewrite H. reflexivity.]</p><pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> silly2 : <span class="hljs-keyword">forall</span> (n m o p : nat),    n = m -&gt;    (n = m -&gt; [n;o] = [m;p]) -&gt;    [n;o] = [m;p].<span class="hljs-keyword">Proof</span>.  <span class="hljs-built_in">intros</span> n m o p eq1 eq2.  <span class="hljs-built_in">apply</span> eq2. <span class="hljs-built_in">apply</span> eq1.  <span class="hljs-keyword">Qed</span>.</code></pre><p>When we [apply] some statements with $\forall$, Coq will try to find appropriate values.</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>Computer Science</category>
+      
+      <category>形式化验证</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>形式化验证</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Learning-Transition-System</title>
     <link href="/post/81ffeeed.html"/>
     <url>/post/81ffeeed.html</url>
     
-    <content type="html"><![CDATA[<h1 id="Transition-System"><a href="#Transition-System" class="headerlink" title="Transition-System"></a>Transition-System</h1><h2 id="Description"><a href="#Description" class="headerlink" title="Description"></a>Description</h2><p>一个六元组</p><script type="math/tex; mode=display">T = (S,Act,\rightarrow,S_0,AP,L)</script><ul><li>$S$, set of <strong>states</strong></li><li>$Act$, set of <strong>actions</strong></li><li>$\rightarrow ~ \subseteq S \times Act \times S$, 3-tuple-relation</li><li>$S_0 \subseteq S$, <strong>initial states</strong></li><li>$AP$, a set of <strong>atomic propositions</strong> (原子命题?)</li><li>$L: S \rightarrow 2^{AP}$, the labeling funciton</li></ul><p>举饮料机为例</p><p>与 Finite State Automata 的三个主要区别</p><ol><li>Numbers of state can be infinite</li><li>There is not something like an accepting state</li><li>It exhibits certain actions</li></ol><p>Change the labeling doesn’t affect the transition. 教授回答了学生一个提问,改变 label 没有改变 trasition.</p><h2 id="Behavior"><a href="#Behavior" class="headerlink" title="Behavior"></a>Behavior</h2><a id="more"></a>]]></content>
+    <content type="html"><![CDATA[<h1 id="Transition-System"><a href="#Transition-System" class="headerlink" title="Transition-System"></a>Transition-System</h1><h2 id="Description"><a href="#Description" class="headerlink" title="Description"></a>Description</h2><p>一个六元组</p><script type="math/tex; mode=display">T = (S,Act,\rightarrow,S_0,AP,L)</script><ul><li>$S$, set of <strong>states</strong></li><li>$Act$, set of <strong>actions</strong></li><li>$\rightarrow ~ \subseteq S \times Act \times S$, 3-tuple-relation</li><li>$S_0 \subseteq S$, <strong>initial states</strong></li><li>$AP$, a set of <strong>atomic propositions</strong> (原子命题?)</li><li>$L: S \rightarrow 2^{AP}$, the labeling funciton</li></ul><p>举饮料机为例</p><p>与 Finite State Automata 的三个主要区别</p><ol><li>Numbers of state can be <strong>infinite</strong></li><li>There is not something like an accepting state</li><li>It exhibits certain actions</li></ol><p>Change the labeling doesn’t affect the transition. 教授回答了学生一个提问,改变 label 没有改变 trasition.</p><a id="more"></a><h2 id="Behavior"><a href="#Behavior" class="headerlink" title="Behavior"></a>Behavior</h2><p>What is the possible behavior of TS.</p><ol><li><p>Start</p><pre><code>select nondeterministically an initial state $s \in S_0$</code></pre><p>As for a series of initial states, select <strong>nondeterministically</strong>. Possibility. No difference.</p></li><li><p>After</p><pre><code>WHILE $s$ is non-terminal DO    select nondeterministically a transition $s \stackrel{\alpha}{\rightarrow} s&#39;$    excute the action $\alpha$ and put $s := s&#39;$OD</code></pre><p>We find another nondeterministically choice.</p></li></ol><p>Describes what the system can do (privately, on its own).</p><p><strong>executions</strong>: maximal <strong>“transition sequences”</strong></p><p><strong>rechable fragement</strong>: set of all <strong>reachable</strong> states.</p><h2 id="Model-checking"><a href="#Model-checking" class="headerlink" title="Model checking"></a>Model checking</h2><p>Map the real complicated system to the TS just learned as one of the input of <strong>model checker</strong>. The other one is specification built from requirements.</p><p>syntactic description of system -&gt; semantics interpretation to TS</p><p>!<strong>The lecture of today is that Transition Systems are the elementary models and basically almost everything you can think about.</strong></p><p>Example: hardware circuits and sequential programs.</p><h3 id="Modelling-of-sequential-circuits-by-TS"><a href="#Modelling-of-sequential-circuits-by-TS" class="headerlink" title="Modelling of sequential circuits by TS"></a>Modelling of sequential circuits by TS</h3><p>Describe by means of two things: transition functions and ouput functions.</p><p>Take 1 bit input and 1 bit register as an example.</p><blockquote><p>4 states (2 * 2)</p><p>Initial states rely on the assumptions. If we assumpt the registor should be 0 in the beginning, then the initial states will be 2/4 which r1 = 0.</p><p>Get the transition from the transition function(s).</p></blockquote><p>As for the number of states: the number of inputs and the number of registers that is decisive on the size of the transition system.</p><p>In this example, the number of state may big but always finite.</p><h3 id="Data-dependent-systems"><a href="#Data-dependent-systems" class="headerlink" title="Data-dependent systems"></a>Data-dependent systems</h3><p>TS-representation of conditional branchings?</p><p>Progrm graph(program system) -&gt; transition system.</p><p>states of the transition system: locations + relevent data.</p><blockquote><p>state?</p><p>Initial states also depend on our assumptions. In the video, the prof. assupmt x=2 and y = 0.<br>Actions (change of state) like alpha (x:=x-1) beta (y:=y+1) and loop_exist. Loop exist action doesn’t change the value of x/y but it does change the program location(program counter) which is also the component of the states we difined. So the state changes.</p></blockquote><h4 id="Effect-function-for-actions"><a href="#Effect-function-for-actions" class="headerlink" title="Effect-function for actions"></a>Effect-function for actions</h4><p>Eval map Variable to Values.</p><p>$Effect:~ Act \times Eval(Var) \rightarrow Eval(Var)$</p><h4 id="Program-graph-PG"><a href="#Program-graph-PG" class="headerlink" title="Program graph (PG)"></a>Program graph (PG)</h4><p>Let $Var$ be a set of typed variables.</p><p>A program graph over $Var$ is a tupple</p><p><script type="math/tex">P = (Loc, Act, Effect, \rightarrow, Loc_0, g_0)</script> where</p><p>!!Now define a mapping from PG to TS.</p>]]></content>
     
     
     <categories>
