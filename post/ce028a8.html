@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  <title>密码技术学习——Keccak原像破解赛题前置知识点总结 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2020-04-17 15:38">
+      2020年4月17日 下午
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.1k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      13
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h1 id="建议阅读"><a href="#建议阅读" class="headerlink" title="建议阅读"></a>建议阅读</h1><p>《SHA-3 标准 Keccak 算法的安全性分析与实现》西电硕士论文</p>
+<p><a href="https://www.jianshu.com/p/4d244dcf2c7a" target="_blank" rel="noopener">现代密码学：Hash 函数 Keccak</a></p>
+<h1 id="Hash-函数安全性"><a href="#Hash-函数安全性" class="headerlink" title="Hash 函数安全性"></a>Hash 函数安全性</h1><p>通常，在讨论 Hash 函数安全性时，我们常考虑下面三条性质，由于各种资料叫法不尽相同，这里做个总结。</p>
+<h2 id="Collision-Resistacne-扛碰撞性"><a href="#Collision-Resistacne-扛碰撞性" class="headerlink" title="Collision Resistacne 扛碰撞性"></a>Collision Resistacne 扛碰撞性</h2><blockquote>
+<p>It should be difficult to find a pair of different messages $m_1$ and $m_2$ such that $H(m_1) = H(m_2)$</p>
+</blockquote>
+<p>又称为<strong>强扛碰撞性</strong>（Strong Collision Resistance），指已知 Hash 算法，找出两个原像（消息、数据报文）$m_1,m_2$，使得其映像（消息摘要、数据摘要）$H(m_1) = H(m_2)$是困难的（计算不可行）。</p>
+<h2 id="Preimage-Resistance-扛原像攻击"><a href="#Preimage-Resistance-扛原像攻击" class="headerlink" title="Preimage Resistance 扛原像攻击"></a>Preimage Resistance 扛原像攻击</h2><blockquote>
+<p>Given an arbitrary n-bit value $y$, it should be difficult to find any message $m$ such that $H(m) = y$</p>
+</blockquote>
+<p>描述了数学中函数的不可逆性，扛原像攻击也称<strong>单向性</strong>（One-way）。指已知 $y = H(m) , y \in Y$（消息摘要，或者称数据摘要集合），要找出 $m \in M$（数据报文集合），使得 $H(m)=y$ 是困难的。</p>
+<h2 id="抗第二原像攻击-Second-Preimage-Resistance"><a href="#抗第二原像攻击-Second-Preimage-Resistance" class="headerlink" title="抗第二原像攻击(Second Preimage Resistance)"></a>抗第二原像攻击(Second Preimage Resistance)</h2><blockquote>
+<p>Given message $m_1$, it should be difficult to find any different message $m_2$ such that $H(m_1) = H(m_2)$。</p>
+</blockquote>
+<p>与 Collision Resistance 很想，就差在一个确定的原像，所以该性质又被称为<strong>弱扛碰撞性</strong>（Weak Collision Resistance）。已知 $m_1 \in N$， 找出另一个 $m_2 \in M$，使得 $H(m_1)=H(m_2)$是困难的（计算不可行）。</p>
+<h2 id="生日攻击"><a href="#生日攻击" class="headerlink" title="生日攻击"></a>生日攻击</h2><p>与 Hash 安全性放在一起介绍的生日悖论与生日攻击请自行查阅资料理解。</p>
+<h1 id="Keccak-f-理解"><a href="#Keccak-f-理解" class="headerlink" title="Keccak-f 理解"></a>Keccak-f 理解</h1><p>读完赛题可以确定的 Keccak 版本是<code>(b=1600,r=1088,c=512)</code>，也即 SHA3-256（Federal Information Processing Standards），见 Meicheng Liu 那份 PPT 第 7 页表格。</p>
+<p>至于 b,r,c 对应海绵结构示意图位置，我在 ppt 上画了个草稿。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Keccak/Keccak_3.png" srcset="/img/loading.gif" alt="Keccak"></p>
+<p>如果觉得太乱，我文字简单解释一下。</p>
+<ul>
+<li>$b$是总运算码长，称为置换宽度，也就是海绵体结构总长度，这个长度被拆成两个部分：$b=r+c$，</li>
+<li>$r$比特率（bit rate），与消息块长度相等</li>
+<li>$c$容量（capacity），表示容量（或者叫冗余长度？）</li>
+<li>这两部分的区别，在每一次$f$置换函数轮转前，需要与原消息进行异或，但是不是整个长度$b$去和消息异或，只有$r$长度部分异或，而$c$部分则直接使用上一次置换计算后的结果。（这是各种利用海绵结构进行 Hash 算法的公共特征）。所以你再去看赛题第二页下方，内层第一个 for 循环只计算了$(s_0,s_1,\cdots,s_{1087})$，长度为$r=1088$。而内层第二个 for 循环则表示$f$（置换函数）的过程，计算$(s_0,s_1,\cdots,s_{1599})$。$(s_{1088},\cdots,s_{1599}$这个长度为$c=512$部分，沿用上一次$f’$置换函数计算后的结果。</li>
+<li>可能你会问怎么保证原消息一定是 1088 啊，当然不是。</li>
+<li>我们通过补位原始至长度为 1088 的整数倍，$k= \frac{size}{r=1088}$，这样就解释了赛题种外层循环和$k$的含义，海绵结构 absorb 过程就是我们把原消息拆分成每 1088 长度为一段，逐段压入过程，压入就是前面说的两个内层循环（1088 长度异或+n 轮置换）</li>
+<li>Keccak-f 算法轮数$n$并不是指最外层 absorb-squeeze 这个过程的次数，实际上，它表示一次$</li>
+<li>f$（置换函数）使用 5 种运算子整体混淆的次数。这个在上面提到过了，再强调一遍。</li>
+</ul>
+<a id="more"></a>
+<h1 id="混淆运算子"><a href="#混淆运算子" class="headerlink" title="混淆运算子"></a>混淆运算子</h1><p>这是我自己起的名字，那几个符号不太好打我就截图了。各种 Keccak 算法介绍的资料中描述了这五个运算的实质。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Keccak/Keccak_1.png" srcset="/img/loading.gif" alt="Keccak"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Keccak/Keccak_2.png" srcset="/img/loading.gif" alt="Keccak"></p>
+<ul>
+<li>把$1600$一维长度理解成$5<em>5</em>64$三维 cube 有助于理解这几个运算子</li>
+<li>上面两个图的描述是完全等价的，$\theta$虽然看起来感觉不太像，你们可以自己证一下（下次问）。</li>
+<li>倒数第二个运算子根据材料讲是唯一的非线性运算子，这里我不大明白，也没想出来它的运算方式，需要你们帮我理解一下。</li>
+<li>RC 值与轮数有关，RC 在 24 轮中的定义如下：（这个也是个常用手段，可以先不理解 RC 值怎么来的）</li>
+</ul>
+<pre><code class="hljs C++"><span class="hljs-keyword">const</span> <span class="hljs-keyword">uint64_t</span> RC[nr] = &#123;
+    <span class="hljs-number">0x0000000000000001</span>, <span class="hljs-number">0x0000000000008082</span>,<span class="hljs-number">0x800000000000808A</span>, <span class="hljs-number">0x8000000080008000</span>,
+    <span class="hljs-number">0x000000000000808B</span>, <span class="hljs-number">0x0000000080000001</span>,<span class="hljs-number">0x8000000080008081</span>, <span class="hljs-number">0x8000000000008009</span>,
+    <span class="hljs-number">0x000000000000008A</span>, <span class="hljs-number">0x0000000000000088</span>,<span class="hljs-number">0x0000000080008009</span>, <span class="hljs-number">0x000000008000000A</span>,
+    <span class="hljs-number">0x000000008000808B</span>, <span class="hljs-number">0x800000000000008B</span>,<span class="hljs-number">0x8000000000008089</span>, <span class="hljs-number">0x8000000000008003</span>,
+    <span class="hljs-number">0x8000000000008002</span>, <span class="hljs-number">0x8000000000000080</span>,<span class="hljs-number">0x000000000000800A</span>, <span class="hljs-number">0x800000008000000A</span>,
+    <span class="hljs-number">0x8000000080008081</span>, <span class="hljs-number">0x8000000000008080</span>,<span class="hljs-number">0x0000000080000001</span>, <span class="hljs-number">0x8000000080008008</span>&#125;;</code></pre>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/密码学/">密码学</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/密码学/">密码学</a>
+                    
+                      <a class="hover-with-bg" href="/tag/Keccak/">Keccak</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/post/78fc1ccf.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">【LeetCode-955】解题报告（暴力，贪心）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/post/bc73800d.html">
+                        <span class="hidden-mobile">算法与数据结构学习——DP背包问题备课提纲</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "密码技术学习——Keccak原像破解赛题前置知识点总结&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

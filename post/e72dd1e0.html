@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  <title>密码技术学习——Keccak一轮破解论文整理 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2020-05-05 19:28">
+      2020年5月5日 晚上
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.9k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      25
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>文章给出一种对 Keccak-512 进行原像攻击的方法，该方法仅需要解 384 个线性方程组。该方法基于散列值和消息位之间方程的自由度？？（原文是：degree of freedom in threequations between hash values and message bits）。使用此方法，我们可以以<strong>恒定复杂度</strong>解位长度小于 1024 的消息对应的散列值。</p>
+<h1 id="Keccak-结构"><a href="#Keccak-结构" class="headerlink" title="Keccak 结构"></a>Keccak 结构</h1><p>Pass</p>
+<p>注意表示方法：</p>
+<ol>
+<li><code>row</code>: 行，长度为 5，表示 yz 确定的沿 x 轴的 5 位块。</li>
+<li><code>column</code>: 列，长度 5，表示 xz 确定的沿 y 轴 5 位块。</li>
+<li><code>lane</code>: 道，长度 64，表示 xy 确定的沿 z 轴 64 位块。</li>
+</ol>
+<h1 id="预先结论发现"><a href="#预先结论发现" class="headerlink" title="预先结论发现"></a>预先结论发现</h1><h2 id="Observation-1"><a href="#Observation-1" class="headerlink" title="Observation 1"></a>Observation 1</h2><p>在$\chi$运算中，对于已知密文序列，可以直接逆运算明文序列。</p>
+<script type="math/tex; mode=display">a_i = b_i \oplus (b_{i+1} \oplus 1) \cdot (b_{i+2} \oplus (b_{i+3} \oplus 1) \cdot b_{i+4})</script><h2 id="Observation-2"><a href="#Observation-2" class="headerlink" title="Observation 2"></a>Observation 2</h2><p>在$\chi$运算中，任意<strong>非相邻</strong>三位的值已知，所有输出可以写成输入的线性组合形式。</p>
+<h2 id="Observation-3"><a href="#Observation-3" class="headerlink" title="Observation 3"></a>Observation 3</h2><p>对于$a_3=1$，可给出$a_0,a_1,a_2$的线性构造式，带入 Observation 1，正确。</p>
+<p>实际上不是特质$index = 3$的位置，把文中公式换做$n+3$的表述形式应为。</p>
+<p>条件：$a_{n+3} = 1$，模 5 条件下，$0 \le n \le 4$。</p>
+<script type="math/tex; mode=display">a_{n+2} = b_{n+2}</script><script type="math/tex; mode=display">a_{n+1} = b_{n+1} \oplus (b_{n+2} \oplus 1)</script><script type="math/tex; mode=display">a_n = b_n \oplus (b_{b+1} \oplus b_{n+2} ) \cdot b_{n+2}</script><p>该性质还会在二轮破解的文章中见到（相同作者）。</p>
+<h2 id="Observation-4"><a href="#Observation-4" class="headerlink" title="Observation 4"></a>Observation 4</h2><p>由$d_0,d_1,d_2,d_3,d_4$表示一个 column 上的四个数，那么$CP$值（parity of column，主要应用于$\theta$运算）可由$d_i$异或和表示。</p>
+<p>主要跟$\theta$运算子有关。</p>
+<h1 id="简述攻击过程"><a href="#简述攻击过程" class="headerlink" title="简述攻击过程"></a>简述攻击过程</h1><ol>
+<li>关注哈希值前 8 lane</li>
+<li>由于$\iota$运算实际参与的只有(0,0) lane，${\iota}^{-1}$只需要再跟 $RC$进行 $XOR$</li>
+<li>将上述结果进行$\chi^{-1}$运算（根据 Observation，逆运算为代数 3 次），记为状态$I$。</li>
+<li>根据 Observation 对 Message Block 进行处理试图达到状态$I$。</li>
+<li>根据限制条件列出线性方程，如果方程独立，可解。</li>
+</ol>
+<a id="more"></a>
+<h1 id="疑惑解答"><a href="#疑惑解答" class="headerlink" title="疑惑解答"></a>疑惑解答</h1><h2 id="d-i-含义改变"><a href="#d-i-含义改变" class="headerlink" title="$d_i$含义改变"></a>$d_i$含义改变</h2><p>这里首先要注意的是，$d_i[k]$与之前 Observation 4 中的$d_i$含义不一样！！</p>
+<p>这里$d_i[k]$表示的是$\theta$运算中$A[x][y][z]$要异或的整体部分，其中指代关系为$i \rightarrow x$，$k \rightarrow z$。（Observation 中$d_i$的$i$表示 column 中第几个）。我们再写一下公式（以英文文献中的符号为准）。</p>
+<script type="math/tex; mode=display">d_i[k] = CP[i-1][k] + CP[i+1][k-1] \tag{1}</script><p>其中$CP$表示 column parity，公式表示为。</p>
+<script type="math/tex; mode=display">CP[x][z] = A[x][0][z] \oplus A[x][1][z] \oplus A[x][2][z] \oplus A[x][3][z] \oplus A[x][4][z]</script><script type="math/tex; mode=display">CP[x][z] = \sum_{j=0}^{j=4} A[x][j][z] \tag{2}</script><p>而$\theta$运算实际为</p>
+<script type="math/tex; mode=display">\theta: A'[x][y][z] = A[x][y][z] \oplus \sum_{y'=0}^{y'=4} {A[x-1][y'][z]} \oplus \sum_{y'=0}^{y'=4} {A[x+1][y'][z-1]} \tag{3}</script><p>将 2 式带入 3 式得到</p>
+<script type="math/tex; mode=display">\theta: A'[x][y][z] = A[x][y][z] \oplus CP[x-1][z] \oplus CP[x+1][z-1]  \tag{4}</script><p>将 1 式带入 4 式（改变一下 d 的表示）得到</p>
+<script type="math/tex; mode=display">\theta: A'[x][y][z] = A[x][y][z] \oplus d[x][z]  \tag{5}</script><p>显然，根据含义$d[x][z]$至于$x,z$有关，同 column 下不同位置对应的值相同，这就解释了为什么后文 Fig.3 Fig.4 等配图中同一列异或相同$d_i$，这里的$i$表示 x 轴的偏移距离。So，我们可以理解作者给出的运算结果表示，如下图。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Keccak/Keccak_1round/Keccak_1round_1.png" srcset="/img/loading.gif" alt="Keccak_1round_1"></p>
+<h2 id="theta-Identity-含义"><a href="#theta-Identity-含义" class="headerlink" title="$\theta$ Identity 含义"></a>$\theta$ Identity 含义</h2><p>实际上<code>Identity</code>表示$\theta$变换为恒等变换。也即</p>
+<script type="math/tex; mode=display">A = \theta A</script><p>根据 Observation 4 和（2）式，xz 坐标相同对应的一个 column，所以在$\theta$运算中，异或的是相同的 CP 值。我们可以构造$\theta$运算前的特定 Cube State，使得每一个 CP 异或和为 0，这样$\theta$运算就是恒等的。</p>
+<script type="math/tex; mode=display">CP[x][z] = 0</script><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Keccak/Keccak_1round/Keccak_1round_2.png" srcset="/img/loading.gif" alt="Keccak_1round_2"></p>
+<p>如上图</p>
+<h2 id="NIST-SHA3-Padding-规则"><a href="#NIST-SHA3-Padding-规则" class="headerlink" title="NIST SHA3 Padding 规则"></a>NIST SHA3 Padding 规则</h2><p>Keccak 在这里使用的 Padding 方式为多重位速率填充（Multi-rate Padding），即 padding 10*1 ，至于为什么，Keccak Team 是这么解释的。</p>
+<blockquote>
+<p>Using multi-rate padding causes each member of the Keccak family (and in particular for each value of the capacity) to act as an independent function.</p>
+</blockquote>
+<p>注意，整除$r$时（恰好填满），并非不需要 padding，而是新填充一个首位为 1，中间为 0 的块</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Keccak/Keccak_1round/Keccak_1round_3.png" srcset="/img/loading.gif" alt="Keccak_1round_3"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Keccak/Keccak_1round/Keccak_1round_4.jpg" srcset="/img/loading.gif" alt="Keccak_1round_4"></p>
+<p>几种特殊情况（r 表示 rate 长度）</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>最后一个 block 长度</th>
+<th style="text-align:center">当前 block 填充结果</th>
+<th>下一 block 填充结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>其他</td>
+<td style="text-align:center">XX…XX<strong>10001</strong></td>
+<td>无</td>
+</tr>
+<tr>
+<td>r-2</td>
+<td style="text-align:center">XX…XX<strong>11</strong></td>
+<td>无</td>
+</tr>
+<tr>
+<td>r-1</td>
+<td style="text-align:center">XX…XXX<strong>1</strong></td>
+<td><strong>00…01</strong></td>
+</tr>
+<tr>
+<td>r</td>
+<td style="text-align:center">XX…XXXX</td>
+<td><strong>10…01</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h1 id="正式攻击过程"><a href="#正式攻击过程" class="headerlink" title="正式攻击过程"></a>正式攻击过程</h1><p>原作者给出了单/双，Identity/Without Identity，四种情况下一轮攻击方法，在我们团队实现的一轮 Keccak-256 攻击中，我们均保证$\theta$运算 Identity，对单 Message Block 和双 Message Block 进行研究，达到的最好成过分别为<strong>192</strong>和<strong>256</strong>位置，双 message 的攻击已经达到 Keccak-256，n=1 的最好攻击成果（Hash 值全为 0）。</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Keccak/Keccak_1round/Keccak_1round_5.png" srcset="/img/loading.gif" alt="Keccak_1round_5"></p>
+<h2 id="单-Message-Block-Identity"><a href="#单-Message-Block-Identity" class="headerlink" title="单 Message Block+ Identity"></a>单 Message Block+ Identity</h2><p><strong>达成最好结果</strong>：192 位前缀 0</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Keccak/Keccak_1round/Keccak_1round_6.png" srcset="/img/loading.gif" alt="Keccak_1round_6"></p>
+<p><strong>输入输出差异</strong>：赛题输入$r=1088$而 paper 中$r=576$，所以我们实际可控的输入到$e[16]$，且赛题输出为$256$位，而 paper 输出为$512$位。所以我们只关注$h_0,h_1,h_2,h_3$。</p>
+<p>根据$\chi^{-1}$与$\iota^{-1}$运算性质，我们知道$h’$可用$h$得到，且结果唯一。$h_0’,h_1’,h_2’,h_3’$经$\pi^{-1}$的换道与$\rho ^{-1}$的 z 轴移动，我们发现道排布在$y=x$对角线上，对应输入位置得到。</p>
+<script type="math/tex; mode=display">h'[0] = e[0]</script><script type="math/tex; mode=display">h'[1] = e[6]</script><script type="math/tex; mode=display">h'[2] = e[12]</script><script type="math/tex; mode=display">h'[3] = 0</script><p>在$h’[3]$要全为$0$的限制下（在容量 c 中，不在可异或的 r 中），我们团队尝试构造最好的 Hash 串为$h[3][0]=1$，其余位置均为$0$，如此前缀长度为$192$，根据条件构造输入，代码：</p>
+<pre><code class="hljs C++"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">64</span>; ++i) &#123;
+    e[<span class="hljs-number">0</span>][i] = hh[<span class="hljs-number">0</span>][i];  <span class="hljs-comment">// e_0 e_5  e_10  e_15</span>
+    e[<span class="hljs-number">5</span>][i] = hh[<span class="hljs-number">0</span>][i];
+    e[<span class="hljs-number">10</span>][i] = hh[<span class="hljs-number">0</span>][i];
+    e[<span class="hljs-number">15</span>][i] = hh[<span class="hljs-number">0</span>][i];
+&#125;
+
+<span class="hljs-comment">//for padding</span>
+e[<span class="hljs-number">11</span>][<span class="hljs-number">0</span>] = e[<span class="hljs-number">11</span>][<span class="hljs-number">63</span>] = e[<span class="hljs-number">16</span>][<span class="hljs-number">0</span>] = e[<span class="hljs-number">16</span>][<span class="hljs-number">63</span>] = <span class="hljs-number">1</span>;</code></pre>
+<p>在验证程序中输入长度为$1024$，验证程序自动 padding（和我们上面的$e_16$赋值相同），$e_{11}$用来对冲$e_{16}$从而保证$\theta$的恒等性质。</p>
+<h2 id="双-Message-Block-Both-Identity"><a href="#双-Message-Block-Both-Identity" class="headerlink" title="双 Message Block + Both Identity"></a>双 Message Block + Both Identity</h2><p><strong>达成最好结果</strong>： 256 位前缀 0</p>
+<p><strong>容易忽略的问题</strong>：$\rho$运算带来的 z 轴偏移，</p>
+<p>完成单 Message block 的情况下，我们思考是什么导致了$h_3$的限制，实际上是由于初始 State，除 r 长度内可通过输入长度，其他位置均为 0，因此倒推过程中我们必须满足$h’_3=0$。</p>
+<p>不过经过一个 Message 的轮转后，其他位置不再是固定的 0 值了，我们的想法：通过构造第一个 Message D 使$h_0’h_1’,h_2’h_3’$达到一个合适状态$F’$（使得经最后两运算子后$F = (\iota \circ \chi) F$），$F$全为 0，即$h_0h_1h_2h_3$均为 0。</p>
+<p>构造细节，注意 Z 轴偏移（正偏反偏），代码：</p>
+<p>Message D</p>
+<pre><code class="hljs C++">d[<span class="hljs-number">4</span>][(<span class="hljs-number">64</span> - <span class="hljs-number">27</span> + <span class="hljs-number">43</span> + <span class="hljs-number">64</span>) % <span class="hljs-number">64</span>] = d[<span class="hljs-number">9</span>][(<span class="hljs-number">64</span> - <span class="hljs-number">27</span> +<span class="hljs-number">43</span> + <span class="hljs-number">64</span>) % <span class="hljs-number">64</span>] = d[<span class="hljs-number">1</span>][<span class="hljs-number">64</span> - <span class="hljs-number">45</span>] = d[<span class="hljs-number">16</span>][<span class="hljs-number">64</span> - <span class="hljs-number">45</span>] = <span class="hljs-number">1</span>;</code></pre>
+<p>再进行第二消息 Message E 的构造，目标有三个：</p>
+<ul>
+<li>保持第二轮$h_3’$位置的状态位置</li>
+<li>斜线（影响 hash 值）异或指定值达到$F’$</li>
+<li>其他地方补 1 达到纵列$CP$值为 0，使$\theta$恒等</li>
+</ul>
+<p>代码：</p>
+<p>Message E</p>
+<pre><code class="hljs C++"><span class="hljs-comment">// x=0</span>
+e[<span class="hljs-number">5</span>][<span class="hljs-number">0</span>] = e[<span class="hljs-number">10</span>][<span class="hljs-number">20</span>] = e[<span class="hljs-number">15</span>][<span class="hljs-number">43</span>] = <span class="hljs-number">1</span>;
+<span class="hljs-comment">// x=1</span>
+e[<span class="hljs-number">6</span>][<span class="hljs-number">36</span>] = e[<span class="hljs-number">6</span>][<span class="hljs-number">0</span>] = e[<span class="hljs-number">6</span>][<span class="hljs-number">20</span>] = <span class="hljs-number">1</span>;
+e[<span class="hljs-number">1</span>][<span class="hljs-number">20</span>] = <span class="hljs-number">1</span>;
+e[<span class="hljs-number">11</span>][<span class="hljs-number">0</span>] = e[<span class="hljs-number">11</span>][<span class="hljs-number">63</span>] = <span class="hljs-number">1</span>;
+<span class="hljs-comment">// x=2</span>
+<span class="hljs-comment">// pass</span>
+<span class="hljs-comment">// x=3</span>
+e[<span class="hljs-number">8</span>][<span class="hljs-number">0</span>] = e[<span class="hljs-number">13</span>][<span class="hljs-number">20</span>] = e[<span class="hljs-number">13</span>][<span class="hljs-number">43</span>] = <span class="hljs-number">1</span>;
+<span class="hljs-comment">// x=4</span>
+e[<span class="hljs-number">9</span>][<span class="hljs-number">36</span>] = <span class="hljs-number">1</span>;</code></pre>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/密码学/">密码学</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/密码学/">密码学</a>
+                    
+                      <a class="hover-with-bg" href="/tag/Keccak/">Keccak</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/post/b0d5859e.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">文献学习方法——如何高效的阅读学术论文（简）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/post/b894091d.html">
+                        <span class="hidden-mobile">分布式系统学习——Hadoop安装与单机模式调试</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "密码技术学习——Keccak一轮破解论文整理&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

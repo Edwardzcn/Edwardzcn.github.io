@@ -171,7 +171,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      221 字
+      2k 字
     </span>
   
 
@@ -181,7 +181,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      3
+      34
        分钟
     </span>
   
@@ -222,6 +222,7 @@
 <a id="more"></a>
 <h2 id="The-apply-Tactic"><a href="#The-apply-Tactic" class="headerlink" title="The [apply] Tactic"></a>The [apply] Tactic</h2><p>The goal to be proved is the same as some hypothesis in the context or some proved lemma, so we can <strong>apply</strong> them to finish the proof.</p>
 <p>Finish with [apply H.] instead of [rewrite H. reflexivity.]</p>
+<p>直接应用某条定理，而非重写后用 reflexivity.</p>
 <pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> silly2 : <span class="hljs-keyword">forall</span> (n m o p : nat),
     n = m -&gt;
     (n = m -&gt; [n;o] = [m;p]) -&gt;
@@ -230,6 +231,217 @@
   <span class="hljs-built_in">intros</span> n m o p eq1 eq2.
   <span class="hljs-built_in">apply</span> eq2. <span class="hljs-built_in">apply</span> eq1.  <span class="hljs-keyword">Qed</span>.</code></pre>
 <p>When we [apply] some statements with $\forall$, Coq will try to find appropriate values.</p>
+<p>当我们应用 apply 定理的时候，Coq 会自动找寻符合定理的值，以下面为例：</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> silly_ex :
+     (<span class="hljs-keyword">forall</span> n, evenb n = true -&gt; oddb (S n) = true) -&gt;
+     evenb <span class="hljs-number">2</span> = true -&gt;
+     oddb <span class="hljs-number">3</span> = true.
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span>.
+  <span class="hljs-comment">(* If we don't use apply tactic *)</span>
+  <span class="hljs-comment">(* rewrite -&gt; H. reflexivity. *)</span>
+  <span class="hljs-comment">(* rewrite -&gt; H0. reflexivity. *)</span>
+  <span class="hljs-built_in">apply</span> H.
+  <span class="hljs-built_in">apply</span> H0.
+<span class="hljs-keyword">Qed</span>.</code></pre>
+<p>这里我们使用 [apply H.] Coq 找到 [n=2]的实例，符合[H]定理要求，所以我们将结论转换为前提。</p>
+<h2 id="The-apply-with-Tactic"><a href="#The-apply-with-Tactic" class="headerlink" title="The [apply with] Tactic"></a>The [apply with] Tactic</h2><p>Proof the theorem trans_eq first, and proof by using [apply trans_eq with (m:=[c;d])] (gives an instantiation of [X]). Trans_eq use abstract type so we can “with” the actual type.</p>
+<p>Coq also has a tactic [transitivity] that accomplishes the same purpose as applying [trans_eq]. The tactic requires us to state the instantiation we want, just like [apply with] does.</p>
+<p>Like:</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Example</span> trans_eq_example' : <span class="hljs-keyword">forall</span> (a b c d e f : nat),
+     [a;b] = [c;d] -&gt;
+     [c;d] = [e;f] -&gt;
+     [a;b] = [e;f].
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span> a b c d e f eq1 eq2.
+
+<span class="hljs-comment">(** If we simply tell Coq [apply trans_eq] at this point, it can
+    tell (by matching the goal against the conclusion of the lemma)
+    that it should instantiate [X] with [[nat]], [n] with [[a,b]], and
+    [o] with [[e,f]].  However, the matching process doesn't determine
+    an instantiation for [m]: we have to supply one explicitly by
+    adding "[with (m:=[c,d])]" to the invocation of [apply]. *)</span>
+
+  <span class="hljs-built_in">apply</span> trans_eq <span class="hljs-built_in">with</span> (m:=[c;d]).
+  <span class="hljs-built_in">apply</span> eq1. <span class="hljs-built_in">apply</span> eq2.   <span class="hljs-keyword">Qed</span>.
+
+<span class="hljs-keyword">Example</span> trans_eq_example'' : <span class="hljs-keyword">forall</span> (a b c d e f : nat),
+     [a;b] = [c;d] -&gt;
+     [c;d] = [e;f] -&gt;
+     [a;b] = [e;f].
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span> a b c d e f eq1 eq2.
+  <span class="hljs-built_in">transitivity</span> [c;d].
+  <span class="hljs-built_in">apply</span> eq1. <span class="hljs-built_in">apply</span> eq2.   <span class="hljs-keyword">Qed</span>.</code></pre>
+<h2 id="The-injection-and-discriminate-Tactics"><a href="#The-injection-and-discriminate-Tactics" class="headerlink" title="The [injection] and [discriminate] Tactics"></a>The [injection] and [discriminate] Tactics</h2><p>举自然数定义，性质：</p>
+<ul>
+<li>构造子$S$是单射（Injective） 或“一一对应”的。即，如果$S n = S m$，那么$n=m$必定成立。</li>
+<li>构造子$O$和$S$是不相交（Disjoint）的。即，对于任何$n$，$O$都不等于$S n$</li>
+</ul>
+<p>可以用<code>pred</code> 推广到任意构造子上，编写撤销一次构造子调用的函数。为此，Coq 提供了更加简便的[injection] 策略，它能让我们利用构造子的单射性。</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> S_injective' : <span class="hljs-keyword">forall</span> (n m : nat),
+  S n = S m -&gt;
+  n = m.
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span> n m H.
+
+<span class="hljs-comment">(** By writing [injection H as Hmn] at this point, we are asking Coq
+    to generate all equations that it can infer from [H] using the
+    injectivity of constructors (in the present example, the equation
+    [n = m]). Each such equation is added as a hypothesis (with the
+    name [Hmn] in this case) into the context. *)</span>
+
+  <span class="hljs-built_in">injection</span> H <span class="hljs-built_in">as</span> Hnm. <span class="hljs-built_in">apply</span> Hnm.
+<span class="hljs-keyword">Qed</span>.</code></pre>
+<p>If you jest say [injection XX] with no [as] clause, then all the equations will be turned into hypotheses at the beginning of the goal. (We can follow with [intros] tactics).</p>
+<p>one exercise</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Example</span> injection_ex3 : <span class="hljs-keyword">forall</span> (X : <span class="hljs-keyword">Type</span>) (x y z : X) (l j : list X),
+  x :: y :: l = z :: j -&gt;
+  j = z :: l -&gt;
+  x = y.
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span>.
+  <span class="hljs-comment">(* Yes, you can write a graph yourself and you will find the head ele will be the same (x = z) and the rest of list, due to the constructor of the list  *)</span>
+  <span class="hljs-built_in">injection</span> H.
+  <span class="hljs-built_in">intros</span>.
+  <span class="hljs-built_in">assert</span> (H': z::l = y::l). &#123; <span class="hljs-built_in">rewrite</span> H1. <span class="hljs-built_in">symmetry</span>. <span class="hljs-built_in">apply</span> H0.  &#125;
+  - <span class="hljs-built_in">injection</span> H' <span class="hljs-built_in">as</span> Hinj.
+    <span class="hljs-built_in">rewrite</span> H2. <span class="hljs-built_in">apply</span> Hinj.
+<span class="hljs-keyword">Qed</span>.</code></pre>
+<p>About disjointnesses.</p>
+<p>Two terms beginning with different constructors (like [0] ans [S], or [true] and [false]) can never be equal.</p>
+<p>Nonsensial to anything: Beginning with different constructors, any time we find ourselves in a context where we’ve _assumed_ that two such terms are equal, we are justified in concluding anything we want.</p>
+<p>The [discriminate] tactic embodies this principle: It is used on a hypothesis involving an equality between different constructors.</p>
+<p>逻辑学原理“爆炸原理”，断言矛盾的前提会推出任何东西，甚至是假命题。</p>
+<p>Example</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> eqb_0_l : <span class="hljs-keyword">forall</span> n,
+   <span class="hljs-number">0</span> =? n = true -&gt; n = <span class="hljs-number">0.</span>
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span> n.
+
+<span class="hljs-comment">(** We can proceed by case analysis on [n]. The first case is
+    trivial. *)</span>
+
+  <span class="hljs-built_in">destruct</span> n <span class="hljs-built_in">as</span> [| <span class="hljs-type">n</span>'] eqn:E.
+  - <span class="hljs-comment">(* n = 0 *)</span>
+    <span class="hljs-built_in">intros</span> H. <span class="hljs-built_in">reflexivity</span>.
+
+<span class="hljs-comment">(** However, the second one doesn't look so simple: assuming [0
+    =? (S n') = true], we must show [S n' = 0]!  The way forward is to
+    observe that the assumption itself is nonsensical: *)</span>
+
+  - <span class="hljs-comment">(* n = S n' *)</span>
+    <span class="hljs-built_in">simpl</span>.
+
+<span class="hljs-comment">(** If we use [discriminate] on this hypothesis, Coq confirms
+    that the subgoal we are working on is impossible and removes it
+    from further consideration. *)</span>
+
+    <span class="hljs-built_in">intros</span> H. <span class="hljs-built_in">discriminate</span> H.
+<span class="hljs-keyword">Qed</span>.</code></pre>
+<p>The injectivity (one to one) allows us to use [f_equal] tactic to reason form like [n = m -&gt; f x = f y].</p>
+<p>Given a goal of the form [f a1 … an = g b1 … bn], the tactic [f_equal] will produce subgoals of the form [f = g], [a1 = b1], …, [an = bn]. At the same time, any of these subgoals that are simple enough (e.g., immediately provable by [reflexivity]) will be automatically discharged by [f_equal].</p>
+<h2 id="Using-Tactics-on-Hypotheses"><a href="#Using-Tactics-on-Hypotheses" class="headerlink" title="Using Tactics on Hypotheses"></a>Using Tactics on Hypotheses</h2><p>Change the goal -&gt; change the context.</p>
+<p>For example, [simple in H], [apply L in H].</p>
+<p>! [apply L in H]会针对 $X$ 匹配 $H$，如果成功，就将其替换为 $Y$ 。换言之，</p>
+<ul>
+<li>[apply L in H] 给了我们一种“正向推理（forward reasoning）” ：<ul>
+<li>根据 $X \rightarrow Y$ 和一个匹配 $X$ 的假设， 它会产生一个匹配 $Y$ 的假设。</li>
+<li>Forward reasoning starts from what is _given_ (premises, previously proven theorems) and iteratively draws conclusions from them until the goal is reached</li>
+</ul>
+</li>
+<li>[apply L]是一种“反向推理”：<ul>
+<li>如果我们指导 $X \rightarrow Y$ 并且试图证明 $Y$, 那么证明 $X$ 就足够了。</li>
+<li>Backward reasoning starts from<br>the _goal_ and iteratively reasons about what would imply the goal, until premises or previously proven theorems are reached.</li>
+</ul>
+</li>
+</ul>
+<p>数学或计算机科学课上见过的非形式化证明（informal proofs）可能倾向于正向推理。通常，Coq 习惯上倾向于使用反向推理，但在某些情况下，正向推理更易于思考。</p>
+<h2 id="Varying-the-Induction-Hypothesis"><a href="#Varying-the-Induction-Hypothesis" class="headerlink" title="Varying the Induction Hypothesis"></a>Varying the Induction Hypothesis</h2><p>变换归纳假设</p>
+<p>[intros m] in the wrong places.</p>
+<p>First</p>
+<pre><code class="hljs Coq"><span class="hljs-comment">(* Failed Proof *)</span>
+<span class="hljs-keyword">Theorem</span> double_injective_FAILED : <span class="hljs-keyword">forall</span> n m,
+     <span class="hljs-built_in">double</span> n = <span class="hljs-built_in">double</span> m -&gt;
+     n = m.
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span> n m. <span class="hljs-built_in">induction</span> n <span class="hljs-built_in">as</span> [| <span class="hljs-type">n</span>' IHn'].
+  - <span class="hljs-comment">(* n = O *)</span> <span class="hljs-built_in">simpl</span>. <span class="hljs-built_in">intros</span> eq. <span class="hljs-built_in">destruct</span> m <span class="hljs-built_in">as</span> [| <span class="hljs-type">m</span>'] eqn:E.
+    + <span class="hljs-comment">(* m = O *)</span> <span class="hljs-built_in">reflexivity</span>.
+    + <span class="hljs-comment">(* m = S m' *)</span> <span class="hljs-built_in">discriminate</span> eq.
+  - <span class="hljs-comment">(* n = S n' *)</span> <span class="hljs-built_in">intros</span> eq. <span class="hljs-built_in">destruct</span> m <span class="hljs-built_in">as</span> [| <span class="hljs-type">m</span>'] eqn:E.
+    + <span class="hljs-comment">(* m = O *)</span> <span class="hljs-built_in">discriminate</span> eq.
+    + <span class="hljs-comment">(* m = S m' *)</span> <span class="hljs-built_in">apply</span> <span class="hljs-built_in">f_equal</span>.
+
+<span class="hljs-comment">(** At this point, the induction hypothesis ([IHn']) does _not_ give us
+    [n' = m'] -- there is an extra [S] in the way -- so the goal is
+    not provable. *)</span>
+
+<span class="hljs-keyword">Abort</span>.</code></pre>
+<p>and we will get the helpless context.</p>
+<pre><code class="hljs txt">1 subgoal (ID 282)
+  
+  n&apos;, m, m&apos; : nat
+  E : m = S m&apos;
+  IHn&apos; : double n&apos; = double (S m&apos;) -&gt; n&apos; = S m&apos;
+  eq : double (S n&apos;) = double (S m&apos;)
+  ============================
+  S n&apos; = S m&apos;</code></pre>
+<p>What’s wrong in the second-second case.</p>
+<p>Trying to carry out this proof by induction on [n] when [m] is already in the context doesn’t work because we are then trying to prove a statement involving _every_ [n] but just a _single_ [m].</p>
+<p>如果我们试着根据 Q 证明 R，就会以“假设 double (S n) = 10..”这样的句子开始， 不过之后我们就会卡住：知道 double (S n) 为 10 并不能告诉我们 double n 是否为 10。（实际上，它强烈地表示 double n ‘不是’ 10！） 因此 Q 是没有用的。</p>
+<pre><code class="hljs Coq"><span class="hljs-comment">(* Successful Proof *)</span>
+<span class="hljs-keyword">Theorem</span> double_injective : <span class="hljs-keyword">forall</span> n m,
+     <span class="hljs-built_in">double</span> n = <span class="hljs-built_in">double</span> m -&gt;
+     n = m.
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span> n. <span class="hljs-built_in">induction</span> n <span class="hljs-built_in">as</span> [| <span class="hljs-type">n</span>' IHn'].
+  - <span class="hljs-comment">(* n = O *)</span> <span class="hljs-built_in">simpl</span>. <span class="hljs-built_in">intros</span> m eq. <span class="hljs-built_in">destruct</span> m <span class="hljs-built_in">as</span> [| <span class="hljs-type">m</span>'] eqn:E.
+    + <span class="hljs-comment">(* m = O *)</span> <span class="hljs-built_in">reflexivity</span>.
+    + <span class="hljs-comment">(* m = S m' *)</span> <span class="hljs-built_in">discriminate</span> eq.
+
+  - <span class="hljs-comment">(* n = S n' *)</span> <span class="hljs-built_in">simpl</span>.
+
+<span class="hljs-comment">(** Notice that both the goal and the induction hypothesis are
+    different this time: the goal asks us to prove something more
+    general (i.e., to prove the statement for _every_ [m]), but the IH
+    is correspondingly more flexible, allowing us to choose whichever
+    [m] we like when we apply the IH. *)</span>
+
+    <span class="hljs-built_in">intros</span> m eq.
+
+<span class="hljs-comment">(** Now we've chosen a particular [m] and introduced the assumption
+    that [double n = double m].  Since we are doing a case analysis on
+    [n], we also need a case analysis on [m] to keep the two "in sync." *)</span>
+
+    <span class="hljs-built_in">destruct</span> m <span class="hljs-built_in">as</span> [| <span class="hljs-type">m</span>'] eqn:E.
+    + <span class="hljs-comment">(* m = O *)</span>
+
+<span class="hljs-comment">(** The 0 case is trivial: *)</span>
+
+    <span class="hljs-built_in">discriminate</span> eq.
+    + <span class="hljs-comment">(* m = S m' *)</span>
+      <span class="hljs-built_in">apply</span> <span class="hljs-built_in">f_equal</span>.
+
+<span class="hljs-comment">(** At this point, since we are in the second branch of the [destruct
+    m], the [m'] mentioned in the context is the predecessor of the
+    branch of the induction, this is perfect: if we instantiate the
+    [m] we started out talking about.  Since we are also in the [S]
+    generic [m] in the IH with the current [m'] (this instantiation is
+    performed automatically by the [apply] in the next step), then
+    [IHn'] gives us exactly what we need to finish the proof. *)</span>
+
+      <span class="hljs-built_in">apply</span> IHn'. <span class="hljs-built_in">simpl</span> <span class="hljs-built_in">in</span> eq. <span class="hljs-built_in">injection</span> eq <span class="hljs-built_in">as</span> goal. <span class="hljs-built_in">apply</span> goal. <span class="hljs-keyword">Qed</span>.</code></pre>
+<p>We get a more general context.</p>
+<pre><code class="hljs Coq"><span class="hljs-number">1</span> subgoal (ID <span class="hljs-number">286</span>)
+  
+  n' : nat
+  IHn' : <span class="hljs-keyword">forall</span> m : nat, <span class="hljs-built_in">double</span> n' = <span class="hljs-built_in">double</span> m -&gt; n' = m
+  m, m' : nat
+  E : m = S m'
+  eq : S (S (<span class="hljs-built_in">double</span> n')) = <span class="hljs-built_in">double</span> (S m')
+  ============================
+  S n' = S m'</code></pre>
 
             </article>
             <hr>

@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  <title>密码技术学习——Keccak攻击进度工作文档 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2020-05-19 13:26">
+      2020年5月19日 下午
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.8k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      21
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h1 id="性质发现"><a href="#性质发现" class="headerlink" title="性质发现"></a>性质发现</h1><h2 id="theta-运算性质"><a href="#theta-运算性质" class="headerlink" title="$\theta$ 运算性质"></a>$\theta$ 运算性质</h2><p>$\theta$运算结果受每个位置原有值与其两侧两个 column parity 的影响，即$CP[x-1][z]$与$CP[x+1][z-1]$。</p>
+<p>通常情况，$\theta$具有扩散性，变量经$\theta$运算后会影响临近列，使区域由原本的定值状态变为代数一次的变量状态，或增加原有变量状态的变量元数。</p>
+<p>我们在研究过程中希望尽量降低$\theta$带来的这类影响，故先分析该运算的一些特殊性质（与《新的低轮 Keccak 线性结构设计》中描述类似）。</p>
+<p><strong>性质 1</strong> 若进行$\theta$前，输入状态$A$的各$CP$核为定值$c$，$c$为$0$或$1$，则经过$\theta$运算的状态$A’$一定线性，且变量不扩散。</p>
+<p><strong>推论 1</strong> 若输入状态$A$的$CP$核均为$0$，则$\theta$为恒等运算（identity）。输出状态$A’=A$。</p>
+<h2 id="chi-运算性质"><a href="#chi-运算性质" class="headerlink" title="$\chi$ 运算性质"></a>$\chi$ 运算性质</h2><p>$\chi$运算是 Keccak 轮函数五个运算中唯一的非线性运算，为代数二次。=，可以看作一个小型 S 盒。其运算每次在一个横行（row）进行。非线性运算是保证哈希函数不可逆性的关键，因而在破解低轮 Keccak 中，我们也特别研究了$\chi$运算的性质。（混编一轮、二轮 Keccak 攻击文献中的性质描述）</p>
+<p><strong>性质 2</strong> 考虑$\chi$运算与其逆运算$\chi^{-1}$，对于全部已知的输出序列$b_0,b_1,b_2,b_3,b_4$，我们可以直接逆运算得到输入序列。</p>
+<script type="math/tex; mode=display">a_i = b_i \oplus (b_{i+1} \oplus 1) \cdot (b_{i+2} \oplus (b_{i+3} \oplus 1) \cdot b_{i+4})</script><p>逆运算$\chi^{-1}$代数次数为 3。</p>
+<p><strong>性质 3</strong> 在$\chi$运算中，任意<strong>非相邻</strong>三位的值已知，所有输出可以写成输入的线性组合形式。</p>
+<p><strong>性质 4</strong> 对于$a_{i+3}=1$，可给出$a_i,a_{i+1},a_{i+2}$的线性构造式。</p>
+<script type="math/tex; mode=display">a_{n+2} = b_{n+2}</script><script type="math/tex; mode=display">a_{n+1} = b_{n+1} \oplus (b_{n+2} \oplus 1)</script><script type="math/tex; mode=display">a_n = b_n \oplus (b_{b+1} \oplus b_{n+2} ) \cdot b_{n+2}</script><h1 id="一轮攻击"><a href="#一轮攻击" class="headerlink" title="一轮攻击"></a>一轮攻击</h1><h2 id="单消息块构造法"><a href="#单消息块构造法" class="headerlink" title="单消息块构造法"></a>单消息块构造法</h2><h3 id="计算平台"><a href="#计算平台" class="headerlink" title="计算平台"></a>计算平台</h3><ul>
+<li>Dell</li>
+<li>4-core 3.40 GHz Intel Core i7 CPU</li>
+<li>500GB, 7200 RPM SATA disk</li>
+<li>4096-byte block size</li>
+<li>64-bit Windows</li>
+</ul>
+<h3 id="计算结果"><a href="#计算结果" class="headerlink" title="计算结果"></a>计算结果</h3><p>原像值：</p>
+<p>哈希值：</p>
+<p>位数与得分：</p>
+<p>证明截图：</p>
+<h3 id="攻击思路"><a href="#攻击思路" class="headerlink" title="攻击思路"></a>攻击思路</h3><p>根据$\chi^{-1}$与$\iota^{-1}$运算性质，我们知道$h’$可由$h$得到，且结果唯一。$h_0’,h_1’,h_2’,h_3’$经$\pi^{-1}$的换道与$\rho ^{-1}$的 z 轴移动，我们发现道排布在$y=x$对角线上，对应输入的位置得到。</p>
+<script type="math/tex; mode=display">h'[0] = e[0]</script><script type="math/tex; mode=display">h'[1] = e[6]</script><script type="math/tex; mode=display">h'[2] = e[12]</script><script type="math/tex; mode=display">h'[3] = 0</script><p>由于$h’[3]$的限制下（其位置超过了与输入消息块的长度，处于容量 c 中），构造输入串满足$\theta$运算恒等，图 3 图 4 对应位置元素相等，从而可以得到如下 5 个方程。（$h_0’-h_2’$确定 $e_0’,e_6’$ 和 $e_{12}’$），可以构造信息值；由 $h_3’=h_4’=0$，$h_0=h_3+RC$，且希望前置 0 串最长，我们让 $h_0=0,h_3=RC=1$，即在一个消息块的情况下，最多满足输出前置 0 串 192 位。</p>
+<h3 id="攻击过程描述"><a href="#攻击过程描述" class="headerlink" title="攻击过程描述"></a>攻击过程描述</h3><p><strong>Step 1 构造合适的 Hash 值所在行</strong>：</p>
+<p>由 Hash 值出发，如果要进行$\chi^{-1}$逆变换的话必须要满足一个横行（row）五小块，，所以补一个块 $h_4$得到 $h_0,h_1,h_2,h_3,h_4$，再根据攻击思路中的分析，构造合适摘要值如图 1 所示，图 3 为初始信息值。</p>
+<p><strong>Step 2 执行$\chi^{-1}  \circ  \iota^{-1}$逆运算</strong></p>
+<p>计算$h’$值</p>
+<p><strong>Step 3 构造输入消息满足$\theta$恒等</strong> Step2 得到的对角线的值（转换位置）后，依据推论 1 要求，构造剩余每列的输入值，使输入的$CP$核均为 0，保证$\theta$恒等。</p>
+<h2 id="双消息块构造法"><a href="#双消息块构造法" class="headerlink" title="双消息块构造法"></a>双消息块构造法</h2><h3 id="计算平台-1"><a href="#计算平台-1" class="headerlink" title="计算平台"></a>计算平台</h3><h3 id="计算结果-1"><a href="#计算结果-1" class="headerlink" title="计算结果"></a>计算结果</h3><p>原像值：</p>
+<p>哈希值：</p>
+<p>位数与得分：</p>
+<p>证明截图：</p>
+<h3 id="攻击思路-1"><a href="#攻击思路-1" class="headerlink" title="攻击思路"></a>攻击思路</h3><p>完成单 Message block 的情况下，我们思考是什么导致了$h_3$的限制，实际上是由于初始 State，除 r 长度内可通过输入长度，其他位置均为 0，因此倒推过程中我们必须满足$h’_3=0$。</p>
+<p>不过经过一个 Message 的轮转后，其他位置不再是固定的 0 值了，我们的想法：通过构造第一个 Message D 使$h_0’h_1’,h_2’h_3’$达到一个合适状态$F’$（使得经最后两运算子后$F = (\iota \circ \chi) F$），$F$全为 0，即$h_0h_1h_2h_3$均为 0。</p>
+<h3 id="攻击过程描述-1"><a href="#攻击过程描述-1" class="headerlink" title="攻击过程描述"></a>攻击过程描述</h3><h1 id="二轮攻击"><a href="#二轮攻击" class="headerlink" title="二轮攻击"></a>二轮攻击</h1><p><strong>Step 1 构造第一个消息块，满足$\theta$恒等，进行轮转</strong>：</p>
+<p>需要保证状态尽量简单，两横行相等，其他七小块全为 0，执行第一轮轮转。</p>
+<p><strong>Step 2 构造全 0 哈希值，并进行逆运算</strong>：</p>
+<p>得到的对角线需要符合 Step 1 轮转后结果异或第二消息块后的结果，由于构造第二消息块会满足$\theta$的恒等性质，所以这里不需要考虑$\theta$函数的影响。</p>
+<p><strong>Step 3 构造第二个消息块</strong>：</p>
+<p>进行第二消息 Message E 的构造，目标有三个：</p>
+<ul>
+<li>保持第二轮$h_3’$位置的状态位置</li>
+<li>斜线（影响 hash 值）异或指定值达到$F’$</li>
+<li>其他地方补 1 达到纵列$CP$值为 0，使$\theta$恒等</li>
+</ul>
+<h2 id="单消息块构建线性系统"><a href="#单消息块构建线性系统" class="headerlink" title="单消息块构建线性系统"></a>单消息块构建线性系统</h2><h3 id="计算平台-2"><a href="#计算平台-2" class="headerlink" title="计算平台"></a>计算平台</h3><h3 id="计算结果-2"><a href="#计算结果-2" class="headerlink" title="计算结果"></a>计算结果</h3><p>原像值：</p>
+<p>哈希值：</p>
+<p>位数与得分：</p>
+<p>证明截图：</p>
+<h3 id="攻击思路-2"><a href="#攻击思路-2" class="headerlink" title="攻击思路"></a>攻击思路</h3><p>利用线性结构（加引用，提出者），（提出者）给出一种在时间复杂度为$O(1)$的针对 Keccak256 的原像攻击方法。</p>
+<p>我们构造了作者提出的 2 轮线性结构，利用该方法对全部 256 位为 0 的哈希值进行原像攻击，得到了符合要求的消息值。</p>
+<h3 id="攻击过程描述-2"><a href="#攻击过程描述-2" class="headerlink" title="攻击过程描述"></a>攻击过程描述</h3><p>（lemma：中间只要隔一列设置变量 即可以保证 X 变换之后 变量仍然线性）</p>
+<p><strong>Step 1 构造 2 轮线性结构的输入</strong>：</p>
+<p>按照论文给出的构造方法构造原像值（只用一个信息块）。在该构造方法中，因为我们的输入值是 17（1088）个 line 且为了考虑 padding 规则最后一个 line 的最后一位应为 1; 为了满足 Lemma1，我们的未知数最多只有 7 个，即 x0-6; 为了满足 θ 变换 as identity，我们可以得到两个方程和第二列的前三个位置必有一个 1。如下图 10 所示</p>
+<p><strong>Step 2 变换后求解线性方程</strong>：</p>
+<p>对该信息块进行一轮置换得到图 12，此时状态既不满足$\theta$是恒等的的（推论 1） 也不满足 Lemma1，如果我们继续进行第二轮变换无法保证线性。为了构造线性方程组解得原像，我们利用中间状态相等的原则，一轮变换后的图 12 进行 $\theta$ 变换（结果可用变量线性表示）和将期望的最终结果（即 256 位全为 0）进行除了 θ 变换外其他四种变换的逆变换（结果已知）的对角线元素相等。从而可以列出 $5<em>64+2</em>64$ 个满秩方程（$7*64$ 个未知数），解得唯一解。</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/密码学/">密码学</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/密码学/">密码学</a>
+                    
+                      <a class="hover-with-bg" href="/tag/Keccak/">Keccak</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/post/f3c25b0b.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">分布式系统学习——云计算发展</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/post/36f994e1.html">
+                        <span class="hidden-mobile">多媒体原理与系统——视频应用系统程序设计</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "密码技术学习——Keccak攻击进度工作文档&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
