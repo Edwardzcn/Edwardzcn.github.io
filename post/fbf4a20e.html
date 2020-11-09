@@ -171,7 +171,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      2k 字
+      2.5k 字
     </span>
   
 
@@ -181,7 +181,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      34
+      43
        分钟
     </span>
   
@@ -380,7 +380,7 @@
 <span class="hljs-keyword">Abort</span>.</code></pre>
 <p>and we will get the helpless context.</p>
 <pre><code class="hljs txt">1 subgoal (ID 282)
-  
+
   n&apos;, m, m&apos; : nat
   E : m = S m&apos;
   IHn&apos; : double n&apos; = double (S m&apos;) -&gt; n&apos; = S m&apos;
@@ -434,7 +434,7 @@
       <span class="hljs-built_in">apply</span> IHn'. <span class="hljs-built_in">simpl</span> <span class="hljs-built_in">in</span> eq. <span class="hljs-built_in">injection</span> eq <span class="hljs-built_in">as</span> goal. <span class="hljs-built_in">apply</span> goal. <span class="hljs-keyword">Qed</span>.</code></pre>
 <p>We get a more general context.</p>
 <pre><code class="hljs Coq"><span class="hljs-number">1</span> subgoal (ID <span class="hljs-number">286</span>)
-  
+
   n' : nat
   IHn' : <span class="hljs-keyword">forall</span> m : nat, <span class="hljs-built_in">double</span> n' = <span class="hljs-built_in">double</span> m -&gt; n' = m
   m, m' : nat
@@ -442,6 +442,95 @@
   eq : S (S (<span class="hljs-built_in">double</span> n')) = <span class="hljs-built_in">double</span> (S m')
   ============================
   S n' = S m'</code></pre>
+<p>What you should take away from all this is that we need to be careful, when using induction, that we are not trying to prove something too specific: When proving a property involving two variables [n] and [m] by induction on [n], it is sometimes crucial to leave [m] generic.</p>
+<p>One of my exercises.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> eqb_true : <span class="hljs-keyword">forall</span> n m,
+    n =? m = true -&gt; n = m.
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span> n.
+  <span class="hljs-built_in">induction</span>  n  <span class="hljs-built_in">as</span> [| <span class="hljs-type">n</span>' IHn'].
+  - <span class="hljs-built_in">intros</span>. <span class="hljs-built_in">destruct</span> m <span class="hljs-built_in">as</span> [| <span class="hljs-type">m</span>'].
+    + <span class="hljs-built_in">reflexivity</span>.
+    + <span class="hljs-built_in">simpl</span> <span class="hljs-built_in">in</span> H. <span class="hljs-built_in">discriminate</span> H.
+  - <span class="hljs-built_in">intros</span>. <span class="hljs-built_in">destruct</span> m <span class="hljs-built_in">as</span> [| <span class="hljs-type">m</span>'].
+    + <span class="hljs-built_in">simpl</span> <span class="hljs-built_in">in</span> H. <span class="hljs-built_in">discriminate</span> H.
+    + <span class="hljs-built_in">simpl</span> <span class="hljs-built_in">in</span> H.
+      <span class="hljs-comment">(* We apply IHn' in H. Forward reasonning. *)</span>
+      <span class="hljs-built_in">apply</span> IHn' <span class="hljs-built_in">in</span> H.
+      <span class="hljs-built_in">rewrite</span> H.
+      <span class="hljs-built_in">reflexivity</span>.
+<span class="hljs-keyword">Qed</span>.</code></pre>
+<p>Another</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> plus_n_n_injective : <span class="hljs-keyword">forall</span> n m,
+     n + n = m + m -&gt;
+     n = m.
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-comment">(* Hint: use [plus_n_Sm] *)</span>
+  <span class="hljs-built_in">intros</span> n.
+  <span class="hljs-built_in">induction</span> n <span class="hljs-built_in">as</span> [| <span class="hljs-type">n</span>' IHn'].
+  - <span class="hljs-built_in">intros</span>. <span class="hljs-built_in">destruct</span> m <span class="hljs-built_in">as</span> [| <span class="hljs-type">m</span>'].
+    + <span class="hljs-built_in">reflexivity</span>.
+    + <span class="hljs-built_in">simpl</span> <span class="hljs-built_in">in</span> H. <span class="hljs-built_in">discriminate</span> H.
+  - <span class="hljs-built_in">destruct</span>  m <span class="hljs-built_in">as</span> [| <span class="hljs-type">m</span>'].
+    + <span class="hljs-built_in">intros</span>. <span class="hljs-built_in">discriminate</span> H.
+    + <span class="hljs-built_in">intros</span>. <span class="hljs-built_in">simpl</span> <span class="hljs-built_in">in</span> H.
+      <span class="hljs-keyword">Check</span> plus_n_Sm.
+      <span class="hljs-keyword">Search</span> (S ( <span class="hljs-keyword">_</span> + <span class="hljs-keyword">_</span> ) ).
+      <span class="hljs-built_in">rewrite</span> &lt;- plus_n_Sm <span class="hljs-built_in">in</span> H.
+      <span class="hljs-built_in">rewrite</span> &lt;- plus_n_Sm <span class="hljs-built_in">in</span> H.
+      <span class="hljs-comment">(* Use injection property *)</span>
+      <span class="hljs-built_in">injection</span> H <span class="hljs-built_in">as</span> IHinj.
+      <span class="hljs-comment">(* Now we can apply IHn' in IHinj with specific m ( that is m') *)</span>
+      <span class="hljs-built_in">apply</span> IHn' <span class="hljs-built_in">in</span> IHinj.
+      <span class="hljs-keyword">Search</span> ( ?a = ?b -&gt; S ?a = S ?b).
+      <span class="hljs-comment">(* As a backward reasoning, we could rewrite the goal with IHinj and  *)</span>
+      <span class="hljs-built_in">rewrite</span> IHinj.
+      <span class="hljs-built_in">reflexivity</span>.
+      <span class="hljs-comment">(* As a forward reasoning, I search the existing therom and make S n' = S m' *)</span>
+      <span class="hljs-comment">(* apply eq_S in IHinj. *)</span>
+      <span class="hljs-comment">(* apply IHinj. *)</span>
+<span class="hljs-keyword">Qed</span>.
+<span class="hljs-comment">(** [] *)</span></code></pre>
+<h3 id="Rearrangement-of-quantified-variables"><a href="#Rearrangement-of-quantified-variables" class="headerlink" title="Rearrangement of quantified variables"></a>Rearrangement of quantified variables</h3><p>有时候需要对量化的变量做一下“重排”。</p>
+<p>比如之前的<code>double_injective</code>的证明，如果我们不引入任何东西就执行[induction m], Coq 就会自动帮我们引入 n。</p>
+<p>What can we do?</p>
+<ul>
+<li>works but not nice: rewrite the statement of the lemma so that [m] is quantified before [n].</li>
+<li>work and nice: first intro duce all and then _re-generalize_ one or more with tactic [generalize dependent].</li>
+</ul>
+<p>An exercise</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> nth_error_after_last: <span class="hljs-keyword">forall</span> (n : nat) (X : <span class="hljs-keyword">Type</span>) (l : list X),
+     length l = n -&gt;
+     nth_error l n = None.
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-comment">(* Prove by induction on [l] *)</span>
+  <span class="hljs-built_in">intros</span> n X l.
+  <span class="hljs-built_in">generalize</span> <span class="hljs-built_in">dependent</span> n.
+  <span class="hljs-built_in">generalize</span> <span class="hljs-built_in">dependent</span> X.
+  <span class="hljs-built_in">induction</span> l <span class="hljs-built_in">as</span> [| <span class="hljs-type">hd</span>' l' IHl'].
+  - <span class="hljs-built_in">simpl</span>. <span class="hljs-built_in">reflexivity</span>.
+  - <span class="hljs-built_in">destruct</span> n.
+    + <span class="hljs-built_in">simpl</span>. <span class="hljs-built_in">intros</span>. <span class="hljs-built_in">discriminate</span> H.
+    + <span class="hljs-built_in">simpl</span>. <span class="hljs-built_in">intros</span>. <span class="hljs-built_in">injection</span> H <span class="hljs-built_in">as</span> IHinj.
+      <span class="hljs-built_in">apply</span> IHl' <span class="hljs-built_in">in</span> IHinj. <span class="hljs-built_in">apply</span> IHinj.
+<span class="hljs-keyword">Qed</span>.</code></pre>
+<h2 id="Unfolding-Definitions"><a href="#Unfolding-Definitions" class="headerlink" title="Unfolding Definitions"></a>Unfolding Definitions</h2><p>Manually unfold a name that has been introduced by a [Definition].</p>
+<p>As for automatic unfolding (with tactic [simpl]), Coq is not smart enough…</p>
+<p>Use [unfold] to explicitly tell Coq what to do.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Fact</span> silly_fact_2' : <span class="hljs-keyword">forall</span> m, bar m + <span class="hljs-number">1</span> = bar (m + <span class="hljs-number">1</span>) + <span class="hljs-number">1.</span>
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span> m.
+  <span class="hljs-built_in">unfold</span> bar.
+
+<span class="hljs-comment">(** Now it is apparent that we are stuck on the [match] expressions on
+    both sides of the [=], and we can use [destruct] to finish the
+    proof without thinking too hard. *)</span>
+
+  <span class="hljs-built_in">destruct</span> m eqn:E.
+  - <span class="hljs-built_in">reflexivity</span>.
+  - <span class="hljs-built_in">reflexivity</span>.
+<span class="hljs-keyword">Qed</span>.</code></pre>
+<h2 id="Using-destruct-on-Compound-Expressions"><a href="#Using-destruct-on-Compound-Expressions" class="headerlink" title="Using [destruct] on Compound Expressions"></a>Using [destruct] on Compound Expressions</h2><p>We have used this for the case analysis before.</p>
 
             </article>
             <hr>
