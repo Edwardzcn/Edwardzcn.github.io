@@ -1,7 +1,7 @@
+
+
 <!DOCTYPE html>
-<html lang="zh-CN">
-
-
+<html lang="zh-CN" data-default-color-scheme=&#34;dark&#34;>
 
 
 
@@ -19,30 +19,47 @@
   <meta name="keywords" content="Edward&#39;s blog">
   <title>分布式系统学习——MapReduce方法Paper翻译 - Edward&#39;s blog</title>
 
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/css/bootstrap.min.css" />
 
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
   <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
   
-    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.1.2/styles/github-gist.min.css" />
+    
   
 
   
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+  
+
 
 
 <!-- 主题依赖的图标库，不要自行修改 -->
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
 
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
 
 <link  rel="stylesheet" href="/css/main.css" />
 
 <!-- 自定义样式保持在最底部 -->
 
 
-  <script  src="/js/utils.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"copy_btn":true,"image_zoom":{"enable":true},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
 
 
@@ -91,11 +108,46 @@
           
           
           
-            <li class="nav-item">
-              <a class="nav-link" href="/categories/">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-category-fill"></i>
                 分类
               </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Computer-Science/">
+                    <i class="iconfont icon-codeforces"></i>
+                    Computer Science
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%98%85%E8%AF%BB/">
+                    <i class="iconfont icon-bookmark-fill"></i>
+                    Life Reading
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%9A%8F%E7%AC%94/">
+                    <i class="iconfont icon-note"></i>
+                    Life Essay
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Research/Report/">
+                    <i class="iconfont icon-clipcheck"></i>
+                    Weekly Report
+                  </a>
+                
+              </div>
             </li>
           
         
@@ -137,8 +189,14 @@
         
         
           <li class="nav-item" id="search-btn">
-            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
-                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
           </li>
         
       </ul>
@@ -146,25 +204,33 @@
   </div>
 </nav>
 
-    <div class="view intro-2" id="background" parallax=true
+    <div class="banner intro-2" id="background" parallax=true
          style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-          <div class="container text-center white-text fadeInUp">
-            <span class="h2" id="subtitle">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="分布式系统学习——MapReduce方法Paper翻译">
               
             </span>
 
             
-              
-  <div class="mt-3 post-meta">
-    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2019-08-24 08:20">
-      2019年8月24日 早上
-    </time>
-  </div>
-
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      Edwardzcn
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2019-08-24 08:20" pubdate>
+        2019年8月24日 早上
+      </time>
+    </span>
+  
+</div>
 
 <div class="mt-1">
   
@@ -209,11 +275,13 @@
     <div class="col-lg-8 nopadding-md">
       <div class="container nopadding-md" id="board-ctn">
         <div class="py-5" id="board">
-          <div class="post-content mx-auto" id="post">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">分布式系统学习——MapReduce方法Paper翻译</h1>
             
-            <article class="markdown-body">
+            <div class="markdown-body">
               <h1 id="读书笔记——MapReduce-Simplified-Data-Processing-on-Large-Clusters"><a href="#读书笔记——MapReduce-Simplified-Data-Processing-on-Large-Clusters" class="headerlink" title="读书笔记——MapReduce: Simplified Data Processing on Large Clusters"></a>读书笔记——MapReduce: Simplified Data Processing on Large Clusters</h1><p>大型集群上的简化处理：MapReduce（两个主要操作）</p>
-<p><a href="https://www.cnblogs.com/YaoDD/p/6017397.html" target="_blank" rel="noopener">原始翻译版本网址：《MapReduce: Simplified Data Processing on Large Cluster 》翻译</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/YaoDD/p/6017397.html">原始翻译版本网址：《MapReduce: Simplified Data Processing on Large Cluster 》翻译</a></p>
 <h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>MapReduce 是一种编程模型和一种用来处理和产生大数据集的相关实现。用户定义 map 函数（map function）来处理 key/value 键值对来产生一系列的中间的 key/value 键值对。还要定义一个 reduce 函数(reduce function)用来合并有着相同中间 key 值的中间 value。许多现实世界中的任务都可以用这种模型来表达，就像下文所展示的那样。</p>
 <p>用这个风格（函数式）编写的程序可以自动并行地在大规模集群上工作。运行时系统会自动处理例如切割输入数据，在机器之间调度程序的执行，处理机器故障以及管理必要的机器间通信等细节问题。这可以让那些对于并行分布式系统<strong>没有任何经验</strong>的程序员也能<strong>很简单</strong>地利用起一个大的分布式系统的资源。</p>
 <p>我们的 MapReduce 的实现运行在一个由大的商业机构成的集群当中并且是高度可扩展的：一个典型的 MapReduce 计算要在上千台机器中处理 TB 数量级的数据。程序员会觉得这个系统非常好用：已经有成千上万的 MapReduce 程序被实现出来并且每天有上千个 MapReduce 任务运行在 Google 的集群上。</p>
@@ -226,16 +294,16 @@
 <p><strong>Map</strong>，是由用户编写的，取一个输入对，并且产生一系列中间的键值对。MapReduce 库将那些具有相同的中间键$I$的中间值聚集在一起，然后将它们传递给 Reduce 函数。</p>
 <p><strong>Reduce</strong>，同样是由用户编写的，接收一个中间键$I$和该键对应的一系列的中间值。Reduce 函数通过将这些值合并来组成一个可能更小的集合（值的集合）。通常每个 Reduce 函数只产生 0 个或 1 个输出值。Reduce 函数一般通过一个迭代器（via an iterator）来获取中间值，从而在中间值的数目远远大于内存容量时，我们也能够处理。</p>
 <h3 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h3><p>下面来考虑这样一个问题：统计大量文档中每一个单词出现的次数。对此，用户需要编写类似于如下的伪代码：</p>
-<pre><code class="hljs python">　　map(String key, String value):
+<pre><code class="hljs python">　　<span class="hljs-built_in">map</span>(String key, String value):
 　　　　// key: document name
 　　　　// value: document contents
 　　　　<span class="hljs-keyword">for</span> each word w <span class="hljs-keyword">in</span> value:
-　　　　　　EmitIntermediate(w, <span class="hljs-string">"1"</span>);
+　　　　　　EmitIntermediate(w, <span class="hljs-string">&quot;1&quot;</span>);
 
 　　reduce(String key, Iterator values):
 　　　　// key: a word
-　　　　// values: a list of counts
-　　　　int result = <span class="hljs-number">0</span>;
+　　　　// values: a <span class="hljs-built_in">list</span> of counts
+　　　　<span class="hljs-built_in">int</span> result = <span class="hljs-number">0</span>;
 　　　　<span class="hljs-keyword">for</span> each v <span class="hljs-keyword">in</span> values:
 　　　　　　result += ParseInt(v);
 　　　　Emit(AsString(result));</code></pre>
@@ -246,11 +314,11 @@ reduce  (k2,list(v2)) -&gt; list(v2)</code></pre>
 <p>需要注意的是，输入的 key 和 value 与输出的 key 和 value 是不同的类型，而中间的 key 和 value 与输出的 key 和 value 是相同的类型（用 k1 和 k2 表示）。我们的 C++实现都是以字符串的形式和用户代码进行交互的，至于将字符串类型转换成相应合适的类型的工作则由用户代码来完成了。</p>
 <h3 id="More-Example"><a href="#More-Example" class="headerlink" title="More Example"></a>More Example</h3><p>接下来是一些能够简单地用 MapReduce 计算模型进行表达的例子</p>
 <p>Distributed Grep（分布式查找）：Map 函数获取匹配提供的模式的行，Reduce 函数只是简单地将这些中间数据拷贝到输出。</p>
-<p>Count of URL Access Frequency（计算 URL 访问频率）：Map 函数处理 web 请求的日志，并且输出<url, 1="">。Reduce 函数将拥有相同 URL 的 value 相加，得到<url, total="" count="">对</url,></url,></p>
-<p>Reverse Web-Link Graph：Map 函数输出<target, source="">对，其中 source 所在的 page 都有连向 target 这个 URL 的链接。Reduce 函数将给定 target 的所有的 source URL 连接起来，输出<target, list(source)="">对</target,></target,></p>
-<p>Term-Vector per Host：一个 term vector 表示一系列<word, frequency="">的键值对，word 表示一篇或者一系列文章中出现的比较重要的单词，frequency 表示它们出现的次数。Map 函数对于每篇输入的文章输出<hostname, term="" vector="">键值对（其中 hostname 是从文章所在的 URL 中抽取出来的）Reduce 函数获取给定 host 的 term vectors。它将这些 term vectors 累加起来，丢弃非频繁出现的 term，并产生一个最终的<hostname, term="" vector="">对。</hostname,></hostname,></word,></p>
-<p>Inverted Index：Map 函数对每篇文章进行处理，并输出一系列的<word, document="" id="">对。Reduce 函数接收给定 word 的所有键值对，对相应的 document ID 进行排序并且输出<word, list<document="" id="">&gt;对。所有输出对的集合构成了一个简单的倒排索引。用了 MapReduce 模型，对单词位置的追踪就变得非常简单了。</word,></word,></p>
-<p>Distributed Sort：Map 函数从每个 record 中抽取出 key，产生<key, record="">键值对。Reduce 函数只是简单地将所有对输出。这个计算模型依赖于 Section 4.1 中描述的划分技巧以及 Section 4.2 中描述的排序特性。</key,></p>
+<p>Count of URL Access Frequency（计算 URL 访问频率）：Map 函数处理 web 请求的日志，并且输出<URL, 1>。Reduce 函数将拥有相同 URL 的 value 相加，得到<URL, total count>对</p>
+<p>Reverse Web-Link Graph：Map 函数输出<target, source>对，其中 source 所在的 page 都有连向 target 这个 URL 的链接。Reduce 函数将给定 target 的所有的 source URL 连接起来，输出<target, list(source)>对</p>
+<p>Term-Vector per Host：一个 term vector 表示一系列<word, frequency>的键值对，word 表示一篇或者一系列文章中出现的比较重要的单词，frequency 表示它们出现的次数。Map 函数对于每篇输入的文章输出<hostname, term vector>键值对（其中 hostname 是从文章所在的 URL 中抽取出来的）Reduce 函数获取给定 host 的 term vectors。它将这些 term vectors 累加起来，丢弃非频繁出现的 term，并产生一个最终的<hostname, term vector>对。</p>
+<p>Inverted Index：Map 函数对每篇文章进行处理，并输出一系列的<word, document ID>对。Reduce 函数接收给定 word 的所有键值对，对相应的 document ID 进行排序并且输出<word, list<document ID>&gt;对。所有输出对的集合构成了一个简单的倒排索引。用了 MapReduce 模型，对单词位置的追踪就变得非常简单了。</p>
+<p>Distributed Sort：Map 函数从每个 record 中抽取出 key，产生<key, record>键值对。Reduce 函数只是简单地将所有对输出。这个计算模型依赖于 Section 4.1 中描述的划分技巧以及 Section 4.2 中描述的排序特性。</p>
 <p>（上述可以全部理解了）</p>
 <h2 id="Implementation"><a href="#Implementation" class="headerlink" title="Implementation"></a>Implementation</h2><p>对于 MapReduce 的接口，各种各样不同的实现都是可能的。所有正确的选择都是基于当下环境的。比如，一种实现可能适合于小的共享内存的机器，另一种可能适合于大型的 NUMA 多处理器机器，甚至有的是为更大的互联的机器集群设计的。</p>
 <p>本节中描述的实现基于的是 Google 中最常用的计算环境：一个由大量商用 PC 机通过交换以太网互联的集群。在我们的环境中：</p>
@@ -311,7 +379,7 @@ reduce  (k2,list(v2)) -&gt; list(v2)</code></pre>
 <h3 id="Partitioning-Function"><a href="#Partitioning-Function" class="headerlink" title="Partitioning Function"></a>Partitioning Function</h3><p>MapReduce 用户决定他们的 Reduce task 或者输出文件的数目 R。通过一个划分函数，根据中间键值将各个 task 的数据进行划分。默认的划分函数是通过哈希（比如，hash(key) mod R）。这通常会产生非常好的较为均衡的划分。但是在其他一些情况下，通过键值的其他函数来划分要更好一些。例如，有的时候输出键值是一些 URL，我们希望同一个 host 的内容能放在同一个输出文件中。为了支持这种情况，MapReduce 库的用户可以提供一个特殊的划分函数。例如，使用“hash(Hostname(urlKey)) mod R”作为划分函数，从而让所有来自于同一个 host 的 URL 的内容都输出到同一个输出文件。</p>
 <p>（个人理解，hash 之前可以根据需求（key 的相似性、urlhost 相同）对 key 提前进行一次分组）</p>
 <h3 id="Ordering-Guarantees"><a href="#Ordering-Guarantees" class="headerlink" title="Ordering Guarantees"></a>Ordering Guarantees</h3><p>我们确保在一个给定的划分中，中间键值对都按照键值的升序进行处理。这样的处理顺序确保了每一个划分产生一个排好序的输出文件。这样的话，如果输出文件格式需要支持根据 key 进行有效的随机查找会比较方便。同时，输出文件（应用）的用户也会觉得已经排好序的数据使用起来特别方便。</p>
-<h3 id="Combiner-Function"><a href="#Combiner-Function" class="headerlink" title="Combiner Function"></a>Combiner Function</h3><p>在有些情况下，每个 Map task 都会产生大量的中间键的重复而用户指定的 Reduce 函数是交互和关联的。Section 2.1 中的单词统计就是一个很好的例子。因为单词的出现频率服从于 Zipf 分布，每个 Map Task 都会产生成百上千个<the, 1="">这样的记录。所有这些记录都会通过网络被送到一个 Reduce task 中，并且由 Reduce 函数加在一起去产生一个数。我们允许用户使用了可选的 Cominer 函数，用于在网络传输之前部分地进行归并操作。</the,></p>
+<h3 id="Combiner-Function"><a href="#Combiner-Function" class="headerlink" title="Combiner Function"></a>Combiner Function</h3><p>在有些情况下，每个 Map task 都会产生大量的中间键的重复而用户指定的 Reduce 函数是交互和关联的。Section 2.1 中的单词统计就是一个很好的例子。因为单词的出现频率服从于 Zipf 分布，每个 Map Task 都会产生成百上千个<the, 1>这样的记录。所有这些记录都会通过网络被送到一个 Reduce task 中，并且由 Reduce 函数加在一起去产生一个数。我们允许用户使用了可选的 Cominer 函数，用于在网络传输之前部分地进行归并操作。</p>
 <p>Combiner 函数在每个执行 Map task 的机器上执行。通常 Combiner 和 Reduce 函数使用的是相同的代码。Reduce 函数和 Combiner 函数<strong>唯一的不同</strong>是 MapReduce 库<strong>如何处理函数的输出</strong>。Reduce 函数的输出写到最终的输出文件中。而 Combiner 函数的输出会被写到一个最终将被送给 Reduce task 的中间文件中（合并后替代原有的中间键值对集合传递给 Reduce Task 机器，这样减少了带宽的占用）。</p>
 <p>部分的合并操作能极大地加速某类特定的 MapReduce 操作。Appendix A 包含了一个使用 Combiner 的例子。</p>
 <h3 id="Input-and-Output-Types"><a href="#Input-and-Output-Types" class="headerlink" title="Input and Output Types"></a>Input and Output Types</h3><p>MapReduce 库提供了对读入数据文件多种的格式支持。例如，”text”格式的输入将每一行作为键值对：key 是文件内的偏移，value 是该行的内容。另外一种比较常用的格式存储一系列按照键进行排序的键值对。每一个输出格式的实现都知道如何将自己进行合理的划分从而能让不同的 Map task 进行处理（例如，text 模式就知道将区域划分到以行为边界）。用户可以通过简单地定义一个 reader 接口来提供一个新的输入类型的实现。事实上，大多数用户只使用了预定义输入类型的很小一部分。</p>
@@ -327,13 +395,13 @@ reduce  (k2,list(v2)) -&gt; list(v2)</code></pre>
 <p>MapReduce 库提供了一个叫 counter 的设施用于统计各种不同事件出现的次数。例如，用户可能想要统计已经处理过的单词的数目或者德国文件的索引数量。</p>
 <p>为了使用这一特性，用户代码创建一个命名的 counter 对象，并且在 Map 以及 Reduce 函数中对 counter 进行增加。例如：</p>
 <pre><code class="hljs python">Counter* uppercase;
-uppercase = GetCounter("uppercase");
+uppercase = GetCounter(<span class="hljs-string">&quot;uppercase&quot;</span>);
 
-map(String name, String contents):
-　　for each word w in contents:
-　　　　if(IsCapitalized(w)):
+<span class="hljs-built_in">map</span>(String name, String contents):
+　　<span class="hljs-keyword">for</span> each word w <span class="hljs-keyword">in</span> contents:
+　　　　<span class="hljs-keyword">if</span>(IsCapitalized(w)):
 　　　　　　uppercase-&gt;Increment();
-　　　　EmitIntermediate(w, "1");</code></pre>
+　　　　EmitIntermediate(w, <span class="hljs-string">&quot;1&quot;</span>);</code></pre>
 <p>每个 worker 机器上 counter 的值会定期传给 master（捎带在给 master 的 ping 回复中）。master 将来自成功执行的 Map 和 Reduce task 的 counter 值聚集起来。然后在 MapReduce 操作完成之后返回给用户代码。当前的 counter 值也会显示在 master 的状态页上（前述的 state pages），所以用户能从实时观看计算的进行。在聚集 counter 的值的时候，master 会消除 Map 或者 Reduce task 的重复执行造成的重复计算。（重复执行可能由 backup tasks 或者因为错误重新执行的 task 引起）。</p>
 <p>有些 counter 的值是由 MapReduce 库自动维护的，例如已经处理的输入键值对数目以及已经产生的输出键值对数目。</p>
 <p>用户发现 counter 特性对于检查 MapReduce 操作的执行是非常有用的。例如，在有些 MapReduce 操作中，用户代码想要确保产生的输出对的数目和已经处理的输入对的数目是恰好相等的（比如检查满射），或者处理的德语文件的数目占总处理文件数目的比重在一个可容忍的范围内。</p>
@@ -382,7 +450,7 @@ map(String name, String contents):
 <li>冗余的任务执行（backup tasks）可以用于减少缓慢机器的影响，以及解决机器故障和数据丢失。</li>
 </ul>
 
-            </article>
+            </div>
             <hr>
             <div>
               <div class="post-metas mb-3">
@@ -392,7 +460,7 @@ map(String name, String contents):
                     
                       <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
                     
-                      <a class="hover-with-bg" href="/categories/Computer-Science/分布式系统/">分布式系统</a>
+                      <a class="hover-with-bg" href="/categories/Computer-Science/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/">分布式系统</a>
                     
                   </div>
                 
@@ -402,17 +470,17 @@ map(String name, String contents):
                     
                       <a class="hover-with-bg" href="/tag/Paper/">Paper</a>
                     
-                      <a class="hover-with-bg" href="/tag/分布式系统/">分布式系统</a>
+                      <a class="hover-with-bg" href="/tag/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/">分布式系统</a>
                     
                   </div>
                 
               </div>
               
-                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
               
               
                 <div class="post-prevnext row">
-                  <div class="post-prev col-6">
+                  <article class="post-prev col-6">
                     
                     
                       <a href="/post/7c86d8e8.html">
@@ -421,8 +489,8 @@ map(String name, String contents):
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
-                  </div>
-                  <div class="post-next col-6">
+                  </article>
+                  <article class="post-next col-6">
                     
                     
                       <a href="/post/86b562df.html">
@@ -431,13 +499,13 @@ map(String name, String contents):
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
-                  </div>
+                  </article>
                 </div>
               
             </div>
 
             
-          </div>
+          </article>
         </div>
       </div>
     </div>
@@ -445,7 +513,7 @@ map(String name, String contents):
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
   <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
-  <div id="tocbot"></div>
+  <div class="toc-body" id="toc-body"></div>
 </div>
 
       </div>
@@ -457,16 +525,15 @@ map(String name, String contents):
 
 
     
-  </main>
 
-  
-    <a id="scroll-top-button" href="#" role="button">
-      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
-    </a>
-  
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
 
-  
-    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
      aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
@@ -487,33 +554,44 @@ map(String name, String contents):
     </div>
   </div>
 </div>
-  
-
-  
-
-  
-
-  <footer class="mt-5">
-  <div class="text-center py-3">
-    <div>
-      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
-      <i class="iconfont icon-love"></i>
-      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
-        <span>Fluid</span></a>
-    </div>
     
 
     
+  </main>
 
-    
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
+  
+
+  
+
+  
 </footer>
 
 <!-- SCRIPTS -->
-<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
-<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+
+  <script  src="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":200})
+    NProgress.start()
+    document.addEventListener('DOMContentLoaded', function() {
+      window.NProgress && window.NProgress.inc();
+    })
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/js/bootstrap.min.js" ></script>
 <script  src="/js/debouncer.js" ></script>
-<script  src="/js/main.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
 
 <!-- Plugins -->
 
@@ -524,103 +602,51 @@ map(String name, String contents):
 
 
 
+  
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.12.0/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.3.0/anchor.min.js" ></script>
+
+
+
   <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
-  <script  src="/js/clipboard-use.js" ></script>
 
 
-
-
-
-
-
-  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
-  <script>
-    $(document).ready(function () {
-      var boardCtn = $('#board-ctn');
-      var boardTop = boardCtn.offset().top;
-
-      tocbot.init({
-        tocSelector: '#tocbot',
-        contentSelector: 'article.markdown-body',
-        headingSelector: 'h1,h2,h3,h4,h5,h6',
-        linkClass: 'tocbot-link',
-        activeLinkClass: 'tocbot-active-link',
-        listClass: 'tocbot-list',
-        isCollapsedClass: 'tocbot-is-collapsed',
-        collapsibleClass: 'tocbot-is-collapsible',
-        collapseDepth: 0,
-        scrollSmooth: true,
-        headingsOffset: -boardTop
-      });
-      if ($('.toc-list-item').length > 0) {
-        $('#toc').css('visibility', 'visible');
-      }
-    });
-  </script>
 
 
 
   <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
   <script>
-    var typed = new Typed('#subtitle', {
-      strings: [
-        '  ',
-        "分布式系统学习——MapReduce方法Paper翻译&nbsp;",
-      ],
-      cursorChar: "_",
-      typeSpeed: 70,
-      loop: false,
-    });
-    typed.stop();
-    $(document).ready(function () {
-      $(".typed-cursor").addClass("h2");
-      typed.start();
-    });
-  </script>
-
-
-
-  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
-  <script>
-    anchors.options = {
-      placement: "right",
-      visible: "hover",
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
       
-    };
-    var el = "h1,h2,h3,h4,h5,h6".split(",");
-    var res = [];
-    for (item of el) {
-      res.push(".markdown-body > " + item)
-    }
-    anchors.add(res.join(", "))
+      typing(title)
+      
+    })(window, document);
   </script>
 
 
 
   <script  src="/js/local-search.js" ></script>
   <script>
-    var path = "/local-search.xml";
-    var inputArea = document.querySelector("#local-search-input");
-    inputArea.onclick = function () {
-      searchFunc(path, 'local-search-input', 'local-search-result');
-      this.onclick = null
-    }
-  </script>
-
-
-
-  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
-
-  <script>
-    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
-      function () {
-        var element = document.createElement('a');
-        $(element).attr('data-fancybox', 'images');
-        $(element).attr('href', $(this).attr('src'));
-        $(this).wrap(element);
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
       }
-    );
+    })()
   </script>
 
 
@@ -662,7 +688,7 @@ map(String name, String contents):
       };
     </script>
 
-    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <script async src="https://cdn.staticfile.org/mathjax/3.1.2/es5/tex-svg.js" ></script>
 
   
 
@@ -676,8 +702,8 @@ map(String name, String contents):
 
 
 
-
-
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
 
 
