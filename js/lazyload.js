@@ -1,6 +1,5 @@
-/* global Debouncer */
-
-(function(window, document) {
+// eslint-disable-next-line no-unused-expressions
+!(function(window, document) {
   var runningOnBrowser = typeof window !== 'undefined';
   var supportsIntersectionObserver = runningOnBrowser && 'IntersectionObserver' in window;
 
@@ -41,6 +40,7 @@
       img.srcset = src;
     }
 
+    // eslint-disable-next-line no-undef
     var lazyLoader = new Debouncer(processImages);
 
     // eslint-disable-next-line no-inner-declarations
