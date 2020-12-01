@@ -227,8 +227,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2020-11-04 01:18" pubdate>
-        2020年11月4日 凌晨
+      <time datetime="2020-11-30 10:18" pubdate>
+        2020年11月30日 上午
       </time>
     </span>
   
@@ -239,7 +239,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      3k 字
+      3.1k 字
     </span>
   
 
@@ -249,7 +249,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      51
+      53
        分钟
     </span>
   
@@ -429,7 +429,6 @@
 <p>数学或计算机科学课上见过的非形式化证明（informal proofs）可能倾向于正向推理。通常，Coq 习惯上倾向于使用反向推理，但在某些情况下，正向推理更易于思考。</p>
 <h2 id="Varying-the-Induction-Hypothesis"><a href="#Varying-the-Induction-Hypothesis" class="headerlink" title="Varying the Induction Hypothesis"></a>Varying the Induction Hypothesis</h2><p>变换归纳假设</p>
 <p>[intros m] in the wrong places.</p>
-<p>First</p>
 <pre><code class="hljs Coq"><span class="hljs-comment">(* Failed Proof *)</span>
 <span class="hljs-keyword">Theorem</span> double_injective_FAILED : <span class="hljs-keyword">forall</span> n m,
      <span class="hljs-built_in">double</span> n = <span class="hljs-built_in">double</span> m -&gt;
@@ -448,7 +447,8 @@
 <span class="hljs-comment">    not provable. *)</span>
 
 <span class="hljs-keyword">Abort</span>.</code></pre>
-<p>and we will get the helpless context.</p>
+<p>分析问题，由于我们已经通过[intros] 将 [m] 引入到上下文中。直观上我们告诉 Coq“现在开始考虑具体的[n]和[m]”，而在对[n]归纳证明时，[P n -&gt; P ( S n )]，对于具体[m]来说是没有意义的（useless）。</p>
+<p>我们需求证明更一般的事情，（在后面才具体化[m]）。</p>
 <pre><code class="hljs txt">1 subgoal (ID 282)
 
   n&#x27;, m, m&#x27; : nat
@@ -601,6 +601,12 @@
   - <span class="hljs-built_in">reflexivity</span>.
   - <span class="hljs-built_in">reflexivity</span>.
 <span class="hljs-keyword">Qed</span>.</code></pre>
+<p>As for automatic unfolding the definition, if [simpl] meet a function involving a pattern match with an application of an variable. It is not smart enough to notice whether the two branches of are identical or not.</p>
+<p>Two ways to make progress</p>
+<ul>
+<li>Destruct the variable (depends on recognizing the dependencis)</li>
+<li>Tell Coq to unfold the function and show directly, and then …</li>
+</ul>
 <h2 id="Using-destruct-on-Compound-Expressions"><a href="#Using-destruct-on-Compound-Expressions" class="headerlink" title="Using [destruct] on Compound Expressions"></a>Using [destruct] on Compound Expressions</h2><p>We have used this for the case analysis before.</p>
 <p>About the [eqn:]!</p>
 <p>When [destruct]ing compound expressions, the information recorded by the [eqn:] can actually be critical: if we leave it out, then [destruct] can erase information we need to complete a proof.</p>
@@ -678,9 +684,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/post/1017d8a9.html">
+                      <a href="/post/ea857063.html">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">A-Basic-Introduction-to-SSA-Lustre-and-K2</span>
+                        <span class="hidden-mobile">Coq学习——《Software-Foundation》Volume1.5-Logic</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -688,8 +694,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/post/81ffeeed.html">
-                        <span class="hidden-mobile">Learning-Transition-System</span>
+                      <a href="/post/f7d0bee3.html">
+                        <span class="hidden-mobile">二十有二</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
