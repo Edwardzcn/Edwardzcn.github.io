@@ -767,6 +767,107 @@
       </tags>
   </entry>
   <entry>
+    <title>Z3学习——Z3-guide</title>
+    <url>/post/2b29a3d3.html</url>
+    <content><![CDATA[<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><h2 id="What-is-Z3"><a href="#What-is-Z3" class="headerlink" title="What is Z3"></a>What is Z3</h2><p>Z3 is a state-of-art theorem prover from Microsoft Research.</p>
+<p>Check sat of logical formulas. Match for software analysis and verification tools.</p>
+<p>Low level tool.</p>
+<h2 id="Basic-Commands"><a href="#Basic-Commands" class="headerlink" title="Basic Commands"></a>Basic Commands</h2><p>Input format (syntax) is an extension of one defined by the SMT-LIB 2.0 standard.</p>
+<ul>
+<li><code>(help)</code>: print the help</li>
+<li><code>(echo &lt;string&gt;)</code>: display the given string</li>
+<li><code>(declare-const &lt;symbol&gt; &lt;sort&gt;)</code>: declare a constant of a given type (aka sort)</li>
+<li><code>(declare-fun &lt;symbol&gt; (&lt;sort&gt;*) &lt;sort&gt;)</code>: declare a function</li>
+</ul>
+<p>The command <code>assert</code> adds a formula into the Z3 internal stack. <code>check-sat</code> lets us know if there is an interpretation for all the declared constants and functions that makes all asserted formulas in Z3 stack true.</p>
+<ul>
+<li><code>(assert &lt;term&gt;)</code>: assert term</li>
+<li><code>(check-sat &lt;boolean-constants&gt;*)</code>: check if the current context is satisfiable. If a list of boolean constants B is provided, then check if the current context is consistent with assigning every constant in B to true.</li>
+</ul>
+<p>When <code>check-sat</code> returns sat(satisfied), the command <code>get-model</code> can be used to retrieve an interpretation. The interpretation is provided using definitions.</p>
+<ul>
+<li><code>(get-model)</code>: retrieve model for the last check-sat command</li>
+<li><code>(get-proof)</code>: retrieve proof</li>
+</ul>
+<p>E.g.</p>
+<pre><code class="hljs Z3">(declare-const a Int)
+(declare-fun f (Int Bool) Int)
+(assert (&gt; a 10))
+(assert (&lt; (f a true) 100))
+(check-sat)
+(get-model)</code></pre>
+<p>Output.</p>
+<pre><code class="hljs txt">sat
+(model
+  (define-fun a () Int
+    11)
+  (define-fun f ((x!1 Int) (x!2 Bool)) Int
+    (ite (and (= x!1 11) (= x!2 true)) 0
+      0))
+)</code></pre>
+<h3 id="Using-Scopes"><a href="#Using-Scopes" class="headerlink" title="Using Scopes"></a>Using Scopes</h3><p><code>push</code> and <code>pop</code> commands are used for the purpose to share several definitions and assertions. The push and pop commands can optionally receive a numeral argument as specifed by the SMT 2 language.</p>
+<ul>
+<li><code>(push &lt;number&gt;?)</code>: push 1 (or <number>) scopes.</li>
+<li><code>(pop &lt;number&gt;?)</code>: pop 1 (or <number>) scopes.</li>
+</ul>
+<p>E.g. (TODO: need to test it).</p>
+<pre><code class="hljs Z3">(declare-const x Int)
+(declare-const y Int)
+(push) ; push the declarations of x and y
+(declare-const z Int)
+(push) ; push z
+(assert (&#x3D; (+ x y) 10))
+(assert (&#x3D; (+ x (* 2 y)) 20))
+(check-sat)
+(get-model) ; get the interpretation
+(pop) ; remove the two assertions
+(pop) ; pop the declaration of z
+(push) ; push the declarations of x and y
+(assert (&#x3D; (+ (* 3 x) y) 10))
+(assert (&#x3D; (+ (* 2 x) (* 2 y)) 21))
+(check-sat) ; not sat
+(pop)
+(push)
+(assert (&#x3D; (+ (* 3 x) y) 10))
+(assert (&#x3D; (+ (* 2 x) (* 2 y)) 4))
+(check-sat) ; sat
+(get-model) ; get the interpretation
+
+(declare-const p Bool)
+(pop)
+(assert p) ; error, since declaration of p was removed from the stack</code></pre>
+<h3 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h3><p>The command set-option is used to configure Z3.</p>
+<p>But I haven’t found the related OCaml API to these configurations. (TODO)</p>
+<h3 id="Additional-commands"><a href="#Additional-commands" class="headerlink" title="Additional commands"></a>Additional commands</h3><ul>
+<li><code>(display) &lt;term&gt;)</code>: display the given term(aka expression).</li>
+<li><code>(simplify &lt;term&gt; (&lt;keyword&gt; &lt;value&gt;)*)</code>: simplify the expr</li>
+</ul>
+<p>From the [z3.mli] we can find the definition of <code>simplify</code> in OCaml.</p>
+<pre><code class="hljs OCaml"><span class="hljs-comment">(** Returns a simplified version of the expression.</span>
+<span class="hljs-comment">      &#123;!get_simplify_help&#125; *)</span>
+  <span class="hljs-keyword">val</span> simplify : <span class="hljs-type">Expr</span>.expr -&gt; <span class="hljs-type">Params</span>.params option -&gt; expr</code></pre>
+]]></content>
+      <categories>
+        <category>Computer Science</category>
+        <category>形式化验证</category>
+      </categories>
+      <tags>
+        <tag>形式化验证</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Coq学习——《Software-Foundation》Volume1.5-IndProp</title>
+    <url>/post/a36f4fc8.html</url>
+    <content><![CDATA[<a id="more"></a>]]></content>
+      <categories>
+        <category>Computer Science</category>
+        <category>形式化验证</category>
+      </categories>
+      <tags>
+        <tag>形式化验证</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>毕业设计Timeline</title>
     <url>/post/168ec82d.html</url>
     <content><![CDATA[<h1 id="毕业设计-Timeline"><a href="#毕业设计-Timeline" class="headerlink" title="毕业设计 Timeline"></a>毕业设计 Timeline</h1><p>整理自计算机学院 2021 届本科毕业设计（论文）工作计划</p>
@@ -941,8 +1042,8 @@
       </tags>
   </entry>
   <entry>
-    <title>Coq学习——《Software-Foundation》Volume1.5-Logic</title>
-    <url>/post/ea857063.html</url>
+    <title>Coq学习——《Software-Foundation》Volume1.6-Logic</title>
+    <url>/post/db6d6afe.html</url>
     <content><![CDATA[<h1 id="Logic"><a href="#Logic" class="headerlink" title="Logic"></a>Logic</h1><p>Coq 中的逻辑系统。</p>
 <p>We have seen many examples of factual claims (_propositions_) and ways of presenting evidence of their truth (_proofs_). In particular, we have worked extensively with _equality propositions_ ([e1 = e2]), implications ([P -&gt; Q]) and quantified propositions ([ forall x, P]). In this chapter, we will see how Coq can be used to carry out other familiar forms of logical reasoning.</p>
 <p>Typed language: every sensible expression in Coq’s world has an associated type.</p>
@@ -965,8 +1066,8 @@
       </tags>
   </entry>
   <entry>
-    <title>Coq学习——《Software-Foundation》Volume1.4-Tactics</title>
-    <url>/post/fbf4a20e.html</url>
+    <title>Coq学习——《Software-Foundation》Volume1.5-Tactics</title>
+    <url>/post/ec8fb64d.html</url>
     <content><![CDATA[<h1 id="Tactics"><a href="#Tactics" class="headerlink" title="Tactics"></a>Tactics</h1><p>More tactics and more properties of functional programs.</p>
 <ul>
 <li>how to use auxiliary lemmas in both “forward-“ and “backward-style” proofs; “正推”“逆推”中使用辅助引理；</li>
