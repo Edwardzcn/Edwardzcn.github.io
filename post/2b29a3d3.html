@@ -239,7 +239,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      514 字
+      2.2k 字
     </span>
   
 
@@ -249,7 +249,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      10
+      43
        分钟
     </span>
   
@@ -359,7 +359,268 @@
 <pre><code class="hljs OCaml"><span class="hljs-comment">(** Returns a simplified version of the expression.</span>
 <span class="hljs-comment">      &#123;!get_simplify_help&#125; *)</span>
   <span class="hljs-keyword">val</span> simplify : <span class="hljs-type">Expr</span>.expr -&gt; <span class="hljs-type">Params</span>.params option -&gt; expr</code></pre>
+<p>create a boolean sort</p>
+<ul>
+<li><code>(define-sort [symbol] ([symbol]+) [sort])</code>: define an abbreviation for a sort expression</li>
+</ul>
+<p>Maybe map to <code>mk_sort</code> in [z3.mli].</p>
+<h2 id="Propositional-Logic"><a href="#Propositional-Logic" class="headerlink" title="Propositional Logic"></a>Propositional Logic</h2><p>So here we meet propositional logic in z3.</p>
+<h3 id="Satisfiability-and-Validity"><a href="#Satisfiability-and-Validity" class="headerlink" title="Satisfiability and Validity"></a>Satisfiability and Validity</h3><p>We need to emphasize the differences between <strong>satisfiability</strong> and <strong>validity</strong>.</p>
+<ul>
+<li><strong>Satifiability</strong> is about finding a solution to a set of constraints.</li>
+<li><strong>Validity</strong> is about finding a proof of a statement.</li>
+</ul>
+<p>In Coq, we always <strong>intros</strong> to get certain Hypotheses though when we try to prove a proposition with implication , we assumes the Hypotheses are right. So we often want to prove a theorm which notes a proposition is validity.</p>
+<p>Back to Z3, consider a formula F with some uninterpreted constants, say a and b. We can ask whether F is valid, that is whether it is always true for any combination of values for a and b. If F is always true, then not F is always false, and then not F will not have any satisfying assignment; that is, not F is unsatisfiable. That is, F is valid precisely when not F is not satisfiable (is unsatisfiable). Alternately, F is satisfiable if and only if not F is not valid (is invalid). Z3 finds satisfying assignments (or report that there are none).</p>
+<p>E.g. check the deMorgan’s law is valid.</p>
+<pre><code class="hljs Z3">(declare-const a Bool)
+(declare-const b Bool)
+(define-fun demorgan () Bool
+    (&#x3D; (and a b) (not (or (not a) (not b)))))
+(assert (not demorgan))
+(check-sat)</code></pre>
+<p>E.g. check the excluded middle law</p>
+<pre><code class="hljs Z3">(declare-const a Bool)
+(define-fun exmi () Bool
+    (or a (not a)
+(assert (not exmi))
+(check-sat)</code></pre>
+<p>Verification with Python API (z3py)</p>
+<pre><code class="hljs python"><span class="hljs-keyword">from</span> z3 <span class="hljs-keyword">import</span> *
 
+<span class="hljs-comment"># create a fresh propositional variable uniquely identified by its name &#x27;p&#x27;</span>
+slvr = Solver()
+p = Bool(<span class="hljs-string">&#x27;p&#x27;</span>)
+
+<span class="hljs-comment"># excluded middle</span>
+solve(Not(Or(p, Not(p))))
+
+<span class="hljs-comment"># Pierce&#x27;s law</span>
+q = Bool(<span class="hljs-string">&#x27;q&#x27;</span>)
+solve(Not(Implies(Implies(Implies(p, q), p), p)))
+
+<span class="hljs-comment"># De Mogan&#x27;s law</span>
+a = Bool(<span class="hljs-string">&#x27;a&#x27;</span>)
+b = Bool(<span class="hljs-string">&#x27;b&#x27;</span>)
+and_a_b = And(a,b)
+not_or = Not( Or (Not(a),Not(b)))
+solve(eq(and_a_b,not_or))</code></pre>
+<h2 id="Uninterpreted-functions-and-constants"><a href="#Uninterpreted-functions-and-constants" class="headerlink" title="Uninterpreted functions and constants"></a>Uninterpreted functions and constants</h2><p>Constants are just functions that take no arguments. <strong>So everything is really just a function</strong>.</p>
+<pre><code class="hljs Z3">(declare-fun f (Int) Int)
+(declare-fun a () Int) ; a is a constant
+(declare-const b Int) ; syntax sugar for (declare-fun b () Int)
+(assert (&gt; a 20))
+(assert (&gt; b a))
+(assert (&#x3D; (f 10) 1))
+(check-sat)
+(get-model)</code></pre>
+<p>in Python API</p>
+<pre><code class="hljs Python">slvr = Solver()
+A = DeclareSort(<span class="hljs-string">&#x27;A&#x27;</span>)
+x = Const(<span class="hljs-string">&#x27;x&#x27;</span>, A)
+y = Const(<span class="hljs-string">&#x27;y&#x27;</span>, A)
+f = Function(<span class="hljs-string">&#x27;f&#x27;</span>, A, A)  <span class="hljs-comment"># f : a -&gt; a</span>
+slvr.add(f(f(x)) == x)
+slvr.add(f(x) == y )
+slvr.add(Not( x == y))
+<span class="hljs-built_in">print</span> (slvr)
+<span class="hljs-built_in">print</span> (slvr.check())
+<span class="hljs-built_in">print</span> (slvr.model())</code></pre>
+<p>The notation of <code>A!val!0</code> means $A_{val_0}$</p>
+<h2 id="Arithmetic"><a href="#Arithmetic" class="headerlink" title="Arithmetic"></a>Arithmetic</h2><p>Builtin support for integer and real constants. These two types (sorts) represent the mathematical integers and reals.</p>
+<p>Not convert automatically integers into reals and vice-versa.</p>
+<h3 id="Nonlinear-arithmetic"><a href="#Nonlinear-arithmetic" class="headerlink" title="Nonlinear arithmetic"></a>Nonlinear arithmetic</h3><p><strong>Nonlinear arithmetic</strong> is <strong>undecidable</strong>. Note that, this does not prevent Z3 from returning an answer for many nonlinear problems. The real limit is that there will always be a nonlinear integer arithmetic formula that it will fail produce an answer.</p>
+<pre><code class="hljs Z3">(declare-const a Int)
+(assert (&gt; (* a a) 3))
+(check-sat)
+(get-model)
+
+(echo &quot;Z3 does not always find solutions to non-linear problems&quot;)
+(declare-const b Real)
+(declare-const c Real)
+(assert (&#x3D; (+ (* b b b) (* b c)) 3.0))
+(check-sat) ; return unknown for nonlinear real arithmetic
+
+(echo &quot;yet it can show unsatisfiabiltiy for some nontrivial nonlinear problems...&quot;)
+(declare-const x Real)
+(declare-const y Real)
+(declare-const z Real)
+(assert (&#x3D; (* x x) (+ x 2.0)))
+(assert (&#x3D; (* x y) x))
+(assert (&#x3D; (* (- y 1.0) z) 1.0))
+(check-sat)
+
+(reset)
+(echo &quot;When presented only non-linear constraints over reals, Z3 uses a specialized solver&quot;)
+(declare-const b Real)
+(declare-const c Real)
+(assert (&#x3D; (+ (* b b b) (* b c)) 3.0))
+(check-sat)
+(get-model)</code></pre>
+<h3 id="Division"><a href="#Division" class="headerlink" title="Division"></a>Division</h3><p>Support division</p>
+<p>E.g. in Python API<br><pre><code class="hljs Python">a = Int(<span class="hljs-string">&#x27;a&#x27;</span>)
+<span class="hljs-comment"># r1  = Int(&#x27;r1&#x27;)</span>
+<span class="hljs-comment"># r2 = Int(&#x27;r2&#x27;)</span>
+<span class="hljs-comment"># r3 = Int(&#x27;r3&#x27;)</span>
+<span class="hljs-comment"># r4 = Int(&#x27;r4&#x27;)</span>
+r = [Int(<span class="hljs-string">&#x27;r&#x27;</span> + <span class="hljs-built_in">str</span>(i)) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-number">10</span>)]
+slvr.add(a == <span class="hljs-number">10</span>, r[<span class="hljs-number">1</span>] == a/<span class="hljs-number">4</span>, r[<span class="hljs-number">2</span>] == a % <span class="hljs-number">4</span>)
+slvr.add(r[<span class="hljs-number">3</span>] == a % <span class="hljs-number">4</span>, r[<span class="hljs-number">4</span>] == a / <span class="hljs-number">-4</span>)
+slvr.add(r[<span class="hljs-number">5</span>] == a % <span class="hljs-number">-4</span>, r[<span class="hljs-number">6</span>] == a % <span class="hljs-number">-4</span>)
+<span class="hljs-built_in">print</span> (slvr.check())</code></pre></p>
+<h2 id="Bitvectors"><a href="#Bitvectors" class="headerlink" title="Bitvectors"></a>Bitvectors</h2><ul>
+<li><code>(_ bv20 8)</code>: a bitvector of size 8 that representes the numeral 20. Desplay as <code>#x14</code></li>
+<li><code>(_ bv10 32)</code>: a bitvector of size 32 that representes the numeral 10. Desplay as <code>#x0000000a</code> (a single num in hexadecimal format represent size 4).</li>
+</ul>
+<p>By default, Z3 display bitvectors in hexadecimal format if the bitvector size is a multiple of 4, and in binary otherwise.</p>
+<p>In Python API the function <code>BitVecVal(10,32)</code> creates a bit-vector of size 32 containing the value 10.</p>
+<pre><code class="hljs Python">a = BitVecVal(<span class="hljs-number">-1</span>,<span class="hljs-number">16</span>)
+b = BitVecVal(<span class="hljs-number">65535</span>,<span class="hljs-number">16</span>)
+print(simplify(a==b))</code></pre>
+<p>We get the True.</p>
+<h3 id="Bitvector-Arithmetic-and-Bitwise-Operations"><a href="#Bitvector-Arithmetic-and-Bitwise-Operations" class="headerlink" title="Bitvector Arithmetic and Bitwise Operations"></a>Bitvector Arithmetic and Bitwise Operations</h3><pre><code class="hljs Z3">(simplify (bvadd #x07 #x03)) ; addition
+(simplify (bvsub #x07 #x03)) ; subtraction
+(simplify (bvneg #x07)) ; unary minus
+(simplify (bvmul #x07 #x03)) ; multiplication
+(simplify (bvurem #x07 #x03)) ; unsigned remainder
+(simplify (bvsrem #x07 #x03)) ; signed remainder
+(simplify (bvsmod #x07 #x03)) ; signed modulo
+(simplify (bvshl #x07 #x03)) ; shift left
+(simplify (bvlshr #xf0 #x03)) ; unsigned (logical) shift right
+(simplify (bvashr #xf0 #x03)) ; signed (arithmetical) shift right</code></pre>
+<p>and the print</p>
+<pre><code class="hljs txt">#x0a
+#x04
+#xf9 ; every bit 1-&gt;0 0-&gt;1 and bitadd 1
+#x15
+#x01
+#x01
+#x01
+#x38
+#x1e
+#xfe</code></pre>
+<p>Prove a bitwise version of deMorgan’s law in Python API.</p>
+<pre><code class="hljs Python"><span class="hljs-comment"># Prove a bitwise version of deMorgan&#x27;s law:</span>
+slvr.pop()
+slvr.push()
+x = BitVec(<span class="hljs-string">&#x27;x&#x27;</span>, <span class="hljs-number">64</span>)
+y = BitVec(<span class="hljs-string">&#x27;y&#x27;</span>, <span class="hljs-number">64</span>)
+slvr.add(Not(( (~x) &amp; (~y)) == ~(x | y)))
+print(slvr)
+print(slvr.check())
+<span class="hljs-comment"># we get an unsat</span>
+<span class="hljs-comment"># print(slvr.model())</span></code></pre>
+<h3 id="A-common-trick"><a href="#A-common-trick" class="headerlink" title="A common trick"></a>A common trick</h3><p>There is a fast way to check that fixed size numbers are powers of two.</p>
+<p>A bit-vector x is a power of two or zero if and only if x &amp; (x - 1) is zero.</p>
+<pre><code class="hljs Z3">(define-fun is-power-of-two ((x (_ BitVec 4))) Bool 
+  (&#x3D; #x0 (bvand x (bvsub x #x1))))
+(declare-const a (_ BitVec 4))
+(assert 
+ (not (&#x3D; (is-power-of-two a) 
+         (or (&#x3D; a #x0) 
+             (&#x3D; a #x1) 
+             (&#x3D; a #x2) 
+             (&#x3D; a #x4) 
+             (&#x3D; a #x8)))))
+(check-sat)</code></pre>
+<p>with Python API</p>
+<pre><code class="hljs Python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">power_of_two</span>(<span class="hljs-params">x</span>):</span>
+    bv_and = x &amp; (x - bv_const_one)
+    <span class="hljs-keyword">return</span> bv_and == bv_const_zero
+
+
+<span class="hljs-comment"># Bit tricks</span>
+x = BitVec(<span class="hljs-string">&#x27;x&#x27;</span>, <span class="hljs-number">32</span>)
+powers = [<span class="hljs-number">2</span>**i <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">32</span>)]
+<span class="hljs-comment"># fast = And(x != 0, x &amp; (x - 1) == 0)</span>
+fast = And(x != bv_const_zero, power_of_two(x))
+<span class="hljs-comment"># fast = power_of_two(x)</span>
+slow = Or([x == p <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> powers])
+print(fast)
+prove(fast == slow)
+
+print(<span class="hljs-string">&quot;trying to prove buggy version...&quot;</span>)
+fast = x &amp; (x - <span class="hljs-number">1</span>) == <span class="hljs-number">0</span>
+print(fast)
+prove(fast == slow)</code></pre>
+<h2 id="Arrays"><a href="#Arrays" class="headerlink" title="Arrays"></a>Arrays</h2><h3 id="Select-and-Store"><a href="#Select-and-Store" class="headerlink" title="Select and Store"></a>Select and Store</h3><p>exercise in Python API</p>
+<pre><code class="hljs Python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">util_print</span>(<span class="hljs-params">s: Solver</span>):</span>
+    r = s.check()
+    print(r)
+    <span class="hljs-keyword">if</span> r.__repr__() == <span class="hljs-string">&quot;sat&quot;</span>:
+        print(s.model())
+
+
+slvr.push()
+x = Int(<span class="hljs-string">&#x27;x&#x27;</span>)
+y = Int(<span class="hljs-string">&#x27;y&#x27;</span>)
+a1 = Array(<span class="hljs-string">&#x27;a1&#x27;</span>, IntSort(), IntSort())
+slvr.push()
+a2 = Array(<span class="hljs-string">&#x27;a2&#x27;</span>, IntSort(), IntSort())
+util_print(slvr)
+
+slvr.pop()
+slvr.add(Select(a1, x) == x)
+slvr.add(Store(a1, x, y) == a1)
+util_print(slvr)
+slvr.add(x != y)
+util_print(slvr)
+slvr.pop()</code></pre>
+<p>and the output</p>
+<pre><code class="hljs txt">sat
+[]
+sat
+[y = 1, a1 = Store(K(Int, 0), 1, 1), x = 1]
+unsat</code></pre>
+<p>We can get an array which maps all indices to fixed value using the <code>const</code> construct in Z3. E.g. <code>(as const (Array T1 T2))</code></p>
+<p>Map functions on arrays using <code>map</code> keyword.</p>
+<h2 id="Datatypes"><a href="#Datatypes" class="headerlink" title="Datatypes"></a>Datatypes</h2><h3 id="Records"><a href="#Records" class="headerlink" title="Records"></a>Records</h3><p>A record is specified as a datatype with a single constructor and as many arguments as record elements. </p>
+<pre><code class="hljs Z3">(declare-datatypes (T1 T2) ((Pair (mk-pair (first T1) (second T2)))))</code></pre>
+<p>with Python API</p>
+<pre><code class="hljs Python">Pair = Datatype(<span class="hljs-string">&#x27;Pair&#x27;</span>)
+Pair.declare(<span class="hljs-string">&#x27;mk_pair&#x27;</span>, (<span class="hljs-string">&#x27;pair_first&#x27;</span>, IntSort()), (<span class="hljs-string">&#x27;pair_second&#x27;</span>, IntSort())) <span class="hljs-comment"># single constructor</span>
+Pair = Pair.create()
+mp = Pair.mk_pair
+fi = Pair.pair_first
+se = Pair.pair_second
+p1 = Const(<span class="hljs-string">&#x27;p1&#x27;</span>, Pair)
+p2 = Const(<span class="hljs-string">&#x27;p2&#x27;</span>, Pair)
+slvr.add(p1 == p2)
+slvr.add(se(p2) &gt; <span class="hljs-number">20</span>)
+util_print(slvr)
+slvr.add(fi(p1) != fi(p2))
+util_print(slvr)
+</code></pre>
+<h3 id="Scalars"><a href="#Scalars" class="headerlink" title="Scalars"></a>Scalars</h3><p>A scalar sort is a finate domain sort.</p>
+<pre><code class="hljs Z3">(declare-datatypes () ((S A B C)))</code></pre>
+<p>The elements of the finite domain are enumerated as distinct constans.</p>
+<p>with Python API</p>
+<pre><code class="hljs Python">S = Datatype(<span class="hljs-string">&#x27;S&#x27;</span>)
+S.declare(<span class="hljs-string">&#x27;A&#x27;</span>)
+S.declare(<span class="hljs-string">&#x27;B&#x27;</span>)
+S.declare(<span class="hljs-string">&#x27;C&#x27;</span>)
+S = S.create()
+x = Const(<span class="hljs-string">&#x27;x&#x27;</span>, S)
+y = Const(<span class="hljs-string">&#x27;y&#x27;</span>, S)
+z = Const(<span class="hljs-string">&#x27;z&#x27;</span>, S)
+u = Const(<span class="hljs-string">&#x27;u&#x27;</span>, S)
+slvr.add(Distinct(x, y, z))
+util_print(slvr)
+slvr.add(Distinct(x, y, z, u))
+util_print(slvr)</code></pre>
+<h3 id="Recursive-datatypes"><a href="#Recursive-datatypes" class="headerlink" title="Recursive datatypes"></a>Recursive datatypes</h3><p>A recursive datatype declaration includes itself directly (or indirectly) as a component.</p>
+<p>like define lst with Python API</p>
+<pre><code class="hljs Python">slvr.pop()
+slvr.push()
+Lst = Datatype(<span class="hljs-string">&#x27;Lst&#x27;</span>)
+Lst.declare(<span class="hljs-string">&#x27;nil&#x27;</span>)
+Lst.declare(<span class="hljs-string">&#x27;cons&#x27;</span>, (<span class="hljs-string">&#x27;hd&#x27;</span>, IntSort()), (<span class="hljs-string">&#x27;tl&#x27;</span>, Lst))
+Lst = Lst.create()
+print(Lst.cons(<span class="hljs-number">10</span>, Lst.nil).sort())</code></pre>
+<p>Z3 will not prove inductive facts. The ground decision procedures for recursive datatypes don’t lift to establing inductive facts. Z3 does not contain methods for producing proofs by induction. E.g. therom on all natural numbers.</p>
+<h2 id="Quantifiers"><a href="#Quantifiers" class="headerlink" title="Quantifiers"></a>Quantifiers</h2><p>Apart from quantifier-free theories (Here Z3 is a <strong>decision procedure</strong>), Z3 also accepts and can work with formulas that use quantifiers. It is no longer a decision procedure for such formulas in general (and for good reasons, as there can be no decision procedure for first-order logic).</p>
+<p>Several approaches to handle quantifiers: patter-based quantifier(effective, inherently incomplete), saturation theorem proving.</p>
+<h3 id="Modeling-with-Quantifiers"><a href="#Modeling-with-Quantifiers" class="headerlink" title="Modeling with Quantifiers"></a>Modeling with Quantifiers</h3>
             </div>
             <hr>
             <div>
@@ -390,6 +651,12 @@
                 <div class="post-prevnext row">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/post/d8e3089e.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">专业之外，社区之中</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">

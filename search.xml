@@ -767,6 +767,36 @@
       </tags>
   </entry>
   <entry>
+    <title>专业之外，社区之中</title>
+    <url>/post/d8e3089e.html</url>
+    <content><![CDATA[<h1 id="专业之外，社区之中"><a href="#专业之外，社区之中" class="headerlink" title="专业之外，社区之中"></a>专业之外，社区之中</h1><p>晚上回家前买到了心心念念 Fascino 面包，和师弟讨论了一个半钟的 RG 选题与我眼中的计算机科学，总算空闲下来，可以整理一下 13 周的碎碎念了。</p>
+<p>本周做了不少有意思的事情，除了继续定理证明器的学习，还开始联络校外毕设申请与题目选定，周六则和老徐在班级群里隔空“对线”，今天又出门参加的流浪犬救助领养活动与长宁区新华社区原创作品设计大赛成果展。</p>
+<p>倒叙说说吧，下午非常幸运再次遇见了作为志愿者参与流浪犬救助活动的朋友。上次见面，也就是初次相遇，应该还是 19 年五一假期独自去南京游玩，在老门东先锋书店门外，时间过得着实有些快。活动组织方和志愿者们为了给这些狗狗们找个可以安度一生的新家，做成这一件事，经历宣传、协议领养、定期回访，比单纯喊一声“帮助流浪动物”的口号难太多，这种 idea 到 practical 的过程，在我所认知的工业界或许还能靠政策与效益驱动，可在这里，或许全凭人与人之间传递的善意吧。</p>
+<p>之后搭乘我地铁前往番禹路的新华社区附近。11 月初在 Tedx 宁波听大鱼营造的创始人刘嘉老师的分享，就一直想切身体会一下这种“有人情味”的社区是怎样构建出来的。今天终于如愿了，而且同样很幸运又见到了他本人。作品展中留下比较深刻印象的除了洋房随行杯与巧克力，还有一个上师大学姐制作的饼干。她的故事里感觉有两句话精准戳中本憨憨不成熟的内心：</p>
+<p>“虽然辛苦，我还是会选择那种滚烫的人生。不想成为大厂里的一颗螺丝钉，只想和喜欢的人一起做有意义的事情，哪怕是吃点亏为爱发电也无所谓。”</p>
+<p>Back to Saturday，就像和老徐争论中拿出的那句论述（来源于土木院江某人）——“思维是最后一件不能放弃的事情。”上师大学姐也好，江某人也好，我也好，只是认定了一些想做与不想做的事情，我欢迎不同意见的交流，甚至不需要心平气和，激烈的辩论也可以，只要你尊重我思考与选择的权利。</p>
+<p>本周还有很多与各个朋友丰富而多彩的交流，每当想到这些我觉得自己无比幸运，原来巷子里百元不止的下午茶，贵重在你有一个朋友愿意与你分享这份时光。</p>
+<p>还是以一首歌结束本周，让我找找这周听哪一首最多哈</p>
+<blockquote>
+<p>原来你是 我最想留住的幸运</p>
+<p>原来我们 和爱情曾经靠得那么近</p>
+<p>那为我对抗世界的决定 那陪我淋的雨</p>
+<p>一幕幕都是你 一尘不染的真心</p>
+<p>与你相遇 好幸运</p>
+<p>可我已失去 为你泪流满面的权利</p>
+</blockquote>
+<p>晚安！</p>
+<a id="more"></a>
+]]></content>
+      <categories>
+        <category>Life</category>
+        <category>随笔</category>
+      </categories>
+      <tags>
+        <tag>随笔</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Z3学习——Z3-guide</title>
     <url>/post/2b29a3d3.html</url>
     <content><![CDATA[<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><h2 id="What-is-Z3"><a href="#What-is-Z3" class="headerlink" title="What is Z3"></a>What is Z3</h2><p>Z3 is a state-of-art theorem prover from Microsoft Research.</p>
@@ -846,7 +876,268 @@
 <pre><code class="hljs OCaml"><span class="hljs-comment">(** Returns a simplified version of the expression.</span>
 <span class="hljs-comment">      &#123;!get_simplify_help&#125; *)</span>
   <span class="hljs-keyword">val</span> simplify : <span class="hljs-type">Expr</span>.expr -&gt; <span class="hljs-type">Params</span>.params option -&gt; expr</code></pre>
-]]></content>
+<p>create a boolean sort</p>
+<ul>
+<li><code>(define-sort [symbol] ([symbol]+) [sort])</code>: define an abbreviation for a sort expression</li>
+</ul>
+<p>Maybe map to <code>mk_sort</code> in [z3.mli].</p>
+<h2 id="Propositional-Logic"><a href="#Propositional-Logic" class="headerlink" title="Propositional Logic"></a>Propositional Logic</h2><p>So here we meet propositional logic in z3.</p>
+<h3 id="Satisfiability-and-Validity"><a href="#Satisfiability-and-Validity" class="headerlink" title="Satisfiability and Validity"></a>Satisfiability and Validity</h3><p>We need to emphasize the differences between <strong>satisfiability</strong> and <strong>validity</strong>.</p>
+<ul>
+<li><strong>Satifiability</strong> is about finding a solution to a set of constraints.</li>
+<li><strong>Validity</strong> is about finding a proof of a statement.</li>
+</ul>
+<p>In Coq, we always <strong>intros</strong> to get certain Hypotheses though when we try to prove a proposition with implication , we assumes the Hypotheses are right. So we often want to prove a theorm which notes a proposition is validity.</p>
+<p>Back to Z3, consider a formula F with some uninterpreted constants, say a and b. We can ask whether F is valid, that is whether it is always true for any combination of values for a and b. If F is always true, then not F is always false, and then not F will not have any satisfying assignment; that is, not F is unsatisfiable. That is, F is valid precisely when not F is not satisfiable (is unsatisfiable). Alternately, F is satisfiable if and only if not F is not valid (is invalid). Z3 finds satisfying assignments (or report that there are none).</p>
+<p>E.g. check the deMorgan’s law is valid.</p>
+<pre><code class="hljs Z3">(declare-const a Bool)
+(declare-const b Bool)
+(define-fun demorgan () Bool
+    (&#x3D; (and a b) (not (or (not a) (not b)))))
+(assert (not demorgan))
+(check-sat)</code></pre>
+<p>E.g. check the excluded middle law</p>
+<pre><code class="hljs Z3">(declare-const a Bool)
+(define-fun exmi () Bool
+    (or a (not a)
+(assert (not exmi))
+(check-sat)</code></pre>
+<p>Verification with Python API (z3py)</p>
+<pre><code class="hljs python"><span class="hljs-keyword">from</span> z3 <span class="hljs-keyword">import</span> *
+
+<span class="hljs-comment"># create a fresh propositional variable uniquely identified by its name &#x27;p&#x27;</span>
+slvr = Solver()
+p = Bool(<span class="hljs-string">&#x27;p&#x27;</span>)
+
+<span class="hljs-comment"># excluded middle</span>
+solve(Not(Or(p, Not(p))))
+
+<span class="hljs-comment"># Pierce&#x27;s law</span>
+q = Bool(<span class="hljs-string">&#x27;q&#x27;</span>)
+solve(Not(Implies(Implies(Implies(p, q), p), p)))
+
+<span class="hljs-comment"># De Mogan&#x27;s law</span>
+a = Bool(<span class="hljs-string">&#x27;a&#x27;</span>)
+b = Bool(<span class="hljs-string">&#x27;b&#x27;</span>)
+and_a_b = And(a,b)
+not_or = Not( Or (Not(a),Not(b)))
+solve(eq(and_a_b,not_or))</code></pre>
+<h2 id="Uninterpreted-functions-and-constants"><a href="#Uninterpreted-functions-and-constants" class="headerlink" title="Uninterpreted functions and constants"></a>Uninterpreted functions and constants</h2><p>Constants are just functions that take no arguments. <strong>So everything is really just a function</strong>.</p>
+<pre><code class="hljs Z3">(declare-fun f (Int) Int)
+(declare-fun a () Int) ; a is a constant
+(declare-const b Int) ; syntax sugar for (declare-fun b () Int)
+(assert (&gt; a 20))
+(assert (&gt; b a))
+(assert (&#x3D; (f 10) 1))
+(check-sat)
+(get-model)</code></pre>
+<p>in Python API</p>
+<pre><code class="hljs Python">slvr = Solver()
+A = DeclareSort(<span class="hljs-string">&#x27;A&#x27;</span>)
+x = Const(<span class="hljs-string">&#x27;x&#x27;</span>, A)
+y = Const(<span class="hljs-string">&#x27;y&#x27;</span>, A)
+f = Function(<span class="hljs-string">&#x27;f&#x27;</span>, A, A)  <span class="hljs-comment"># f : a -&gt; a</span>
+slvr.add(f(f(x)) == x)
+slvr.add(f(x) == y )
+slvr.add(Not( x == y))
+<span class="hljs-built_in">print</span> (slvr)
+<span class="hljs-built_in">print</span> (slvr.check())
+<span class="hljs-built_in">print</span> (slvr.model())</code></pre>
+<p>The notation of <code>A!val!0</code> means $A_{val_0}$</p>
+<h2 id="Arithmetic"><a href="#Arithmetic" class="headerlink" title="Arithmetic"></a>Arithmetic</h2><p>Builtin support for integer and real constants. These two types (sorts) represent the mathematical integers and reals.</p>
+<p>Not convert automatically integers into reals and vice-versa.</p>
+<h3 id="Nonlinear-arithmetic"><a href="#Nonlinear-arithmetic" class="headerlink" title="Nonlinear arithmetic"></a>Nonlinear arithmetic</h3><p><strong>Nonlinear arithmetic</strong> is <strong>undecidable</strong>. Note that, this does not prevent Z3 from returning an answer for many nonlinear problems. The real limit is that there will always be a nonlinear integer arithmetic formula that it will fail produce an answer.</p>
+<pre><code class="hljs Z3">(declare-const a Int)
+(assert (&gt; (* a a) 3))
+(check-sat)
+(get-model)
+
+(echo &quot;Z3 does not always find solutions to non-linear problems&quot;)
+(declare-const b Real)
+(declare-const c Real)
+(assert (&#x3D; (+ (* b b b) (* b c)) 3.0))
+(check-sat) ; return unknown for nonlinear real arithmetic
+
+(echo &quot;yet it can show unsatisfiabiltiy for some nontrivial nonlinear problems...&quot;)
+(declare-const x Real)
+(declare-const y Real)
+(declare-const z Real)
+(assert (&#x3D; (* x x) (+ x 2.0)))
+(assert (&#x3D; (* x y) x))
+(assert (&#x3D; (* (- y 1.0) z) 1.0))
+(check-sat)
+
+(reset)
+(echo &quot;When presented only non-linear constraints over reals, Z3 uses a specialized solver&quot;)
+(declare-const b Real)
+(declare-const c Real)
+(assert (&#x3D; (+ (* b b b) (* b c)) 3.0))
+(check-sat)
+(get-model)</code></pre>
+<h3 id="Division"><a href="#Division" class="headerlink" title="Division"></a>Division</h3><p>Support division</p>
+<p>E.g. in Python API<br><pre><code class="hljs Python">a = Int(<span class="hljs-string">&#x27;a&#x27;</span>)
+<span class="hljs-comment"># r1  = Int(&#x27;r1&#x27;)</span>
+<span class="hljs-comment"># r2 = Int(&#x27;r2&#x27;)</span>
+<span class="hljs-comment"># r3 = Int(&#x27;r3&#x27;)</span>
+<span class="hljs-comment"># r4 = Int(&#x27;r4&#x27;)</span>
+r = [Int(<span class="hljs-string">&#x27;r&#x27;</span> + <span class="hljs-built_in">str</span>(i)) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-number">10</span>)]
+slvr.add(a == <span class="hljs-number">10</span>, r[<span class="hljs-number">1</span>] == a/<span class="hljs-number">4</span>, r[<span class="hljs-number">2</span>] == a % <span class="hljs-number">4</span>)
+slvr.add(r[<span class="hljs-number">3</span>] == a % <span class="hljs-number">4</span>, r[<span class="hljs-number">4</span>] == a / <span class="hljs-number">-4</span>)
+slvr.add(r[<span class="hljs-number">5</span>] == a % <span class="hljs-number">-4</span>, r[<span class="hljs-number">6</span>] == a % <span class="hljs-number">-4</span>)
+<span class="hljs-built_in">print</span> (slvr.check())</code></pre></p>
+<h2 id="Bitvectors"><a href="#Bitvectors" class="headerlink" title="Bitvectors"></a>Bitvectors</h2><ul>
+<li><code>(_ bv20 8)</code>: a bitvector of size 8 that representes the numeral 20. Desplay as <code>#x14</code></li>
+<li><code>(_ bv10 32)</code>: a bitvector of size 32 that representes the numeral 10. Desplay as <code>#x0000000a</code> (a single num in hexadecimal format represent size 4).</li>
+</ul>
+<p>By default, Z3 display bitvectors in hexadecimal format if the bitvector size is a multiple of 4, and in binary otherwise.</p>
+<p>In Python API the function <code>BitVecVal(10,32)</code> creates a bit-vector of size 32 containing the value 10.</p>
+<pre><code class="hljs Python">a = BitVecVal(<span class="hljs-number">-1</span>,<span class="hljs-number">16</span>)
+b = BitVecVal(<span class="hljs-number">65535</span>,<span class="hljs-number">16</span>)
+print(simplify(a==b))</code></pre>
+<p>We get the True.</p>
+<h3 id="Bitvector-Arithmetic-and-Bitwise-Operations"><a href="#Bitvector-Arithmetic-and-Bitwise-Operations" class="headerlink" title="Bitvector Arithmetic and Bitwise Operations"></a>Bitvector Arithmetic and Bitwise Operations</h3><pre><code class="hljs Z3">(simplify (bvadd #x07 #x03)) ; addition
+(simplify (bvsub #x07 #x03)) ; subtraction
+(simplify (bvneg #x07)) ; unary minus
+(simplify (bvmul #x07 #x03)) ; multiplication
+(simplify (bvurem #x07 #x03)) ; unsigned remainder
+(simplify (bvsrem #x07 #x03)) ; signed remainder
+(simplify (bvsmod #x07 #x03)) ; signed modulo
+(simplify (bvshl #x07 #x03)) ; shift left
+(simplify (bvlshr #xf0 #x03)) ; unsigned (logical) shift right
+(simplify (bvashr #xf0 #x03)) ; signed (arithmetical) shift right</code></pre>
+<p>and the print</p>
+<pre><code class="hljs txt">#x0a
+#x04
+#xf9 ; every bit 1-&gt;0 0-&gt;1 and bitadd 1
+#x15
+#x01
+#x01
+#x01
+#x38
+#x1e
+#xfe</code></pre>
+<p>Prove a bitwise version of deMorgan’s law in Python API.</p>
+<pre><code class="hljs Python"><span class="hljs-comment"># Prove a bitwise version of deMorgan&#x27;s law:</span>
+slvr.pop()
+slvr.push()
+x = BitVec(<span class="hljs-string">&#x27;x&#x27;</span>, <span class="hljs-number">64</span>)
+y = BitVec(<span class="hljs-string">&#x27;y&#x27;</span>, <span class="hljs-number">64</span>)
+slvr.add(Not(( (~x) &amp; (~y)) == ~(x | y)))
+print(slvr)
+print(slvr.check())
+<span class="hljs-comment"># we get an unsat</span>
+<span class="hljs-comment"># print(slvr.model())</span></code></pre>
+<h3 id="A-common-trick"><a href="#A-common-trick" class="headerlink" title="A common trick"></a>A common trick</h3><p>There is a fast way to check that fixed size numbers are powers of two.</p>
+<p>A bit-vector x is a power of two or zero if and only if x &amp; (x - 1) is zero.</p>
+<pre><code class="hljs Z3">(define-fun is-power-of-two ((x (_ BitVec 4))) Bool 
+  (&#x3D; #x0 (bvand x (bvsub x #x1))))
+(declare-const a (_ BitVec 4))
+(assert 
+ (not (&#x3D; (is-power-of-two a) 
+         (or (&#x3D; a #x0) 
+             (&#x3D; a #x1) 
+             (&#x3D; a #x2) 
+             (&#x3D; a #x4) 
+             (&#x3D; a #x8)))))
+(check-sat)</code></pre>
+<p>with Python API</p>
+<pre><code class="hljs Python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">power_of_two</span>(<span class="hljs-params">x</span>):</span>
+    bv_and = x &amp; (x - bv_const_one)
+    <span class="hljs-keyword">return</span> bv_and == bv_const_zero
+
+
+<span class="hljs-comment"># Bit tricks</span>
+x = BitVec(<span class="hljs-string">&#x27;x&#x27;</span>, <span class="hljs-number">32</span>)
+powers = [<span class="hljs-number">2</span>**i <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">32</span>)]
+<span class="hljs-comment"># fast = And(x != 0, x &amp; (x - 1) == 0)</span>
+fast = And(x != bv_const_zero, power_of_two(x))
+<span class="hljs-comment"># fast = power_of_two(x)</span>
+slow = Or([x == p <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> powers])
+print(fast)
+prove(fast == slow)
+
+print(<span class="hljs-string">&quot;trying to prove buggy version...&quot;</span>)
+fast = x &amp; (x - <span class="hljs-number">1</span>) == <span class="hljs-number">0</span>
+print(fast)
+prove(fast == slow)</code></pre>
+<h2 id="Arrays"><a href="#Arrays" class="headerlink" title="Arrays"></a>Arrays</h2><h3 id="Select-and-Store"><a href="#Select-and-Store" class="headerlink" title="Select and Store"></a>Select and Store</h3><p>exercise in Python API</p>
+<pre><code class="hljs Python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">util_print</span>(<span class="hljs-params">s: Solver</span>):</span>
+    r = s.check()
+    print(r)
+    <span class="hljs-keyword">if</span> r.__repr__() == <span class="hljs-string">&quot;sat&quot;</span>:
+        print(s.model())
+
+
+slvr.push()
+x = Int(<span class="hljs-string">&#x27;x&#x27;</span>)
+y = Int(<span class="hljs-string">&#x27;y&#x27;</span>)
+a1 = Array(<span class="hljs-string">&#x27;a1&#x27;</span>, IntSort(), IntSort())
+slvr.push()
+a2 = Array(<span class="hljs-string">&#x27;a2&#x27;</span>, IntSort(), IntSort())
+util_print(slvr)
+
+slvr.pop()
+slvr.add(Select(a1, x) == x)
+slvr.add(Store(a1, x, y) == a1)
+util_print(slvr)
+slvr.add(x != y)
+util_print(slvr)
+slvr.pop()</code></pre>
+<p>and the output</p>
+<pre><code class="hljs txt">sat
+[]
+sat
+[y = 1, a1 = Store(K(Int, 0), 1, 1), x = 1]
+unsat</code></pre>
+<p>We can get an array which maps all indices to fixed value using the <code>const</code> construct in Z3. E.g. <code>(as const (Array T1 T2))</code></p>
+<p>Map functions on arrays using <code>map</code> keyword.</p>
+<h2 id="Datatypes"><a href="#Datatypes" class="headerlink" title="Datatypes"></a>Datatypes</h2><h3 id="Records"><a href="#Records" class="headerlink" title="Records"></a>Records</h3><p>A record is specified as a datatype with a single constructor and as many arguments as record elements. </p>
+<pre><code class="hljs Z3">(declare-datatypes (T1 T2) ((Pair (mk-pair (first T1) (second T2)))))</code></pre>
+<p>with Python API</p>
+<pre><code class="hljs Python">Pair = Datatype(<span class="hljs-string">&#x27;Pair&#x27;</span>)
+Pair.declare(<span class="hljs-string">&#x27;mk_pair&#x27;</span>, (<span class="hljs-string">&#x27;pair_first&#x27;</span>, IntSort()), (<span class="hljs-string">&#x27;pair_second&#x27;</span>, IntSort())) <span class="hljs-comment"># single constructor</span>
+Pair = Pair.create()
+mp = Pair.mk_pair
+fi = Pair.pair_first
+se = Pair.pair_second
+p1 = Const(<span class="hljs-string">&#x27;p1&#x27;</span>, Pair)
+p2 = Const(<span class="hljs-string">&#x27;p2&#x27;</span>, Pair)
+slvr.add(p1 == p2)
+slvr.add(se(p2) &gt; <span class="hljs-number">20</span>)
+util_print(slvr)
+slvr.add(fi(p1) != fi(p2))
+util_print(slvr)
+</code></pre>
+<h3 id="Scalars"><a href="#Scalars" class="headerlink" title="Scalars"></a>Scalars</h3><p>A scalar sort is a finate domain sort.</p>
+<pre><code class="hljs Z3">(declare-datatypes () ((S A B C)))</code></pre>
+<p>The elements of the finite domain are enumerated as distinct constans.</p>
+<p>with Python API</p>
+<pre><code class="hljs Python">S = Datatype(<span class="hljs-string">&#x27;S&#x27;</span>)
+S.declare(<span class="hljs-string">&#x27;A&#x27;</span>)
+S.declare(<span class="hljs-string">&#x27;B&#x27;</span>)
+S.declare(<span class="hljs-string">&#x27;C&#x27;</span>)
+S = S.create()
+x = Const(<span class="hljs-string">&#x27;x&#x27;</span>, S)
+y = Const(<span class="hljs-string">&#x27;y&#x27;</span>, S)
+z = Const(<span class="hljs-string">&#x27;z&#x27;</span>, S)
+u = Const(<span class="hljs-string">&#x27;u&#x27;</span>, S)
+slvr.add(Distinct(x, y, z))
+util_print(slvr)
+slvr.add(Distinct(x, y, z, u))
+util_print(slvr)</code></pre>
+<h3 id="Recursive-datatypes"><a href="#Recursive-datatypes" class="headerlink" title="Recursive datatypes"></a>Recursive datatypes</h3><p>A recursive datatype declaration includes itself directly (or indirectly) as a component.</p>
+<p>like define lst with Python API</p>
+<pre><code class="hljs Python">slvr.pop()
+slvr.push()
+Lst = Datatype(<span class="hljs-string">&#x27;Lst&#x27;</span>)
+Lst.declare(<span class="hljs-string">&#x27;nil&#x27;</span>)
+Lst.declare(<span class="hljs-string">&#x27;cons&#x27;</span>, (<span class="hljs-string">&#x27;hd&#x27;</span>, IntSort()), (<span class="hljs-string">&#x27;tl&#x27;</span>, Lst))
+Lst = Lst.create()
+print(Lst.cons(<span class="hljs-number">10</span>, Lst.nil).sort())</code></pre>
+<p>Z3 will not prove inductive facts. The ground decision procedures for recursive datatypes don’t lift to establing inductive facts. Z3 does not contain methods for producing proofs by induction. E.g. therom on all natural numbers.</p>
+<h2 id="Quantifiers"><a href="#Quantifiers" class="headerlink" title="Quantifiers"></a>Quantifiers</h2><p>Apart from quantifier-free theories (Here Z3 is a <strong>decision procedure</strong>), Z3 also accepts and can work with formulas that use quantifiers. It is no longer a decision procedure for such formulas in general (and for good reasons, as there can be no decision procedure for first-order logic).</p>
+<p>Several approaches to handle quantifiers: patter-based quantifier(effective, inherently incomplete), saturation theorem proving.</p>
+<h3 id="Modeling-with-Quantifiers"><a href="#Modeling-with-Quantifiers" class="headerlink" title="Modeling with Quantifiers"></a>Modeling with Quantifiers</h3>]]></content>
       <categories>
         <category>Computer Science</category>
         <category>形式化验证</category>
@@ -858,7 +1149,89 @@
   <entry>
     <title>Coq学习——《Software-Foundation》Volume1.5-IndProp</title>
     <url>/post/a36f4fc8.html</url>
-    <content><![CDATA[<a id="more"></a>]]></content>
+    <content><![CDATA[<h1 id="IndProp"><a href="#IndProp" class="headerlink" title="IndProp"></a>IndProp</h1><p>We have seen several ways of writing propositions (conjunction, disjunction, and existential quantification) In this chapter, we bring yet another new tool in to the mix: <strong>inductive definitions</strong>.</p>
+<p>Uses an inductive definition of “evenness” as a running example.</p>
+<p>In past chapters, we have two ways to say [n] is even:</p>
+<ol>
+<li>[evenb n = true]</li>
+<li>[exists k, n = double k]</li>
+</ol>
+<p>Yet another possibility is to say that [n] is even if we can establish its evenness from the following rules:</p>
+<ul>
+<li>Rule [ev_0]: The number [0] is even.</li>
+<li>Rule [ev_SS]: If [n] is even, then [S (S n)] is even.</li>
+</ul>
+<a id="more"></a>
+<h2 id="Inductive-Definition-of-Evenness"><a href="#Inductive-Definition-of-Evenness" class="headerlink" title="Inductive Definition of Evenness"></a>Inductive Definition of Evenness</h2><pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> ev : nat -&gt; <span class="hljs-keyword">Prop</span> :=
+  | <span class="hljs-type">ev_0</span> : ev <span class="hljs-number">0</span>
+  | <span class="hljs-type">ev_SS</span> (n : nat) (H : ev n) : ev (S (S n)).</code></pre>
+<p>Different from previous uses of [Inductive]. Neither a [Type] (like [nat]) nor a function yielding a [Type] (like [list]).</p>
+<p>We define a function from [nat] to [Prop]. That is, <strong>a property of numbers</strong>!</p>
+<p>In contrast, recall the definition of [list]:</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> list (X:<span class="hljs-keyword">Type</span>) : <span class="hljs-keyword">Type</span> :=
+  | <span class="hljs-type">nil</span>
+  | <span class="hljs-type">cons</span> (x : X) (l : list X).</code></pre>
+<p>Notice the “parameter” on the left of the colon and “index” (or “annotation”) on the right.</p>
+<h2 id="Inversion-on-Evidence"><a href="#Inversion-on-Evidence" class="headerlink" title="Inversion on Evidence"></a>Inversion on Evidence</h2><p>destruct [ev n] directly.</p>
+<pre><code class="hljs Coq"><span class="hljs-built_in">destruct</span> E <span class="hljs-built_in">as</span> [|<span class="hljs-type">n</span>&#x27; E&#x27;] eqn:EE</code></pre>
+<p>When the goal relates to [n] but we destruct H with S(n) or S(S(n)), we can two ways to prove.</p>
+<ul>
+<li>with the help of [ev_inversion] theorem proven before.</li>
+<li>use [remember] tactic.</li>
+</ul>
+<p>Note how both proofs produce two subgoals, which correspond to the two ways of proving [ev].  The first subgoal is a contradiction that is discharged with [discriminate].  The second subgoal makes use of [injection] and [rewrite].  Coq provides a handy tactic called [inversion] that factors out that common pattern.</p>
+<p>The [inversion] tactic can detect:</p>
+<ol>
+<li>that the first case ([n = 0]) does not apply and<br>2 .that the [n’] that appears in the [ev_SS] case must be the same as [n].</li>
+</ol>
+<p>It has an “[as]” variant similar to [destruct], allowing us to assign names rather than have Coq choose them.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> evSS_ev&#x27; : <span class="hljs-keyword">forall</span> n,
+  ev (S (S n)) -&gt; ev n.
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span> n E.
+  <span class="hljs-built_in">inversion</span> E <span class="hljs-built_in">as</span> [| <span class="hljs-type">n</span>&#x27; E&#x27; Heq].
+  <span class="hljs-comment">(* We are in the [E = ev_SS n&#x27; E&#x27;] case now. *)</span>
+  <span class="hljs-built_in">apply</span> E&#x27;.
+<span class="hljs-keyword">Qed</span>.</code></pre>
+<p>The [inversion] tactic does quite a bit of work. destruct, injection …</p>
+<p>When [inversion H]. Generate subgoals which [H] has been replaced by exact contexts. Then [inversion] will throw those self-contradictionory subgoals away. Details follows:</p>
+<blockquote>
+<p>Here’s how [inversion] works in general.  Suppose the name [H] refers to an assumption [P] in the current context, where [P] has been defined by an [Inductive] declaration.  Then, for each of the constructors of [P], [inversion H] generates a subgoal in which [H] has been replaced by the exact, specific conditions under which this constructor could have been used to prove [P].  Some of these subgoals will be self-contradictory; [inversion] throws these away.  The ones that are left represent the cases that must be proved to establish the original goal.  For those, [inversion] adds all equations into the proof context that must hold of the arguments given to [P] (e.g., [S (S n’) = n] in the proof of [evSS_ev]).</p>
+</blockquote>
+<h2 id="Induction-on-Evidence"><a href="#Induction-on-Evidence" class="headerlink" title="Induction on Evidence"></a>Induction on Evidence</h2><p>Just as induction on data, when we inversion construct evidence and get stuck like prove another instance of the same theorem we set out to prove, we can consider use induction on evidence.</p>
+<p>This time we can get a useful hypothesis related to the other instance of n.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Lemma</span> ev_even : <span class="hljs-keyword">forall</span> n,
+  ev n -&gt; even n.
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span> n E.
+  <span class="hljs-built_in">induction</span> E <span class="hljs-built_in">as</span> [| <span class="hljs-type">n</span>&#x27; E&#x27; IH].
+  - <span class="hljs-comment">(* E = ev_0 *)</span>
+    <span class="hljs-built_in">exists</span> <span class="hljs-number">0.</span> <span class="hljs-built_in">reflexivity</span>.
+  - <span class="hljs-comment">(* E = ev_SS n&#x27; E&#x27;</span>
+<span class="hljs-comment">       with IH : even E&#x27; *)</span>
+    <span class="hljs-built_in">unfold</span> even <span class="hljs-built_in">in</span> IH.
+    <span class="hljs-built_in">destruct</span> IH <span class="hljs-built_in">as</span> [k Hk].
+    <span class="hljs-built_in">rewrite</span> Hk. <span class="hljs-built_in">exists</span> (S k). <span class="hljs-built_in">simpl</span>. <span class="hljs-built_in">reflexivity</span>.
+<span class="hljs-keyword">Qed</span>.
+
+<span class="hljs-comment">(** Here, we can see that Coq produced an [IH] that corresponds</span>
+<span class="hljs-comment">    to [E&#x27;], the single recursive occurrence of [ev] in its own</span>
+<span class="hljs-comment">    definition.  Since [E&#x27;] mentions [n&#x27;], the induction hypothesis</span>
+<span class="hljs-comment">    talks about [n&#x27;], as opposed to [n] or some other number. *)</span>
+
+<span class="hljs-comment">(** The equivalence between the second and third definitions of</span>
+<span class="hljs-comment">    evenness now follows. *)</span>
+
+<span class="hljs-keyword">Theorem</span> ev_even_iff : <span class="hljs-keyword">forall</span> n,
+  ev n &lt;-&gt; even n.
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span> n. <span class="hljs-built_in">split</span>.
+  - <span class="hljs-comment">(* -&gt; *)</span> <span class="hljs-built_in">apply</span> ev_even.
+  - <span class="hljs-comment">(* &lt;- *)</span> <span class="hljs-built_in">unfold</span> even. <span class="hljs-built_in">intros</span> [k Hk]. <span class="hljs-built_in">rewrite</span> Hk.
+    <span class="hljs-keyword">Check</span> ev_double.
+    <span class="hljs-built_in">apply</span> ev_double.
+<span class="hljs-keyword">Qed</span>.</code></pre>
+]]></content>
       <categories>
         <category>Computer Science</category>
         <category>形式化验证</category>
@@ -868,66 +1241,14 @@
       </tags>
   </entry>
   <entry>
-    <title>毕业设计Timeline</title>
+    <title>毕业设计安排</title>
     <url>/post/168ec82d.html</url>
-    <content><![CDATA[<h1 id="毕业设计-Timeline"><a href="#毕业设计-Timeline" class="headerlink" title="毕业设计 Timeline"></a>毕业设计 Timeline</h1><p>整理自计算机学院 2021 届本科毕业设计（论文）工作计划</p>
-<h2 id="前期工作（申请与选题）"><a href="#前期工作（申请与选题）" class="headerlink" title="前期工作（申请与选题）"></a>前期工作（申请与选题）</h2><h3 id="毕业设计（论文）选题"><a href="#毕业设计（论文）选题" class="headerlink" title="毕业设计（论文）选题"></a>毕业设计（论文）选题</h3><div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:left">时间</th>
-<th style="text-align:left">内容</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left">2020 年 12 月 9—12 日</td>
-<td style="text-align:left">各教学主任通过本科生院教务网络管理系统分配毕业设计（论文）学生给各位指导教师，确保每一位学生都有指导教师；</td>
-</tr>
-<tr>
-<td style="text-align:left">2020 年 12 月 13—18 日</td>
-<td style="text-align:left">各位毕业设计（论文）指导教师通过本科生院教务网络管理系统填报毕业设计（论文）题目；</td>
-</tr>
-<tr>
-<td style="text-align:left">2020 年 12 月 19—21 日</td>
-<td style="text-align:left">各教学主任和教学副院长通过本科生院教务网络管理系统审核毕业设计（论文）题目；</td>
-</tr>
-<tr>
-<td style="text-align:left">2020 年 12 月 22—24 日</td>
-<td style="text-align:left">学生通过本科生院教务网络管理系统选定毕业设计（论文）题目，各指导教师需在教务管理系统中审核确定学生所选毕业设计（论文）题目，学生的选题方为有效。（为了提高工作效率，请各位指导教师事先与学生沟通好每个学生的毕业设计（论文）题目）；</td>
-</tr>
-<tr>
-<td style="text-align:left">2020 年 12 月 28 日前</td>
-<td style="text-align:left">各教学主任通过本科生院教务网络管理系统审核毕业设计（论文）选题情况，审核通过后，下载毕业设计（论文）题目表。同时将《中南大学本科毕业设计(论文)情况一览表》发邮箱：csejwb@csu.edu.cn。</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h3 id="毕业设计（论文）任务书"><a href="#毕业设计（论文）任务书" class="headerlink" title="毕业设计（论文）任务书"></a>毕业设计（论文）任务书</h3><div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:left">时间</th>
-<th style="text-align:left">内容</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left">2020 年 12 月 25—29 日</td>
-<td style="text-align:left">指导教师填写毕业设计（论文）任务书；</td>
-</tr>
-<tr>
-<td style="text-align:left">2020 年 12 月 30 日—2021 年 1 月 6 日</td>
-<td style="text-align:left">教学主任和教学副院长审核毕业设计（论文）任务书；</td>
-</tr>
-<tr>
-<td style="text-align:left">2021 年 1 月 7—11 日</td>
-<td style="text-align:left">各学院组织专家对毕业设计任务书进行审查。</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h2 id="调研报告与译文"><a href="#调研报告与译文" class="headerlink" title="调研报告与译文"></a>调研报告与译文</h2><div class="table-container">
+    <content><![CDATA[<h1 id="毕业设计安排"><a href="#毕业设计安排" class="headerlink" title="毕业设计安排"></a>毕业设计安排</h1><p>整理自计算机学院 2021 届本科毕业设计（论文）工作计划与校外毕设申请附件</p>
+<ul>
+<li>⭐ ：标记为学生个人需要关注</li>
+<li>🟢 ：标记为指导老师需要关注</li>
+</ul>
+<h1 id="校外毕设申请材料"><a href="#校外毕设申请材料" class="headerlink" title="校外毕设申请材料"></a>校外毕设申请材料</h1><div class="table-container">
 <table>
 <thead>
 <tr>
@@ -938,86 +1259,212 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left">2021 年 2 月 21 日— 3 月 16 日</td>
-<td style="text-align:left">学生通过教务网络管理系统提交调研报告和译文。</td>
+<td style="text-align:left">2021 年 1 月 12 日前</td>
+<td style="text-align:left">⭐ 提交校外毕设申请材料</td>
+<td style="text-align:left">完成外出毕业设计（论文）的申请工作</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="准备材料"><a href="#准备材料" class="headerlink" title="准备材料"></a>准备材料</h2><ul>
+<li>⭐ 保研/工作证明：（TODO：需询问教务）</li>
+<li>🟢 单位接收函（盖公章）：（TODO：需询问科大）</li>
+<li>🟢 单位毕业设计指导教师学历和职称证明：可以咋看接收函中写明，一并加盖公章。</li>
+<li>⭐🟢《附件 4：中南大学本科毕业设计(论文)任务书》</li>
+<li>⭐🟢《附件 13-附件 3：计算机学院本科毕业生在校外做毕业设计（论文）申请表》</li>
+<li>⭐🟢《附件 13-附件 4：校外进行本科毕业论文（设计）协议书》（协议书需家长签字并附家长联系电话）</li>
+<li>⭐🟢《附件 13-附件 7：计算机学院学生外出毕业设计申请审批表》</li>
+</ul>
+<p>（注意：任务书、申请表均涉及毕设题目，需要提前与校外导师沟通确定）</p>
+<h2 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h2><ul>
+<li>学生向学院安排的指导教师提交书面申请（附证明材料、家长签字）。实习开始前，至少提前 1 周提交申请；校外毕业设计申请时间为每年 1-3 月。逾期不接受申请。</li>
+<li>指导教师、教学副系主任、学工办审查学生申请材料并签署意见。</li>
+<li>学生将申请材料交学院教务办，由学院审批。审批通过，按照相关规定到本科生院办理相关手续。</li>
+</ul>
+<p>（注意：涉及老师、学院、学校多个办公部门审批，最好本人一次性办好）</p>
+<h1 id="Timeline"><a href="#Timeline" class="headerlink" title="Timeline"></a>Timeline</h1><h3 id="前期工作（申请与选题）"><a href="#前期工作（申请与选题）" class="headerlink" title="前期工作（申请与选题）"></a>前期工作（申请与选题）</h3><h4 id="毕业设计（论文）选题"><a href="#毕业设计（论文）选题" class="headerlink" title="毕业设计（论文）选题"></a>毕业设计（论文）选题</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:left">时间</th>
+<th style="text-align:left">内容</th>
+<th style="text-align:left">要求</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">2020 年 12 月 9—-12 日</td>
+<td style="text-align:left">分配指导教师（已完成）</td>
+<td style="text-align:left">各教学主任通过本科生院教务网络管理系统分配毕业设计（论文）学生给各位指导教师，确保每一位学生都有指导教师；</td>
+</tr>
+<tr>
+<td style="text-align:left">2020 年 12 月 13—-18 日</td>
+<td style="text-align:left">🟢 老师上报论文题目</td>
+<td style="text-align:left">指导教师通过本科生院教务网络管理系统填报毕业设计（论文）题目</td>
+</tr>
+<tr>
+<td style="text-align:left">2020 年 12 月 19—-21 日</td>
+<td style="text-align:left">学院审核题目</td>
+<td style="text-align:left">教学主任和教学副院长审核毕业设计（论文）题目；</td>
+</tr>
+<tr>
+<td style="text-align:left">2020 年 12 月 22—-24 日</td>
+<td style="text-align:left">⭐ 学生选定论文题目</td>
+<td style="text-align:left">学生通过本科生院教务网络管理系统选定题目，各指导教师<strong>需在教务管理系统中审核确定学生所选毕业设计（论文）题目</strong>，学生的选题方为有效。（为了提高工作效率，请各位指导教师事先与学生沟通好每个学生的毕业设计（论文）题目）；</td>
+</tr>
+<tr>
+<td style="text-align:left">2020 年 12 月 28 日前</td>
+<td style="text-align:left">学院审核选题</td>
+<td style="text-align:left">各教学主任通过本科生院教务网络管理系统审核毕业设计（论文）选题情况，</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="毕业设计（论文）任务书"><a href="#毕业设计（论文）任务书" class="headerlink" title="毕业设计（论文）任务书"></a>毕业设计（论文）任务书</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:left">时间</th>
+<th style="text-align:left">内容</th>
+<th style="text-align:left">要求</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">2020 年 12 月 25—-29 日</td>
+<td style="text-align:left">🟢 指导教师填写任务书</td>
+<td style="text-align:left">指导教师填写毕业设计（论文）任务书；</td>
+</tr>
+<tr>
+<td style="text-align:left">2020 年 12 月 30 日—-2021 年 1 月 6 日</td>
+<td style="text-align:left">学院审核</td>
+<td style="text-align:left">教学主任和教学副院长审核毕业设计（论文）任务书；</td>
+</tr>
+<tr>
+<td style="text-align:left">2021 年 1 月 7—-11 日</td>
+<td style="text-align:left">学院审核</td>
+<td style="text-align:left">各学院组织专家对毕业设计任务书进行审查。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="调研报告与译文"><a href="#调研报告与译文" class="headerlink" title="调研报告与译文"></a>调研报告与译文</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:left">时间</th>
+<th style="text-align:left">内容</th>
+<th style="text-align:left">要求</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">2021 年 2 月 21 日—- 3 月 16 日</td>
+<td style="text-align:left">⭐ 学生通过教务网络管理系统提交调研报告和译文。</td>
 <td style="text-align:left">至少应参考一篇外文文献(特殊选题除外)，并完成 3000 单词以上与毕业设计（论文）有关的外文资料翻译，译文要求准确、文理通畅。</td>
 </tr>
 </tbody>
 </table>
 </div>
-<h2 id="毕业设计（论文）初期检查"><a href="#毕业设计（论文）初期检查" class="headerlink" title="毕业设计（论文）初期检查"></a>毕业设计（论文）初期检查</h2><div class="table-container">
+<h3 id="毕业设计（论文）初期检查"><a href="#毕业设计（论文）初期检查" class="headerlink" title="毕业设计（论文）初期检查"></a>毕业设计（论文）初期检查</h3><div class="table-container">
 <table>
 <thead>
 <tr>
 <th style="text-align:left">时间</th>
 <th style="text-align:left">内容</th>
+<th style="text-align:left">要求</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left">2021 年 2 月 28 日— 3 月 8 日（第一至二周）</td>
+<td style="text-align:left">2021 年 2 月 28 日—- 3 月 8 日（第一至二周）</td>
+<td style="text-align:left">⭐ 学生参与学院初期检查</td>
 <td style="text-align:left">进行毕业设计（论文）初期工作检查。</td>
 </tr>
 <tr>
-<td style="text-align:left">2021 年 3 月 14—20 日（第三周）</td>
+<td style="text-align:left">2021 年 3 月 14—-20 日（第三周）</td>
+<td style="text-align:left">学校进行初期检查</td>
 <td style="text-align:left">学校组织对各学院进行初期工作检查。</td>
 </tr>
 </tbody>
 </table>
 </div>
-<h2 id="毕业设计（论文）中期工作检查"><a href="#毕业设计（论文）中期工作检查" class="headerlink" title="毕业设计（论文）中期工作检查"></a>毕业设计（论文）中期工作检查</h2><div class="table-container">
+<h3 id="毕业设计（论文）中期检查"><a href="#毕业设计（论文）中期检查" class="headerlink" title="毕业设计（论文）中期检查"></a>毕业设计（论文）中期检查</h3><div class="table-container">
 <table>
 <thead>
 <tr>
 <th style="text-align:left">时间</th>
 <th style="text-align:left">内容</th>
+<th style="text-align:left">要求</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left">2021 年 4 月 10 日—4 月 16 日（第六至第七周）</td>
+<td style="text-align:left">2021 年 4 月 10 日—-4 月 16 日（第六至第七周）</td>
+<td style="text-align:left">⭐ 学生参与学院中期检查</td>
 <td style="text-align:left">进行中期检查</td>
 </tr>
 <tr>
 <td style="text-align:left">2021 年 4 月 18-24 日（第八周）</td>
+<td style="text-align:left">学校进行中期检查</td>
 <td style="text-align:left">学校组织专家对各学院毕业设计（论文）进行中期进度及质量检查</td>
 </tr>
 </tbody>
 </table>
 </div>
-<h2 id="毕业设计（论文）答辩"><a href="#毕业设计（论文）答辩" class="headerlink" title="毕业设计（论文）答辩"></a>毕业设计（论文）答辩</h2><div class="table-container">
+<h3 id="毕业设计（论文）答辩"><a href="#毕业设计（论文）答辩" class="headerlink" title="毕业设计（论文）答辩"></a>毕业设计（论文）答辩</h3><div class="table-container">
 <table>
 <thead>
 <tr>
 <th style="text-align:left">时间</th>
 <th style="text-align:left">内容</th>
+<th style="text-align:left">要求</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align:left">2021 年 3 月 13 日前</td>
+<td style="text-align:left">⭐ 撰写培训回忆</td>
 <td style="text-align:left">各系召开毕业设计（论文）撰写培训会议，指导学生撰写毕业设计（论文）。</td>
 </tr>
 <tr>
 <td style="text-align:left">2021 年 5 月 23 日前</td>
+<td style="text-align:left">答辩小组</td>
 <td style="text-align:left">各专业成立答辩委员会和答辩小组，并将名单报学院。</td>
 </tr>
 <tr>
 <td style="text-align:left">2021 年 5 月 23 日前</td>
+<td style="text-align:left">🟢 指导老师完成论文批阅</td>
 <td style="text-align:left">指导教师务必完成毕业设计（论文）正式稿的审阅批改工作，并将论文集中。</td>
 </tr>
 <tr>
-<td style="text-align:left">2021 年 5 月 24 日—5 月 28 日</td>
+<td style="text-align:left">2021 年 5 月 24 日—-5 月 28 日</td>
+<td style="text-align:left">确定资格</td>
 <td style="text-align:left">由各系组织审阅学生论文，确定学生是否具备答辩资格，未经同意，学生不得参加答辩。</td>
 </tr>
 <tr>
 <td style="text-align:left">2021 年 5 月 28 日前</td>
+<td style="text-align:left">准备答辩</td>
 <td style="text-align:left">将论文返回学生，准备答辩。</td>
 </tr>
 </tbody>
 </table>
 </div>
-<h1 id="毕业设计（论文）后期检查与成绩评定评优"><a href="#毕业设计（论文）后期检查与成绩评定评优" class="headerlink" title="毕业设计（论文）后期检查与成绩评定评优"></a>毕业设计（论文）后期检查与成绩评定评优</h1><p>略</p>
+<h3 id="毕业设计（论文）后期检查与成绩评定评优"><a href="#毕业设计（论文）后期检查与成绩评定评优" class="headerlink" title="毕业设计（论文）后期检查与成绩评定评优"></a>毕业设计（论文）后期检查与成绩评定评优</h3><p>略</p>
+<h1 id="会议记录"><a href="#会议记录" class="headerlink" title="会议记录"></a>会议记录</h1><h2 id="知识基础"><a href="#知识基础" class="headerlink" title="知识基础"></a>知识基础</h2><ol>
+<li>掌握较好的科目：离散数学、编译原理、密码学</li>
+<li>项目经历：<ol>
+<li>FlappyBird 游戏（C+EasyX 图形库）</li>
+<li>Lustre V6 编译器前端词法语法部分（OCaml 实现，华为实习的项目）</li>
+</ol>
+</li>
+<li>技能：<ol>
+<li>编程语言：C++/Python/OCaml</li>
+<li>定理证明器：Coq（自学 SoftwareFoundation LF 一半）、Z3（刚刚接触，根据 Tutorial 调用 Python API 做了一些练习）</li>
+<li>其他：网站开发（接触过，但没有进行过大规模开发）、Adobe AE/PR/PS 全家桶（做宣传工作使用过）、其他 7788 的东西</li>
+</ol>
+</li>
+</ol>
 <a id="more"></a>
 ]]></content>
       <categories>
