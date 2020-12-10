@@ -767,6 +767,60 @@
       </tags>
   </entry>
   <entry>
+    <title>Coq学习——《Software-Foundation》Volume1.8-Maps</title>
+    <url>/post/a9000e9c.html</url>
+    <content><![CDATA[<h1 id="Maps"><a href="#Maps" class="headerlink" title="Maps"></a>Maps</h1><p>Definition total maps and partial maps.</p>
+<p>A nice case study using ideas we’ve seen in previous chapters, including building data structures out of high-order functions and the use of reflection to streamline proofs.</p>
+<h2 id="Total-Maps"><a href="#Total-Maps" class="headerlink" title="Total Maps"></a>Total Maps</h2><p>Use functions, rather than lists of key-value pairs, to build maps. The advantage of this representation is that it offers a more <strong>extensional</strong> view of maps.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Definition</span> total_map (A : <span class="hljs-keyword">Type</span>) := string -&gt; A.
+
+<span class="hljs-comment">(** Intuitively, a total map over an element type [A] is just a</span>
+<span class="hljs-comment">    function that can be used to look up [string]s, yielding [A]s. *)</span>
+
+<span class="hljs-comment">(** The function [t_empty] yields an empty total map, given a default</span>
+<span class="hljs-comment">    element; this map always returns the default element when applied</span>
+<span class="hljs-comment">    to any string. *)</span>
+
+<span class="hljs-keyword">Definition</span> t_empty &#123;A : <span class="hljs-keyword">Type</span>&#125; (v : A) : total_map A :=
+  (<span class="hljs-keyword">fun</span> <span class="hljs-keyword">_</span> =&gt; v).</code></pre>
+<h2 id="Partial-Maps"><a href="#Partial-Maps" class="headerlink" title="Partial Maps"></a>Partial Maps</h2><p>Give a series of defs and lemmas proved by the former ones in total maps</p>
+<p>Finally give the def o inclusion</p>
+<pre><code class="hljs Coq"><span class="hljs-comment">(** Finally, for partial maps we introduce a notion of map inclusion,</span>
+<span class="hljs-comment">    stating that one map includes another:  *)</span>
+
+<span class="hljs-keyword">Definition</span> inclusion &#123;A : <span class="hljs-keyword">Type</span>&#125; (m m&#x27; : partial_map A) :=
+  <span class="hljs-keyword">forall</span> x v, m x = Some v -&gt; m&#x27; x = Some v.
+
+<span class="hljs-comment">(** We show that map update preserves map inclusion, that is: *)</span>
+
+<span class="hljs-keyword">Lemma</span> inclusion_update : <span class="hljs-keyword">forall</span> (A : <span class="hljs-keyword">Type</span>) (m m&#x27;: partial_map A)
+                              x vx,
+  inclusion m m&#x27; -&gt;
+  inclusion (x |<span class="hljs-type">-&gt; vx</span> ; m) (x |<span class="hljs-type">-&gt; vx</span> ; m&#x27;).
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">unfold</span> inclusion.
+  <span class="hljs-built_in">intros</span> A m m&#x27; x vx H.
+  <span class="hljs-built_in">intros</span> y vy.
+  <span class="hljs-built_in">destruct</span> (eqb_stringP x y) <span class="hljs-built_in">as</span> [Hxy | <span class="hljs-type">Hxy</span>].
+  - <span class="hljs-built_in">rewrite</span> Hxy.
+    <span class="hljs-built_in">rewrite</span> update_eq. <span class="hljs-built_in">rewrite</span> update_eq. <span class="hljs-built_in">intro</span> H1. <span class="hljs-built_in">apply</span> H1.
+  - <span class="hljs-built_in">rewrite</span> update_neq. <span class="hljs-built_in">rewrite</span> update_neq.
+    + <span class="hljs-built_in">apply</span> H.
+    + <span class="hljs-built_in">apply</span> Hxy.
+    + <span class="hljs-built_in">apply</span> Hxy.
+<span class="hljs-keyword">Qed</span>.</code></pre>
+<p>This property is useful for reasoning about the <strong>lambda-calculus</strong>, where maps are used to keey track of which program variables are defined at a given point.</p>
+<a id="more"></a>
+]]></content>
+      <categories>
+        <category>Computer Science</category>
+        <category>形式化验证</category>
+      </categories>
+      <tags>
+        <tag>形式化验证</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>专业之外，社区之中</title>
     <url>/post/d8e3089e.html</url>
     <content><![CDATA[<h1 id="专业之外，社区之中"><a href="#专业之外，社区之中" class="headerlink" title="专业之外，社区之中"></a>专业之外，社区之中</h1><p>晚上回家前买到了心心念念 Fascino 面包，和师弟讨论了一个半钟的 RG 选题与我眼中的计算机科学，总算空闲下来，可以整理一下 13 周的碎碎念了。</p>
@@ -1147,7 +1201,7 @@ print(Lst.cons(<span class="hljs-number">10</span>, Lst.nil).sort())</code></pre
       </tags>
   </entry>
   <entry>
-    <title>Coq学习——《Software-Foundation》Volume1.5-IndProp</title>
+    <title>Coq学习——《Software-Foundation》Volume1.7-IndProp</title>
     <url>/post/a36f4fc8.html</url>
     <content><![CDATA[<h1 id="IndProp"><a href="#IndProp" class="headerlink" title="IndProp"></a>IndProp</h1><p>We have seen several ways of writing propositions (conjunction, disjunction, and existential quantification) In this chapter, we bring yet another new tool in to the mix: <strong>inductive definitions</strong>.</p>
 <p>Uses an inductive definition of “evenness” as a running example.</p>
@@ -1179,7 +1233,7 @@ print(Lst.cons(<span class="hljs-number">10</span>, Lst.nil).sort())</code></pre
 <li>with the help of [ev_inversion] theorem proven before.</li>
 <li>use [remember] tactic.</li>
 </ul>
-<p>Note how both proofs produce two subgoals, which correspond to the two ways of proving [ev].  The first subgoal is a contradiction that is discharged with [discriminate].  The second subgoal makes use of [injection] and [rewrite].  Coq provides a handy tactic called [inversion] that factors out that common pattern.</p>
+<p>Note how both proofs produce two subgoals, which correspond to the two ways of proving [ev]. The first subgoal is a contradiction that is discharged with [discriminate]. The second subgoal makes use of [injection] and [rewrite]. Coq provides a handy tactic called [inversion] that factors out that common pattern.</p>
 <p>The [inversion] tactic can detect:</p>
 <ol>
 <li>that the first case ([n = 0]) does not apply and<br>2 .that the [n’] that appears in the [ev_SS] case must be the same as [n].</li>
@@ -1196,7 +1250,7 @@ print(Lst.cons(<span class="hljs-number">10</span>, Lst.nil).sort())</code></pre
 <p>The [inversion] tactic does quite a bit of work. destruct, injection …</p>
 <p>When [inversion H]. Generate subgoals which [H] has been replaced by exact contexts. Then [inversion] will throw those self-contradictionory subgoals away. Details follows:</p>
 <blockquote>
-<p>Here’s how [inversion] works in general.  Suppose the name [H] refers to an assumption [P] in the current context, where [P] has been defined by an [Inductive] declaration.  Then, for each of the constructors of [P], [inversion H] generates a subgoal in which [H] has been replaced by the exact, specific conditions under which this constructor could have been used to prove [P].  Some of these subgoals will be self-contradictory; [inversion] throws these away.  The ones that are left represent the cases that must be proved to establish the original goal.  For those, [inversion] adds all equations into the proof context that must hold of the arguments given to [P] (e.g., [S (S n’) = n] in the proof of [evSS_ev]).</p>
+<p>Here’s how [inversion] works in general. Suppose the name [H] refers to an assumption [P] in the current context, where [P] has been defined by an [Inductive] declaration. Then, for each of the constructors of [P], [inversion H] generates a subgoal in which [H] has been replaced by the exact, specific conditions under which this constructor could have been used to prove [P]. Some of these subgoals will be self-contradictory; [inversion] throws these away. The ones that are left represent the cases that must be proved to establish the original goal. For those, [inversion] adds all equations into the proof context that must hold of the arguments given to [P] (e.g., [S (S n’) = n] in the proof of [evSS_ev]).</p>
 </blockquote>
 <h2 id="Induction-on-Evidence"><a href="#Induction-on-Evidence" class="headerlink" title="Induction on Evidence"></a>Induction on Evidence</h2><p>Just as induction on data, when we inversion construct evidence and get stuck like prove another instance of the same theorem we set out to prove, we can consider use induction on evidence.</p>
 <p>This time we can get a useful hypothesis related to the other instance of n.</p>
@@ -1231,6 +1285,10 @@ print(Lst.cons(<span class="hljs-number">10</span>, Lst.nil).sort())</code></pre
     <span class="hljs-keyword">Check</span> ev_double.
     <span class="hljs-built_in">apply</span> ev_double.
 <span class="hljs-keyword">Qed</span>.</code></pre>
+<h2 id="Inductive-Relations"><a href="#Inductive-Relations" class="headerlink" title="Inductive Relations"></a>Inductive Relations</h2><p>A one-argument proposition can be thought of as a property. A two-argument proposition can be thought of as a relation.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> le : nat -&gt; nat -&gt; <span class="hljs-keyword">Prop</span> :=
+  | <span class="hljs-type">le_n</span> (n : nat)                : le n n
+  | <span class="hljs-type">le_S</span> (n m : nat) (H : le n m) : le n (S m).</code></pre>
 ]]></content>
       <categories>
         <category>Computer Science</category>

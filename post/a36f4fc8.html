@@ -19,7 +19,7 @@
   <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
-  <title>Coq学习——《Software-Foundation》Volume1.5-IndProp - Edward&#39;s blog</title>
+  <title>Coq学习——《Software-Foundation》Volume1.7-IndProp - Edward&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/css/bootstrap.min.css" />
 
@@ -212,7 +212,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="Coq学习——《Software-Foundation》Volume1.5-IndProp">
+            <span class="h2" id="subtitle" title="Coq学习——《Software-Foundation》Volume1.7-IndProp">
               
             </span>
 
@@ -239,7 +239,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      722 字
+      770 字
     </span>
   
 
@@ -249,7 +249,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      14
+      15
        分钟
     </span>
   
@@ -279,7 +279,7 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Coq学习——《Software-Foundation》Volume1.5-IndProp</h1>
+            <h1 style="display: none">Coq学习——《Software-Foundation》Volume1.7-IndProp</h1>
             
             <div class="markdown-body">
               <h1 id="IndProp"><a href="#IndProp" class="headerlink" title="IndProp"></a>IndProp</h1><p>We have seen several ways of writing propositions (conjunction, disjunction, and existential quantification) In this chapter, we bring yet another new tool in to the mix: <strong>inductive definitions</strong>.</p>
@@ -312,7 +312,7 @@
 <li>with the help of [ev_inversion] theorem proven before.</li>
 <li>use [remember] tactic.</li>
 </ul>
-<p>Note how both proofs produce two subgoals, which correspond to the two ways of proving [ev].  The first subgoal is a contradiction that is discharged with [discriminate].  The second subgoal makes use of [injection] and [rewrite].  Coq provides a handy tactic called [inversion] that factors out that common pattern.</p>
+<p>Note how both proofs produce two subgoals, which correspond to the two ways of proving [ev]. The first subgoal is a contradiction that is discharged with [discriminate]. The second subgoal makes use of [injection] and [rewrite]. Coq provides a handy tactic called [inversion] that factors out that common pattern.</p>
 <p>The [inversion] tactic can detect:</p>
 <ol>
 <li>that the first case ([n = 0]) does not apply and<br>2 .that the [n’] that appears in the [ev_SS] case must be the same as [n].</li>
@@ -329,7 +329,7 @@
 <p>The [inversion] tactic does quite a bit of work. destruct, injection …</p>
 <p>When [inversion H]. Generate subgoals which [H] has been replaced by exact contexts. Then [inversion] will throw those self-contradictionory subgoals away. Details follows:</p>
 <blockquote>
-<p>Here’s how [inversion] works in general.  Suppose the name [H] refers to an assumption [P] in the current context, where [P] has been defined by an [Inductive] declaration.  Then, for each of the constructors of [P], [inversion H] generates a subgoal in which [H] has been replaced by the exact, specific conditions under which this constructor could have been used to prove [P].  Some of these subgoals will be self-contradictory; [inversion] throws these away.  The ones that are left represent the cases that must be proved to establish the original goal.  For those, [inversion] adds all equations into the proof context that must hold of the arguments given to [P] (e.g., [S (S n’) = n] in the proof of [evSS_ev]).</p>
+<p>Here’s how [inversion] works in general. Suppose the name [H] refers to an assumption [P] in the current context, where [P] has been defined by an [Inductive] declaration. Then, for each of the constructors of [P], [inversion H] generates a subgoal in which [H] has been replaced by the exact, specific conditions under which this constructor could have been used to prove [P]. Some of these subgoals will be self-contradictory; [inversion] throws these away. The ones that are left represent the cases that must be proved to establish the original goal. For those, [inversion] adds all equations into the proof context that must hold of the arguments given to [P] (e.g., [S (S n’) = n] in the proof of [evSS_ev]).</p>
 </blockquote>
 <h2 id="Induction-on-Evidence"><a href="#Induction-on-Evidence" class="headerlink" title="Induction on Evidence"></a>Induction on Evidence</h2><p>Just as induction on data, when we inversion construct evidence and get stuck like prove another instance of the same theorem we set out to prove, we can consider use induction on evidence.</p>
 <p>This time we can get a useful hypothesis related to the other instance of n.</p>
@@ -364,6 +364,10 @@
     <span class="hljs-keyword">Check</span> ev_double.
     <span class="hljs-built_in">apply</span> ev_double.
 <span class="hljs-keyword">Qed</span>.</code></pre>
+<h2 id="Inductive-Relations"><a href="#Inductive-Relations" class="headerlink" title="Inductive Relations"></a>Inductive Relations</h2><p>A one-argument proposition can be thought of as a property. A two-argument proposition can be thought of as a relation.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> le : nat -&gt; nat -&gt; <span class="hljs-keyword">Prop</span> :=
+  | <span class="hljs-type">le_n</span> (n : nat)                : le n n
+  | <span class="hljs-type">le_S</span> (n m : nat) (H : le n m) : le n (S m).</code></pre>
 
             </div>
             <hr>
