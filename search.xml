@@ -767,6 +767,139 @@
       </tags>
   </entry>
   <entry>
+    <title>Coq学习——《Software-Foundation》Volume1.9-ProofObjects</title>
+    <url>/post/62b7bfee.html</url>
+    <content><![CDATA[<h1 id="ProofObjects-The-Curry-Howard-Correspondence"><a href="#ProofObjects-The-Curry-Howard-Correspondence" class="headerlink" title="ProofObjects: The Curry-Howard Correspondence"></a>ProofObjects: The Curry-Howard Correspondence</h1><blockquote>
+<p>“Algorithms are the computational content of proofs.” —Robert Harper</p>
+</blockquote>
+<p>In Coq we have seen machanisms for</p>
+<ul>
+<li><strong>Programming</strong>: using inductive data types and functions over them.</li>
+<li><strong>Proving</strong>: using inductive propositions, implication, universal quantification.</li>
+</ul>
+<p>Not separate, but related.</p>
+<blockquote>
+<p>试问：如果是证据是数据，那么命题本身是什么？</p>
+<p>答曰：类型也！</p>
+</blockquote>
+<p>Types and propositions</p>
+<p>between [:] as “has type” and [:] as “is a proof of” or “is evidence for” — is called the “<strong>Curry-Howard correspondence</strong>“. </p>
+<pre><code>propositions ~ types
+
+proofs ~ data values
+</code></pre><p>E.g. the definition of ev and proof of (ev 4).</p>
+<h2 id="Proof-Scripts"><a href="#Proof-Scripts" class="headerlink" title="Proof Scripts"></a>Proof Scripts</h2><p>Gradually constructing a proof object — a term whose type is the proposition being proved!!</p>
+<p>The tactics between [Proof] and [Qed] tell it how to build up a term of the required type.</p>
+<p>Let’s see what happens with the help of [Show Proof command].</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> ev_4&#x27;&#x27; : ev <span class="hljs-number">4.</span>
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.                   <span class="hljs-comment">(* ?Goal *)</span>
+  <span class="hljs-built_in">apply</span> ev_SS.
+  <span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.                   <span class="hljs-comment">(* (ev_SS 2 ?Goal) *)</span>
+  <span class="hljs-built_in">apply</span> ev_SS.
+  <span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.                   <span class="hljs-comment">(* (ev_SS 2 (ev_SS 0 ?Goal)) *)</span>
+  <span class="hljs-built_in">apply</span> ev_0.
+  <span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.                   <span class="hljs-comment">(* (ev_SS 2 (ev_SS 0 ev_0)) *)</span>
+<span class="hljs-keyword">Qed</span>.</code></pre>
+<ul>
+<li>A proof script is to fill the hole(?Goal).</li>
+<li>Tactic proofs are useful and convenient but not essential. We can use [Definition] rather than [Theorem] to give a global name directly to the evidence.</li>
+</ul>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Definition</span> ev_4&#x27;&#x27;&#x27; : ev <span class="hljs-number">4</span> :=
+  ev_SS <span class="hljs-number">2</span> (ev_SS <span class="hljs-number">0</span> ev_0).
+
+<span class="hljs-comment">(** All these different ways of building the proof lead to exactly the</span>
+<span class="hljs-comment">    same evidence being saved in the global environment. *)</span>
+
+<span class="hljs-keyword">Print</span> ev_4.
+<span class="hljs-comment">(* ===&gt; ev_4    =   ev_SS 2 (ev_SS 0 ev_0) : ev 4 *)</span>
+<span class="hljs-keyword">Print</span> ev_4&#x27;.
+<span class="hljs-comment">(* ===&gt; ev_4&#x27;   =   ev_SS 2 (ev_SS 0 ev_0) : ev 4 *)</span>
+<span class="hljs-keyword">Print</span> ev_4&#x27;&#x27;.
+<span class="hljs-comment">(* ===&gt; ev_4&#x27;&#x27;  =   ev_SS 2 (ev_SS 0 ev_0) : ev 4 *)</span>
+<span class="hljs-keyword">Print</span> ev_4&#x27;&#x27;&#x27;.
+<span class="hljs-comment">(* ===&gt; ev_4&#x27;&#x27;&#x27; =   ev_SS 2 (ev_SS 0 ev_0) : ev 4 *)</span></code></pre>
+<h2 id="Quantifiers-Implications-Functions"><a href="#Quantifiers-Implications-Functions" class="headerlink" title="Quantifiers, Implications, Functions"></a>Quantifiers, Implications, Functions</h2><p>Proof of propositions including implications map to construct function(hypotheses as params and conclusion as results)</p>
+<p>The equivalent proof/def of ex_plus4.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> ev_plus4 : <span class="hljs-keyword">forall</span> n, ev n -&gt; ev (<span class="hljs-number">4</span> + n).
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span> n H. <span class="hljs-built_in">simpl</span>.
+  <span class="hljs-built_in">apply</span> ev_SS.
+  <span class="hljs-built_in">apply</span> ev_SS.
+  <span class="hljs-built_in">apply</span> H.
+<span class="hljs-keyword">Qed</span>.
+
+<span class="hljs-keyword">Definition</span> ev_plus4&#x27; : <span class="hljs-keyword">forall</span> n, ev n -&gt; ev (<span class="hljs-number">4</span> + n) :=
+  <span class="hljs-keyword">fun</span> (n : nat) =&gt; <span class="hljs-keyword">fun</span> (H : ev n) =&gt;
+    ev_SS (S (S n)) (ev_SS n H).
+
+<span class="hljs-keyword">Definition</span> ev_plus4&#x27;&#x27; (n : nat) (H : ev n)
+                    : ev (<span class="hljs-number">4</span> + n) :=
+  ev_SS (S (S n)) (ev_SS n H).</code></pre>
+<a id="more"></a>
+<h2 id="Programmig-with-Tactics"><a href="#Programmig-with-Tactics" class="headerlink" title="Programmig with Tactics"></a>Programmig with Tactics</h2><p>We terminate the [Definition] with a [.] rather than with [:=] followed by a term.  This tells Coq to enter _proof scripting mode_ to build an object of type [nat -&gt; nat]. And terminate the proof with [Defined] rather than [Qed].</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Definition</span> add1 : nat -&gt; nat.
+<span class="hljs-built_in">intro</span> n.
+<span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.
+<span class="hljs-built_in">apply</span> S.
+<span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.
+<span class="hljs-built_in">apply</span> n.
+<span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.
+<span class="hljs-comment">(* Qed. *)</span>
+<span class="hljs-keyword">Defined</span>.                        <span class="hljs-comment">(* not Qed. *)</span>
+
+<span class="hljs-keyword">Print</span> add1.
+<span class="hljs-comment">(* ==&gt;</span>
+<span class="hljs-comment">    add1 = fun n : nat =&gt; S n</span>
+<span class="hljs-comment">         : nat -&gt; nat</span>
+<span class="hljs-comment">*)</span>
+
+<span class="hljs-keyword">Compute</span> add1 <span class="hljs-number">2.</span>
+<span class="hljs-comment">(* ==&gt; 3 : nat *)</span></code></pre>
+<p>End with [Defined] rather than [Qed] make the definition “transparent”. NEED BETTER UNDERSTANDING.</p>
+<h2 id="Logical-Connectives-as-Inductive-Types"><a href="#Logical-Connectives-as-Inductive-Types" class="headerlink" title="Logical Connectives as Inductive Types"></a>Logical Connectives as Inductive Types</h2><p>归纳定义足够用于表达我们目前为止遇到的大多数的联结词。事实上， 只有全称量化（以及作为特殊情况的蕴含式）是Coq内置的，所有其他的都是被归纳 定义的。</p>
+<p>Here we know what conjunction [/] actually means.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> and (P Q : <span class="hljs-keyword">Prop</span>) : <span class="hljs-keyword">Prop</span> :=
+| <span class="hljs-type">conj</span> : P -&gt; Q -&gt; and P Q.</code></pre>
+<p>This clarify why [destruct] and [intros] patterns can be used on a conjunctive hypothesis. Case analysis allow us to consider all possible ways in which [P /\ Q] was proved. Her just one (from the [conj] constructor).</p>
+<p>Exercise: construct a proof object for the following proposition.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Definition</span> conj_fact : <span class="hljs-keyword">forall</span> P Q R, P /\ Q -&gt; Q /\ R -&gt; P /\ R :=
+  <span class="hljs-keyword">fun</span> (P Q R : <span class="hljs-keyword">Prop</span>) =&gt;
+    <span class="hljs-keyword">fun</span> (H1 : P /\ Q) =&gt;
+      <span class="hljs-keyword">fun</span> (H2 : Q /\ R) =&gt;
+        <span class="hljs-keyword">match</span> H1 <span class="hljs-built_in">with</span>
+        | <span class="hljs-type">conj</span> P Q =&gt;
+          <span class="hljs-keyword">match</span> H2 <span class="hljs-built_in">with</span>
+          | <span class="hljs-type">conj</span> Q R =&gt; conj P R
+          <span class="hljs-keyword">end</span>
+        <span class="hljs-keyword">end</span>.</code></pre>
+<h2 id="Disjunction"><a href="#Disjunction" class="headerlink" title="Disjunction"></a>Disjunction</h2><p>The inductive definition.</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> or (P Q : <span class="hljs-keyword">Prop</span>) : <span class="hljs-keyword">Prop</span> :=
+| <span class="hljs-type">or_introl</span> : P -&gt; or P Q
+| <span class="hljs-type">or_intror</span> : Q -&gt; or P Q.</code></pre>
+<h2 id="Existential-Quantification"><a href="#Existential-Quantification" class="headerlink" title="Existential Quantification"></a>Existential Quantification</h2><p>Construct the witness of such a Prop</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> ex &#123;A : <span class="hljs-keyword">Type</span>&#125; (P : A -&gt; <span class="hljs-keyword">Prop</span>) : <span class="hljs-keyword">Prop</span> :=
+| <span class="hljs-type">ex_intro</span> : <span class="hljs-keyword">forall</span> x : A, P x -&gt; ex P.</code></pre>
+<h2 id="True-and-False"><a href="#True-and-False" class="headerlink" title="[True] and [False]"></a>[True] and [False]</h2><p>Both simple</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> True : <span class="hljs-keyword">Prop</span> :=
+  | <span class="hljs-type">I</span> : True.
+  
+<span class="hljs-comment">(** [False] is equally simple -- indeed, so simple it may look</span>
+<span class="hljs-comment">    syntactically wrong at first glance! *)</span>
+
+<span class="hljs-keyword">Inductive</span> False : <span class="hljs-keyword">Prop</span> := .</code></pre>
+<p>[False] is an inductive type with <strong>no</strong> constructors. NO WAY TO BUILD AN EVIDENCE OR MAKE A DEFINITION!!</p>
+<h2 id="Equality"><a href="#Equality" class="headerlink" title="Equality"></a>Equality</h2><p>Inductive definition</p>
+]]></content>
+      <categories>
+        <category>Computer Science</category>
+        <category>形式化验证</category>
+      </categories>
+      <tags>
+        <tag>形式化验证</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Coq学习——《Software-Foundation》Volume1.8-Maps</title>
     <url>/post/a9000e9c.html</url>
     <content><![CDATA[<h1 id="Maps"><a href="#Maps" class="headerlink" title="Maps"></a>Maps</h1><p>Definition total maps and partial maps.</p>
