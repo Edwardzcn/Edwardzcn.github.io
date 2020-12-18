@@ -239,7 +239,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      775 字
+      992 字
     </span>
   
 
@@ -249,7 +249,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      14
+      18
        分钟
     </span>
   
@@ -296,7 +296,7 @@
 <p>答曰：类型也！</p>
 </blockquote>
 <p>Types and propositions</p>
-<p>between [:] as “has type” and [:] as “is a proof of” or “is evidence for” — is called the “<strong>Curry-Howard correspondence</strong>“. </p>
+<p>between [:] as “has type” and [:] as “is a proof of” or “is evidence for” — is called the “<strong>Curry-Howard correspondence</strong>“.</p>
 <pre><code>propositions ~ types
 
 proofs ~ data values
@@ -350,7 +350,7 @@ proofs ~ data values
                     : ev (<span class="hljs-number">4</span> + n) :=
   ev_SS (S (S n)) (ev_SS n H).</code></pre>
 <a id="more"></a>
-<h2 id="Programmig-with-Tactics"><a href="#Programmig-with-Tactics" class="headerlink" title="Programmig with Tactics"></a>Programmig with Tactics</h2><p>We terminate the [Definition] with a [.] rather than with [:=] followed by a term.  This tells Coq to enter _proof scripting mode_ to build an object of type [nat -&gt; nat]. And terminate the proof with [Defined] rather than [Qed].</p>
+<h2 id="Programmig-with-Tactics"><a href="#Programmig-with-Tactics" class="headerlink" title="Programmig with Tactics"></a>Programmig with Tactics</h2><p>We terminate the [Definition] with a [.] rather than with [:=] followed by a term. This tells Coq to enter _proof scripting mode_ to build an object of type [nat -&gt; nat]. And terminate the proof with [Defined] rather than [Qed].</p>
 <pre><code class="hljs Coq"><span class="hljs-keyword">Definition</span> add1 : nat -&gt; nat.
 <span class="hljs-built_in">intro</span> n.
 <span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.
@@ -370,7 +370,7 @@ proofs ~ data values
 <span class="hljs-keyword">Compute</span> add1 <span class="hljs-number">2.</span>
 <span class="hljs-comment">(* ==&gt; 3 : nat *)</span></code></pre>
 <p>End with [Defined] rather than [Qed] make the definition “transparent”. NEED BETTER UNDERSTANDING.</p>
-<h2 id="Logical-Connectives-as-Inductive-Types"><a href="#Logical-Connectives-as-Inductive-Types" class="headerlink" title="Logical Connectives as Inductive Types"></a>Logical Connectives as Inductive Types</h2><p>归纳定义足够用于表达我们目前为止遇到的大多数的联结词。事实上， 只有全称量化（以及作为特殊情况的蕴含式）是Coq内置的，所有其他的都是被归纳 定义的。</p>
+<h2 id="Logical-Connectives-as-Inductive-Types"><a href="#Logical-Connectives-as-Inductive-Types" class="headerlink" title="Logical Connectives as Inductive Types"></a>Logical Connectives as Inductive Types</h2><p>归纳定义足够用于表达我们目前为止遇到的大多数的联结词。事实上， 只有全称量化（以及作为特殊情况的蕴含式）是 Coq 内置的，所有其他的都是被归纳 定义的。</p>
 <p>Here we know what conjunction [/] actually means.</p>
 <pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> and (P Q : <span class="hljs-keyword">Prop</span>) : <span class="hljs-keyword">Prop</span> :=
 | <span class="hljs-type">conj</span> : P -&gt; Q -&gt; and P Q.</code></pre>
@@ -396,14 +396,51 @@ proofs ~ data values
 <h2 id="True-and-False"><a href="#True-and-False" class="headerlink" title="[True] and [False]"></a>[True] and [False]</h2><p>Both simple</p>
 <pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> True : <span class="hljs-keyword">Prop</span> :=
   | <span class="hljs-type">I</span> : True.
-  
+
 <span class="hljs-comment">(** [False] is equally simple -- indeed, so simple it may look</span>
 <span class="hljs-comment">    syntactically wrong at first glance! *)</span>
 
 <span class="hljs-keyword">Inductive</span> False : <span class="hljs-keyword">Prop</span> := .</code></pre>
 <p>[False] is an inductive type with <strong>no</strong> constructors. NO WAY TO BUILD AN EVIDENCE OR MAKE A DEFINITION!!</p>
 <h2 id="Equality"><a href="#Equality" class="headerlink" title="Equality"></a>Equality</h2><p>Inductive definition</p>
+<p>The Inductive definition is <strong>equivalent</strong> to Leibniz equality.</p>
+<p>From inductive definition, the only way to construct a equal pair is applying the constructor [eq_refl] to a type [X] and value [x : X].</p>
+<pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> eq &#123;X:<span class="hljs-keyword">Type</span>&#125; : X -&gt; X -&gt; <span class="hljs-keyword">Prop</span> :=
+| <span class="hljs-type">eq_refl</span> : <span class="hljs-keyword">forall</span> x, eq x x.</code></pre>
+<pre><code class="hljs Coq"><span class="hljs-comment">(** **** Exercise: 2 stars, standard (equality__leibniz_equality) </span>
+<span class="hljs-comment"></span>
+<span class="hljs-comment">    The inductive definition of equality implies _Leibniz equality_:</span>
+<span class="hljs-comment">    what we mean when we say &quot;[x] and [y] are equal&quot; is that every</span>
+<span class="hljs-comment">    property on [P] that is true of [x] is also true of [y].  *)</span>
 
+<span class="hljs-keyword">Lemma</span> equality__leibniz_equality : <span class="hljs-keyword">forall</span> (X : <span class="hljs-keyword">Type</span>) (x y: X),
+  x == y -&gt; <span class="hljs-keyword">forall</span> P:X-&gt;<span class="hljs-keyword">Prop</span>, P x -&gt; P y.
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span> X x y H.
+  <span class="hljs-built_in">induction</span> H.
+  <span class="hljs-built_in">intros</span> P HP.
+  <span class="hljs-built_in">apply</span> HP.
+  <span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.
+<span class="hljs-keyword">Qed</span>.
+<span class="hljs-comment">(** [] *)</span>
+
+<span class="hljs-comment">(** **** Exercise: 3 stars, standard, optional (leibniz_equality__equality) </span>
+<span class="hljs-comment"></span>
+<span class="hljs-comment">    Show that, in fact, the inductive definition of equality is</span>
+<span class="hljs-comment">    _equivalent_ to Leibniz equality.  Hint: the proof is quite short;</span>
+<span class="hljs-comment">    about all you need to do is to invent a clever property [P] to</span>
+<span class="hljs-comment">    instantiate the antecedent.*)</span>
+
+<span class="hljs-keyword">Lemma</span> leibniz_equality__equality : <span class="hljs-keyword">forall</span> (X : <span class="hljs-keyword">Type</span>) (x y: X),
+  (<span class="hljs-keyword">forall</span> P:X-&gt;<span class="hljs-keyword">Prop</span>, P x -&gt; P y) -&gt; x == y.
+<span class="hljs-keyword">Proof</span>.
+  <span class="hljs-built_in">intros</span> X x y H.
+  <span class="hljs-keyword">Check</span> (eq x x).
+  <span class="hljs-keyword">Check</span> (eq x y).
+  <span class="hljs-keyword">Check</span> (H (eq x)).
+  <span class="hljs-built_in">apply</span> (H (eq x)).
+  <span class="hljs-built_in">apply</span> eq_refl.
+<span class="hljs-keyword">Qed</span>.</code></pre>
             </div>
             <hr>
             <div>

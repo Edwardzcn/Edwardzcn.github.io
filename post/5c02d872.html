@@ -227,8 +227,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2020-12-17 11:24" pubdate>
-        2020年12月17日 上午
+      <time datetime="2020-12-18 11:24" pubdate>
+        2020年12月18日 上午
       </time>
     </span>
   
@@ -239,7 +239,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      252 字
+      674 字
     </span>
   
 
@@ -249,7 +249,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      4
+      12
        分钟
     </span>
   
@@ -288,7 +288,7 @@
 <p>consistency model -&gt; <strong>Explicit Consistency</strong> (strengthens eventual consistency with a guarantee to preserve <strong>specific invariants</strong> defined by the application)</p>
 <p>application-specific invariants</p>
 <p>System supports Explicit Consistency identifies which operations would be unsafe under concurrent execution.</p>
-<p>programs need to deal with different situations and select proper stategies. </p>
+<p>programs need to deal with different situations and select proper stategies.</p>
 <p>Either violation-avoidance or invariant-repair techniques.</p>
 <ul>
 <li>violation-avoidance: coordination off the critical path of operation execution by relying on a reservation system</li>
@@ -306,8 +306,15 @@
 </ul>
 </li>
 </ul>
-<p>Explicit Consistency</p>
-<h2 id="基本理论概况"><a href="#基本理论概况" class="headerlink" title="基本理论概况"></a>基本理论概况</h2><h2 id="结论部分"><a href="#结论部分" class="headerlink" title="结论部分"></a>结论部分</h2><!-- 确定作者的成过以及点出的经验、问题、改进方 -->
+<p>Explicit Consistency: new consistency model design</p>
+<h3 id="Contributions-and-Conclusions"><a href="#Contributions-and-Conclusions" class="headerlink" title="Contributions and Conclusions"></a>Contributions and Conclusions</h3><ul>
+<li>Explicit Consistency(model to obey): specify the consistency rules that the system must maintain as <strong>a set of variants</strong></li>
+<li>A methodology to derive an efficient reservation system for enforcing Explicit Consistency(static analysis+ alternative solutions)</li>
+<li>Indigo (a middleware system implementation): a middleware that can enforce Explicit Consistency on top of a causally consistent store.</li>
+</ul>
+<p>Result: modified applications have performance similar to weak consistency for most operations. Rare operations that <strong>require intricate rights transfers</strong> exhibit high latency.</p>
+<p>Future work for the high latency situations mentioned above.</p>
+<h2 id="基本理论概况"><a href="#基本理论概况" class="headerlink" title="基本理论概况"></a>基本理论概况</h2><!-- 确定作者的成过以及点出的经验、问题、改进方 -->
 <h2 id="回答基本问题"><a href="#回答基本问题" class="headerlink" title="回答基本问题"></a>回答基本问题</h2><ol>
 <li>类别</li>
 </ol>
@@ -340,6 +347,73 @@
 <h2 id="思路复现"><a href="#思路复现" class="headerlink" title="思路复现"></a>思路复现</h2><!-- 推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ -->
 <h2 id="证明与推理复现"><a href="#证明与推理复现" class="headerlink" title="证明与推理复现"></a>证明与推理复现</h2><!-- 分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源 -->
 <h2 id="实验验证复现"><a href="#实验验证复现" class="headerlink" title="实验验证复现"></a>实验验证复现</h2><!-- Rework -->
+<h2 id="Original-Presentation-EuroSys-‘15"><a href="#Original-Presentation-EuroSys-‘15" class="headerlink" title="Original Presentation(EuroSys ‘15)"></a>Original Presentation(EuroSys ‘15)</h2><h3 id="Motivation-and-BG"><a href="#Motivation-and-BG" class="headerlink" title="Motivation and BG"></a>Motivation and BG</h3><ul>
+<li>Services operate on a global scale.</li>
+<li>An unprecedented number of people are using internet services</li>
+</ul>
+<p>global application and low latency</p>
+<p>geo-replication an its sync is costly</p>
+<h3 id="Example-Tounament-remove-question"><a href="#Example-Tounament-remove-question" class="headerlink" title="Example: Tounament remove question"></a>Example: Tounament remove question</h3><p>Typical solution: strong consistency</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/EuroSys15/EC_01.png" srcset="/img/loading.gif" alt="EC_01"></p>
+<p>Sync when needed and ahieve low latency in normal operations</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/EuroSys15/EC_02.png" srcset="/img/loading.gif" alt="EC_02"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/EuroSys15/EC_03.png" srcset="/img/loading.gif" alt="EC_03"></p>
+<h3 id="Explicit-Consistency"><a href="#Explicit-Consistency" class="headerlink" title="Explicit Consistency"></a>Explicit Consistency</h3><p>the three-step methodlogy to force explicit consistency</p>
+<ul>
+<li><strong>Identify I-offenders</strong>: static analysis that may break invariants</li>
+<li><strong>Choose reservations</strong>(reservation system)</li>
+<li><strong>Instrument application</strong></li>
+</ul>
+<h4 id="Static-analysis"><a href="#Static-analysis" class="headerlink" title="Static analysis"></a>Static analysis</h4><p>From programmer specifies:</p>
+<p>invariant and</p>
+<ul>
+<li><p>invariant</p>
+<ul>
+<li>“players can only participate in existing tounaments”</li>
+<li>so $Inv = enrolled(p,t) =&gt; player(p) \land tounament(t)$</li>
+</ul>
+</li>
+<li><p>operations’ side effects</p>
+<ul>
+<li>enroll(p,5): $\{ ~ enrolled(p,t) := true ~ \}$</li>
+<li>removetounament(t): $\{ ~ tounament(t) := false ~ \}$</li>
+</ul>
+</li>
+</ul>
+<p>Testing algorithm</p>
+<p>The sub image find a pair of operations that when executed concurrently will break the coherence of the application -&gt; one I-offender set</p>
+<p>Programers to do:</p>
+<ul>
+<li>specify the invariants and the post conditions of the operations (so maybe a burden?)<ul>
+<li>programmers provide simple annotations</li>
+<li>static analysis detects conlicting operations</li>
+<li>low-latency operations with reservations</li>
+</ul>
+</li>
+</ul>
+<h4 id="Choose-reservations"><a href="#Choose-reservations" class="headerlink" title="Choose reservations"></a>Choose reservations</h4><p>Mechanisms to control I-offenders without breaking invariants</p>
+<p>select strategy?</p>
+<p>take multi-level lock as an example</p>
+<h3 id="Indigo"><a href="#Indigo" class="headerlink" title="Indigo"></a>Indigo</h3><p>In short, can be extended with new reservations</p>
+<h3 id="Evaluation"><a href="#Evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h3><p>Answer the question</p>
+<ul>
+<li>How well does the system scale?</li>
+<li>What is the latency of operations?</li>
+<li>Compare performance<ul>
+<li>Causal Consistency</li>
+<li>String Consistency</li>
+<li>Red-Blue Consistency</li>
+<li>Explicit Consistency</li>
+</ul>
+</li>
+</ul>
+<h3 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h3><p>Q1: How simple the notations are? How many manual work do we need?</p>
+<p>A1: Global quantifier and exist quantifier like shown in the slides.</p>
+<p>No false-positive found. Interesting</p>
+<p>Q2: If system consider of the monotonic(单调性)?</p>
+<p>A2: total based on the specifications given by the programmers. So no monotonicity knowledge.</p>
+<p>Q3: what if one of the centers fail and what will do with the reservations?</p>
+<p>A3: We can not use the reservations as the center goes down. But with the help of network replication, each data center still make progress by using the local reservation that it holds(Lock will block if one goes down?).</p>
 
             </div>
             <hr>
