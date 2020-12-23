@@ -239,7 +239,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      689 字
+      1.8k 字
     </span>
   
 
@@ -249,7 +249,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      12
+      31
        分钟
     </span>
   
@@ -293,7 +293,7 @@
 <p>As for ML</p>
 <p>perfect <strong>cache structured</strong> for the tree-based index.</p>
 <p>Implementation: XSTORE</p>
-<p>Key idea: decouple </p>
+<p>Key idea: decouple</p>
 <p>Evaluation</p>
 <p>compare to DrTM-Tree, Cell, eRPC+Masstree</p>
 <p>Recent effort(way):</p>
@@ -320,39 +320,156 @@
 </ul>
 <h2 id="基本理论概况"><a href="#基本理论概况" class="headerlink" title="基本理论概况"></a>基本理论概况</h2><h2 id="结论部分"><a href="#结论部分" class="headerlink" title="结论部分"></a>结论部分</h2><!-- 确定作者的成过以及点出的经验、问题、改进方 -->
 <h2 id="回答基本问题"><a href="#回答基本问题" class="headerlink" title="回答基本问题"></a>回答基本问题</h2><ol>
-<li>类别</li>
-</ol>
+<li><p>类别</p>
 <!-- 这篇论文是什么类型？测试类？对现有系统进行分析的？对原型系统进行描述的？-->
-<ol>
-<li>内容</li>
-</ol>
+<p>对原型系统进行描述 XSTORE</p>
+</li>
+<li><p>内容</p>
 <!-- 你读过的其他论文有没有与之相关的？相关性与区别最直接体现在哪里？文章中分析问题用的什么理论基础（通过瞥一眼数学概况与核心证明可以得到）。 -->
-<ol>
-<li>正确性</li>
-</ol>
+<p>RDMA 相关，以前未曾涉及</p>
+</li>
+<li><p>正确性</p>
 <!-- 结论是否看起来真实有效？ -->
-<ol>
-<li>创新点</li>
-</ol>
+<p>有效</p>
+</li>
+<li><p>创新点</p>
 <!-- 论文的主要创新点是什么？总结提到的经验、问题和改进方法是什么？ -->
-<ol>
-<li>清晰度</li>
-</ol>
+<p>使用 ML 来建模 Cache，</p>
+</li>
+<li><p>清晰度</p>
 <!-- 这篇论文是否写的条理清晰 -->
-<h2 id="阅读选择"><a href="#阅读选择" class="headerlink" title="阅读选择"></a>阅读选择</h2><!--
+<p>比较清晰</p>
+</li>
+</ol>
+<h2 id="阅读选择"><a href="#阅读选择" class="headerlink" title="阅读选择"></a>阅读选择</h2><p>继续阅读</p>
+<!--
 1. 继续阅读：论文有价值担保，研究领域非常切合，对当前进行工作有极大帮助，圈内爆火文章
 2. 不继续阅读：论文不吸引自己，论文价值/正确性存疑，论文作者给出了不适当的假设。
 3. 库存保留并标记：当前不处于自己的研究领域，但不久的日后相关论文会有用。
 -->
 <a id="more"></a>
 <h1 id="Step-2"><a href="#Step-2" class="headerlink" title="Step 2"></a>Step 2</h1><h2 id="细读笔记"><a href="#细读笔记" class="headerlink" title="细读笔记"></a>细读笔记</h2><!-- 要仔细阅读论文，但是诸如证明等信息要忽略掉 -->
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/nullzx/p/8729425.html">B 树与 B+树数据结构介绍</a></p>
 <h3 id="RDMA-based-Key-Value-Store"><a href="#RDMA-based-Key-Value-Store" class="headerlink" title="RDMA-based Key-Value Store"></a>RDMA-based Key-Value Store</h3><p>KV: in-memory key-value store</p>
 <p>network-attached: client-server model</p>
 <p>tree-backed: range index structures</p>
 <p>KV interfaces including $GET(K)$, $UPDATE(K,V)$, $SCAN(K,V)$, $INSERT(K,V)$ and $DELETE(K**$</p>
 <p>architecture design</p>
-<p><strong>Server-centric design</strong>: Reimplement the communication layer (e.g. RPC) using RDMA primitives. This design allows access to the server-side store with only two RDMA operations no matter how complex the index structures are.</p>
-<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><h2 id="未读（且值得读）文献记录"><a href="#未读（且值得读）文献记录" class="headerlink" title="未读（且值得读）文献记录"></a>未读（且值得读）文献记录</h2><!-- 在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 -->
+<ul>
+<li><p><strong>Server-centric design</strong>(S-RKV):</p>
+<ul>
+<li>Reimplement the communication layer (e.g. RPC) using RDMA primitives.</li>
+<li>This design allows access to the server-side store with only two RDMA operations no matter how complex the index structures are.</li>
+</ul>
+</li>
+<li><p><strong>Client-direct design</strong>(C-RKV):</p>
+<ul>
+<li>Bypass server cpu</li>
+<li>May consume extra network round trips for traversing th tree-based index.</li>
+<li>This commomn choice is also motivated by the read-dominated nature of most applications.</li>
+<li><strong>index cache</strong>: cache top levels(due to the large tree-based index) to reduce network round trips.</li>
+</ul>
+</li>
+</ul>
+<h3 id="Analysis-and-Motivations"><a href="#Analysis-and-Motivations" class="headerlink" title="Analysis and Motivations"></a>Analysis and Motivations</h3><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/OSDI20/XSTORE_01.png" srcset="/img/loading.gif" alt="XSTORE"></p>
+<ul>
+<li><strong>CPU is the primary scalability bottleneck in the sever-centric design</strong><ul>
+<li>Fig.2a shows that the S-RKV design makes the server rapidly saturates all CPUs</li>
+<li>S-RKV just consumes 11% of network bandwith and CPU first becomes the performance bottleneck</li>
+</ul>
+</li>
+<li><strong>Costly RDMA-based traversal is the key obstacle in the client-direct design</strong><ul>
+<li>Fig. 2c sgiws RDMA-based traversal limits the peak throughput of C-RKV to 7 million requests per second, even much lower than that of S-RKV.</li>
+<li>4 level cache (down from 8) Cell peaks at 14.5M reqs/s</li>
+</ul>
+</li>
+<li><strong>Tree is not a proper structure for RDMA-based index cache</strong><ul>
+<li>index is large. 理论最好情况（全部 cache）能达到 78M reqs/s，是 S-RKV 最好情况 24M reqs/s 的 3.3 倍。</li>
+<li>memory-intensive but low-compute operation</li>
+<li>updates to the tree-based index might progagate the changes from the leaf level to the root node, sothat the index updates would probably invalidate the cache <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/10.1145/3299869.3300081">recursively</a><ul>
+<li><blockquote>
+<p>An interesting dimension in the NAM architecture is caching of hot index nodes in compute servers that are frequently accessed. Caching allows compute servers to avoid remote memory transfers from memory servers. This is similar to the co-location of compute and memory servers.</p>
+</blockquote>
+</li>
+<li><blockquote>
+<p>For tree-based indexes, where inserts and deletes might propagate up to the index from the leaf level to the root node, we observed that cache invalidation is even a more severe issue since one insert/delete operation might need to invalidate multiple cached index nodes.</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Approach-and-Overview"><a href="#Approach-and-Overview" class="headerlink" title="Approach and Overview"></a>Approach and Overview</h3><p>Using ML Models: Inspired by <a target="_blank" rel="noopener" href="https://www.cl.cam.ac.uk/~ey204/teaching/ACS/R244_2018_2019/papers/Kraska_SIGMOD_2018.pdf">learned index</a></p>
+<p>Cumulative distribution function(CDF): map the sorted keys to the <strong>actual position</strong>, $P = CDF(K)$</p>
+<p>Models: Approximate the shape of a CDF using ML models, like NN, LR. Given a lookup key (K), the model (the black curve) can predict a position (pos) with a min- and max-error, and a local search (e.g., scanning) around the prediction is used to get the actual position.</p>
+<p>From the given key to a sorted array.</p>
+<ul>
+<li><p><strong>Learned Cache</strong>: The key idea behind XSTORE.</p>
+<ul>
+<li>First, cache <strong>whole</strong>(compared to <strong>partial</strong>) index at the cost of accuracy.<ul>
+<li>reduce the network round trips</li>
+<li>memory-efficient</li>
+</ul>
+</li>
+<li>Second, approximately predict a range of positions for one lookup key simply (a single multiplication and addition like linear regression)<ul>
+<li>also reduce end-to-end latency even compared to a whole-index cache.</li>
+</ul>
+</li>
+<li>Finally, instead of fine-grained and recursive invalidation in the tree-based cache, ML model can delay due to approximate predictions.<ul>
+<li>Save invalidation cost compared to a whole-index cache.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Challenge</strong>: Dynamic Workloads</p>
+<ul>
+<li>dynamic workloads (e.g., inserts and deletes) violated the “sorted” assumption</li>
+<li>Model retraining is slow and costly</li>
+<li>Alternative: intros delta index (server centric?) would incur more network round trips and severely increase the latency.</li>
+</ul>
+</li>
+</ul>
+<p>How to make learned cache keep pace with dynamic workloads at low cost becomes a key challenge.</p>
+<ul>
+<li><strong>Overview of XStore</strong>:<ul>
+<li>Server hosts a B+tree index (XTREE) which store kv pairs at the leaf level physically.</li>
+<li>Client use library to interact with server and host a local learned cache</li>
+<li>Client-direct design for read-only requests and the server-centric design for the rest.</li>
+<li>Server-centric design, transfer to remote</li>
+</ul>
+</li>
+</ul>
+<p>关于两次 RDMA READ</p>
+<blockquote>
+<p>B+树的内部结点并没有指向关键字具体信息的指针。因此其内部结点相对 B 树更小。如果把所有同一内部结点的关键字存放在同一盘块中，那么盘块所能容纳的关键字数量也越多。一次性读入内存中的需要查找的关键字也就越多。相对来说 IO 读写次数也就降低了。</p>
+</blockquote>
+<p>第一次 range 仍然是索引的搜索，从 pos 的 range 得到(key,指向具体信息的指针)的 range，之后在 client 端做本地的 scan，根据所查 key 的具体信息指针进行一次 RDMA READ 获得具体信息。?</p>
+<p>XSTOREstores keys and values sepa-rately but continuously. It can avoid storing the address ofthe value. The client can fetchNkeys from the leaf node andcalculate the (remote) address of expected value locally (afixed offset from its key).</p>
+<h3 id="Design-and-Implementation"><a href="#Design-and-Implementation" class="headerlink" title="Design and Implementation"></a>Design and Implementation</h3><ul>
+<li><p><strong>XTree</strong>: at the server, a B+tree index(XTREE) and stores key-value pairs at the leaf level physically.</p>
+<ul>
+<li>optimized for remote reads in leaf node</li>
+<li>24-bit incarnation</li>
+<li>8-bit counter</li>
+<li>32-bit right-link pointer to next sibling</li>
+<li>keys with n slots and values with n slots</li>
+</ul>
+</li>
+<li><p><strong>XCache with TT</strong>: at the client, a local learned cache (XCache) with consists of a-level recursive ML model and a translation table (TT)</p>
+<ul>
+<li>virtual address: Predict a range of positions (POS[..]) within a sorted array (logically stitching together all leaf nodes of XTREE)</li>
+</ul>
+</li>
+</ul>
+<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><h2 id="未读（且值得读）文献记录"><a href="#未读（且值得读）文献记录" class="headerlink" title="未读（且值得读）文献记录"></a>未读（且值得读）文献记录</h2><ul>
+<li>Concurrent B+ Tree<ul>
+<li><a target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/papers/masstree:eurosys12.pdf">33: Cache craftiness for fast multicore key-value storage | EuroSys ‘12</a></li>
+<li><a target="_blank" rel="noopener" href="https://dl.acm.org/doi/10.1145/2592798.2592815">50: Using restrictedtransactional memory to build a scalable in-memory database | EuroSys ‘14</a></li>
+</ul>
+</li>
+</ul>
+<!-- 在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 -->
 <h1 id="Step-3"><a href="#Step-3" class="headerlink" title="Step 3"></a>Step 3</h1><!-- 试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。 -->
 <h2 id="思路复现"><a href="#思路复现" class="headerlink" title="思路复现"></a>思路复现</h2><!-- 推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ -->
 <h2 id="证明与推理复现"><a href="#证明与推理复现" class="headerlink" title="证明与推理复现"></a>证明与推理复现</h2><!-- 分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源 -->
@@ -365,8 +482,8 @@
 </ol>
 <p>workload shift from the server cpu to the client cpu -&gt; client-direct</p>
 <p>simple read/write -&gt; easy for hashtable but hard for tree-based index structures</p>
-<p>QQ1: Why n RTT? </p>
-<p>QCache: </p>
+<p>QQ1: Why n RTT?</p>
+<p>QCache:</p>
 <ol>
 <li>existing systems adopt caching</li>
 </ol>
@@ -378,9 +495,9 @@
 </ol>
 <p>insert -&gt; tree split and let it to the remote CPU</p>
 <h3 id="Learned-cache"><a href="#Learned-cache" class="headerlink" title="Learned cache"></a>Learned cache</h3><p>Realted: Learned index</p>
-<p>索引是模型:b树索引可以看作是一个模型，它是一个记录在排序数组中的位置的键</p>
+<p>索引是模型:b 树索引可以看作是一个模型，它是一个记录在排序数组中的位置的键</p>
 <p>Key —index model—&gt; Address</p>
-<h4 id="Client-direct-get-using-learned-cache"><a href="#Client-direct-get-using-learned-cache" class="headerlink" title="Client-direct get() using learned cache"></a>Client-direct get() using learned cache</h4><p>first train model at the server(small memory usage) </p>
+<h4 id="Client-direct-get-using-learned-cache"><a href="#Client-direct-get-using-learned-cache" class="headerlink" title="Client-direct get() using learned cache"></a>Client-direct get() using learned cache</h4><p>first train model at the server(small memory usage)</p>
 <p>transfer from server to the client</p>
 <p>Note: learned model assumes that the KV are stored in a sorted array</p>
 <ul>
@@ -396,10 +513,55 @@
 <li>Cache miss</li>
 <li>Random acces</li>
 </ol>
-<p>Why 2 times RDMA -&gt; TT </p>
+<p>Why 2 times RDMA -&gt; TT</p>
 <p>Decouple insert O1 challenge</p>
 <p>ML correct about the insertion</p>
-<p>Training </p>
+<p>Training</p>
+<h3 id="2020-12-19-meeting"><a href="#2020-12-19-meeting" class="headerlink" title="2020/12/19 meeting"></a>2020/12/19 meeting</h3><ol>
+<li>B+ 树设计 Cache ，positions 预测</li>
+<li>TT 表的理解<br>1.</li>
+<li>CDF 曲线样式可能和</li>
+</ol>
+<p>自己的序号+1，为什么原来的 XCAHE 模型可以，</p>
+<h2 id="新的问题"><a href="#新的问题" class="headerlink" title="新的问题"></a>新的问题</h2><ol>
+<li><p>retraining，保证你本地的 TT 表能更新，能支持动态的 workloads</p>
+</li>
+<li><p>client 端 TT 表更新策略</p>
+</li>
+<li><p>HTM transaction</p>
+</li>
+</ol>
+<h2 id=""><a href="#" class="headerlink" title="#"></a>#</h2><p>接近 1h：18min，拓展</p>
+<p>补：RDMA 上的工作，引入 Learned Cache，</p>
+<h3 id="Contents"><a href="#Contents" class="headerlink" title="Contents"></a>Contents</h3><ul>
+<li>Background</li>
+<li>Motivation<ul>
+<li>Analysis 3. 原</li>
+<li>Learned Cache 4 Cache 模型本身设计问题，</li>
+</ul>
+</li>
+<li><p>Contribution 部分</p>
+<ul>
+<li>阶段性总结</li>
+</ul>
+</li>
+<li><p>Model</p>
+<ul>
+<li>Hybrid architecture</li>
+</ul>
+</li>
+<li><p>Implementation</p>
+<ul>
+<li>XSTORE Cache + TT 表</li>
+</ul>
+</li>
+<li><p>Evalutaion（图表？）</p>
+</li>
+<li>Conclution<ul>
+<li>搬运原有文章</li>
+</ul>
+</li>
+</ul>
 <!-- Rework -->
 
             </div>
