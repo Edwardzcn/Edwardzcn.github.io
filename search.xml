@@ -1173,12 +1173,15 @@
 </ul>
 </li>
 </ul>
-<p>关于两次 RDMA READ</p>
+<h3 id="关于两次-RDMA-READ"><a href="#关于两次-RDMA-READ" class="headerlink" title="关于两次 RDMA READ"></a>关于两次 RDMA READ</h3><p>email 询问作者魏星达的回复</p>
 <blockquote>
-<p>B+树的内部结点并没有指向关键字具体信息的指针。因此其内部结点相对 B 树更小。如果把所有同一内部结点的关键字存放在同一盘块中，那么盘块所能容纳的关键字数量也越多。一次性读入内存中的需要查找的关键字也就越多。相对来说 IO 读写次数也就降低了。</p>
+<p>问题名称：XTree 叶子节点的 Value 保存的是指具体的数据，还是指向数据部分的地址。</p>
+<p>XSTORE 在 value 时定长的时候保存的是具体的数据，不定长的时候储存的是地址。</p>
+<p>这里我疑惑如果保存的是具体数据，我们为什么还需要在这里确定 key 的“实际地址”后再进行一次 RDMA READ，value 值不是可以再叶子节点中读取到吗？</p>
+<p>你的问题是正确的。理论来说，如果叶子存的是具体数据，那么一次 RDMA 就可以完全读回。这边 XSTORE 使用两次是为了节约 RDMA 读的 payload。</p>
+<p>举例来说，如果使用一次 RDMA，则需要读取叶子里的所有数据加上 $Key$，这样会读取过多的值 $(n <em> sizeof(Key) + n </em> sizeof(Value)$,其中 $n$ 是叶子节点最多的 item 数量），造成 RDMA bandwidth 的浪费。</p>
+<p>如果使用两次 RDMA，则总共需要读 $n * sizeof(Key) + sizeof(Value)$ 数据，如果 $Value$ 的大小比 $Key$ 大很多（通常是这种情况），则会更加高效。</p>
 </blockquote>
-<p>第一次 range 仍然是索引的搜索，从 pos 的 range 得到(key,指向具体信息的指针)的 range，之后在 client 端做本地的 scan，根据所查 key 的具体信息指针进行一次 RDMA READ 获得具体信息。?</p>
-<p>XSTOREstores keys and values sepa-rately but continuously. It can avoid storing the address ofthe value. The client can fetchNkeys from the leaf node andcalculate the (remote) address of expected value locally (afixed offset from its key).</p>
 <h3 id="Design-and-Implementation"><a href="#Design-and-Implementation" class="headerlink" title="Design and Implementation"></a>Design and Implementation</h3><ul>
 <li><p><strong>XTree</strong>: at the server, a B+tree index(XTREE) and stores key-value pairs at the leaf level physically.</p>
 <ul>
@@ -1192,10 +1195,45 @@
 <li><p><strong>XCache with TT</strong>: at the client, a local learned cache (XCache) with consists of a-level recursive ML model and a translation table (TT)</p>
 <ul>
 <li>virtual address: Predict a range of positions (POS[..]) within a sorted array (logically stitching together all leaf nodes of XTREE)</li>
+<li>TT is located by the leaf-node number (LLN) of a valid bit, a 31-bit actual leaf-node number (ALN). 24-bit incarnation and 8-bit counter.</li>
+</ul>
+</li>
+<li><p><strong>Training models and TT</strong>:</p>
+<ul>
+<li>Read code</li>
+<li>train each sub-model on a sorted array of its keys with a private logical position at a leaf node granularity (line 12-21) and calculate min- and max-error for every sub-model.</li>
+<li>note that the keys in the leaf node across sub-models will be trained by both of sub-models (in several kset[i] due to the same predict of $xmodel.top.predict(k) \times M$).</li>
+<li>Each sub-model has independent logical positions and an own translation table, making it easy to retrain a sub-model individually when necessary.</li>
+</ul>
+</li>
+<li><p><strong>A memory-performance trade-off</strong>:</p>
+<ul>
+<li>model is small but TT is large</li>
+<li>XMODEL with 500K sub-models only needs less than 6.7MB(14B per model)</li>
+<li>100M keys, suppose each leaf node has 16 slots and is half-full, TT requires nearly 100MB. ( 100M * 64(bit) / 8(slots) /8(B/bit))</li>
+<li>cache on demand</li>
 </ul>
 </li>
 </ul>
-<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><h2 id="未读（且值得读）文献记录"><a href="#未读（且值得读）文献记录" class="headerlink" title="未读（且值得读）文献记录"></a>未读（且值得读）文献记录</h2><ul>
+<h3 id="Client-direct-Operations"><a href="#Client-direct-Operations" class="headerlink" title="Client-direct Operations"></a>Client-direct Operations</h3><h4 id="Get"><a href="#Get" class="headerlink" title="Get"></a>Get</h4><p>Read code eaxmple. 根据图 7 展示的 LOOKUP 流程我们知道模型预测的是一组 leaf node ID，根据 TT 表转译并通过 door bell batching 技术（该优化技术帮助我们用一次 RDMA READ 读取非连续的内存区域信息）读取到远程内存中叶子节点的信息，然后在本地进行 local search，计算所要 key 的实际地址。</p>
+<p>most likely to read just one leaf node due to the low predection error of XMODEL</p>
+<p>invalid in TT entry(line 9 and 17) would result in a fallback path, which ships the get operation to the server and fetches updated models and TT entries using a single request(i.e., server-centric design).</p>
+<h4 id="Scan"><a href="#Scan" class="headerlink" title="Scan"></a>Scan</h4><p>find N key-value pairs (in order by key) starting with the next key at or after K.</p>
+<ol>
+<li>uses the lookup operation with K to determin the remote address of the first key-value pair</li>
+<li>predicts the leaft nodes that contain next n key-value pairs with the help of TT(provides CNT and ALN in sorted order by key).</li>
+<li>use one RDMA READ with doorbell batching to fetch these leaf nodes</li>
+</ol>
+<h4 id="Non-existent-Keys"><a href="#Non-existent-Keys" class="headerlink" title="Non-existent Keys"></a>Non-existent Keys</h4><p>Non-existent key 的 read，预测的键范围应该 cover 键本身。两层结构对于出于 sub-model 边界的 key 可能会产生错误预测。</p>
+<p>解决办法：增加训练集，仅增加一个边界键到相邻两个 sub-models 的训练集中。</p>
+<ul>
+<li>由于两个子模型之间叶节点的 keys 都经过了训练，在大多数情况下不需要进行数据扩充。</li>
+</ul>
+<h3 id="Server-centric-Operations"><a href="#Server-centric-Operations" class="headerlink" title="Server-centric Operations"></a>Server-centric Operations</h3><ul>
+<li><strong>Correctness</strong>: no lost keys</li>
+<li><strong>Concurrency</strong>: HTM-based concurrent B+tree, HTM 区域+RDMA 强一致性（终止访问统一内存位置的 HTM 事务）。缓存那里不太理解。</li>
+</ul>
+<h4 id="UPDATE"><a href="#UPDATE" class="headerlink" title="UPDATE"></a>UPDATE</h4><h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><h2 id="未读（且值得读）文献记录"><a href="#未读（且值得读）文献记录" class="headerlink" title="未读（且值得读）文献记录"></a>未读（且值得读）文献记录</h2><ul>
 <li>Concurrent B+ Tree<ul>
 <li><a href="https://pdos.csail.mit.edu/papers/masstree:eurosys12.pdf">33: Cache craftiness for fast multicore key-value storage | EuroSys ‘12</a></li>
 <li><a href="https://dl.acm.org/doi/10.1145/2592798.2592815">50: Using restrictedtransactional memory to build a scalable in-memory database | EuroSys ‘14</a></li>
@@ -1264,7 +1302,7 @@
 <li><p>HTM transaction</p>
 </li>
 </ol>
-<h2 id=""><a href="#" class="headerlink" title="#"></a>#</h2><p>接近 1h：18min，拓展</p>
+<p>接近 1h：18min，拓展</p>
 <p>补：RDMA 上的工作，引入 Learned Cache，</p>
 <h3 id="Contents"><a href="#Contents" class="headerlink" title="Contents"></a>Contents</h3><ul>
 <li>Background</li>
