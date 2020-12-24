@@ -21,22 +21,22 @@
   <meta name="keywords" content="Edward&#39;s blog">
   <title>Haskell学习——自定义数据类型 - Edward&#39;s blog</title>
 
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/css/bootstrap.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
 
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
   <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
   
     
     
       
-      <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.1.2/styles/github-gist.min.css" />
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
     
   
 
   
-    <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
   
 
 
@@ -57,7 +57,7 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"copy_btn":true,"image_zoom":{"enable":true},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
@@ -206,7 +206,7 @@
   </div>
 </nav>
 
-    <div class="banner intro-2" id="background" parallax=true
+    <div class="banner" id="banner" parallax=true
          style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
@@ -271,11 +271,11 @@
     
       
 
-<div class="container-fluid">
-  <div class="row">
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
     <div class="d-none d-lg-block col-lg-2"></div>
-    <div class="col-lg-8 nopadding-md">
-      <div class="container nopadding-md" id="board-ctn">
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
@@ -283,24 +283,11 @@
             
             <div class="markdown-body">
               <h1 id="自定义类型"><a href="#自定义类型" class="headerlink" title="自定义类型"></a>自定义类型</h1><p>读 Haskell 代码时发现有两种自定义类型的方式，速成学习做以下记录。</p>
-<h2 id="data-关键字-枚举"><a href="#data-关键字-枚举" class="headerlink" title="data 关键字+枚举"></a>data 关键字+枚举</h2><pre><code class="hljs Haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">TopDecl</span> =</span>
-    <span class="hljs-type">DeclareType</span>     !<span class="hljs-type">TypeDecl</span>
-  | <span class="hljs-type">DeclareConst</span>    !<span class="hljs-type">ConstDef</span>
-  | <span class="hljs-type">DeclareNode</span>     !<span class="hljs-type">NodeDecl</span>
-  | <span class="hljs-type">DeclareNodeInst</span> !<span class="hljs-type">NodeInstDecl</span>
-  | <span class="hljs-type">DeclareContract</span> !<span class="hljs-type">ContractDecl</span>
-    <span class="hljs-keyword">deriving</span> <span class="hljs-type">Show</span></code></pre>
+<h2 id="data-关键字-枚举"><a href="#data-关键字-枚举" class="headerlink" title="data 关键字+枚举"></a>data 关键字+枚举</h2><figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs Haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">TopDecl</span> =</span><br>    <span class="hljs-type">DeclareType</span>     !<span class="hljs-type">TypeDecl</span><br>  | <span class="hljs-type">DeclareConst</span>    !<span class="hljs-type">ConstDef</span><br>  | <span class="hljs-type">DeclareNode</span>     !<span class="hljs-type">NodeDecl</span><br>  | <span class="hljs-type">DeclareNodeInst</span> !<span class="hljs-type">NodeInstDecl</span><br>  | <span class="hljs-type">DeclareContract</span> !<span class="hljs-type">ContractDecl</span><br>    <span class="hljs-keyword">deriving</span> <span class="hljs-type">Show</span><br></code></pre></td></tr></table></figure>
 <p>用<code>|</code>分隔的 constructor，constructor 构造器本质上是返回某一类类型的函数。对于多个构造器放在一起柯里化后更好理解。</p>
 <p>如果不加 deriving Show，则不是 Show 类型类实例，不能被 show 函数调用。</p>
 <p>以及如果加上 deriving Eq，就可以直接使用==或/=来判断它们的值的相等性了。Haskell 会先检查两个值的构造器是否一致，再用==来检查其中的每一对字段的数据是否想等。</p>
-<h2 id="data-关键字-记录语法-record-syntax"><a href="#data-关键字-记录语法-record-syntax" class="headerlink" title="data 关键字+记录语法 record syntax"></a>data 关键字+记录语法 record syntax</h2><pre><code class="hljs Haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Package</span> = <span class="hljs-type">Package</span></span>
-  &#123; packageName     :: !<span class="hljs-type">Ident</span>
-  , packageUses     :: ![<span class="hljs-type">Ident</span>]
-  , packageParams   :: ![<span class="hljs-type">StaticParam</span>]   <span class="hljs-comment">-- ^ Empty list for pacakges</span>
-  , packageProvides :: ![<span class="hljs-type">PackageProvides</span>]
-  , packageBody     :: ![<span class="hljs-type">TopDecl</span>]
-  , packageRange    :: !<span class="hljs-type">SourceRange</span>
-  &#125; <span class="hljs-keyword">deriving</span> <span class="hljs-type">Show</span></code></pre>
+<h2 id="data-关键字-记录语法-record-syntax"><a href="#data-关键字-记录语法-record-syntax" class="headerlink" title="data 关键字+记录语法 record syntax"></a>data 关键字+记录语法 record syntax</h2><figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs Haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Package</span> = <span class="hljs-type">Package</span></span><br>  &#123; packageName     :: !<span class="hljs-type">Ident</span><br>  , packageUses     :: ![<span class="hljs-type">Ident</span>]<br>  , packageParams   :: ![<span class="hljs-type">StaticParam</span>]   <span class="hljs-comment">-- ^ Empty list for pacakges</span><br>  , packageProvides :: ![<span class="hljs-type">PackageProvides</span>]<br>  , packageBody     :: ![<span class="hljs-type">TopDecl</span>]<br>  , packageRange    :: !<span class="hljs-type">SourceRange</span><br>  &#125; <span class="hljs-keyword">deriving</span> <span class="hljs-type">Show</span><br></code></pre></td></tr></table></figure>
 <p>会自动创建多个函数，比如 packageName :: Package -&gt; !Ident</p>
 <p>允许按字段取值。</p>
 <a id="more"></a>
@@ -332,7 +319,7 @@
                 <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
               
               
-                <div class="post-prevnext row">
+                <div class="post-prevnext">
                   <article class="post-prev col-6">
                     
                     
@@ -425,23 +412,20 @@
 
 <!-- SCRIPTS -->
 
-  <script  src="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.css" />
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
 
   <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":200})
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
     NProgress.start()
-    document.addEventListener('DOMContentLoaded', function() {
-      window.NProgress && window.NProgress.inc();
-    })
     window.addEventListener('load', function() {
       NProgress.done();
     })
   </script>
 
 
-<script  src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js" ></script>
-<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/js/bootstrap.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
 <script  src="/js/debouncer.js" ></script>
 <script  src="/js/events.js" ></script>
 <script  src="/js/plugins.js" ></script>
@@ -459,25 +443,26 @@
 
 
 
-  <script  src="https://cdn.staticfile.org/tocbot/4.12.0/tocbot.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
 
 
 
-  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
 
 
 
-  <script  src="https://cdn.staticfile.org/anchor-js/4.3.0/anchor.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
 
 
 
-  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
 
 
 
 
 
-  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
   <script>
     (function (window, document) {
       var typing = Fluid.plugins.typing;
@@ -541,7 +526,7 @@
       };
     </script>
 
-    <script async src="https://cdn.staticfile.org/mathjax/3.1.2/es5/tex-svg.js" ></script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-svg.js" ></script>
 
   
 

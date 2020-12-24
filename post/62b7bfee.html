@@ -21,22 +21,22 @@
   <meta name="keywords" content="Edward&#39;s blog">
   <title>Coq学习——《Software-Foundation》Volume1.9-ProofObjects - Edward&#39;s blog</title>
 
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/css/bootstrap.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
 
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
   <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
   
     
     
       
-      <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.1.2/styles/github-gist.min.css" />
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
     
   
 
   
-    <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
   
 
 
@@ -57,7 +57,7 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"copy_btn":true,"image_zoom":{"enable":true},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
@@ -206,7 +206,7 @@
   </div>
 </nav>
 
-    <div class="banner intro-2" id="background" parallax=true
+    <div class="banner" id="banner" parallax=true
          style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
@@ -239,7 +239,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      992 字
+      993 字
     </span>
   
 
@@ -271,11 +271,11 @@
     
       
 
-<div class="container-fluid">
-  <div class="row">
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
     <div class="d-none d-lg-block col-lg-2"></div>
-    <div class="col-lg-8 nopadding-md">
-      <div class="container nopadding-md" id="board-ctn">
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
@@ -304,143 +304,37 @@ proofs ~ data values
 <h2 id="Proof-Scripts"><a href="#Proof-Scripts" class="headerlink" title="Proof Scripts"></a>Proof Scripts</h2><p>Gradually constructing a proof object — a term whose type is the proposition being proved!!</p>
 <p>The tactics between [Proof] and [Qed] tell it how to build up a term of the required type.</p>
 <p>Let’s see what happens with the help of [Show Proof command].</p>
-<pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> ev_4&#x27;&#x27; : ev <span class="hljs-number">4.</span>
-<span class="hljs-keyword">Proof</span>.
-  <span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.                   <span class="hljs-comment">(* ?Goal *)</span>
-  <span class="hljs-built_in">apply</span> ev_SS.
-  <span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.                   <span class="hljs-comment">(* (ev_SS 2 ?Goal) *)</span>
-  <span class="hljs-built_in">apply</span> ev_SS.
-  <span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.                   <span class="hljs-comment">(* (ev_SS 2 (ev_SS 0 ?Goal)) *)</span>
-  <span class="hljs-built_in">apply</span> ev_0.
-  <span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.                   <span class="hljs-comment">(* (ev_SS 2 (ev_SS 0 ev_0)) *)</span>
-<span class="hljs-keyword">Qed</span>.</code></pre>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> ev_4&#x27;&#x27; : ev <span class="hljs-number">4.</span><br><span class="hljs-keyword">Proof</span>.<br>  <span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.                   <span class="hljs-comment">(* ?Goal *)</span><br>  <span class="hljs-built_in">apply</span> ev_SS.<br>  <span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.                   <span class="hljs-comment">(* (ev_SS 2 ?Goal) *)</span><br>  <span class="hljs-built_in">apply</span> ev_SS.<br>  <span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.                   <span class="hljs-comment">(* (ev_SS 2 (ev_SS 0 ?Goal)) *)</span><br>  <span class="hljs-built_in">apply</span> ev_0.<br>  <span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.                   <span class="hljs-comment">(* (ev_SS 2 (ev_SS 0 ev_0)) *)</span><br><span class="hljs-keyword">Qed</span>.<br></code></pre></td></tr></table></figure>
 <ul>
 <li>A proof script is to fill the hole(?Goal).</li>
 <li>Tactic proofs are useful and convenient but not essential. We can use [Definition] rather than [Theorem] to give a global name directly to the evidence.</li>
 </ul>
-<pre><code class="hljs Coq"><span class="hljs-keyword">Definition</span> ev_4&#x27;&#x27;&#x27; : ev <span class="hljs-number">4</span> :=
-  ev_SS <span class="hljs-number">2</span> (ev_SS <span class="hljs-number">0</span> ev_0).
-
-<span class="hljs-comment">(** All these different ways of building the proof lead to exactly the</span>
-<span class="hljs-comment">    same evidence being saved in the global environment. *)</span>
-
-<span class="hljs-keyword">Print</span> ev_4.
-<span class="hljs-comment">(* ===&gt; ev_4    =   ev_SS 2 (ev_SS 0 ev_0) : ev 4 *)</span>
-<span class="hljs-keyword">Print</span> ev_4&#x27;.
-<span class="hljs-comment">(* ===&gt; ev_4&#x27;   =   ev_SS 2 (ev_SS 0 ev_0) : ev 4 *)</span>
-<span class="hljs-keyword">Print</span> ev_4&#x27;&#x27;.
-<span class="hljs-comment">(* ===&gt; ev_4&#x27;&#x27;  =   ev_SS 2 (ev_SS 0 ev_0) : ev 4 *)</span>
-<span class="hljs-keyword">Print</span> ev_4&#x27;&#x27;&#x27;.
-<span class="hljs-comment">(* ===&gt; ev_4&#x27;&#x27;&#x27; =   ev_SS 2 (ev_SS 0 ev_0) : ev 4 *)</span></code></pre>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs Coq"><span class="hljs-keyword">Definition</span> ev_4&#x27;&#x27;&#x27; : ev <span class="hljs-number">4</span> :=<br>  ev_SS <span class="hljs-number">2</span> (ev_SS <span class="hljs-number">0</span> ev_0).<br><br><span class="hljs-comment">(** All these different ways of building the proof lead to exactly the</span><br><span class="hljs-comment">    same evidence being saved in the global environment. *)</span><br><br><span class="hljs-keyword">Print</span> ev_4.<br><span class="hljs-comment">(* ===&gt; ev_4    =   ev_SS 2 (ev_SS 0 ev_0) : ev 4 *)</span><br><span class="hljs-keyword">Print</span> ev_4&#x27;.<br><span class="hljs-comment">(* ===&gt; ev_4&#x27;   =   ev_SS 2 (ev_SS 0 ev_0) : ev 4 *)</span><br><span class="hljs-keyword">Print</span> ev_4&#x27;&#x27;.<br><span class="hljs-comment">(* ===&gt; ev_4&#x27;&#x27;  =   ev_SS 2 (ev_SS 0 ev_0) : ev 4 *)</span><br><span class="hljs-keyword">Print</span> ev_4&#x27;&#x27;&#x27;.<br><span class="hljs-comment">(* ===&gt; ev_4&#x27;&#x27;&#x27; =   ev_SS 2 (ev_SS 0 ev_0) : ev 4 *)</span><br></code></pre></td></tr></table></figure>
 <h2 id="Quantifiers-Implications-Functions"><a href="#Quantifiers-Implications-Functions" class="headerlink" title="Quantifiers, Implications, Functions"></a>Quantifiers, Implications, Functions</h2><p>Proof of propositions including implications map to construct function(hypotheses as params and conclusion as results)</p>
 <p>The equivalent proof/def of ex_plus4.</p>
-<pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> ev_plus4 : <span class="hljs-keyword">forall</span> n, ev n -&gt; ev (<span class="hljs-number">4</span> + n).
-<span class="hljs-keyword">Proof</span>.
-  <span class="hljs-built_in">intros</span> n H. <span class="hljs-built_in">simpl</span>.
-  <span class="hljs-built_in">apply</span> ev_SS.
-  <span class="hljs-built_in">apply</span> ev_SS.
-  <span class="hljs-built_in">apply</span> H.
-<span class="hljs-keyword">Qed</span>.
-
-<span class="hljs-keyword">Definition</span> ev_plus4&#x27; : <span class="hljs-keyword">forall</span> n, ev n -&gt; ev (<span class="hljs-number">4</span> + n) :=
-  <span class="hljs-keyword">fun</span> (n : nat) =&gt; <span class="hljs-keyword">fun</span> (H : ev n) =&gt;
-    ev_SS (S (S n)) (ev_SS n H).
-
-<span class="hljs-keyword">Definition</span> ev_plus4&#x27;&#x27; (n : nat) (H : ev n)
-                    : ev (<span class="hljs-number">4</span> + n) :=
-  ev_SS (S (S n)) (ev_SS n H).</code></pre>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> ev_plus4 : <span class="hljs-keyword">forall</span> n, ev n -&gt; ev (<span class="hljs-number">4</span> + n).<br><span class="hljs-keyword">Proof</span>.<br>  <span class="hljs-built_in">intros</span> n H. <span class="hljs-built_in">simpl</span>.<br>  <span class="hljs-built_in">apply</span> ev_SS.<br>  <span class="hljs-built_in">apply</span> ev_SS.<br>  <span class="hljs-built_in">apply</span> H.<br><span class="hljs-keyword">Qed</span>.<br><br><span class="hljs-keyword">Definition</span> ev_plus4&#x27; : <span class="hljs-keyword">forall</span> n, ev n -&gt; ev (<span class="hljs-number">4</span> + n) :=<br>  <span class="hljs-keyword">fun</span> (n : nat) =&gt; <span class="hljs-keyword">fun</span> (H : ev n) =&gt;<br>    ev_SS (S (S n)) (ev_SS n H).<br><br><span class="hljs-keyword">Definition</span> ev_plus4&#x27;&#x27; (n : nat) (H : ev n)<br>                    : ev (<span class="hljs-number">4</span> + n) :=<br>  ev_SS (S (S n)) (ev_SS n H).<br></code></pre></td></tr></table></figure>
 <a id="more"></a>
 <h2 id="Programmig-with-Tactics"><a href="#Programmig-with-Tactics" class="headerlink" title="Programmig with Tactics"></a>Programmig with Tactics</h2><p>We terminate the [Definition] with a [.] rather than with [:=] followed by a term. This tells Coq to enter _proof scripting mode_ to build an object of type [nat -&gt; nat]. And terminate the proof with [Defined] rather than [Qed].</p>
-<pre><code class="hljs Coq"><span class="hljs-keyword">Definition</span> add1 : nat -&gt; nat.
-<span class="hljs-built_in">intro</span> n.
-<span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.
-<span class="hljs-built_in">apply</span> S.
-<span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.
-<span class="hljs-built_in">apply</span> n.
-<span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.
-<span class="hljs-comment">(* Qed. *)</span>
-<span class="hljs-keyword">Defined</span>.                        <span class="hljs-comment">(* not Qed. *)</span>
-
-<span class="hljs-keyword">Print</span> add1.
-<span class="hljs-comment">(* ==&gt;</span>
-<span class="hljs-comment">    add1 = fun n : nat =&gt; S n</span>
-<span class="hljs-comment">         : nat -&gt; nat</span>
-<span class="hljs-comment">*)</span>
-
-<span class="hljs-keyword">Compute</span> add1 <span class="hljs-number">2.</span>
-<span class="hljs-comment">(* ==&gt; 3 : nat *)</span></code></pre>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs Coq"><span class="hljs-keyword">Definition</span> add1 : nat -&gt; nat.<br><span class="hljs-built_in">intro</span> n.<br><span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.<br><span class="hljs-built_in">apply</span> S.<br><span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.<br><span class="hljs-built_in">apply</span> n.<br><span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.<br><span class="hljs-comment">(* Qed. *)</span><br><span class="hljs-keyword">Defined</span>.                        <span class="hljs-comment">(* not Qed. *)</span><br><br><span class="hljs-keyword">Print</span> add1.<br><span class="hljs-comment">(* ==&gt;</span><br><span class="hljs-comment">    add1 = fun n : nat =&gt; S n</span><br><span class="hljs-comment">         : nat -&gt; nat</span><br><span class="hljs-comment">*)</span><br><br><span class="hljs-keyword">Compute</span> add1 <span class="hljs-number">2.</span><br><span class="hljs-comment">(* ==&gt; 3 : nat *)</span><br></code></pre></td></tr></table></figure>
 <p>End with [Defined] rather than [Qed] make the definition “transparent”. NEED BETTER UNDERSTANDING.</p>
 <h2 id="Logical-Connectives-as-Inductive-Types"><a href="#Logical-Connectives-as-Inductive-Types" class="headerlink" title="Logical Connectives as Inductive Types"></a>Logical Connectives as Inductive Types</h2><p>归纳定义足够用于表达我们目前为止遇到的大多数的联结词。事实上， 只有全称量化（以及作为特殊情况的蕴含式）是 Coq 内置的，所有其他的都是被归纳 定义的。</p>
 <p>Here we know what conjunction [/] actually means.</p>
-<pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> and (P Q : <span class="hljs-keyword">Prop</span>) : <span class="hljs-keyword">Prop</span> :=
-| <span class="hljs-type">conj</span> : P -&gt; Q -&gt; and P Q.</code></pre>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> and (P Q : <span class="hljs-keyword">Prop</span>) : <span class="hljs-keyword">Prop</span> :=<br>| <span class="hljs-type">conj</span> : P -&gt; Q -&gt; and P Q.<br></code></pre></td></tr></table></figure>
 <p>This clarify why [destruct] and [intros] patterns can be used on a conjunctive hypothesis. Case analysis allow us to consider all possible ways in which [P /\ Q] was proved. Her just one (from the [conj] constructor).</p>
 <p>Exercise: construct a proof object for the following proposition.</p>
-<pre><code class="hljs Coq"><span class="hljs-keyword">Definition</span> conj_fact : <span class="hljs-keyword">forall</span> P Q R, P /\ Q -&gt; Q /\ R -&gt; P /\ R :=
-  <span class="hljs-keyword">fun</span> (P Q R : <span class="hljs-keyword">Prop</span>) =&gt;
-    <span class="hljs-keyword">fun</span> (H1 : P /\ Q) =&gt;
-      <span class="hljs-keyword">fun</span> (H2 : Q /\ R) =&gt;
-        <span class="hljs-keyword">match</span> H1 <span class="hljs-built_in">with</span>
-        | <span class="hljs-type">conj</span> P Q =&gt;
-          <span class="hljs-keyword">match</span> H2 <span class="hljs-built_in">with</span>
-          | <span class="hljs-type">conj</span> Q R =&gt; conj P R
-          <span class="hljs-keyword">end</span>
-        <span class="hljs-keyword">end</span>.</code></pre>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs Coq"><span class="hljs-keyword">Definition</span> conj_fact : <span class="hljs-keyword">forall</span> P Q R, P /\ Q -&gt; Q /\ R -&gt; P /\ R :=<br>  <span class="hljs-keyword">fun</span> (P Q R : <span class="hljs-keyword">Prop</span>) =&gt;<br>    <span class="hljs-keyword">fun</span> (H1 : P /\ Q) =&gt;<br>      <span class="hljs-keyword">fun</span> (H2 : Q /\ R) =&gt;<br>        <span class="hljs-keyword">match</span> H1 <span class="hljs-built_in">with</span><br>        | <span class="hljs-type">conj</span> P Q =&gt;<br>          <span class="hljs-keyword">match</span> H2 <span class="hljs-built_in">with</span><br>          | <span class="hljs-type">conj</span> Q R =&gt; conj P R<br>          <span class="hljs-keyword">end</span><br>        <span class="hljs-keyword">end</span>.<br></code></pre></td></tr></table></figure>
 <h2 id="Disjunction"><a href="#Disjunction" class="headerlink" title="Disjunction"></a>Disjunction</h2><p>The inductive definition.</p>
-<pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> or (P Q : <span class="hljs-keyword">Prop</span>) : <span class="hljs-keyword">Prop</span> :=
-| <span class="hljs-type">or_introl</span> : P -&gt; or P Q
-| <span class="hljs-type">or_intror</span> : Q -&gt; or P Q.</code></pre>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> or (P Q : <span class="hljs-keyword">Prop</span>) : <span class="hljs-keyword">Prop</span> :=<br>| <span class="hljs-type">or_introl</span> : P -&gt; or P Q<br>| <span class="hljs-type">or_intror</span> : Q -&gt; or P Q.<br></code></pre></td></tr></table></figure>
 <h2 id="Existential-Quantification"><a href="#Existential-Quantification" class="headerlink" title="Existential Quantification"></a>Existential Quantification</h2><p>Construct the witness of such a Prop</p>
-<pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> ex &#123;A : <span class="hljs-keyword">Type</span>&#125; (P : A -&gt; <span class="hljs-keyword">Prop</span>) : <span class="hljs-keyword">Prop</span> :=
-| <span class="hljs-type">ex_intro</span> : <span class="hljs-keyword">forall</span> x : A, P x -&gt; ex P.</code></pre>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> ex &#123;A : <span class="hljs-keyword">Type</span>&#125; (P : A -&gt; <span class="hljs-keyword">Prop</span>) : <span class="hljs-keyword">Prop</span> :=<br>| <span class="hljs-type">ex_intro</span> : <span class="hljs-keyword">forall</span> x : A, P x -&gt; ex P.<br></code></pre></td></tr></table></figure>
 <h2 id="True-and-False"><a href="#True-and-False" class="headerlink" title="[True] and [False]"></a>[True] and [False]</h2><p>Both simple</p>
-<pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> True : <span class="hljs-keyword">Prop</span> :=
-  | <span class="hljs-type">I</span> : True.
-
-<span class="hljs-comment">(** [False] is equally simple -- indeed, so simple it may look</span>
-<span class="hljs-comment">    syntactically wrong at first glance! *)</span>
-
-<span class="hljs-keyword">Inductive</span> False : <span class="hljs-keyword">Prop</span> := .</code></pre>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> True : <span class="hljs-keyword">Prop</span> :=<br>  | <span class="hljs-type">I</span> : True.<br><br><span class="hljs-comment">(** [False] is equally simple -- indeed, so simple it may look</span><br><span class="hljs-comment">    syntactically wrong at first glance! *)</span><br><br><span class="hljs-keyword">Inductive</span> False : <span class="hljs-keyword">Prop</span> := .<br></code></pre></td></tr></table></figure>
 <p>[False] is an inductive type with <strong>no</strong> constructors. NO WAY TO BUILD AN EVIDENCE OR MAKE A DEFINITION!!</p>
 <h2 id="Equality"><a href="#Equality" class="headerlink" title="Equality"></a>Equality</h2><p>Inductive definition</p>
 <p>The Inductive definition is <strong>equivalent</strong> to Leibniz equality.</p>
 <p>From inductive definition, the only way to construct a equal pair is applying the constructor [eq_refl] to a type [X] and value [x : X].</p>
-<pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> eq &#123;X:<span class="hljs-keyword">Type</span>&#125; : X -&gt; X -&gt; <span class="hljs-keyword">Prop</span> :=
-| <span class="hljs-type">eq_refl</span> : <span class="hljs-keyword">forall</span> x, eq x x.</code></pre>
-<pre><code class="hljs Coq"><span class="hljs-comment">(** **** Exercise: 2 stars, standard (equality__leibniz_equality) </span>
-<span class="hljs-comment"></span>
-<span class="hljs-comment">    The inductive definition of equality implies _Leibniz equality_:</span>
-<span class="hljs-comment">    what we mean when we say &quot;[x] and [y] are equal&quot; is that every</span>
-<span class="hljs-comment">    property on [P] that is true of [x] is also true of [y].  *)</span>
-
-<span class="hljs-keyword">Lemma</span> equality__leibniz_equality : <span class="hljs-keyword">forall</span> (X : <span class="hljs-keyword">Type</span>) (x y: X),
-  x == y -&gt; <span class="hljs-keyword">forall</span> P:X-&gt;<span class="hljs-keyword">Prop</span>, P x -&gt; P y.
-<span class="hljs-keyword">Proof</span>.
-  <span class="hljs-built_in">intros</span> X x y H.
-  <span class="hljs-built_in">induction</span> H.
-  <span class="hljs-built_in">intros</span> P HP.
-  <span class="hljs-built_in">apply</span> HP.
-  <span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.
-<span class="hljs-keyword">Qed</span>.
-<span class="hljs-comment">(** [] *)</span>
-
-<span class="hljs-comment">(** **** Exercise: 3 stars, standard, optional (leibniz_equality__equality) </span>
-<span class="hljs-comment"></span>
-<span class="hljs-comment">    Show that, in fact, the inductive definition of equality is</span>
-<span class="hljs-comment">    _equivalent_ to Leibniz equality.  Hint: the proof is quite short;</span>
-<span class="hljs-comment">    about all you need to do is to invent a clever property [P] to</span>
-<span class="hljs-comment">    instantiate the antecedent.*)</span>
-
-<span class="hljs-keyword">Lemma</span> leibniz_equality__equality : <span class="hljs-keyword">forall</span> (X : <span class="hljs-keyword">Type</span>) (x y: X),
-  (<span class="hljs-keyword">forall</span> P:X-&gt;<span class="hljs-keyword">Prop</span>, P x -&gt; P y) -&gt; x == y.
-<span class="hljs-keyword">Proof</span>.
-  <span class="hljs-built_in">intros</span> X x y H.
-  <span class="hljs-keyword">Check</span> (eq x x).
-  <span class="hljs-keyword">Check</span> (eq x y).
-  <span class="hljs-keyword">Check</span> (H (eq x)).
-  <span class="hljs-built_in">apply</span> (H (eq x)).
-  <span class="hljs-built_in">apply</span> eq_refl.
-<span class="hljs-keyword">Qed</span>.</code></pre>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> eq &#123;X:<span class="hljs-keyword">Type</span>&#125; : X -&gt; X -&gt; <span class="hljs-keyword">Prop</span> :=<br>| <span class="hljs-type">eq_refl</span> : <span class="hljs-keyword">forall</span> x, eq x x.<br></code></pre></td></tr></table></figure>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs Coq"><span class="hljs-comment">(** **** Exercise: 2 stars, standard (equality__leibniz_equality) </span><br><span class="hljs-comment"></span><br><span class="hljs-comment">    The inductive definition of equality implies _Leibniz equality_:</span><br><span class="hljs-comment">    what we mean when we say &quot;[x] and [y] are equal&quot; is that every</span><br><span class="hljs-comment">    property on [P] that is true of [x] is also true of [y].  *)</span><br><br><span class="hljs-keyword">Lemma</span> equality__leibniz_equality : <span class="hljs-keyword">forall</span> (X : <span class="hljs-keyword">Type</span>) (x y: X),<br>  x == y -&gt; <span class="hljs-keyword">forall</span> P:X-&gt;<span class="hljs-keyword">Prop</span>, P x -&gt; P y.<br><span class="hljs-keyword">Proof</span>.<br>  <span class="hljs-built_in">intros</span> X x y H.<br>  <span class="hljs-built_in">induction</span> H.<br>  <span class="hljs-built_in">intros</span> P HP.<br>  <span class="hljs-built_in">apply</span> HP.<br>  <span class="hljs-keyword">Show</span> <span class="hljs-keyword">Proof</span>.<br><span class="hljs-keyword">Qed</span>.<br><span class="hljs-comment">(** [] *)</span><br><br><span class="hljs-comment">(** **** Exercise: 3 stars, standard, optional (leibniz_equality__equality) </span><br><span class="hljs-comment"></span><br><span class="hljs-comment">    Show that, in fact, the inductive definition of equality is</span><br><span class="hljs-comment">    _equivalent_ to Leibniz equality.  Hint: the proof is quite short;</span><br><span class="hljs-comment">    about all you need to do is to invent a clever property [P] to</span><br><span class="hljs-comment">    instantiate the antecedent.*)</span><br><br><span class="hljs-keyword">Lemma</span> leibniz_equality__equality : <span class="hljs-keyword">forall</span> (X : <span class="hljs-keyword">Type</span>) (x y: X),<br>  (<span class="hljs-keyword">forall</span> P:X-&gt;<span class="hljs-keyword">Prop</span>, P x -&gt; P y) -&gt; x == y.<br><span class="hljs-keyword">Proof</span>.<br>  <span class="hljs-built_in">intros</span> X x y H.<br>  <span class="hljs-keyword">Check</span> (eq x x).<br>  <span class="hljs-keyword">Check</span> (eq x y).<br>  <span class="hljs-keyword">Check</span> (H (eq x)).<br>  <span class="hljs-built_in">apply</span> (H (eq x)).<br>  <span class="hljs-built_in">apply</span> eq_refl.<br><span class="hljs-keyword">Qed</span>.<br></code></pre></td></tr></table></figure>
             </div>
             <hr>
             <div>
@@ -468,7 +362,7 @@ proofs ~ data values
                 <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
               
               
-                <div class="post-prevnext row">
+                <div class="post-prevnext">
                   <article class="post-prev col-6">
                     
                     
@@ -561,23 +455,20 @@ proofs ~ data values
 
 <!-- SCRIPTS -->
 
-  <script  src="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.css" />
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
 
   <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":200})
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
     NProgress.start()
-    document.addEventListener('DOMContentLoaded', function() {
-      window.NProgress && window.NProgress.inc();
-    })
     window.addEventListener('load', function() {
       NProgress.done();
     })
   </script>
 
 
-<script  src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js" ></script>
-<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/js/bootstrap.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
 <script  src="/js/debouncer.js" ></script>
 <script  src="/js/events.js" ></script>
 <script  src="/js/plugins.js" ></script>
@@ -595,25 +486,26 @@ proofs ~ data values
 
 
 
-  <script  src="https://cdn.staticfile.org/tocbot/4.12.0/tocbot.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
 
 
 
-  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
 
 
 
-  <script  src="https://cdn.staticfile.org/anchor-js/4.3.0/anchor.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
 
 
 
-  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
 
 
 
 
 
-  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
   <script>
     (function (window, document) {
       var typing = Fluid.plugins.typing;
@@ -677,7 +569,7 @@ proofs ~ data values
       };
     </script>
 
-    <script async src="https://cdn.staticfile.org/mathjax/3.1.2/es5/tex-svg.js" ></script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-svg.js" ></script>
 
   
 

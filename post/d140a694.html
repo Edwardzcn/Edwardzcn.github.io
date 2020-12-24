@@ -21,22 +21,22 @@
   <meta name="keywords" content="Edward&#39;s blog">
   <title>数字图像处理——高斯滤波器与零填充避免DFT固有周期性影响 - Edward&#39;s blog</title>
 
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/css/bootstrap.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
 
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
   <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
   
     
     
       
-      <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.1.2/styles/github-gist.min.css" />
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
     
   
 
   
-    <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
   
 
 
@@ -57,7 +57,7 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"copy_btn":true,"image_zoom":{"enable":true},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
@@ -206,7 +206,7 @@
   </div>
 </nav>
 
-    <div class="banner intro-2" id="background" parallax=true
+    <div class="banner" id="banner" parallax=true
          style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
@@ -271,11 +271,11 @@
     
       
 
-<div class="container-fluid">
-  <div class="row">
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
     <div class="d-none d-lg-block col-lg-2"></div>
-    <div class="col-lg-8 nopadding-md">
-      <div class="container nopadding-md" id="board-ctn">
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
@@ -285,32 +285,7 @@
               <p>2019.10.24 更新，与<a href="https://www.edwardzcn98yx.com/post/e371c683.html">数字图像处理——频率域平滑锐化图像常用滤波器</a>中滤波器公式保持一致，并更新填充函数的写法。</p>
 <h1 id="高斯滤波"><a href="#高斯滤波" class="headerlink" title="高斯滤波"></a>高斯滤波</h1><h2 id="高斯高通滤波-GaussianHPF"><a href="#高斯高通滤波-GaussianHPF" class="headerlink" title="高斯高通滤波 GaussianHPF"></a>高斯高通滤波 GaussianHPF</h2><p>频率域高斯高通滤波公式如下，注意公式$D$和$D_0$的区别</p>
 <script type="math/tex; mode=display">H(u,v) = 1-e^{\dfrac{-D^2(u,v)}{2D_0^2}}</script><h2 id="高斯低通滤波-GaussianLPF"><a href="#高斯低通滤波-GaussianLPF" class="headerlink" title="高斯低通滤波 GaussianLPF"></a>高斯低通滤波 GaussianLPF</h2><p>频率域高斯低通滤波公式如下</p>
-<script type="math/tex; mode=display">H(u,v) = e^{\dfrac{-D^2(u,v)}{2D_0^2}}</script><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getGaussianMask</span>(<span class="hljs-params">mask_shape,filter_d0,hl_type</span>):</span>
-    <span class="hljs-keyword">assert</span> hl_type <span class="hljs-keyword">in</span> (<span class="hljs-string">&quot;lpf&quot;</span>,<span class="hljs-string">&quot;hpf&quot;</span>)
-    rows,cols = mask_shape[<span class="hljs-number">0</span>],mask_shape[<span class="hljs-number">1</span>]
-    crow = rows/<span class="hljs-number">2</span>
-    ccol = cols/<span class="hljs-number">2</span>
-    mask = np.zeros((rows,cols))
-    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(rows):
-        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(cols):
-            dis = sqrt((i-crow)**<span class="hljs-number">2</span> + (j-ccol)**<span class="hljs-number">2</span>)
-            <span class="hljs-keyword">if</span> hl_type == <span class="hljs-string">&quot;hpf&quot;</span>:
-                mask[i,j] = <span class="hljs-number">1</span>-np.exp(-(dis**<span class="hljs-number">2</span>) / (<span class="hljs-number">2</span>*(filter_d0**<span class="hljs-number">2</span>)))
-            <span class="hljs-keyword">elif</span> hl_type == <span class="hljs-string">&quot;lpf&quot;</span>:
-                mask[i,j] = np.exp(-(dis**<span class="hljs-number">2</span>)/(<span class="hljs-number">2</span>*(filter_d0**<span class="hljs-number">2</span>)))
-    <span class="hljs-keyword">return</span> mask
-
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getGaussianFilterPassImg</span>(<span class="hljs-params">input_img : np.array, filter_type : <span class="hljs-built_in">str</span> , filter_d0  , size = <span class="hljs-literal">None</span></span>):</span>
-    <span class="hljs-keyword">assert</span> filter_type <span class="hljs-keyword">in</span> (<span class="hljs-string">&quot;lpf&quot;</span>,<span class="hljs-string">&quot;hpf&quot;</span>)
-    f_img = np.fft.fft2(input_img , s = size)
-    shift_img = np.fft.fftshift(f_img)
-    mask_shift_img = getGaussianMask(f_img.shape,filter_d0,filter_type)
-    new_shift_img = mask_shift_img*shift_img
-    new_manitude_img = <span class="hljs-number">20</span>*np.log(np.<span class="hljs-built_in">abs</span>(new_shift_img+eps))
-    new_f_img = np.fft.ifftshift(new_shift_img)
-    new_img = np.fft.ifft2(new_f_img)
-    new_img = np.<span class="hljs-built_in">abs</span>(new_img)
-    <span class="hljs-keyword">return</span> new_img,new_manitude_img,mask_shift_img</code></pre>
+<script type="math/tex; mode=display">H(u,v) = e^{\dfrac{-D^2(u,v)}{2D_0^2}}</script><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getGaussianMask</span>(<span class="hljs-params">mask_shape,filter_d0,hl_type</span>):</span><br>    <span class="hljs-keyword">assert</span> hl_type <span class="hljs-keyword">in</span> (<span class="hljs-string">&quot;lpf&quot;</span>,<span class="hljs-string">&quot;hpf&quot;</span>)<br>    rows,cols = mask_shape[<span class="hljs-number">0</span>],mask_shape[<span class="hljs-number">1</span>]<br>    crow = rows/<span class="hljs-number">2</span><br>    ccol = cols/<span class="hljs-number">2</span><br>    mask = np.zeros((rows,cols))<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(rows):<br>        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(cols):<br>            dis = sqrt((i-crow)**<span class="hljs-number">2</span> + (j-ccol)**<span class="hljs-number">2</span>)<br>            <span class="hljs-keyword">if</span> hl_type == <span class="hljs-string">&quot;hpf&quot;</span>:<br>                mask[i,j] = <span class="hljs-number">1</span>-np.exp(-(dis**<span class="hljs-number">2</span>) / (<span class="hljs-number">2</span>*(filter_d0**<span class="hljs-number">2</span>)))<br>            <span class="hljs-keyword">elif</span> hl_type == <span class="hljs-string">&quot;lpf&quot;</span>:<br>                mask[i,j] = np.exp(-(dis**<span class="hljs-number">2</span>)/(<span class="hljs-number">2</span>*(filter_d0**<span class="hljs-number">2</span>)))<br>    <span class="hljs-keyword">return</span> mask<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getGaussianFilterPassImg</span>(<span class="hljs-params">input_img : np.array, filter_type : <span class="hljs-built_in">str</span> , filter_d0  , size = <span class="hljs-literal">None</span></span>):</span><br>    <span class="hljs-keyword">assert</span> filter_type <span class="hljs-keyword">in</span> (<span class="hljs-string">&quot;lpf&quot;</span>,<span class="hljs-string">&quot;hpf&quot;</span>)<br>    f_img = np.fft.fft2(input_img , s = size)<br>    shift_img = np.fft.fftshift(f_img)<br>    mask_shift_img = getGaussianMask(f_img.shape,filter_d0,filter_type)<br>    new_shift_img = mask_shift_img*shift_img<br>    new_manitude_img = <span class="hljs-number">20</span>*np.log(np.<span class="hljs-built_in">abs</span>(new_shift_img+eps))<br>    new_f_img = np.fft.ifftshift(new_shift_img)<br>    new_img = np.fft.ifft2(new_f_img)<br>    new_img = np.<span class="hljs-built_in">abs</span>(new_img)<br>    <span class="hljs-keyword">return</span> new_img,new_manitude_img,mask_shift_img<br></code></pre></td></tr></table></figure>
 <h1 id="DFT-固有周期影响"><a href="#DFT-固有周期影响" class="headerlink" title="DFT 固有周期影响"></a>DFT 固有周期影响</h1><p>实现方法，由于 numpy.fft.fft2 方法参数中可以指定输出图像的大小，官方描述如下：</p>
 <blockquote>
 <p>s : sequence of ints, optional</p>
@@ -319,9 +294,9 @@
 <p>该参数默认为 DFT 变换后大小为原图大小，若指定输出大小大于原图大小，则进行 0 填充，我们可以利用该参数实现我们的测试。</p>
 <h2 id="不经填充裁剪"><a href="#不经填充裁剪" class="headerlink" title="不经填充裁剪"></a>不经填充裁剪</h2><p>直接以 s 的默认值（None）调用 numpy.fft.fft2 实际上就是进行的非 0 填充</p>
 <p>调用我之前写的方法，实现如下</p>
-<pre><code class="hljs python">lpf_cycle_img, manitude_cycle_img,mask_img = getGaussianFilterPassImg(cycle_img , <span class="hljs-string">&quot;lpf&quot;</span> , <span class="hljs-number">5</span> )</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">lpf_cycle_img, manitude_cycle_img,mask_img = getGaussianFilterPassImg(cycle_img , <span class="hljs-string">&quot;lpf&quot;</span> , <span class="hljs-number">5</span> )<br></code></pre></td></tr></table></figure>
 <p>或者如下</p>
-<pre><code class="hljs python">lpf_cycle_img, manitude_cycle_img,mask_img = getGaussianFilterPassImg(cycle_img , <span class="hljs-string">&quot;lpf&quot;</span> , <span class="hljs-number">5</span> ,size = <span class="hljs-literal">None</span>)</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">lpf_cycle_img, manitude_cycle_img,mask_img = getGaussianFilterPassImg(cycle_img , <span class="hljs-string">&quot;lpf&quot;</span> , <span class="hljs-number">5</span> ,size = <span class="hljs-literal">None</span>)<br></code></pre></td></tr></table></figure>
 <h2 id="进行填充裁剪"><a href="#进行填充裁剪" class="headerlink" title="进行填充裁剪"></a>进行填充裁剪</h2><p>根据教材 P157 解释以及 P159、P163 页，二维零填充避免缠绕错误的结论与一维相同，令$f(x)$和$h(x)$分别是大小为$A \times B$和$C \times D$像素的图像阵列。循环卷积中的缠绕错误可以通过下面函数进行零填充来避免，方法如下：</p>
 <script type="math/tex; mode=display">
 f_p(x,y)=\left \{
@@ -345,101 +320,16 @@ h(x,y) & , & 0 \le x \le C-1 和 0 \le y\le D-1 \\
 </ol>
 <a id="more"></a>
 <p>填充的代码实现：</p>
-<pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getPaddingSize</span>(<span class="hljs-params">shape1,shape2</span>):</span>
-    <span class="hljs-keyword">return</span> shape1[<span class="hljs-number">0</span>]+shape2[<span class="hljs-number">0</span>]<span class="hljs-number">-1</span>,shape1[<span class="hljs-number">1</span>]+shape2[<span class="hljs-number">1</span>]<span class="hljs-number">-1</span>
-
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getPaddingImg</span>(<span class="hljs-params">fimg,himg_shape, position = <span class="hljs-string">&quot;corner&quot;</span></span>):</span>
-    fimg = np.array(fimg)
-    himg = np.array(himg_shape)
-    <span class="hljs-keyword">assert</span> position <span class="hljs-keyword">in</span> (<span class="hljs-string">&quot;corner&quot;</span>,<span class="hljs-string">&quot;middle&quot;</span>)
-    fimg = np.array(fimg)
-    rows,cols = fimg.shape
-    prows,pcols = getPaddingSize(fimg.shape,himg_shape)
-    <span class="hljs-keyword">if</span> position == <span class="hljs-string">&quot;corner&quot;</span>:
-        new_img = np.pad(fimg,((<span class="hljs-number">0</span>,prows-rows),(<span class="hljs-number">0</span>,pcols-cols)),<span class="hljs-string">&#x27;constant&#x27;</span>, constant_values = <span class="hljs-number">0</span>)
-    <span class="hljs-keyword">else</span>:
-        cal = <span class="hljs-keyword">lambda</span> x,y: ((x-y)//<span class="hljs-number">2</span> , x-y-(x-y)//<span class="hljs-number">2</span>)
-        new_img = np.pad(fimg,(cal(prows,rows),cal(pcols,cols)),<span class="hljs-string">&#x27;constant&#x27;</span>, constant_values = <span class="hljs-number">0</span>)
-    <span class="hljs-keyword">return</span> new_img
-
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cutOriginalImg</span>(<span class="hljs-params">pad_img,originalsize,position = <span class="hljs-string">&quot;corner&quot;</span></span>):</span>
-    <span class="hljs-keyword">assert</span> position <span class="hljs-keyword">in</span> (<span class="hljs-string">&quot;corner&quot;</span>,<span class="hljs-string">&quot;middle&quot;</span>)
-    <span class="hljs-keyword">if</span>(position == <span class="hljs-string">&quot;corner&quot;</span>):
-        <span class="hljs-keyword">return</span> pad_img[<span class="hljs-number">0</span>:originalsize[<span class="hljs-number">0</span>],<span class="hljs-number">0</span>:originalsize[<span class="hljs-number">1</span>]]
-    <span class="hljs-keyword">else</span>:
-        padsizer = pad_img.shape[<span class="hljs-number">0</span>]-originalsize[<span class="hljs-number">0</span>]
-        padsizec = pad_img.shape[<span class="hljs-number">1</span>]-originalsize[<span class="hljs-number">1</span>]
-        <span class="hljs-keyword">return</span> pad_img[padsizer//<span class="hljs-number">2</span>:padsizer//<span class="hljs-number">2</span>+originalsize[<span class="hljs-number">0</span>],padsizec//<span class="hljs-number">2</span>:padsizec//<span class="hljs-number">2</span>+originalsize[<span class="hljs-number">1</span>]]</code></pre>
-<pre><code class="hljs python">cycle_img = cv2.imread(<span class="hljs-string">&#x27;./DIP3E_Original_Images_CH04/Fig0432(a)(square_original).tif&#x27;</span>,<span class="hljs-number">0</span>)
-cycle_img_corner = getPaddingImg(cycle_img,(<span class="hljs-number">1000</span>,<span class="hljs-number">1000</span>),position = <span class="hljs-string">&quot;corner&quot;</span>)
-cycle_img_middle = getPaddingImg(cycle_img,(<span class="hljs-number">1000</span>,<span class="hljs-number">1000</span>),position = <span class="hljs-string">&quot;middle&quot;</span>)
-plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">8</span>))
-ax1 = plt.subplot(<span class="hljs-number">131</span>)
-ax1.imshow(cycle_img, cmap = <span class="hljs-string">&quot;gray&quot;</span>)
-ax1.set_title(<span class="hljs-string">&quot;Original Test Img&quot;</span>)
-ax2 = plt.subplot(<span class="hljs-number">132</span>)
-ax2.imshow(cycle_img_corner, cmap = <span class="hljs-string">&quot;gray&quot;</span>)
-ax2.set_title(<span class="hljs-string">&quot;After Padding Img (Corner)&quot;</span>)
-ax3 = plt.subplot(<span class="hljs-number">133</span>)
-ax3.imshow(cycle_img_middle, cmap = <span class="hljs-string">&quot;gray&quot;</span> )
-ax3.set_title(<span class="hljs-string">&quot;After Padding Img (Middle)&quot;</span>)
-plt.show()</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getPaddingSize</span>(<span class="hljs-params">shape1,shape2</span>):</span><br>    <span class="hljs-keyword">return</span> shape1[<span class="hljs-number">0</span>]+shape2[<span class="hljs-number">0</span>]<span class="hljs-number">-1</span>,shape1[<span class="hljs-number">1</span>]+shape2[<span class="hljs-number">1</span>]<span class="hljs-number">-1</span><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getPaddingImg</span>(<span class="hljs-params">fimg,himg_shape, position = <span class="hljs-string">&quot;corner&quot;</span></span>):</span><br>    fimg = np.array(fimg)<br>    himg = np.array(himg_shape)<br>    <span class="hljs-keyword">assert</span> position <span class="hljs-keyword">in</span> (<span class="hljs-string">&quot;corner&quot;</span>,<span class="hljs-string">&quot;middle&quot;</span>)<br>    fimg = np.array(fimg)<br>    rows,cols = fimg.shape<br>    prows,pcols = getPaddingSize(fimg.shape,himg_shape)<br>    <span class="hljs-keyword">if</span> position == <span class="hljs-string">&quot;corner&quot;</span>:<br>        new_img = np.pad(fimg,((<span class="hljs-number">0</span>,prows-rows),(<span class="hljs-number">0</span>,pcols-cols)),<span class="hljs-string">&#x27;constant&#x27;</span>, constant_values = <span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">else</span>:<br>        cal = <span class="hljs-keyword">lambda</span> x,y: ((x-y)//<span class="hljs-number">2</span> , x-y-(x-y)//<span class="hljs-number">2</span>)<br>        new_img = np.pad(fimg,(cal(prows,rows),cal(pcols,cols)),<span class="hljs-string">&#x27;constant&#x27;</span>, constant_values = <span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">return</span> new_img<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cutOriginalImg</span>(<span class="hljs-params">pad_img,originalsize,position = <span class="hljs-string">&quot;corner&quot;</span></span>):</span><br>    <span class="hljs-keyword">assert</span> position <span class="hljs-keyword">in</span> (<span class="hljs-string">&quot;corner&quot;</span>,<span class="hljs-string">&quot;middle&quot;</span>)<br>    <span class="hljs-keyword">if</span>(position == <span class="hljs-string">&quot;corner&quot;</span>):<br>        <span class="hljs-keyword">return</span> pad_img[<span class="hljs-number">0</span>:originalsize[<span class="hljs-number">0</span>],<span class="hljs-number">0</span>:originalsize[<span class="hljs-number">1</span>]]<br>    <span class="hljs-keyword">else</span>:<br>        padsizer = pad_img.shape[<span class="hljs-number">0</span>]-originalsize[<span class="hljs-number">0</span>]<br>        padsizec = pad_img.shape[<span class="hljs-number">1</span>]-originalsize[<span class="hljs-number">1</span>]<br>        <span class="hljs-keyword">return</span> pad_img[padsizer//<span class="hljs-number">2</span>:padsizer//<span class="hljs-number">2</span>+originalsize[<span class="hljs-number">0</span>],padsizec//<span class="hljs-number">2</span>:padsizec//<span class="hljs-number">2</span>+originalsize[<span class="hljs-number">1</span>]]<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python">cycle_img = cv2.imread(<span class="hljs-string">&#x27;./DIP3E_Original_Images_CH04/Fig0432(a)(square_original).tif&#x27;</span>,<span class="hljs-number">0</span>)<br>cycle_img_corner = getPaddingImg(cycle_img,(<span class="hljs-number">1000</span>,<span class="hljs-number">1000</span>),position = <span class="hljs-string">&quot;corner&quot;</span>)<br>cycle_img_middle = getPaddingImg(cycle_img,(<span class="hljs-number">1000</span>,<span class="hljs-number">1000</span>),position = <span class="hljs-string">&quot;middle&quot;</span>)<br>plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">8</span>))<br>ax1 = plt.subplot(<span class="hljs-number">131</span>)<br>ax1.imshow(cycle_img, cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>ax1.set_title(<span class="hljs-string">&quot;Original Test Img&quot;</span>)<br>ax2 = plt.subplot(<span class="hljs-number">132</span>)<br>ax2.imshow(cycle_img_corner, cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>ax2.set_title(<span class="hljs-string">&quot;After Padding Img (Corner)&quot;</span>)<br>ax3 = plt.subplot(<span class="hljs-number">133</span>)<br>ax3.imshow(cycle_img_middle, cmap = <span class="hljs-string">&quot;gray&quot;</span> )<br>ax3.set_title(<span class="hljs-string">&quot;After Padding Img (Middle)&quot;</span>)<br>plt.show()<br></code></pre></td></tr></table></figure>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/GaussianFilterAndDFTCycle/1.png" srcset="/img/loading.gif" alt="png"></p>
-<pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">showThreeImg</span>(<span class="hljs-params">img1,img2,img3,img_name1 = <span class="hljs-literal">None</span>,img_name2 = <span class="hljs-literal">None</span>,img_name3 = <span class="hljs-literal">None</span></span>):</span>
-    plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">4</span>))
-    ax1 = plt.subplot(<span class="hljs-number">131</span>)
-    ax1.set_title(img_name1)
-    ax1.imshow(img1  , cmap = <span class="hljs-string">&quot;gray&quot;</span>)
-    ax2 = plt.subplot(<span class="hljs-number">132</span>)
-    ax2.imshow(img2, cmap = <span class="hljs-string">&quot;gray&quot;</span>)
-    ax2.set_title(img_name2)
-    ax3 = plt.subplot(<span class="hljs-number">133</span>)
-    ax3.imshow(img3,cmap = <span class="hljs-string">&quot;gray&quot;</span>)
-    ax3.set_title(img_name3)
-    plt.show()
-
-
-mfilter_size = <span class="hljs-number">8</span>
-<span class="hljs-comment"># 先构建mask</span>
-
-<span class="hljs-comment"># 尝试方法零（不填充）</span>
-<span class="hljs-comment"># 通过自编写方法补零后再进行DFT加高斯低通滤波</span>
-lpf_cycle_img_nopadding, manitude_cycle_img,mask_img = getGaussianFilterPassImg(cycle_img , <span class="hljs-string">&quot;lpf&quot;</span> , mfilter_size)
-showThreeImg(lpf_cycle_img_nopadding,manitude_cycle_img,mask_img,<span class="hljs-string">&quot;Original Img Without Padding&quot;</span>,<span class="hljs-string">&quot;Manitude&quot;</span>,<span class="hljs-string">&quot;Mask&quot;</span>)
-<span class="hljs-comment"># 尝试方法1 （预填充）</span>
-<span class="hljs-comment">## Corner</span>
-pad_cycle_img_corner = getPaddingImg(cycle_img,(mfilter_size,mfilter_size),<span class="hljs-string">&quot;corner&quot;</span>)
-lpf_cycle_img_padcorner_m1, manitude_cycle_img,mask_img = getGaussianFilterPassImg(pad_cycle_img_corner , <span class="hljs-string">&quot;lpf&quot;</span> , mfilter_size)
-cut_lpf_cycle_img_padcorner_m1 = cutOriginalImg(lpf_cycle_img_padcorner_m1,cycle_img.shape,<span class="hljs-string">&quot;corner&quot;</span>)
-showThreeImg(cut_lpf_cycle_img_padcorner_m1,manitude_cycle_img,mask_img,<span class="hljs-string">&quot;Corner Padding Method 1 (After Cut)&quot;</span>,<span class="hljs-string">&quot;Manitude (No Cut)&quot;</span>,<span class="hljs-string">&quot;Mask (No Cut)&quot;</span>)
-
-<span class="hljs-comment">## Middle</span>
-pad_cycle_img_middle = getPaddingImg(cycle_img,(mfilter_size,mfilter_size),<span class="hljs-string">&quot;middle&quot;</span>)
-lpf_cycle_img_padmiddle_m1, manitude_cycle_img,mask_img = getGaussianFilterPassImg(pad_cycle_img_middle , <span class="hljs-string">&quot;lpf&quot;</span> , mfilter_size)
-cut_lpf_cycle_img_padmiddle_m1 = cutOriginalImg(lpf_cycle_img_padmiddle_m1,cycle_img.shape,<span class="hljs-string">&quot;middle&quot;</span>)
-showThreeImg(cut_lpf_cycle_img_padmiddle_m1,manitude_cycle_img,mask_img,<span class="hljs-string">&quot;Middle Padding Method 1 (After Cut)&quot;</span>,<span class="hljs-string">&quot;Manitude (No Cut)&quot;</span>,<span class="hljs-string">&quot;Mask (No Cut)&quot;</span>)
-
-<span class="hljs-comment"># 尝试方法2 （限定s自动零填充）</span>
-<span class="hljs-comment">## 实现了相同的效果</span>
-lpf_cycle_img_padcorner_m2, manitude_cycle_img,mask_img = getGaussianFilterPassImg(cycle_img , <span class="hljs-string">&quot;lpf&quot;</span> , mfilter_size , size = getPaddingSize(cycle_img.shape,np.array([mfilter_size,mfilter_size])))
-cut_lpf_cycle_img_padcorner_m2 = cutOriginalImg(lpf_cycle_img_padcorner_m2,cycle_img.shape,<span class="hljs-string">&quot;corner&quot;</span>)
-showThreeImg(cut_lpf_cycle_img_padcorner_m2,manitude_cycle_img,mask_img,<span class="hljs-string">&quot;Corner Padding Method 2 (After Cut)&quot;</span>,<span class="hljs-string">&quot;Manitude (No Cut)&quot;</span>,<span class="hljs-string">&quot;Mask (No Cut)&quot;</span>)
-</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">showThreeImg</span>(<span class="hljs-params">img1,img2,img3,img_name1 = <span class="hljs-literal">None</span>,img_name2 = <span class="hljs-literal">None</span>,img_name3 = <span class="hljs-literal">None</span></span>):</span><br>    plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">4</span>))<br>    ax1 = plt.subplot(<span class="hljs-number">131</span>)<br>    ax1.set_title(img_name1)<br>    ax1.imshow(img1  , cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>    ax2 = plt.subplot(<span class="hljs-number">132</span>)<br>    ax2.imshow(img2, cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>    ax2.set_title(img_name2)<br>    ax3 = plt.subplot(<span class="hljs-number">133</span>)<br>    ax3.imshow(img3,cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>    ax3.set_title(img_name3)<br>    plt.show()<br><br><br>mfilter_size = <span class="hljs-number">8</span><br><span class="hljs-comment"># 先构建mask</span><br><br><span class="hljs-comment"># 尝试方法零（不填充）</span><br><span class="hljs-comment"># 通过自编写方法补零后再进行DFT加高斯低通滤波</span><br>lpf_cycle_img_nopadding, manitude_cycle_img,mask_img = getGaussianFilterPassImg(cycle_img , <span class="hljs-string">&quot;lpf&quot;</span> , mfilter_size)<br>showThreeImg(lpf_cycle_img_nopadding,manitude_cycle_img,mask_img,<span class="hljs-string">&quot;Original Img Without Padding&quot;</span>,<span class="hljs-string">&quot;Manitude&quot;</span>,<span class="hljs-string">&quot;Mask&quot;</span>)<br><span class="hljs-comment"># 尝试方法1 （预填充）</span><br><span class="hljs-comment">## Corner</span><br>pad_cycle_img_corner = getPaddingImg(cycle_img,(mfilter_size,mfilter_size),<span class="hljs-string">&quot;corner&quot;</span>)<br>lpf_cycle_img_padcorner_m1, manitude_cycle_img,mask_img = getGaussianFilterPassImg(pad_cycle_img_corner , <span class="hljs-string">&quot;lpf&quot;</span> , mfilter_size)<br>cut_lpf_cycle_img_padcorner_m1 = cutOriginalImg(lpf_cycle_img_padcorner_m1,cycle_img.shape,<span class="hljs-string">&quot;corner&quot;</span>)<br>showThreeImg(cut_lpf_cycle_img_padcorner_m1,manitude_cycle_img,mask_img,<span class="hljs-string">&quot;Corner Padding Method 1 (After Cut)&quot;</span>,<span class="hljs-string">&quot;Manitude (No Cut)&quot;</span>,<span class="hljs-string">&quot;Mask (No Cut)&quot;</span>)<br><br><span class="hljs-comment">## Middle</span><br>pad_cycle_img_middle = getPaddingImg(cycle_img,(mfilter_size,mfilter_size),<span class="hljs-string">&quot;middle&quot;</span>)<br>lpf_cycle_img_padmiddle_m1, manitude_cycle_img,mask_img = getGaussianFilterPassImg(pad_cycle_img_middle , <span class="hljs-string">&quot;lpf&quot;</span> , mfilter_size)<br>cut_lpf_cycle_img_padmiddle_m1 = cutOriginalImg(lpf_cycle_img_padmiddle_m1,cycle_img.shape,<span class="hljs-string">&quot;middle&quot;</span>)<br>showThreeImg(cut_lpf_cycle_img_padmiddle_m1,manitude_cycle_img,mask_img,<span class="hljs-string">&quot;Middle Padding Method 1 (After Cut)&quot;</span>,<span class="hljs-string">&quot;Manitude (No Cut)&quot;</span>,<span class="hljs-string">&quot;Mask (No Cut)&quot;</span>)<br><br><span class="hljs-comment"># 尝试方法2 （限定s自动零填充）</span><br><span class="hljs-comment">## 实现了相同的效果</span><br>lpf_cycle_img_padcorner_m2, manitude_cycle_img,mask_img = getGaussianFilterPassImg(cycle_img , <span class="hljs-string">&quot;lpf&quot;</span> , mfilter_size , size = getPaddingSize(cycle_img.shape,np.array([mfilter_size,mfilter_size])))<br>cut_lpf_cycle_img_padcorner_m2 = cutOriginalImg(lpf_cycle_img_padcorner_m2,cycle_img.shape,<span class="hljs-string">&quot;corner&quot;</span>)<br>showThreeImg(cut_lpf_cycle_img_padcorner_m2,manitude_cycle_img,mask_img,<span class="hljs-string">&quot;Corner Padding Method 2 (After Cut)&quot;</span>,<span class="hljs-string">&quot;Manitude (No Cut)&quot;</span>,<span class="hljs-string">&quot;Mask (No Cut)&quot;</span>)<br><br></code></pre></td></tr></table></figure>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/GaussianFilterAndDFTCycle/2.png" srcset="/img/loading.gif" alt="png"></p>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/GaussianFilterAndDFTCycle/3.png" srcset="/img/loading.gif" alt="png"></p>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/GaussianFilterAndDFTCycle/4.png" srcset="/img/loading.gif" alt="png"></p>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/GaussianFilterAndDFTCycle/5.png" srcset="/img/loading.gif" alt="png"></p>
-<pre><code class="hljs python">print(lpf_cycle_img_padmiddle_m1.shape)
-print(cut_lpf_cycle_img_padmiddle_m1.shape)
-print(<span class="hljs-string">&quot;Really Cut&quot;</span>)
-
-print((cut_lpf_cycle_img_padcorner_m1==cut_lpf_cycle_img_padcorner_m2).<span class="hljs-built_in">all</span>())
-print(<span class="hljs-string">&quot;Method 2 has the same effect as Method 1 and generalize the same img.&quot;</span>)</code></pre>
-<pre><code class="hljs python">(<span class="hljs-number">775</span>, <span class="hljs-number">775</span>)
-(<span class="hljs-number">768</span>, <span class="hljs-number">768</span>)
-Really Cut
-<span class="hljs-literal">True</span>
-Method <span class="hljs-number">2</span> has the same effect <span class="hljs-keyword">as</span> Method <span class="hljs-number">1</span> <span class="hljs-keyword">and</span> generalize the same img.</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python">print(lpf_cycle_img_padmiddle_m1.shape)<br>print(cut_lpf_cycle_img_padmiddle_m1.shape)<br>print(<span class="hljs-string">&quot;Really Cut&quot;</span>)<br><br>print((cut_lpf_cycle_img_padcorner_m1==cut_lpf_cycle_img_padcorner_m2).<span class="hljs-built_in">all</span>())<br>print(<span class="hljs-string">&quot;Method 2 has the same effect as Method 1 and generalize the same img.&quot;</span>)<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python">(<span class="hljs-number">775</span>, <span class="hljs-number">775</span>)<br>(<span class="hljs-number">768</span>, <span class="hljs-number">768</span>)<br>Really Cut<br><span class="hljs-literal">True</span><br>Method <span class="hljs-number">2</span> has the same effect <span class="hljs-keyword">as</span> Method <span class="hljs-number">1</span> <span class="hljs-keyword">and</span> generalize the same img.<br></code></pre></td></tr></table></figure>
 <p>上述实验证明了 DFT 固有周期带来的一些影响，未进行零填充的 Original Img 由于固有周期亮色部分左右仍旧是亮色部分，所以使滤波器丧失了能力，在一些情况下我们希望避免这种固有周期带来的影响，因而才引入了零填充的方式。</p>
 <p>正如课本 P163 以及 P164 所讲：</p>
 <blockquote>
@@ -479,7 +369,7 @@ Method <span class="hljs-number">2</span> has the same effect <span class="hljs-
                 <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
               
               
-                <div class="post-prevnext row">
+                <div class="post-prevnext">
                   <article class="post-prev col-6">
                     
                     
@@ -572,23 +462,20 @@ Method <span class="hljs-number">2</span> has the same effect <span class="hljs-
 
 <!-- SCRIPTS -->
 
-  <script  src="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.css" />
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
 
   <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":200})
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
     NProgress.start()
-    document.addEventListener('DOMContentLoaded', function() {
-      window.NProgress && window.NProgress.inc();
-    })
     window.addEventListener('load', function() {
       NProgress.done();
     })
   </script>
 
 
-<script  src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js" ></script>
-<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/js/bootstrap.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
 <script  src="/js/debouncer.js" ></script>
 <script  src="/js/events.js" ></script>
 <script  src="/js/plugins.js" ></script>
@@ -606,25 +493,26 @@ Method <span class="hljs-number">2</span> has the same effect <span class="hljs-
 
 
 
-  <script  src="https://cdn.staticfile.org/tocbot/4.12.0/tocbot.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
 
 
 
-  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
 
 
 
-  <script  src="https://cdn.staticfile.org/anchor-js/4.3.0/anchor.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
 
 
 
-  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
 
 
 
 
 
-  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
   <script>
     (function (window, document) {
       var typing = Fluid.plugins.typing;
@@ -688,7 +576,7 @@ Method <span class="hljs-number">2</span> has the same effect <span class="hljs-
       };
     </script>
 
-    <script async src="https://cdn.staticfile.org/mathjax/3.1.2/es5/tex-svg.js" ></script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-svg.js" ></script>
 
   
 

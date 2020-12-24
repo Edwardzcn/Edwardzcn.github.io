@@ -21,22 +21,22 @@
   <meta name="keywords" content="Edward&#39;s blog">
   <title>Z3学习——Z3-guide - Edward&#39;s blog</title>
 
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/css/bootstrap.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
 
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
   <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
   
     
     
       
-      <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.1.2/styles/github-gist.min.css" />
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
     
   
 
   
-    <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
   
 
 
@@ -57,7 +57,7 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"copy_btn":true,"image_zoom":{"enable":true},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
@@ -206,7 +206,7 @@
   </div>
 </nav>
 
-    <div class="banner intro-2" id="background" parallax=true
+    <div class="banner" id="banner" parallax=true
          style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
@@ -271,11 +271,11 @@
     
       
 
-<div class="container-fluid">
-  <div class="row">
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
     <div class="d-none d-lg-block col-lg-2"></div>
-    <div class="col-lg-8 nopadding-md">
-      <div class="container nopadding-md" id="board-ctn">
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
@@ -303,52 +303,16 @@
 <li><code>(get-proof)</code>: retrieve proof</li>
 </ul>
 <p>E.g.</p>
-<pre><code class="hljs Z3">(declare-const a Int)
-(declare-fun f (Int Bool) Int)
-(assert (&gt; a 10))
-(assert (&lt; (f a true) 100))
-(check-sat)
-(get-model)</code></pre>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs Z3">(declare-const a Int)<br>(declare-fun f (Int Bool) Int)<br>(assert (&gt; a 10))<br>(assert (&lt; (f a true) 100))<br>(check-sat)<br>(get-model)<br></code></pre></td></tr></table></figure>
 <p>Output.</p>
-<pre><code class="hljs txt">sat
-(model
-  (define-fun a () Int
-    11)
-  (define-fun f ((x!1 Int) (x!2 Bool)) Int
-    (ite (and (= x!1 11) (= x!2 true)) 0
-      0))
-)</code></pre>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs txt">sat<br>(model<br>  (define-fun a () Int<br>    11)<br>  (define-fun f ((x!1 Int) (x!2 Bool)) Int<br>    (ite (and (= x!1 11) (= x!2 true)) 0<br>      0))<br>)<br></code></pre></td></tr></table></figure>
 <h3 id="Using-Scopes"><a href="#Using-Scopes" class="headerlink" title="Using Scopes"></a>Using Scopes</h3><p><code>push</code> and <code>pop</code> commands are used for the purpose to share several definitions and assertions. The push and pop commands can optionally receive a numeral argument as specifed by the SMT 2 language.</p>
 <ul>
 <li><code>(push &lt;number&gt;?)</code>: push 1 (or <number>) scopes.</li>
 <li><code>(pop &lt;number&gt;?)</code>: pop 1 (or <number>) scopes.</li>
 </ul>
 <p>E.g. (TODO: need to test it).</p>
-<pre><code class="hljs Z3">(declare-const x Int)
-(declare-const y Int)
-(push) ; push the declarations of x and y
-(declare-const z Int)
-(push) ; push z
-(assert (&#x3D; (+ x y) 10))
-(assert (&#x3D; (+ x (* 2 y)) 20))
-(check-sat)
-(get-model) ; get the interpretation
-(pop) ; remove the two assertions
-(pop) ; pop the declaration of z
-(push) ; push the declarations of x and y
-(assert (&#x3D; (+ (* 3 x) y) 10))
-(assert (&#x3D; (+ (* 2 x) (* 2 y)) 21))
-(check-sat) ; not sat
-(pop)
-(push)
-(assert (&#x3D; (+ (* 3 x) y) 10))
-(assert (&#x3D; (+ (* 2 x) (* 2 y)) 4))
-(check-sat) ; sat
-(get-model) ; get the interpretation
-
-(declare-const p Bool)
-(pop)
-(assert p) ; error, since declaration of p was removed from the stack</code></pre>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs Z3">(declare-const x Int)<br>(declare-const y Int)<br>(push) ; push the declarations of x and y<br>(declare-const z Int)<br>(push) ; push z<br>(assert (&#x3D; (+ x y) 10))<br>(assert (&#x3D; (+ x (* 2 y)) 20))<br>(check-sat)<br>(get-model) ; get the interpretation<br>(pop) ; remove the two assertions<br>(pop) ; pop the declaration of z<br>(push) ; push the declarations of x and y<br>(assert (&#x3D; (+ (* 3 x) y) 10))<br>(assert (&#x3D; (+ (* 2 x) (* 2 y)) 21))<br>(check-sat) ; not sat<br>(pop)<br>(push)<br>(assert (&#x3D; (+ (* 3 x) y) 10))<br>(assert (&#x3D; (+ (* 2 x) (* 2 y)) 4))<br>(check-sat) ; sat<br>(get-model) ; get the interpretation<br><br>(declare-const p Bool)<br>(pop)<br>(assert p) ; error, since declaration of p was removed from the stack<br></code></pre></td></tr></table></figure>
 <h3 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h3><p>The command set-option is used to configure Z3.</p>
 <p>But I haven’t found the related OCaml API to these configurations. (TODO)</p>
 <h3 id="Additional-commands"><a href="#Additional-commands" class="headerlink" title="Additional commands"></a>Additional commands</h3><ul>
@@ -356,9 +320,7 @@
 <li><code>(simplify &lt;term&gt; (&lt;keyword&gt; &lt;value&gt;)*)</code>: simplify the expr</li>
 </ul>
 <p>From the [z3.mli] we can find the definition of <code>simplify</code> in OCaml.</p>
-<pre><code class="hljs OCaml"><span class="hljs-comment">(** Returns a simplified version of the expression.</span>
-<span class="hljs-comment">      &#123;!get_simplify_help&#125; *)</span>
-  <span class="hljs-keyword">val</span> simplify : <span class="hljs-type">Expr</span>.expr -&gt; <span class="hljs-type">Params</span>.params option -&gt; expr</code></pre>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs OCaml"><span class="hljs-comment">(** Returns a simplified version of the expression.</span><br><span class="hljs-comment">      &#123;!get_simplify_help&#125; *)</span><br>  <span class="hljs-keyword">val</span> simplify : <span class="hljs-type">Expr</span>.expr -&gt; <span class="hljs-type">Params</span>.params option -&gt; expr<br></code></pre></td></tr></table></figure>
 <p>create a boolean sort</p>
 <ul>
 <li><code>(define-sort [symbol] ([symbol]+) [sort])</code>: define an abbreviation for a sort expression</li>
@@ -373,250 +335,58 @@
 <p>In Coq, we always <strong>intros</strong> to get certain Hypotheses though when we try to prove a proposition with implication , we assumes the Hypotheses are right. So we often want to prove a theorm which notes a proposition is validity.</p>
 <p>Back to Z3, consider a formula F with some uninterpreted constants, say a and b. We can ask whether F is valid, that is whether it is always true for any combination of values for a and b. If F is always true, then not F is always false, and then not F will not have any satisfying assignment; that is, not F is unsatisfiable. That is, F is valid precisely when not F is not satisfiable (is unsatisfiable). Alternately, F is satisfiable if and only if not F is not valid (is invalid). Z3 finds satisfying assignments (or report that there are none).</p>
 <p>E.g. check the deMorgan’s law is valid.</p>
-<pre><code class="hljs Z3">(declare-const a Bool)
-(declare-const b Bool)
-(define-fun demorgan () Bool
-    (&#x3D; (and a b) (not (or (not a) (not b)))))
-(assert (not demorgan))
-(check-sat)</code></pre>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs Z3">(declare-const a Bool)<br>(declare-const b Bool)<br>(define-fun demorgan () Bool<br>    (&#x3D; (and a b) (not (or (not a) (not b)))))<br>(assert (not demorgan))<br>(check-sat)<br></code></pre></td></tr></table></figure>
 <p>E.g. check the excluded middle law</p>
-<pre><code class="hljs Z3">(declare-const a Bool)
-(define-fun exmi () Bool
-    (or a (not a)
-(assert (not exmi))
-(check-sat)</code></pre>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs Z3">(declare-const a Bool)<br>(define-fun exmi () Bool<br>    (or a (not a)<br>(assert (not exmi))<br>(check-sat)<br></code></pre></td></tr></table></figure>
 <p>Verification with Python API (z3py)</p>
-<pre><code class="hljs python"><span class="hljs-keyword">from</span> z3 <span class="hljs-keyword">import</span> *
-
-<span class="hljs-comment"># create a fresh propositional variable uniquely identified by its name &#x27;p&#x27;</span>
-slvr = Solver()
-p = Bool(<span class="hljs-string">&#x27;p&#x27;</span>)
-
-<span class="hljs-comment"># excluded middle</span>
-solve(Not(Or(p, Not(p))))
-
-<span class="hljs-comment"># Pierce&#x27;s law</span>
-q = Bool(<span class="hljs-string">&#x27;q&#x27;</span>)
-solve(Not(Implies(Implies(Implies(p, q), p), p)))
-
-<span class="hljs-comment"># De Mogan&#x27;s law</span>
-a = Bool(<span class="hljs-string">&#x27;a&#x27;</span>)
-b = Bool(<span class="hljs-string">&#x27;b&#x27;</span>)
-and_a_b = And(a,b)
-not_or = Not( Or (Not(a),Not(b)))
-solve(eq(and_a_b,not_or))</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> z3 <span class="hljs-keyword">import</span> *<br><br><span class="hljs-comment"># create a fresh propositional variable uniquely identified by its name &#x27;p&#x27;</span><br>slvr = Solver()<br>p = Bool(<span class="hljs-string">&#x27;p&#x27;</span>)<br><br><span class="hljs-comment"># excluded middle</span><br>solve(Not(Or(p, Not(p))))<br><br><span class="hljs-comment"># Pierce&#x27;s law</span><br>q = Bool(<span class="hljs-string">&#x27;q&#x27;</span>)<br>solve(Not(Implies(Implies(Implies(p, q), p), p)))<br><br><span class="hljs-comment"># De Mogan&#x27;s law</span><br>a = Bool(<span class="hljs-string">&#x27;a&#x27;</span>)<br>b = Bool(<span class="hljs-string">&#x27;b&#x27;</span>)<br>and_a_b = And(a,b)<br>not_or = Not( Or (Not(a),Not(b)))<br>solve(eq(and_a_b,not_or))<br></code></pre></td></tr></table></figure>
 <h2 id="Uninterpreted-functions-and-constants"><a href="#Uninterpreted-functions-and-constants" class="headerlink" title="Uninterpreted functions and constants"></a>Uninterpreted functions and constants</h2><p>Constants are just functions that take no arguments. <strong>So everything is really just a function</strong>.</p>
-<pre><code class="hljs Z3">(declare-fun f (Int) Int)
-(declare-fun a () Int) ; a is a constant
-(declare-const b Int) ; syntax sugar for (declare-fun b () Int)
-(assert (&gt; a 20))
-(assert (&gt; b a))
-(assert (&#x3D; (f 10) 1))
-(check-sat)
-(get-model)</code></pre>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs Z3">(declare-fun f (Int) Int)<br>(declare-fun a () Int) ; a is a constant<br>(declare-const b Int) ; syntax sugar for (declare-fun b () Int)<br>(assert (&gt; a 20))<br>(assert (&gt; b a))<br>(assert (&#x3D; (f 10) 1))<br>(check-sat)<br>(get-model)<br></code></pre></td></tr></table></figure>
 <p>in Python API</p>
-<pre><code class="hljs Python">slvr = Solver()
-A = DeclareSort(<span class="hljs-string">&#x27;A&#x27;</span>)
-x = Const(<span class="hljs-string">&#x27;x&#x27;</span>, A)
-y = Const(<span class="hljs-string">&#x27;y&#x27;</span>, A)
-f = Function(<span class="hljs-string">&#x27;f&#x27;</span>, A, A)  <span class="hljs-comment"># f : a -&gt; a</span>
-slvr.add(f(f(x)) == x)
-slvr.add(f(x) == y )
-slvr.add(Not( x == y))
-<span class="hljs-built_in">print</span> (slvr)
-<span class="hljs-built_in">print</span> (slvr.check())
-<span class="hljs-built_in">print</span> (slvr.model())</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs Python">slvr = Solver()<br>A = DeclareSort(<span class="hljs-string">&#x27;A&#x27;</span>)<br>x = Const(<span class="hljs-string">&#x27;x&#x27;</span>, A)<br>y = Const(<span class="hljs-string">&#x27;y&#x27;</span>, A)<br>f = Function(<span class="hljs-string">&#x27;f&#x27;</span>, A, A)  <span class="hljs-comment"># f : a -&gt; a</span><br>slvr.add(f(f(x)) == x)<br>slvr.add(f(x) == y )<br>slvr.add(Not( x == y))<br><span class="hljs-built_in">print</span> (slvr)<br><span class="hljs-built_in">print</span> (slvr.check())<br><span class="hljs-built_in">print</span> (slvr.model())<br></code></pre></td></tr></table></figure>
 <p>The notation of <code>A!val!0</code> means $A_{val_0}$</p>
 <h2 id="Arithmetic"><a href="#Arithmetic" class="headerlink" title="Arithmetic"></a>Arithmetic</h2><p>Builtin support for integer and real constants. These two types (sorts) represent the mathematical integers and reals.</p>
 <p>Not convert automatically integers into reals and vice-versa.</p>
 <h3 id="Nonlinear-arithmetic"><a href="#Nonlinear-arithmetic" class="headerlink" title="Nonlinear arithmetic"></a>Nonlinear arithmetic</h3><p><strong>Nonlinear arithmetic</strong> is <strong>undecidable</strong>. Note that, this does not prevent Z3 from returning an answer for many nonlinear problems. The real limit is that there will always be a nonlinear integer arithmetic formula that it will fail produce an answer.</p>
-<pre><code class="hljs Z3">(declare-const a Int)
-(assert (&gt; (* a a) 3))
-(check-sat)
-(get-model)
-
-(echo &quot;Z3 does not always find solutions to non-linear problems&quot;)
-(declare-const b Real)
-(declare-const c Real)
-(assert (&#x3D; (+ (* b b b) (* b c)) 3.0))
-(check-sat) ; return unknown for nonlinear real arithmetic
-
-(echo &quot;yet it can show unsatisfiabiltiy for some nontrivial nonlinear problems...&quot;)
-(declare-const x Real)
-(declare-const y Real)
-(declare-const z Real)
-(assert (&#x3D; (* x x) (+ x 2.0)))
-(assert (&#x3D; (* x y) x))
-(assert (&#x3D; (* (- y 1.0) z) 1.0))
-(check-sat)
-
-(reset)
-(echo &quot;When presented only non-linear constraints over reals, Z3 uses a specialized solver&quot;)
-(declare-const b Real)
-(declare-const c Real)
-(assert (&#x3D; (+ (* b b b) (* b c)) 3.0))
-(check-sat)
-(get-model)</code></pre>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs Z3">(declare-const a Int)<br>(assert (&gt; (* a a) 3))<br>(check-sat)<br>(get-model)<br><br>(echo &quot;Z3 does not always find solutions to non-linear problems&quot;)<br>(declare-const b Real)<br>(declare-const c Real)<br>(assert (&#x3D; (+ (* b b b) (* b c)) 3.0))<br>(check-sat) ; return unknown for nonlinear real arithmetic<br><br>(echo &quot;yet it can show unsatisfiabiltiy for some nontrivial nonlinear problems...&quot;)<br>(declare-const x Real)<br>(declare-const y Real)<br>(declare-const z Real)<br>(assert (&#x3D; (* x x) (+ x 2.0)))<br>(assert (&#x3D; (* x y) x))<br>(assert (&#x3D; (* (- y 1.0) z) 1.0))<br>(check-sat)<br><br>(reset)<br>(echo &quot;When presented only non-linear constraints over reals, Z3 uses a specialized solver&quot;)<br>(declare-const b Real)<br>(declare-const c Real)<br>(assert (&#x3D; (+ (* b b b) (* b c)) 3.0))<br>(check-sat)<br>(get-model)<br></code></pre></td></tr></table></figure>
 <h3 id="Division"><a href="#Division" class="headerlink" title="Division"></a>Division</h3><p>Support division</p>
-<p>E.g. in Python API<br><pre><code class="hljs Python">a = Int(<span class="hljs-string">&#x27;a&#x27;</span>)
-<span class="hljs-comment"># r1  = Int(&#x27;r1&#x27;)</span>
-<span class="hljs-comment"># r2 = Int(&#x27;r2&#x27;)</span>
-<span class="hljs-comment"># r3 = Int(&#x27;r3&#x27;)</span>
-<span class="hljs-comment"># r4 = Int(&#x27;r4&#x27;)</span>
-r = [Int(<span class="hljs-string">&#x27;r&#x27;</span> + <span class="hljs-built_in">str</span>(i)) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-number">10</span>)]
-slvr.add(a == <span class="hljs-number">10</span>, r[<span class="hljs-number">1</span>] == a/<span class="hljs-number">4</span>, r[<span class="hljs-number">2</span>] == a % <span class="hljs-number">4</span>)
-slvr.add(r[<span class="hljs-number">3</span>] == a % <span class="hljs-number">4</span>, r[<span class="hljs-number">4</span>] == a / <span class="hljs-number">-4</span>)
-slvr.add(r[<span class="hljs-number">5</span>] == a % <span class="hljs-number">-4</span>, r[<span class="hljs-number">6</span>] == a % <span class="hljs-number">-4</span>)
-<span class="hljs-built_in">print</span> (slvr.check())</code></pre></p>
+<p>E.g. in Python API<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs Python">a = Int(<span class="hljs-string">&#x27;a&#x27;</span>)<br><span class="hljs-comment"># r1  = Int(&#x27;r1&#x27;)</span><br><span class="hljs-comment"># r2 = Int(&#x27;r2&#x27;)</span><br><span class="hljs-comment"># r3 = Int(&#x27;r3&#x27;)</span><br><span class="hljs-comment"># r4 = Int(&#x27;r4&#x27;)</span><br>r = [Int(<span class="hljs-string">&#x27;r&#x27;</span> + <span class="hljs-built_in">str</span>(i)) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-number">10</span>)]<br>slvr.add(a == <span class="hljs-number">10</span>, r[<span class="hljs-number">1</span>] == a/<span class="hljs-number">4</span>, r[<span class="hljs-number">2</span>] == a % <span class="hljs-number">4</span>)<br>slvr.add(r[<span class="hljs-number">3</span>] == a % <span class="hljs-number">4</span>, r[<span class="hljs-number">4</span>] == a / <span class="hljs-number">-4</span>)<br>slvr.add(r[<span class="hljs-number">5</span>] == a % <span class="hljs-number">-4</span>, r[<span class="hljs-number">6</span>] == a % <span class="hljs-number">-4</span>)<br><span class="hljs-built_in">print</span> (slvr.check())<br></code></pre></td></tr></table></figure></p>
 <h2 id="Bitvectors"><a href="#Bitvectors" class="headerlink" title="Bitvectors"></a>Bitvectors</h2><ul>
 <li><code>(_ bv20 8)</code>: a bitvector of size 8 that representes the numeral 20. Desplay as <code>#x14</code></li>
 <li><code>(_ bv10 32)</code>: a bitvector of size 32 that representes the numeral 10. Desplay as <code>#x0000000a</code> (a single num in hexadecimal format represent size 4).</li>
 </ul>
 <p>By default, Z3 display bitvectors in hexadecimal format if the bitvector size is a multiple of 4, and in binary otherwise.</p>
 <p>In Python API the function <code>BitVecVal(10,32)</code> creates a bit-vector of size 32 containing the value 10.</p>
-<pre><code class="hljs Python">a = BitVecVal(<span class="hljs-number">-1</span>,<span class="hljs-number">16</span>)
-b = BitVecVal(<span class="hljs-number">65535</span>,<span class="hljs-number">16</span>)
-print(simplify(a==b))</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs Python">a = BitVecVal(<span class="hljs-number">-1</span>,<span class="hljs-number">16</span>)<br>b = BitVecVal(<span class="hljs-number">65535</span>,<span class="hljs-number">16</span>)<br>print(simplify(a==b))<br></code></pre></td></tr></table></figure>
 <p>We get the True.</p>
-<h3 id="Bitvector-Arithmetic-and-Bitwise-Operations"><a href="#Bitvector-Arithmetic-and-Bitwise-Operations" class="headerlink" title="Bitvector Arithmetic and Bitwise Operations"></a>Bitvector Arithmetic and Bitwise Operations</h3><pre><code class="hljs Z3">(simplify (bvadd #x07 #x03)) ; addition
-(simplify (bvsub #x07 #x03)) ; subtraction
-(simplify (bvneg #x07)) ; unary minus
-(simplify (bvmul #x07 #x03)) ; multiplication
-(simplify (bvurem #x07 #x03)) ; unsigned remainder
-(simplify (bvsrem #x07 #x03)) ; signed remainder
-(simplify (bvsmod #x07 #x03)) ; signed modulo
-(simplify (bvshl #x07 #x03)) ; shift left
-(simplify (bvlshr #xf0 #x03)) ; unsigned (logical) shift right
-(simplify (bvashr #xf0 #x03)) ; signed (arithmetical) shift right</code></pre>
+<h3 id="Bitvector-Arithmetic-and-Bitwise-Operations"><a href="#Bitvector-Arithmetic-and-Bitwise-Operations" class="headerlink" title="Bitvector Arithmetic and Bitwise Operations"></a>Bitvector Arithmetic and Bitwise Operations</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs Z3">(simplify (bvadd #x07 #x03)) ; addition<br>(simplify (bvsub #x07 #x03)) ; subtraction<br>(simplify (bvneg #x07)) ; unary minus<br>(simplify (bvmul #x07 #x03)) ; multiplication<br>(simplify (bvurem #x07 #x03)) ; unsigned remainder<br>(simplify (bvsrem #x07 #x03)) ; signed remainder<br>(simplify (bvsmod #x07 #x03)) ; signed modulo<br>(simplify (bvshl #x07 #x03)) ; shift left<br>(simplify (bvlshr #xf0 #x03)) ; unsigned (logical) shift right<br>(simplify (bvashr #xf0 #x03)) ; signed (arithmetical) shift right<br></code></pre></td></tr></table></figure>
 <p>and the print</p>
-<pre><code class="hljs txt">#x0a
-#x04
-#xf9 ; every bit 1-&gt;0 0-&gt;1 and bitadd 1
-#x15
-#x01
-#x01
-#x01
-#x38
-#x1e
-#xfe</code></pre>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs txt">#x0a<br>#x04<br>#xf9 ; every bit 1-&gt;0 0-&gt;1 and bitadd 1<br>#x15<br>#x01<br>#x01<br>#x01<br>#x38<br>#x1e<br>#xfe<br></code></pre></td></tr></table></figure>
 <p>Prove a bitwise version of deMorgan’s law in Python API.</p>
-<pre><code class="hljs Python"><span class="hljs-comment"># Prove a bitwise version of deMorgan&#x27;s law:</span>
-slvr.pop()
-slvr.push()
-x = BitVec(<span class="hljs-string">&#x27;x&#x27;</span>, <span class="hljs-number">64</span>)
-y = BitVec(<span class="hljs-string">&#x27;y&#x27;</span>, <span class="hljs-number">64</span>)
-slvr.add(Not(( (~x) &amp; (~y)) == ~(x | y)))
-print(slvr)
-print(slvr.check())
-<span class="hljs-comment"># we get an unsat</span>
-<span class="hljs-comment"># print(slvr.model())</span></code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs Python"><span class="hljs-comment"># Prove a bitwise version of deMorgan&#x27;s law:</span><br>slvr.pop()<br>slvr.push()<br>x = BitVec(<span class="hljs-string">&#x27;x&#x27;</span>, <span class="hljs-number">64</span>)<br>y = BitVec(<span class="hljs-string">&#x27;y&#x27;</span>, <span class="hljs-number">64</span>)<br>slvr.add(Not(( (~x) &amp; (~y)) == ~(x | y)))<br>print(slvr)<br>print(slvr.check())<br><span class="hljs-comment"># we get an unsat</span><br><span class="hljs-comment"># print(slvr.model())</span><br></code></pre></td></tr></table></figure>
 <h3 id="A-common-trick"><a href="#A-common-trick" class="headerlink" title="A common trick"></a>A common trick</h3><p>There is a fast way to check that fixed size numbers are powers of two.</p>
 <p>A bit-vector x is a power of two or zero if and only if x &amp; (x - 1) is zero.</p>
-<pre><code class="hljs Z3">(define-fun is-power-of-two ((x (_ BitVec 4))) Bool 
-  (&#x3D; #x0 (bvand x (bvsub x #x1))))
-(declare-const a (_ BitVec 4))
-(assert 
- (not (&#x3D; (is-power-of-two a) 
-         (or (&#x3D; a #x0) 
-             (&#x3D; a #x1) 
-             (&#x3D; a #x2) 
-             (&#x3D; a #x4) 
-             (&#x3D; a #x8)))))
-(check-sat)</code></pre>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs Z3">(define-fun is-power-of-two ((x (_ BitVec 4))) Bool <br>  (&#x3D; #x0 (bvand x (bvsub x #x1))))<br>(declare-const a (_ BitVec 4))<br>(assert <br> (not (&#x3D; (is-power-of-two a) <br>         (or (&#x3D; a #x0) <br>             (&#x3D; a #x1) <br>             (&#x3D; a #x2) <br>             (&#x3D; a #x4) <br>             (&#x3D; a #x8)))))<br>(check-sat)<br></code></pre></td></tr></table></figure>
 <p>with Python API</p>
-<pre><code class="hljs Python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">power_of_two</span>(<span class="hljs-params">x</span>):</span>
-    bv_and = x &amp; (x - bv_const_one)
-    <span class="hljs-keyword">return</span> bv_and == bv_const_zero
-
-
-<span class="hljs-comment"># Bit tricks</span>
-x = BitVec(<span class="hljs-string">&#x27;x&#x27;</span>, <span class="hljs-number">32</span>)
-powers = [<span class="hljs-number">2</span>**i <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">32</span>)]
-<span class="hljs-comment"># fast = And(x != 0, x &amp; (x - 1) == 0)</span>
-fast = And(x != bv_const_zero, power_of_two(x))
-<span class="hljs-comment"># fast = power_of_two(x)</span>
-slow = Or([x == p <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> powers])
-print(fast)
-prove(fast == slow)
-
-print(<span class="hljs-string">&quot;trying to prove buggy version...&quot;</span>)
-fast = x &amp; (x - <span class="hljs-number">1</span>) == <span class="hljs-number">0</span>
-print(fast)
-prove(fast == slow)</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs Python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">power_of_two</span>(<span class="hljs-params">x</span>):</span><br>    bv_and = x &amp; (x - bv_const_one)<br>    <span class="hljs-keyword">return</span> bv_and == bv_const_zero<br><br><br><span class="hljs-comment"># Bit tricks</span><br>x = BitVec(<span class="hljs-string">&#x27;x&#x27;</span>, <span class="hljs-number">32</span>)<br>powers = [<span class="hljs-number">2</span>**i <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">32</span>)]<br><span class="hljs-comment"># fast = And(x != 0, x &amp; (x - 1) == 0)</span><br>fast = And(x != bv_const_zero, power_of_two(x))<br><span class="hljs-comment"># fast = power_of_two(x)</span><br>slow = Or([x == p <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> powers])<br>print(fast)<br>prove(fast == slow)<br><br>print(<span class="hljs-string">&quot;trying to prove buggy version...&quot;</span>)<br>fast = x &amp; (x - <span class="hljs-number">1</span>) == <span class="hljs-number">0</span><br>print(fast)<br>prove(fast == slow)<br></code></pre></td></tr></table></figure>
 <h2 id="Arrays"><a href="#Arrays" class="headerlink" title="Arrays"></a>Arrays</h2><h3 id="Select-and-Store"><a href="#Select-and-Store" class="headerlink" title="Select and Store"></a>Select and Store</h3><p>exercise in Python API</p>
-<pre><code class="hljs Python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">util_print</span>(<span class="hljs-params">s: Solver</span>):</span>
-    r = s.check()
-    print(r)
-    <span class="hljs-keyword">if</span> r.__repr__() == <span class="hljs-string">&quot;sat&quot;</span>:
-        print(s.model())
-
-
-slvr.push()
-x = Int(<span class="hljs-string">&#x27;x&#x27;</span>)
-y = Int(<span class="hljs-string">&#x27;y&#x27;</span>)
-a1 = Array(<span class="hljs-string">&#x27;a1&#x27;</span>, IntSort(), IntSort())
-slvr.push()
-a2 = Array(<span class="hljs-string">&#x27;a2&#x27;</span>, IntSort(), IntSort())
-util_print(slvr)
-
-slvr.pop()
-slvr.add(Select(a1, x) == x)
-slvr.add(Store(a1, x, y) == a1)
-util_print(slvr)
-slvr.add(x != y)
-util_print(slvr)
-slvr.pop()</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs Python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">util_print</span>(<span class="hljs-params">s: Solver</span>):</span><br>    r = s.check()<br>    print(r)<br>    <span class="hljs-keyword">if</span> r.__repr__() == <span class="hljs-string">&quot;sat&quot;</span>:<br>        print(s.model())<br><br><br>slvr.push()<br>x = Int(<span class="hljs-string">&#x27;x&#x27;</span>)<br>y = Int(<span class="hljs-string">&#x27;y&#x27;</span>)<br>a1 = Array(<span class="hljs-string">&#x27;a1&#x27;</span>, IntSort(), IntSort())<br>slvr.push()<br>a2 = Array(<span class="hljs-string">&#x27;a2&#x27;</span>, IntSort(), IntSort())<br>util_print(slvr)<br><br>slvr.pop()<br>slvr.add(Select(a1, x) == x)<br>slvr.add(Store(a1, x, y) == a1)<br>util_print(slvr)<br>slvr.add(x != y)<br>util_print(slvr)<br>slvr.pop()<br></code></pre></td></tr></table></figure>
 <p>and the output</p>
-<pre><code class="hljs txt">sat
-[]
-sat
-[y = 1, a1 = Store(K(Int, 0), 1, 1), x = 1]
-unsat</code></pre>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs txt">sat<br>[]<br>sat<br>[y = 1, a1 = Store(K(Int, 0), 1, 1), x = 1]<br>unsat<br></code></pre></td></tr></table></figure>
 <p>We can get an array which maps all indices to fixed value using the <code>const</code> construct in Z3. E.g. <code>(as const (Array T1 T2))</code></p>
 <p>Map functions on arrays using <code>map</code> keyword.</p>
 <h2 id="Datatypes"><a href="#Datatypes" class="headerlink" title="Datatypes"></a>Datatypes</h2><h3 id="Records"><a href="#Records" class="headerlink" title="Records"></a>Records</h3><p>A record is specified as a datatype with a single constructor and as many arguments as record elements. </p>
-<pre><code class="hljs Z3">(declare-datatypes (T1 T2) ((Pair (mk-pair (first T1) (second T2)))))</code></pre>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Z3">(declare-datatypes (T1 T2) ((Pair (mk-pair (first T1) (second T2)))))<br></code></pre></td></tr></table></figure>
 <p>with Python API</p>
-<pre><code class="hljs Python">Pair = Datatype(<span class="hljs-string">&#x27;Pair&#x27;</span>)
-Pair.declare(<span class="hljs-string">&#x27;mk_pair&#x27;</span>, (<span class="hljs-string">&#x27;pair_first&#x27;</span>, IntSort()), (<span class="hljs-string">&#x27;pair_second&#x27;</span>, IntSort())) <span class="hljs-comment"># single constructor</span>
-Pair = Pair.create()
-mp = Pair.mk_pair
-fi = Pair.pair_first
-se = Pair.pair_second
-p1 = Const(<span class="hljs-string">&#x27;p1&#x27;</span>, Pair)
-p2 = Const(<span class="hljs-string">&#x27;p2&#x27;</span>, Pair)
-slvr.add(p1 == p2)
-slvr.add(se(p2) &gt; <span class="hljs-number">20</span>)
-util_print(slvr)
-slvr.add(fi(p1) != fi(p2))
-util_print(slvr)
-</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs Python">Pair = Datatype(<span class="hljs-string">&#x27;Pair&#x27;</span>)<br>Pair.declare(<span class="hljs-string">&#x27;mk_pair&#x27;</span>, (<span class="hljs-string">&#x27;pair_first&#x27;</span>, IntSort()), (<span class="hljs-string">&#x27;pair_second&#x27;</span>, IntSort())) <span class="hljs-comment"># single constructor</span><br>Pair = Pair.create()<br>mp = Pair.mk_pair<br>fi = Pair.pair_first<br>se = Pair.pair_second<br>p1 = Const(<span class="hljs-string">&#x27;p1&#x27;</span>, Pair)<br>p2 = Const(<span class="hljs-string">&#x27;p2&#x27;</span>, Pair)<br>slvr.add(p1 == p2)<br>slvr.add(se(p2) &gt; <span class="hljs-number">20</span>)<br>util_print(slvr)<br>slvr.add(fi(p1) != fi(p2))<br>util_print(slvr)<br><br></code></pre></td></tr></table></figure>
 <h3 id="Scalars"><a href="#Scalars" class="headerlink" title="Scalars"></a>Scalars</h3><p>A scalar sort is a finate domain sort.</p>
-<pre><code class="hljs Z3">(declare-datatypes () ((S A B C)))</code></pre>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Z3">(declare-datatypes () ((S A B C)))<br></code></pre></td></tr></table></figure>
 <p>The elements of the finite domain are enumerated as distinct constans.</p>
 <p>with Python API</p>
-<pre><code class="hljs Python">S = Datatype(<span class="hljs-string">&#x27;S&#x27;</span>)
-S.declare(<span class="hljs-string">&#x27;A&#x27;</span>)
-S.declare(<span class="hljs-string">&#x27;B&#x27;</span>)
-S.declare(<span class="hljs-string">&#x27;C&#x27;</span>)
-S = S.create()
-x = Const(<span class="hljs-string">&#x27;x&#x27;</span>, S)
-y = Const(<span class="hljs-string">&#x27;y&#x27;</span>, S)
-z = Const(<span class="hljs-string">&#x27;z&#x27;</span>, S)
-u = Const(<span class="hljs-string">&#x27;u&#x27;</span>, S)
-slvr.add(Distinct(x, y, z))
-util_print(slvr)
-slvr.add(Distinct(x, y, z, u))
-util_print(slvr)</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs Python">S = Datatype(<span class="hljs-string">&#x27;S&#x27;</span>)<br>S.declare(<span class="hljs-string">&#x27;A&#x27;</span>)<br>S.declare(<span class="hljs-string">&#x27;B&#x27;</span>)<br>S.declare(<span class="hljs-string">&#x27;C&#x27;</span>)<br>S = S.create()<br>x = Const(<span class="hljs-string">&#x27;x&#x27;</span>, S)<br>y = Const(<span class="hljs-string">&#x27;y&#x27;</span>, S)<br>z = Const(<span class="hljs-string">&#x27;z&#x27;</span>, S)<br>u = Const(<span class="hljs-string">&#x27;u&#x27;</span>, S)<br>slvr.add(Distinct(x, y, z))<br>util_print(slvr)<br>slvr.add(Distinct(x, y, z, u))<br>util_print(slvr)<br></code></pre></td></tr></table></figure>
 <h3 id="Recursive-datatypes"><a href="#Recursive-datatypes" class="headerlink" title="Recursive datatypes"></a>Recursive datatypes</h3><p>A recursive datatype declaration includes itself directly (or indirectly) as a component.</p>
 <p>like define lst with Python API</p>
-<pre><code class="hljs Python">slvr.pop()
-slvr.push()
-Lst = Datatype(<span class="hljs-string">&#x27;Lst&#x27;</span>)
-Lst.declare(<span class="hljs-string">&#x27;nil&#x27;</span>)
-Lst.declare(<span class="hljs-string">&#x27;cons&#x27;</span>, (<span class="hljs-string">&#x27;hd&#x27;</span>, IntSort()), (<span class="hljs-string">&#x27;tl&#x27;</span>, Lst))
-Lst = Lst.create()
-print(Lst.cons(<span class="hljs-number">10</span>, Lst.nil).sort())</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs Python">slvr.pop()<br>slvr.push()<br>Lst = Datatype(<span class="hljs-string">&#x27;Lst&#x27;</span>)<br>Lst.declare(<span class="hljs-string">&#x27;nil&#x27;</span>)<br>Lst.declare(<span class="hljs-string">&#x27;cons&#x27;</span>, (<span class="hljs-string">&#x27;hd&#x27;</span>, IntSort()), (<span class="hljs-string">&#x27;tl&#x27;</span>, Lst))<br>Lst = Lst.create()<br>print(Lst.cons(<span class="hljs-number">10</span>, Lst.nil).sort())<br></code></pre></td></tr></table></figure>
 <p>Z3 will not prove inductive facts. The ground decision procedures for recursive datatypes don’t lift to establing inductive facts. Z3 does not contain methods for producing proofs by induction. E.g. therom on all natural numbers.</p>
 <h2 id="Quantifiers"><a href="#Quantifiers" class="headerlink" title="Quantifiers"></a>Quantifiers</h2><p>Apart from quantifier-free theories (Here Z3 is a <strong>decision procedure</strong>), Z3 also accepts and can work with formulas that use quantifiers. It is no longer a decision procedure for such formulas in general (and for good reasons, as there can be no decision procedure for first-order logic).</p>
 <p>Several approaches to handle quantifiers: patter-based quantifier(effective, inherently incomplete), saturation theorem proving.</p>
@@ -648,7 +418,7 @@ print(Lst.cons(<span class="hljs-number">10</span>, Lst.nil).sort())</code></pre
                 <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
               
               
-                <div class="post-prevnext row">
+                <div class="post-prevnext">
                   <article class="post-prev col-6">
                     
                     
@@ -741,23 +511,20 @@ print(Lst.cons(<span class="hljs-number">10</span>, Lst.nil).sort())</code></pre
 
 <!-- SCRIPTS -->
 
-  <script  src="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.css" />
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
 
   <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":200})
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
     NProgress.start()
-    document.addEventListener('DOMContentLoaded', function() {
-      window.NProgress && window.NProgress.inc();
-    })
     window.addEventListener('load', function() {
       NProgress.done();
     })
   </script>
 
 
-<script  src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js" ></script>
-<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/js/bootstrap.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
 <script  src="/js/debouncer.js" ></script>
 <script  src="/js/events.js" ></script>
 <script  src="/js/plugins.js" ></script>
@@ -775,25 +542,26 @@ print(Lst.cons(<span class="hljs-number">10</span>, Lst.nil).sort())</code></pre
 
 
 
-  <script  src="https://cdn.staticfile.org/tocbot/4.12.0/tocbot.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
 
 
 
-  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
 
 
 
-  <script  src="https://cdn.staticfile.org/anchor-js/4.3.0/anchor.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
 
 
 
-  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
 
 
 
 
 
-  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
   <script>
     (function (window, document) {
       var typing = Fluid.plugins.typing;
@@ -857,7 +625,7 @@ print(Lst.cons(<span class="hljs-number">10</span>, Lst.nil).sort())</code></pre
       };
     </script>
 
-    <script async src="https://cdn.staticfile.org/mathjax/3.1.2/es5/tex-svg.js" ></script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-svg.js" ></script>
 
   
 

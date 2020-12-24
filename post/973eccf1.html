@@ -21,22 +21,22 @@
   <meta name="keywords" content="Edward&#39;s blog">
   <title>数字图像处理——直方图匹配 - Edward&#39;s blog</title>
 
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/css/bootstrap.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
 
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
   <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
   
     
     
       
-      <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.1.2/styles/github-gist.min.css" />
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
     
   
 
   
-    <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
   
 
 
@@ -57,7 +57,7 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"copy_btn":true,"image_zoom":{"enable":true},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
@@ -206,7 +206,7 @@
   </div>
 </nav>
 
-    <div class="banner intro-2" id="background" parallax=true
+    <div class="banner" id="banner" parallax=true
          style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
@@ -271,11 +271,11 @@
     
       
 
-<div class="container-fluid">
-  <div class="row">
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
     <div class="d-none d-lg-block col-lg-2"></div>
-    <div class="col-lg-8 nopadding-md">
-      <div class="container nopadding-md" id="board-ctn">
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
@@ -298,228 +298,25 @@
 <p>$T(r)$表示$r$的累积分布函数，本样例中为小猫图像的累积分布函数，图示为淡蓝色曲线。<br>$G(z)$表示为$z$的累积分布函数，本样例中为文字图片的累积分布函数，图示为橙黄色曲线。</p>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/HistogramMatch/output_4_0.png" srcset="/img/loading.gif" alt="im1"></p>
 <h2 id="求反函数"><a href="#求反函数" class="headerlink" title="求反函数"></a>求反函数</h2><p>反函数的计算，并没有按照课本上所说，搜索找最近值，对于一张$m \times n$图像，对于每个搜索需要$O(log(L))$，总复杂度是相乘的关系$O(MNlog(L))$，而通过一个二重循环实现打表计算则可以优化到$O(MN)+O(L)$，对于实际图片$MN$远大于$L$，所以这种优化是值得的</p>
-<pre><code class="hljs python">cnt = <span class="hljs-number">0</span>
-<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">256</span>):
-    <span class="hljs-keyword">while</span> cnt&lt;=raw_table[i]:
-        new_table[cnt] = i
-        cnt+=<span class="hljs-number">1</span>
-<span class="hljs-keyword">return</span> new_table</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python">cnt = <span class="hljs-number">0</span><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">256</span>):<br>    <span class="hljs-keyword">while</span> cnt&lt;=raw_table[i]:<br>        new_table[cnt] = i<br>        cnt+=<span class="hljs-number">1</span><br><span class="hljs-keyword">return</span> new_table<br></code></pre></td></tr></table></figure>
 <p>计算反函数表方便后面对图像进行变换。</p>
-<pre><code class="hljs python">reverse_imtest1_table = GetReverseTable(imtest1_tabel)
-match_imtest0_table = reverse_imtest1_table[imtest0_tabel]
-match_imtest0 = match_imtest0_table[imtest0]</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">reverse_imtest1_table = GetReverseTable(imtest1_tabel)<br>match_imtest0_table = reverse_imtest1_table[imtest0_tabel]<br>match_imtest0 = match_imtest0_table[imtest0]<br></code></pre></td></tr></table></figure>
 <p>输出结果如下</p>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/HistogramMatch/output_6_0.png" srcset="/img/loading.gif" alt="im2"></p>
 <p>直方图对比表示了 image0，image1，匹配后的 image0 三图，由图可以看出匹配后的 image0 直方图分布已经很贴近 image1 了。</p>
 <h2 id="图片效果"><a href="#图片效果" class="headerlink" title="图片效果"></a>图片效果</h2><p>（小猫被玩的有点可怜）</p>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/HistogramMatch/output_7_0.png" srcset="/img/loading.gif" alt="im2"></p>
-<h1 id="核心代码"><a href="#核心代码" class="headerlink" title="核心代码"></a>核心代码</h1><h2 id="图像直方图展示"><a href="#图像直方图展示" class="headerlink" title="图像直方图展示"></a>图像直方图展示</h2><pre><code class="hljs python"><span class="hljs-comment"># 展示直方图</span>
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">DrawHist</span>(<span class="hljs-params">input_img,pic_handle,histogram_handle</span>):</span>
-    kwargs = <span class="hljs-built_in">dict</span>(bins = <span class="hljs-number">50</span>, histtype=<span class="hljs-string">&#x27;bar&#x27;</span>, edgecolor = <span class="hljs-string">&quot;white&quot;</span>,alpha=<span class="hljs-number">0.5</span>, density  = <span class="hljs-literal">True</span>)
-    pic_handle.set_title(<span class="hljs-string">&quot;The image&quot;</span>)
-    pic_handle.imshow(input_img)
-    histogram_handle.set_title(<span class="hljs-string">&quot;The histogram&quot;</span>)
-    histogram_handle.hist(input_img.flatten(),**kwargs)
-
-imtest0 = imageio.imread(<span class="hljs-string">&#x27;imageio:chelsea.png&#x27;</span>)
-imtest1 = GetRGB(<span class="hljs-string">&#x27;./3_3Photo/3.jpg&#x27;</span>)
-
-plt.figure(figsize=(<span class="hljs-number">20</span>,<span class="hljs-number">10</span>))
-DrawHist(imtest0,plt.subplot(<span class="hljs-number">221</span>),plt.subplot(<span class="hljs-number">222</span>))
-DrawHist(imtest1,plt.subplot(<span class="hljs-number">223</span>),plt.subplot(<span class="hljs-number">224</span>))
-
-plt.show()</code></pre>
-<h2 id="直方图匹配"><a href="#直方图匹配" class="headerlink" title="直方图匹配"></a>直方图匹配</h2><pre><code class="hljs python"><span class="hljs-comment"># 获取目标图像累积分布函数的反函数lut表（离散）</span>
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">GetReverseTable</span>(<span class="hljs-params">raw_table</span>):</span>
-
-    new_table = np.zeros(<span class="hljs-number">256</span>,dtype = np.int64)
-    cnt = <span class="hljs-number">0</span>
-    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">256</span>):
-        <span class="hljs-keyword">while</span> cnt&lt;=raw_table[i]:
-            new_table[cnt] = i
-            cnt+=<span class="hljs-number">1</span>
-    <span class="hljs-keyword">return</span> new_table</code></pre>
-<h2 id="加入反函数输出"><a href="#加入反函数输出" class="headerlink" title="加入反函数输出"></a>加入反函数输出</h2><pre><code class="hljs python"><span class="hljs-comment"># 加入反函数，再绘图</span>
-plt.figure(figsize=(<span class="hljs-number">15</span>,<span class="hljs-number">5</span>))
-plotline = plt.subplot(<span class="hljs-number">121</span>)
-plotline.set_title(<span class="hljs-string">&quot;The function&quot;</span>)
-plotline.plot(np.arange(<span class="hljs-number">256</span>),imtest0_tabel,label = <span class="hljs-string">&quot;$T(r)$&quot;</span>)
-plotline.plot(np.arange(<span class="hljs-number">256</span>),np.arange(<span class="hljs-number">256</span>),color = <span class="hljs-string">&quot;black&quot;</span>,label = <span class="hljs-string">&quot;$r$&quot;</span>)
-plotline.plot(np.arange(<span class="hljs-number">256</span>),imtest1_tabel,label = <span class="hljs-string">&quot;$G(z)$&quot;</span>)
-plotline.plot(np.arange(<span class="hljs-number">256</span>),reverse_imtest1_table, label = <span class="hljs-string">&quot;$G^&#123;-1&#125;(z)$&quot;</span>)
-plotline.plot(np.arange(<span class="hljs-number">256</span>),match_imtest0_table, label= <span class="hljs-string">&quot;$G^&#123;-1&#125;(T(r)), N(r)$&quot;</span>)
-plotline.legend()
-
-
-<span class="hljs-comment"># 设置直方图参数 分割块 叠加模式 边界颜色 透明度 正则化（映射到0~1）</span>
-kwargs = <span class="hljs-built_in">dict</span>(bins = <span class="hljs-number">50</span>, histtype=<span class="hljs-string">&#x27;bar&#x27;</span>, edgecolor = <span class="hljs-string">&quot;white&quot;</span>,alpha=<span class="hljs-number">0.5</span>, density  = <span class="hljs-literal">True</span>)
-histogram1 = plt.subplot(<span class="hljs-number">122</span>)
-histogram1.set_title(<span class="hljs-string">&quot;The histogram&quot;</span>)
-histogram1.hist(imtest0.flatten(),color = <span class="hljs-string">&quot;black&quot;</span>,label = <span class="hljs-string">&quot;imtest0 original&quot;</span>,**kwargs )
-histogram1.hist(imtest1.flatten(),label = <span class="hljs-string">&quot;imtest1 original&quot;</span>,**kwargs)
-histogram1.hist(match_imtest0.flatten(),label = <span class="hljs-string">&quot;imtest0 after match&quot;</span>,**kwargs)
-histogram1.legend()
-
-plt.show()</code></pre>
-<h1 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h1><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
-<span class="hljs-keyword">import</span> imageio
-<span class="hljs-keyword">import</span> cv2
-<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
-
-im = imageio.imread(<span class="hljs-string">&#x27;photo2.jpg&#x27;</span>)</code></pre>
-<pre><code class="hljs python"><span class="hljs-comment"># 获取RGB图像</span>
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">GetRGB</span>(<span class="hljs-params">path</span>):</span>
-    im_BGR = cv2.imread(path,cv2.COLOR_GRAY2RGB)
-    im = cv2.cvtColor(im_BGR,cv2.COLOR_BGR2RGB)
-    <span class="hljs-keyword">return</span> im
-</code></pre>
-<pre><code class="hljs python"><span class="hljs-comment"># 展示直方图</span>
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">DrawHist</span>(<span class="hljs-params">input_img,pic_handle,histogram_handle</span>):</span>
-    kwargs = <span class="hljs-built_in">dict</span>(bins = <span class="hljs-number">50</span>, histtype=<span class="hljs-string">&#x27;bar&#x27;</span>, edgecolor = <span class="hljs-string">&quot;white&quot;</span>,alpha=<span class="hljs-number">0.5</span>, density  = <span class="hljs-literal">True</span>)
-    pic_handle.set_title(<span class="hljs-string">&quot;The image&quot;</span>)
-    pic_handle.imshow(input_img)
-    histogram_handle.set_title(<span class="hljs-string">&quot;The histogram&quot;</span>)
-    histogram_handle.hist(input_img.flatten(),**kwargs)
-
-imtest0 = imageio.imread(<span class="hljs-string">&#x27;imageio:chelsea.png&#x27;</span>)
-imtest1 = GetRGB(<span class="hljs-string">&#x27;./3_3Photo/3.jpg&#x27;</span>)
-
-plt.figure(figsize=(<span class="hljs-number">20</span>,<span class="hljs-number">10</span>))
-DrawHist(imtest0,plt.subplot(<span class="hljs-number">221</span>),plt.subplot(<span class="hljs-number">222</span>))
-DrawHist(imtest1,plt.subplot(<span class="hljs-number">223</span>),plt.subplot(<span class="hljs-number">224</span>))
-
-plt.show()</code></pre>
-<pre><code class="hljs python"><span class="hljs-comment"># 尝试直方图均衡化，</span>
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">CaculateHistogram</span>(<span class="hljs-params">input_image</span>):</span>
-    <span class="hljs-comment"># 参数1. 单通道8位灰度图像</span>
-    <span class="hljs-comment"># 输出1. 总像素值</span>
-    <span class="hljs-comment"># 输出2. 灰度值分布计数</span>
-    <span class="hljs-comment"># 输出3. 灰度值分布前缀和（用来做后续直方图平局奴化）</span>
-
-    <span class="hljs-comment"># 区分通道</span>
-    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(np.shape(input_image)) == <span class="hljs-number">3</span>:
-           height,width,level = np.shape(input_image)
-           summ = height*width*level
-    <span class="hljs-keyword">else</span> :
-           height,width = np.shape(input_image)
-           summ = height*width
-
-
-<span class="hljs-comment">#     第一种 通过访问指定位置像素  耗时executed in 7m 9s</span>
-<span class="hljs-comment">#     巨慢无比</span>
-<span class="hljs-comment">#     for i in range(height):</span>
-<span class="hljs-comment">#         for j in range(width):</span>
-<span class="hljs-comment">#             caculate_num[input_image[i][j]] += 1</span>
-
-<span class="hljs-comment">#     第二种 直接拆分行，像素获取像素值  耗时executed in 14.4s</span>
-<span class="hljs-comment">#     for line in input_image:</span>
-<span class="hljs-comment">#         for px in line:</span>
-<span class="hljs-comment">#             caculate_num[px] +=1</span>
-
-<span class="hljs-comment">#     第三种 调用np.histogram()方法  耗时executed in 644ms</span>
-    caculate_num,index_x = GetHistogramArray(input_image)
-    caculate_num = np.append(caculate_num,<span class="hljs-number">1</span>)
-<span class="hljs-comment">#     print(np.shape(caculate_num))</span>
-    <span class="hljs-comment">#     第四种 吕少推荐的方法(还没看懂)</span>
-<span class="hljs-comment">#     caculate_num = cumsum(input_image,256)</span>
-<span class="hljs-comment">#     print(np.shape(caculate_num))</span>
-
-    sum_num = np.copy(caculate_num)
-    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">256</span>):
-<span class="hljs-comment">#         print(sum_num[i-1],caculate_num[i])</span>
-        sum_num[i] = sum_num[i<span class="hljs-number">-1</span>] + sum_num[i]
-    <span class="hljs-keyword">return</span> summ,caculate_num,sum_num
-
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">GetHistogramArray</span>(<span class="hljs-params">image</span>):</span>
-    <span class="hljs-keyword">return</span> np.histogram(image,np.arange(<span class="hljs-number">0</span>,<span class="hljs-number">256</span>));
-
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cumsum</span>(<span class="hljs-params">img, bins</span>):</span>
-
-    histogram = np.zeros(bins)
-    <span class="hljs-keyword">for</span> pixel <span class="hljs-keyword">in</span> np.arange(<span class="hljs-number">0</span>, bins, <span class="hljs-number">1</span>):
-        histogram[pixel] += <span class="hljs-built_in">len</span>(img[img==pixel])
-
-    <span class="hljs-keyword">return</span> histogram
-
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">HistogramEqualizationLUT</span>(<span class="hljs-params">input_image</span>):</span>
-    <span class="hljs-comment"># 参数1, 单通道8位灰度图像</span>
-    <span class="hljs-comment"># 输出1. 单通道8位灰度图像（直方图均衡化后）</span>
-    size,data,data_sum = CaculateHistogram(input_image)
-    fxy  = <span class="hljs-keyword">lambda</span> x: (<span class="hljs-number">255</span>*data_sum[x])//size
-    table = np.array([fxy(i) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">256</span>)])
-<span class="hljs-comment">#     print(table)</span>
-<span class="hljs-comment">#     不可以这样</span>
-<span class="hljs-comment">#     image_new = table[input_image]</span>
-    lut = <span class="hljs-keyword">lambda</span> x: table[x]
-    <span class="hljs-keyword">return</span> lut(input_image),table
-
-
-imtest0_he,imtest0_tabel = HistogramEqualizationLUT(imtest0)
-imtest1_he,imtest1_tabel = HistogramEqualizationLUT(imtest1)
-plt.figure(figsize=(<span class="hljs-number">20</span>,<span class="hljs-number">20</span>))
-DrawHist(imtest0,plt.subplot(<span class="hljs-number">421</span>),plt.subplot(<span class="hljs-number">422</span>))
-DrawHist(imtest0_he,plt.subplot(<span class="hljs-number">423</span>),plt.subplot(<span class="hljs-number">424</span>))
-DrawHist(imtest1,plt.subplot(<span class="hljs-number">425</span>),plt.subplot(<span class="hljs-number">426</span>))
-DrawHist(imtest1_he,plt.subplot(<span class="hljs-number">427</span>),plt.subplot(<span class="hljs-number">428</span>))</code></pre>
-<pre><code class="hljs python">plt.figure(figsize=(<span class="hljs-number">15</span>,<span class="hljs-number">5</span>))
-plotline = plt.subplot(<span class="hljs-number">121</span>)
-plotline.set_title(<span class="hljs-string">&quot;The function&quot;</span>)
-plotline.plot(np.arange(<span class="hljs-number">256</span>),np.arange(<span class="hljs-number">256</span>),color = <span class="hljs-string">&#x27;black&#x27;</span>,label = <span class="hljs-string">&quot;$r$&quot;</span>)
-plotline.plot(np.arange(<span class="hljs-number">256</span>),imtest0_tabel,label = <span class="hljs-string">&quot;$T(r)$&quot;</span>)
-plotline.plot(np.arange(<span class="hljs-number">256</span>),imtest1_tabel,label = <span class="hljs-string">&quot;$G(z)$&quot;</span>)
-plotline.legend()
-
-kwargs = <span class="hljs-built_in">dict</span>(bins = <span class="hljs-number">50</span>, histtype=<span class="hljs-string">&#x27;bar&#x27;</span>, edgecolor = <span class="hljs-string">&quot;white&quot;</span>,alpha=<span class="hljs-number">0.6</span>, density  = <span class="hljs-literal">True</span>)
-histogram = plt.subplot(<span class="hljs-number">122</span>)
-histogram.set_title(<span class="hljs-string">&quot;The histogram&quot;</span>)
-histogram.hist(imtest0.flatten(),**kwargs, label = <span class="hljs-string">&quot;imtest0 $p_r(r)$&quot;</span> )
-histogram.hist(imtest1.flatten(), **kwargs, label = <span class="hljs-string">&quot;imtest1 $p_z(z)$&quot;</span>)
-histogram.legend()
-plt.show()</code></pre>
-<pre><code class="hljs python"><span class="hljs-comment"># 获取目标图像累积分布函数的反函数lut表（离散）</span>
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">GetReverseTable</span>(<span class="hljs-params">raw_table</span>):</span>
-
-    new_table = np.zeros(<span class="hljs-number">256</span>,dtype = np.int64)
-    cnt = <span class="hljs-number">0</span>
-    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">256</span>):
-        <span class="hljs-keyword">while</span> cnt&lt;=raw_table[i]:
-            new_table[cnt] = i
-            cnt+=<span class="hljs-number">1</span>
-    <span class="hljs-keyword">return</span> new_table
-
-reverse_imtest1_table = GetReverseTable(imtest1_tabel)
-match_imtest0_table = reverse_imtest1_table[imtest0_tabel]
-match_imtest0 = match_imtest0_table[imtest0]
-
-</code></pre>
-<pre><code class="hljs python"><span class="hljs-comment"># 加入反函数，再绘图</span>
-plt.figure(figsize=(<span class="hljs-number">15</span>,<span class="hljs-number">5</span>))
-plotline = plt.subplot(<span class="hljs-number">121</span>)
-plotline.set_title(<span class="hljs-string">&quot;The function&quot;</span>)
-plotline.plot(np.arange(<span class="hljs-number">256</span>),imtest0_tabel,label = <span class="hljs-string">&quot;$T(r)$&quot;</span>)
-plotline.plot(np.arange(<span class="hljs-number">256</span>),np.arange(<span class="hljs-number">256</span>),color = <span class="hljs-string">&quot;black&quot;</span>,label = <span class="hljs-string">&quot;$r$&quot;</span>)
-plotline.plot(np.arange(<span class="hljs-number">256</span>),imtest1_tabel,label = <span class="hljs-string">&quot;$G(z)$&quot;</span>)
-plotline.plot(np.arange(<span class="hljs-number">256</span>),reverse_imtest1_table, label = <span class="hljs-string">&quot;$G^&#123;-1&#125;(z)$&quot;</span>)
-plotline.plot(np.arange(<span class="hljs-number">256</span>),match_imtest0_table, label= <span class="hljs-string">&quot;$G^&#123;-1&#125;(T(r)), N(r)$&quot;</span>)
-plotline.legend()
-
-
-<span class="hljs-comment"># 设置直方图参数 分割块 叠加模式 边界颜色 透明度 正则化（映射到0~1）</span>
-kwargs = <span class="hljs-built_in">dict</span>(bins = <span class="hljs-number">50</span>, histtype=<span class="hljs-string">&#x27;bar&#x27;</span>, edgecolor = <span class="hljs-string">&quot;white&quot;</span>,alpha=<span class="hljs-number">0.5</span>, density  = <span class="hljs-literal">True</span>)
-histogram1 = plt.subplot(<span class="hljs-number">122</span>)
-histogram1.set_title(<span class="hljs-string">&quot;The histogram&quot;</span>)
-histogram1.hist(imtest0.flatten(),color = <span class="hljs-string">&quot;black&quot;</span>,label = <span class="hljs-string">&quot;imtest0 original&quot;</span>,**kwargs )
-histogram1.hist(imtest1.flatten(),label = <span class="hljs-string">&quot;imtest1 original&quot;</span>,**kwargs)
-histogram1.hist(match_imtest0.flatten(),label = <span class="hljs-string">&quot;imtest0 after match&quot;</span>,**kwargs)
-histogram1.legend()
-
-plt.show()</code></pre>
-<pre><code class="hljs python"><span class="hljs-comment"># 输出三种图像</span>
-plt.figure(figsize=(<span class="hljs-number">20</span>,<span class="hljs-number">15</span>))
-DrawHist(imtest0,plt.subplot(<span class="hljs-number">321</span>),plt.subplot(<span class="hljs-number">322</span>))
-DrawHist(imtest0_he,plt.subplot(<span class="hljs-number">323</span>),plt.subplot(<span class="hljs-number">324</span>))
-DrawHist(match_imtest0,plt.subplot(<span class="hljs-number">325</span>),plt.subplot(<span class="hljs-number">326</span>))
-plt.show()</code></pre>
+<h1 id="核心代码"><a href="#核心代码" class="headerlink" title="核心代码"></a>核心代码</h1><h2 id="图像直方图展示"><a href="#图像直方图展示" class="headerlink" title="图像直方图展示"></a>图像直方图展示</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 展示直方图</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">DrawHist</span>(<span class="hljs-params">input_img,pic_handle,histogram_handle</span>):</span><br>    kwargs = <span class="hljs-built_in">dict</span>(bins = <span class="hljs-number">50</span>, histtype=<span class="hljs-string">&#x27;bar&#x27;</span>, edgecolor = <span class="hljs-string">&quot;white&quot;</span>,alpha=<span class="hljs-number">0.5</span>, density  = <span class="hljs-literal">True</span>)<br>    pic_handle.set_title(<span class="hljs-string">&quot;The image&quot;</span>)<br>    pic_handle.imshow(input_img)<br>    histogram_handle.set_title(<span class="hljs-string">&quot;The histogram&quot;</span>)<br>    histogram_handle.hist(input_img.flatten(),**kwargs)<br><br>imtest0 = imageio.imread(<span class="hljs-string">&#x27;imageio:chelsea.png&#x27;</span>)<br>imtest1 = GetRGB(<span class="hljs-string">&#x27;./3_3Photo/3.jpg&#x27;</span>)<br><br>plt.figure(figsize=(<span class="hljs-number">20</span>,<span class="hljs-number">10</span>))<br>DrawHist(imtest0,plt.subplot(<span class="hljs-number">221</span>),plt.subplot(<span class="hljs-number">222</span>))<br>DrawHist(imtest1,plt.subplot(<span class="hljs-number">223</span>),plt.subplot(<span class="hljs-number">224</span>))<br><br>plt.show()<br></code></pre></td></tr></table></figure>
+<h2 id="直方图匹配"><a href="#直方图匹配" class="headerlink" title="直方图匹配"></a>直方图匹配</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 获取目标图像累积分布函数的反函数lut表（离散）</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">GetReverseTable</span>(<span class="hljs-params">raw_table</span>):</span><br><br>    new_table = np.zeros(<span class="hljs-number">256</span>,dtype = np.int64)<br>    cnt = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">256</span>):<br>        <span class="hljs-keyword">while</span> cnt&lt;=raw_table[i]:<br>            new_table[cnt] = i<br>            cnt+=<span class="hljs-number">1</span><br>    <span class="hljs-keyword">return</span> new_table<br></code></pre></td></tr></table></figure>
+<h2 id="加入反函数输出"><a href="#加入反函数输出" class="headerlink" title="加入反函数输出"></a>加入反函数输出</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 加入反函数，再绘图</span><br>plt.figure(figsize=(<span class="hljs-number">15</span>,<span class="hljs-number">5</span>))<br>plotline = plt.subplot(<span class="hljs-number">121</span>)<br>plotline.set_title(<span class="hljs-string">&quot;The function&quot;</span>)<br>plotline.plot(np.arange(<span class="hljs-number">256</span>),imtest0_tabel,label = <span class="hljs-string">&quot;$T(r)$&quot;</span>)<br>plotline.plot(np.arange(<span class="hljs-number">256</span>),np.arange(<span class="hljs-number">256</span>),color = <span class="hljs-string">&quot;black&quot;</span>,label = <span class="hljs-string">&quot;$r$&quot;</span>)<br>plotline.plot(np.arange(<span class="hljs-number">256</span>),imtest1_tabel,label = <span class="hljs-string">&quot;$G(z)$&quot;</span>)<br>plotline.plot(np.arange(<span class="hljs-number">256</span>),reverse_imtest1_table, label = <span class="hljs-string">&quot;$G^&#123;-1&#125;(z)$&quot;</span>)<br>plotline.plot(np.arange(<span class="hljs-number">256</span>),match_imtest0_table, label= <span class="hljs-string">&quot;$G^&#123;-1&#125;(T(r)), N(r)$&quot;</span>)<br>plotline.legend()<br><br><br><span class="hljs-comment"># 设置直方图参数 分割块 叠加模式 边界颜色 透明度 正则化（映射到0~1）</span><br>kwargs = <span class="hljs-built_in">dict</span>(bins = <span class="hljs-number">50</span>, histtype=<span class="hljs-string">&#x27;bar&#x27;</span>, edgecolor = <span class="hljs-string">&quot;white&quot;</span>,alpha=<span class="hljs-number">0.5</span>, density  = <span class="hljs-literal">True</span>)<br>histogram1 = plt.subplot(<span class="hljs-number">122</span>)<br>histogram1.set_title(<span class="hljs-string">&quot;The histogram&quot;</span>)<br>histogram1.hist(imtest0.flatten(),color = <span class="hljs-string">&quot;black&quot;</span>,label = <span class="hljs-string">&quot;imtest0 original&quot;</span>,**kwargs )<br>histogram1.hist(imtest1.flatten(),label = <span class="hljs-string">&quot;imtest1 original&quot;</span>,**kwargs)<br>histogram1.hist(match_imtest0.flatten(),label = <span class="hljs-string">&quot;imtest0 after match&quot;</span>,**kwargs)<br>histogram1.legend()<br><br>plt.show()<br></code></pre></td></tr></table></figure>
+<h1 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">import</span> imageio<br><span class="hljs-keyword">import</span> cv2<br><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt<br><br>im = imageio.imread(<span class="hljs-string">&#x27;photo2.jpg&#x27;</span>)<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 获取RGB图像</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">GetRGB</span>(<span class="hljs-params">path</span>):</span><br>    im_BGR = cv2.imread(path,cv2.COLOR_GRAY2RGB)<br>    im = cv2.cvtColor(im_BGR,cv2.COLOR_BGR2RGB)<br>    <span class="hljs-keyword">return</span> im<br><br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 展示直方图</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">DrawHist</span>(<span class="hljs-params">input_img,pic_handle,histogram_handle</span>):</span><br>    kwargs = <span class="hljs-built_in">dict</span>(bins = <span class="hljs-number">50</span>, histtype=<span class="hljs-string">&#x27;bar&#x27;</span>, edgecolor = <span class="hljs-string">&quot;white&quot;</span>,alpha=<span class="hljs-number">0.5</span>, density  = <span class="hljs-literal">True</span>)<br>    pic_handle.set_title(<span class="hljs-string">&quot;The image&quot;</span>)<br>    pic_handle.imshow(input_img)<br>    histogram_handle.set_title(<span class="hljs-string">&quot;The histogram&quot;</span>)<br>    histogram_handle.hist(input_img.flatten(),**kwargs)<br><br>imtest0 = imageio.imread(<span class="hljs-string">&#x27;imageio:chelsea.png&#x27;</span>)<br>imtest1 = GetRGB(<span class="hljs-string">&#x27;./3_3Photo/3.jpg&#x27;</span>)<br><br>plt.figure(figsize=(<span class="hljs-number">20</span>,<span class="hljs-number">10</span>))<br>DrawHist(imtest0,plt.subplot(<span class="hljs-number">221</span>),plt.subplot(<span class="hljs-number">222</span>))<br>DrawHist(imtest1,plt.subplot(<span class="hljs-number">223</span>),plt.subplot(<span class="hljs-number">224</span>))<br><br>plt.show()<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 尝试直方图均衡化，</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">CaculateHistogram</span>(<span class="hljs-params">input_image</span>):</span><br>    <span class="hljs-comment"># 参数1. 单通道8位灰度图像</span><br>    <span class="hljs-comment"># 输出1. 总像素值</span><br>    <span class="hljs-comment"># 输出2. 灰度值分布计数</span><br>    <span class="hljs-comment"># 输出3. 灰度值分布前缀和（用来做后续直方图平局奴化）</span><br><br>    <span class="hljs-comment"># 区分通道</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(np.shape(input_image)) == <span class="hljs-number">3</span>:<br>           height,width,level = np.shape(input_image)<br>           summ = height*width*level<br>    <span class="hljs-keyword">else</span> :<br>           height,width = np.shape(input_image)<br>           summ = height*width<br><br><br><span class="hljs-comment">#     第一种 通过访问指定位置像素  耗时executed in 7m 9s</span><br><span class="hljs-comment">#     巨慢无比</span><br><span class="hljs-comment">#     for i in range(height):</span><br><span class="hljs-comment">#         for j in range(width):</span><br><span class="hljs-comment">#             caculate_num[input_image[i][j]] += 1</span><br><br><span class="hljs-comment">#     第二种 直接拆分行，像素获取像素值  耗时executed in 14.4s</span><br><span class="hljs-comment">#     for line in input_image:</span><br><span class="hljs-comment">#         for px in line:</span><br><span class="hljs-comment">#             caculate_num[px] +=1</span><br><br><span class="hljs-comment">#     第三种 调用np.histogram()方法  耗时executed in 644ms</span><br>    caculate_num,index_x = GetHistogramArray(input_image)<br>    caculate_num = np.append(caculate_num,<span class="hljs-number">1</span>)<br><span class="hljs-comment">#     print(np.shape(caculate_num))</span><br>    <span class="hljs-comment">#     第四种 吕少推荐的方法(还没看懂)</span><br><span class="hljs-comment">#     caculate_num = cumsum(input_image,256)</span><br><span class="hljs-comment">#     print(np.shape(caculate_num))</span><br><br>    sum_num = np.copy(caculate_num)<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">256</span>):<br><span class="hljs-comment">#         print(sum_num[i-1],caculate_num[i])</span><br>        sum_num[i] = sum_num[i<span class="hljs-number">-1</span>] + sum_num[i]<br>    <span class="hljs-keyword">return</span> summ,caculate_num,sum_num<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">GetHistogramArray</span>(<span class="hljs-params">image</span>):</span><br>    <span class="hljs-keyword">return</span> np.histogram(image,np.arange(<span class="hljs-number">0</span>,<span class="hljs-number">256</span>));<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cumsum</span>(<span class="hljs-params">img, bins</span>):</span><br><br>    histogram = np.zeros(bins)<br>    <span class="hljs-keyword">for</span> pixel <span class="hljs-keyword">in</span> np.arange(<span class="hljs-number">0</span>, bins, <span class="hljs-number">1</span>):<br>        histogram[pixel] += <span class="hljs-built_in">len</span>(img[img==pixel])<br><br>    <span class="hljs-keyword">return</span> histogram<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">HistogramEqualizationLUT</span>(<span class="hljs-params">input_image</span>):</span><br>    <span class="hljs-comment"># 参数1, 单通道8位灰度图像</span><br>    <span class="hljs-comment"># 输出1. 单通道8位灰度图像（直方图均衡化后）</span><br>    size,data,data_sum = CaculateHistogram(input_image)<br>    fxy  = <span class="hljs-keyword">lambda</span> x: (<span class="hljs-number">255</span>*data_sum[x])//size<br>    table = np.array([fxy(i) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">256</span>)])<br><span class="hljs-comment">#     print(table)</span><br><span class="hljs-comment">#     不可以这样</span><br><span class="hljs-comment">#     image_new = table[input_image]</span><br>    lut = <span class="hljs-keyword">lambda</span> x: table[x]<br>    <span class="hljs-keyword">return</span> lut(input_image),table<br><br><br>imtest0_he,imtest0_tabel = HistogramEqualizationLUT(imtest0)<br>imtest1_he,imtest1_tabel = HistogramEqualizationLUT(imtest1)<br>plt.figure(figsize=(<span class="hljs-number">20</span>,<span class="hljs-number">20</span>))<br>DrawHist(imtest0,plt.subplot(<span class="hljs-number">421</span>),plt.subplot(<span class="hljs-number">422</span>))<br>DrawHist(imtest0_he,plt.subplot(<span class="hljs-number">423</span>),plt.subplot(<span class="hljs-number">424</span>))<br>DrawHist(imtest1,plt.subplot(<span class="hljs-number">425</span>),plt.subplot(<span class="hljs-number">426</span>))<br>DrawHist(imtest1_he,plt.subplot(<span class="hljs-number">427</span>),plt.subplot(<span class="hljs-number">428</span>))<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python">plt.figure(figsize=(<span class="hljs-number">15</span>,<span class="hljs-number">5</span>))<br>plotline = plt.subplot(<span class="hljs-number">121</span>)<br>plotline.set_title(<span class="hljs-string">&quot;The function&quot;</span>)<br>plotline.plot(np.arange(<span class="hljs-number">256</span>),np.arange(<span class="hljs-number">256</span>),color = <span class="hljs-string">&#x27;black&#x27;</span>,label = <span class="hljs-string">&quot;$r$&quot;</span>)<br>plotline.plot(np.arange(<span class="hljs-number">256</span>),imtest0_tabel,label = <span class="hljs-string">&quot;$T(r)$&quot;</span>)<br>plotline.plot(np.arange(<span class="hljs-number">256</span>),imtest1_tabel,label = <span class="hljs-string">&quot;$G(z)$&quot;</span>)<br>plotline.legend()<br><br>kwargs = <span class="hljs-built_in">dict</span>(bins = <span class="hljs-number">50</span>, histtype=<span class="hljs-string">&#x27;bar&#x27;</span>, edgecolor = <span class="hljs-string">&quot;white&quot;</span>,alpha=<span class="hljs-number">0.6</span>, density  = <span class="hljs-literal">True</span>)<br>histogram = plt.subplot(<span class="hljs-number">122</span>)<br>histogram.set_title(<span class="hljs-string">&quot;The histogram&quot;</span>)<br>histogram.hist(imtest0.flatten(),**kwargs, label = <span class="hljs-string">&quot;imtest0 $p_r(r)$&quot;</span> )<br>histogram.hist(imtest1.flatten(), **kwargs, label = <span class="hljs-string">&quot;imtest1 $p_z(z)$&quot;</span>)<br>histogram.legend()<br>plt.show()<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 获取目标图像累积分布函数的反函数lut表（离散）</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">GetReverseTable</span>(<span class="hljs-params">raw_table</span>):</span><br><br>    new_table = np.zeros(<span class="hljs-number">256</span>,dtype = np.int64)<br>    cnt = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">256</span>):<br>        <span class="hljs-keyword">while</span> cnt&lt;=raw_table[i]:<br>            new_table[cnt] = i<br>            cnt+=<span class="hljs-number">1</span><br>    <span class="hljs-keyword">return</span> new_table<br><br>reverse_imtest1_table = GetReverseTable(imtest1_tabel)<br>match_imtest0_table = reverse_imtest1_table[imtest0_tabel]<br>match_imtest0 = match_imtest0_table[imtest0]<br><br><br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 加入反函数，再绘图</span><br>plt.figure(figsize=(<span class="hljs-number">15</span>,<span class="hljs-number">5</span>))<br>plotline = plt.subplot(<span class="hljs-number">121</span>)<br>plotline.set_title(<span class="hljs-string">&quot;The function&quot;</span>)<br>plotline.plot(np.arange(<span class="hljs-number">256</span>),imtest0_tabel,label = <span class="hljs-string">&quot;$T(r)$&quot;</span>)<br>plotline.plot(np.arange(<span class="hljs-number">256</span>),np.arange(<span class="hljs-number">256</span>),color = <span class="hljs-string">&quot;black&quot;</span>,label = <span class="hljs-string">&quot;$r$&quot;</span>)<br>plotline.plot(np.arange(<span class="hljs-number">256</span>),imtest1_tabel,label = <span class="hljs-string">&quot;$G(z)$&quot;</span>)<br>plotline.plot(np.arange(<span class="hljs-number">256</span>),reverse_imtest1_table, label = <span class="hljs-string">&quot;$G^&#123;-1&#125;(z)$&quot;</span>)<br>plotline.plot(np.arange(<span class="hljs-number">256</span>),match_imtest0_table, label= <span class="hljs-string">&quot;$G^&#123;-1&#125;(T(r)), N(r)$&quot;</span>)<br>plotline.legend()<br><br><br><span class="hljs-comment"># 设置直方图参数 分割块 叠加模式 边界颜色 透明度 正则化（映射到0~1）</span><br>kwargs = <span class="hljs-built_in">dict</span>(bins = <span class="hljs-number">50</span>, histtype=<span class="hljs-string">&#x27;bar&#x27;</span>, edgecolor = <span class="hljs-string">&quot;white&quot;</span>,alpha=<span class="hljs-number">0.5</span>, density  = <span class="hljs-literal">True</span>)<br>histogram1 = plt.subplot(<span class="hljs-number">122</span>)<br>histogram1.set_title(<span class="hljs-string">&quot;The histogram&quot;</span>)<br>histogram1.hist(imtest0.flatten(),color = <span class="hljs-string">&quot;black&quot;</span>,label = <span class="hljs-string">&quot;imtest0 original&quot;</span>,**kwargs )<br>histogram1.hist(imtest1.flatten(),label = <span class="hljs-string">&quot;imtest1 original&quot;</span>,**kwargs)<br>histogram1.hist(match_imtest0.flatten(),label = <span class="hljs-string">&quot;imtest0 after match&quot;</span>,**kwargs)<br>histogram1.legend()<br><br>plt.show()<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 输出三种图像</span><br>plt.figure(figsize=(<span class="hljs-number">20</span>,<span class="hljs-number">15</span>))<br>DrawHist(imtest0,plt.subplot(<span class="hljs-number">321</span>),plt.subplot(<span class="hljs-number">322</span>))<br>DrawHist(imtest0_he,plt.subplot(<span class="hljs-number">323</span>),plt.subplot(<span class="hljs-number">324</span>))<br>DrawHist(match_imtest0,plt.subplot(<span class="hljs-number">325</span>),plt.subplot(<span class="hljs-number">326</span>))<br>plt.show()<br></code></pre></td></tr></table></figure>
 
             </div>
             <hr>
@@ -548,7 +345,7 @@ plt.show()</code></pre>
                 <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
               
               
-                <div class="post-prevnext row">
+                <div class="post-prevnext">
                   <article class="post-prev col-6">
                     
                     
@@ -641,23 +438,20 @@ plt.show()</code></pre>
 
 <!-- SCRIPTS -->
 
-  <script  src="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.css" />
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
 
   <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":200})
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
     NProgress.start()
-    document.addEventListener('DOMContentLoaded', function() {
-      window.NProgress && window.NProgress.inc();
-    })
     window.addEventListener('load', function() {
       NProgress.done();
     })
   </script>
 
 
-<script  src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js" ></script>
-<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/js/bootstrap.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
 <script  src="/js/debouncer.js" ></script>
 <script  src="/js/events.js" ></script>
 <script  src="/js/plugins.js" ></script>
@@ -675,25 +469,26 @@ plt.show()</code></pre>
 
 
 
-  <script  src="https://cdn.staticfile.org/tocbot/4.12.0/tocbot.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
 
 
 
-  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
 
 
 
-  <script  src="https://cdn.staticfile.org/anchor-js/4.3.0/anchor.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
 
 
 
-  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
 
 
 
 
 
-  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
   <script>
     (function (window, document) {
       var typing = Fluid.plugins.typing;
@@ -757,7 +552,7 @@ plt.show()</code></pre>
       };
     </script>
 
-    <script async src="https://cdn.staticfile.org/mathjax/3.1.2/es5/tex-svg.js" ></script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-svg.js" ></script>
 
   
 

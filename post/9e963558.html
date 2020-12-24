@@ -21,22 +21,22 @@
   <meta name="keywords" content="Edward&#39;s blog">
   <title>Go学习——《Go语言程序设计》Chap4 - Edward&#39;s blog</title>
 
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/css/bootstrap.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
 
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
   <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
   
     
     
       
-      <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.1.2/styles/github-gist.min.css" />
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
     
   
 
   
-    <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
   
 
 
@@ -57,7 +57,7 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"copy_btn":true,"image_zoom":{"enable":true},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
@@ -206,7 +206,7 @@
   </div>
 </nav>
 
-    <div class="banner intro-2" id="background" parallax=true
+    <div class="banner" id="banner" parallax=true
          style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
@@ -271,11 +271,11 @@
     
       
 
-<div class="container-fluid">
-  <div class="row">
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
     <div class="d-none d-lg-block col-lg-2"></div>
-    <div class="col-lg-8 nopadding-md">
-      <div class="container nopadding-md" id="board-ctn">
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
@@ -287,127 +287,34 @@
 <p>对于字符串，如果修改一个传入的字符串（例如，使用<code>+=</code>操作符），Go 语言必须创建一个新的字符串，并且复制原始的字符串，并将其加到该字符串之后，这对于大字符串来说很可能代价非常大。（实际上，如<a href="https://www.edwardzcn98yx.com/post/f2a0fb.html">Chap3</a>里面讲的，更多时候我们会准备一个字符切片<code>[]string</code>,或者用<code>bytes.Buffer</code>对应方法实现）</p>
 <p>剩下的指针与 C/C++及其类似，在此不再赘述，需要特别了解的是，虽然 Go 编译器可能在内部将栈和堆的内存区分对待，但是 Go 程序员从不需要担心这些，因为 Go 语言自己会在内部处理好内存管理的事情。</p>
 <p>我的测试</p>
-<pre><code class="hljs Go">z := <span class="hljs-number">37</span>
-pi := &amp;z
-ppi := &amp;pi
-fmt.Println(z, *pi, **ppi)
-**ppi++
-fmt.Println(z, *pi, **ppi)
-fmt.Println(reflect.TypeOf(pi))
-fmt.Println(reflect.TypeOf(ppi))</code></pre>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs Go">z := <span class="hljs-number">37</span><br>pi := &amp;z<br>ppi := &amp;pi<br>fmt.Println(z, *pi, **ppi)<br>**ppi++<br>fmt.Println(z, *pi, **ppi)<br>fmt.Println(reflect.TypeOf(pi))<br>fmt.Println(reflect.TypeOf(ppi))<br></code></pre></td></tr></table></figure>
 <p>测试结果</p>
-<pre><code class="hljs Go"><span class="hljs-number">37</span> <span class="hljs-number">37</span> <span class="hljs-number">37</span>
-<span class="hljs-number">38</span> <span class="hljs-number">38</span> <span class="hljs-number">38</span>
-*<span class="hljs-keyword">int</span>
-**<span class="hljs-keyword">int</span></code></pre>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-number">37</span> <span class="hljs-number">37</span> <span class="hljs-number">37</span><br><span class="hljs-number">38</span> <span class="hljs-number">38</span> <span class="hljs-number">38</span><br>*<span class="hljs-keyword">int</span><br>**<span class="hljs-keyword">int</span><br></code></pre></td></tr></table></figure>
 <p>对于 swap 等操作（需要对变量本身而非变量的副本进行操作），C/C++的常见思路是将需要操作的原始变量的指针以参数形式传入函数并进行修改，而 Go 提供了一个更人性化的方法，一般而言，对于少量这样的变量，我们仍采用按值传递的方式，然后通过<strong>多返回值</strong>的设计完成需要，或者，对于大量的，我们会传入一个切片来达到效果。</p>
 <p>表示成功与失败，C/C++中习惯传入一个布尔类型指针，Go 语言中直接以最后一个返回值的形式返回一个布尔型的成功标志（或者最好是一个 error 值）的写法更好用。</p>
 <a id="more"></a>
-<h2 id="数组和切片"><a href="#数组和切片" class="headerlink" title="数组和切片"></a>数组和切片</h2><h3 id="数组的创建方法"><a href="#数组的创建方法" class="headerlink" title="数组的创建方法"></a>数组的创建方法</h3><pre><code class="hljs Go">[length]Type
-[N]Type&#123;v1,v2,v3,...,vn&#125;
-[...]Type&#123;v1,v2,v3,...,vn&#125;</code></pre>
+<h2 id="数组和切片"><a href="#数组和切片" class="headerlink" title="数组和切片"></a>数组和切片</h2><h3 id="数组的创建方法"><a href="#数组的创建方法" class="headerlink" title="数组的创建方法"></a>数组的创建方法</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs Go">[length]Type<br>[N]Type&#123;v1,v2,v3,...,vn&#125;<br>[...]Type&#123;v1,v2,v3,...,vn&#125;<br></code></pre></td></tr></table></figure>
 <p><code>...</code>在这种场景下使用，Go 会自动补全，我们可以理解为定长度的（与后面切片的变长相对应）。</p>
 <p>一般而言，Go 语言的切片比数组更加灵活、强大且方便。数组是按值传递的（即传递副本，虽然可以通过传递指针来避免，PS 这么操作的话 Go 比 C/C++还反人类）。</p>
 <p>虽然数组和切片所保存的元素类型相同，但<strong>在实际使用中并不受此限</strong>。这是因为其类型也可以是一个接口。因此<strong>我们可以保存任意满足</strong>所声明的接口的元素（即它们定义了该接口所需的方法）。然后我们可以让一个数组或者切片为空接口 <code>interface&#123;&#125;</code>，这意味着我们可以存储任意类型的元素，不过这导致我们在获取一个元素时需要使用<strong>类型断言</strong>或者<strong>类型转变</strong>，或者两者配合使用。</p>
-<h3 id="切片的创建方法"><a href="#切片的创建方法" class="headerlink" title="切片的创建方法"></a>切片的创建方法</h3><pre><code class="hljs Go"><span class="hljs-built_in">make</span>([]Type, length, capacity)
-<span class="hljs-built_in">make</span>([]Type, length)
-[]Type&#123;&#125;
-[]Type&#123;value1,value2,...,valueN&#125;</code></pre>
+<h3 id="切片的创建方法"><a href="#切片的创建方法" class="headerlink" title="切片的创建方法"></a>切片的创建方法</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-built_in">make</span>([]Type, length, capacity)<br><span class="hljs-built_in">make</span>([]Type, length)<br>[]Type&#123;&#125;<br>[]Type&#123;value1,value2,...,valueN&#125;<br></code></pre></td></tr></table></figure>
 <p>切片创建时会创建一个<strong>隐藏的</strong>初始化为零值的数组（如果使用第四种方法则是有初始值的）。一个切片的容量即为其隐藏数组的长度，而其长度为不超过容量的任意值。</p>
 <p>实际中使用空切片，<code>make()</code>创建会更实用，只需将长度设为 0，并且将容量设为一个我们估计需要保存元素的个数。</p>
 <p><strong>切片再切片是引用</strong>，<strong>切片参数也是引用</strong>，都是对同一底层数组的引用，其中一个<strong>改变</strong>会影响到其他所有指向该相同数组的任何其他引用。</p>
 <p>二维切片的实验：</p>
 <p>使用长度为 3（即包含三个切片和容量为 3（默认容量为其长度）来创建一个切片的切片 grid），我们尝试让内层切片长度不一样。</p>
-<pre><code class="hljs Go"><span class="hljs-keyword">package</span> main
-
-<span class="hljs-keyword">import</span> (
-    <span class="hljs-string">&quot;fmt&quot;</span>
-    <span class="hljs-string">&quot;os&quot;</span>
-    <span class="hljs-string">&quot;strconv&quot;</span>
-)
-
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
-    <span class="hljs-comment">// debug参数设定为 [&quot;3&quot;,&quot;4&quot;,&quot;5&quot;]</span>
-    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(os.Args) &lt; <span class="hljs-number">4</span> &#123;
-    fmt.Println(<span class="hljs-string">&quot;This program needs three int:&quot;</span>)
-    os.Exit(<span class="hljs-number">1</span>)
-    &#125;
-    grid1 := <span class="hljs-built_in">make</span>([][]<span class="hljs-keyword">int</span>, <span class="hljs-number">3</span>)
-    <span class="hljs-keyword">for</span> index := <span class="hljs-number">0</span>; index &lt; <span class="hljs-number">3</span>; index++ &#123;
-        parint, _ := strconv.ParseInt(os.Args[index+<span class="hljs-number">1</span>], <span class="hljs-number">10</span>, <span class="hljs-number">0</span>)
-        grid1[index] = <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">int</span>, parint)
-    &#125;
-    fmt.Println(grid1)
-    grid1[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>], grid1[<span class="hljs-number">1</span>][<span class="hljs-number">1</span>], grid1[<span class="hljs-number">2</span>][<span class="hljs-number">2</span>] = <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>
-    fmt.Println(grid1)
-    <span class="hljs-comment">// [[0 0 0] [0 0 0 0] [0 0 0 0 0]]</span>
-    <span class="hljs-comment">// [[1 0 0] [0 2 0 0] [0 0 3 0 0]]</span>
-    <span class="hljs-comment">// 符合预期</span>
-&#125;
-</code></pre>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>    <span class="hljs-string">&quot;fmt&quot;</span><br>    <span class="hljs-string">&quot;os&quot;</span><br>    <span class="hljs-string">&quot;strconv&quot;</span><br>)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>    <span class="hljs-comment">// debug参数设定为 [&quot;3&quot;,&quot;4&quot;,&quot;5&quot;]</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(os.Args) &lt; <span class="hljs-number">4</span> &#123;<br>    fmt.Println(<span class="hljs-string">&quot;This program needs three int:&quot;</span>)<br>    os.Exit(<span class="hljs-number">1</span>)<br>    &#125;<br>    grid1 := <span class="hljs-built_in">make</span>([][]<span class="hljs-keyword">int</span>, <span class="hljs-number">3</span>)<br>    <span class="hljs-keyword">for</span> index := <span class="hljs-number">0</span>; index &lt; <span class="hljs-number">3</span>; index++ &#123;<br>        parint, _ := strconv.ParseInt(os.Args[index+<span class="hljs-number">1</span>], <span class="hljs-number">10</span>, <span class="hljs-number">0</span>)<br>        grid1[index] = <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">int</span>, parint)<br>    &#125;<br>    fmt.Println(grid1)<br>    grid1[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>], grid1[<span class="hljs-number">1</span>][<span class="hljs-number">1</span>], grid1[<span class="hljs-number">2</span>][<span class="hljs-number">2</span>] = <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span><br>    fmt.Println(grid1)<br>    <span class="hljs-comment">// [[0 0 0] [0 0 0 0] [0 0 0 0 0]]</span><br>    <span class="hljs-comment">// [[1 0 0] [0 2 0 0] [0 0 3 0 0]]</span><br>    <span class="hljs-comment">// 符合预期</span><br>&#125;<br><br></code></pre></td></tr></table></figure>
 <h3 id="遍历切片"><a href="#遍历切片" class="headerlink" title="遍历切片"></a>遍历切片</h3><p>for…range 循化，带循环计数器的循环，（”_“）表示丢弃该值</p>
 <p>我的实验：</p>
-<pre><code class="hljs Go">grid2 := <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">int</span>, <span class="hljs-number">5</span>)
-<span class="hljs-keyword">for</span> _, i := <span class="hljs-keyword">range</span> grid2 &#123;
-    fmt.Println(i)
-    i = <span class="hljs-number">2</span>
-&#125;
-fmt.Println(grid2)
-<span class="hljs-keyword">for</span> k, _ := <span class="hljs-keyword">range</span> grid2 &#123;
-    grid2[k] = <span class="hljs-number">2</span>
-&#125;
-fmt.Println(grid2)</code></pre>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs Go">grid2 := <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">int</span>, <span class="hljs-number">5</span>)<br><span class="hljs-keyword">for</span> _, i := <span class="hljs-keyword">range</span> grid2 &#123;<br>    fmt.Println(i)<br>    i = <span class="hljs-number">2</span><br>&#125;<br>fmt.Println(grid2)<br><span class="hljs-keyword">for</span> k, _ := <span class="hljs-keyword">range</span> grid2 &#123;<br>    grid2[k] = <span class="hljs-number">2</span><br>&#125;<br>fmt.Println(grid2)<br></code></pre></td></tr></table></figure>
 <p>输出为</p>
-<pre><code class="hljs Go"><span class="hljs-number">0</span>
-<span class="hljs-number">0</span>
-<span class="hljs-number">0</span>
-<span class="hljs-number">0</span>
-<span class="hljs-number">0</span>
-[<span class="hljs-number">0</span> <span class="hljs-number">0</span> <span class="hljs-number">0</span> <span class="hljs-number">0</span> <span class="hljs-number">0</span>]
-[<span class="hljs-number">2</span> <span class="hljs-number">2</span> <span class="hljs-number">2</span> <span class="hljs-number">2</span> <span class="hljs-number">2</span>]</code></pre>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-number">0</span><br><span class="hljs-number">0</span><br><span class="hljs-number">0</span><br><span class="hljs-number">0</span><br><span class="hljs-number">0</span><br>[<span class="hljs-number">0</span> <span class="hljs-number">0</span> <span class="hljs-number">0</span> <span class="hljs-number">0</span> <span class="hljs-number">0</span>]<br>[<span class="hljs-number">2</span> <span class="hljs-number">2</span> <span class="hljs-number">2</span> <span class="hljs-number">2</span> <span class="hljs-number">2</span>]<br></code></pre></td></tr></table></figure>
 <p>发现取到的值是值，改变并不会引起切片的改变，<strong>如果我们想要修改切片中的项，我们必须使用可以提供有效切片索引而非仅仅是元素副本的 for 循环</strong>，需要区分切片本身引用与 for 循环取值副本的差别。</p>
-<h3 id="切片的修改"><a href="#切片的修改" class="headerlink" title="切片的修改"></a>切片的修改</h3><pre><code class="hljs Go">s = []<span class="hljs-keyword">string</span>&#123;&#125;
-t = []<span class="hljs-keyword">string</span>&#123;<span class="hljs-string">&quot;a&quot;</span>,<span class="hljs-string">&quot;b&quot;</span>,<span class="hljs-string">&quot;c&quot;</span>,<span class="hljs-string">&quot;d&quot;</span>&#125;
-s = <span class="hljs-built_in">append</span>(s,<span class="hljs-string">&quot;h&quot;</span>,<span class="hljs-string">&quot;i&quot;</span>,<span class="hljs-string">&quot;j&quot;</span>) <span class="hljs-comment">//添加多个单一值</span>
-s = <span class="hljs-built_in">append</span>(s, t...) <span class="hljs-comment">//添加t整个切片中所有值</span>
-s = <span class="hljs-built_in">append</span>(s, t[<span class="hljs-number">1</span>:<span class="hljs-number">3</span>]...) <span class="hljs-comment">// 添加一个子切片所有值</span>
-b := []<span class="hljs-keyword">byte</span>&#123;<span class="hljs-string">&#x27;U&#x27;</span>,<span class="hljs-string">&#x27;V&#x27;</span>&#125;
-letters := <span class="hljs-string">&quot;WXY&quot;</span>
-b = <span class="hljs-built_in">append</span>(b, letters...) <span class="hljs-comment">//将字符串字节添加到字节且片中</span></code></pre>
+<h3 id="切片的修改"><a href="#切片的修改" class="headerlink" title="切片的修改"></a>切片的修改</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs Go">s = []<span class="hljs-keyword">string</span>&#123;&#125;<br>t = []<span class="hljs-keyword">string</span>&#123;<span class="hljs-string">&quot;a&quot;</span>,<span class="hljs-string">&quot;b&quot;</span>,<span class="hljs-string">&quot;c&quot;</span>,<span class="hljs-string">&quot;d&quot;</span>&#125;<br>s = <span class="hljs-built_in">append</span>(s,<span class="hljs-string">&quot;h&quot;</span>,<span class="hljs-string">&quot;i&quot;</span>,<span class="hljs-string">&quot;j&quot;</span>) <span class="hljs-comment">//添加多个单一值</span><br>s = <span class="hljs-built_in">append</span>(s, t...) <span class="hljs-comment">//添加t整个切片中所有值</span><br>s = <span class="hljs-built_in">append</span>(s, t[<span class="hljs-number">1</span>:<span class="hljs-number">3</span>]...) <span class="hljs-comment">// 添加一个子切片所有值</span><br>b := []<span class="hljs-keyword">byte</span>&#123;<span class="hljs-string">&#x27;U&#x27;</span>,<span class="hljs-string">&#x27;V&#x27;</span>&#125;<br>letters := <span class="hljs-string">&quot;WXY&quot;</span><br>b = <span class="hljs-built_in">append</span>(b, letters...) <span class="hljs-comment">//将字符串字节添加到字节且片中</span><br></code></pre></td></tr></table></figure>
 <p><code>...</code>这时候很像<code>解包</code>，把切片拆解为底层构成元素然后统一放入。</p>
 <h3 id="排序和搜索切片"><a href="#排序和搜索切片" class="headerlink" title="排序和搜索切片"></a>排序和搜索切片</h3><p>一些常用方法：<code>sort.Float64s()</code>,<code>sort.Ints()</code>,<code>sort.IntsAreSorted()</code>等等。</p>
 <p><code>sort.Sort()</code>函数能够对任意类型进行排序，只需其类型提供了<code>sort.Int结果义的方法，**即只要这些类型根据相应的签名实现了</code>Len(结果 Swap()`**等方法，便可以使用函数排序，下面是自己对结果</p>
-<pre><code class="hljs Go"><span class="hljs-keyword">package</span> m结果
-
-<span class="hljs-keyword">import</span> (
-    <span class="hljs-string">&quot;fmt&quot;</span>结果
-    <span class="hljs-string">&quot;sort&quot;</span>
-    <span class="hljs-string">&quot;strings&quot;</span>
-)
-
-<span class="hljs-keyword">type</span> FoldedString []<span class="hljs-keyword">string</span>
-
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(slice FoldedString)</span> <span class="hljs-title">Len</span><span class="hljs-params">()</span> <span class="hljs-title">int</span></span> &#123;
-    <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(slice)
-&#125;
-
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(slice FoldedString)</span> <span class="hljs-title">Less</span><span class="hljs-params">(i <span class="hljs-keyword">int</span>, j <span class="hljs-keyword">int</span>)</span> <span class="hljs-title">bool</span></span> &#123;
-    <span class="hljs-keyword">return</span> strings.ToLower(slice[i]) &lt; strings.ToLower(slice[j])
-&#125;
-
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(slice FoldedString)</span> <span class="hljs-title">Swap</span><span class="hljs-params">(i <span class="hljs-keyword">int</span>, j <span class="hljs-keyword">int</span>)</span></span> &#123;
-    slice[i], slice[j] = slice[j], slice[i]
-&#125;
-
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
-    test1 := <span class="hljs-built_in">make</span>(FoldedString, <span class="hljs-number">2</span>)
-    test1 = <span class="hljs-built_in">append</span>(test1, <span class="hljs-string">&quot;who&quot;</span>)
-    test1 = <span class="hljs-built_in">append</span>(test1, <span class="hljs-string">&quot;What&quot;</span>)
-    test1 = <span class="hljs-built_in">append</span>(test1, <span class="hljs-string">&quot;Answer&quot;</span>)
-    fmt.Println(test1)
-    sort.Sort(test1)
-    fmt.Println(test1)
-&#125;</code></pre>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-keyword">package</span> m结果<br><br><span class="hljs-keyword">import</span> (<br>    <span class="hljs-string">&quot;fmt&quot;</span>结果<br>    <span class="hljs-string">&quot;sort&quot;</span><br>    <span class="hljs-string">&quot;strings&quot;</span><br>)<br><br><span class="hljs-keyword">type</span> FoldedString []<span class="hljs-keyword">string</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(slice FoldedString)</span> <span class="hljs-title">Len</span><span class="hljs-params">()</span> <span class="hljs-title">int</span></span> &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(slice)<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(slice FoldedString)</span> <span class="hljs-title">Less</span><span class="hljs-params">(i <span class="hljs-keyword">int</span>, j <span class="hljs-keyword">int</span>)</span> <span class="hljs-title">bool</span></span> &#123;<br>    <span class="hljs-keyword">return</span> strings.ToLower(slice[i]) &lt; strings.ToLower(slice[j])<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(slice FoldedString)</span> <span class="hljs-title">Swap</span><span class="hljs-params">(i <span class="hljs-keyword">int</span>, j <span class="hljs-keyword">int</span>)</span></span> &#123;<br>    slice[i], slice[j] = slice[j], slice[i]<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>    test1 := <span class="hljs-built_in">make</span>(FoldedString, <span class="hljs-number">2</span>)<br>    test1 = <span class="hljs-built_in">append</span>(test1, <span class="hljs-string">&quot;who&quot;</span>)<br>    test1 = <span class="hljs-built_in">append</span>(test1, <span class="hljs-string">&quot;What&quot;</span>)<br>    test1 = <span class="hljs-built_in">append</span>(test1, <span class="hljs-string">&quot;Answer&quot;</span>)<br>    fmt.Println(test1)<br>    sort.Sort(test1)<br>    fmt.Println(test1)<br>&#125;<br></code></pre></td></tr></table></figure>
 <p><code>sort.Search()</code>提供了一个二分搜索算法的函数。该函数两个参数：长度、与元素比较的函数（必须为闭包，闭包在下一节涉及）。</p>
 <h2 id="映射"><a href="#映射" class="headerlink" title="映射"></a>映射</h2><p>某些场合也成为散列映射、散列表、无序映射、字典。</p>
 <h3 id="映射的操作"><a href="#映射的操作" class="headerlink" title="映射的操作"></a>映射的操作</h3><div class="table-container">
@@ -447,122 +354,32 @@ b = <span class="hljs-built_in">append</span>(b, letters...) <span class="hljs-c
 <h2 id="例子：词频统计"><a href="#例子：词频统计" class="headerlink" title="例子：词频统计"></a>例子：词频统计</h2><p>这个例子里面涉及到 UTF 编码文件的分割和映射反转（多值），所以详细看了下。</p>
 <h3 id="处理文件"><a href="#处理文件" class="headerlink" title="处理文件"></a>处理文件</h3><ul>
 <li><p>主函数</p>
-<pre><code class="hljs Go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
-    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(os.Args) == <span class="hljs-number">1</span> || os.Args[<span class="hljs-number">1</span>] == <span class="hljs-string">&quot;-h&quot;</span> || os.Args[<span class="hljs-number">1</span>] == <span class="hljs-string">&quot;--help&quot;</span> &#123;
-        fmt.Printf(<span class="hljs-string">&quot;usage: %s &lt;file1&gt; [&lt;file2&gt; [... &lt;fileN&gt;]]\n&quot;</span>,
-            filepath.Base(os.Args[<span class="hljs-number">0</span>]))
-        os.Exit(<span class="hljs-number">1</span>)
-    &#125;
-
-    frequencyForWord := <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">int</span>&#123;&#125; <span class="hljs-comment">// Same as: make(map[string]int)</span>
-    <span class="hljs-keyword">for</span> _, filename := <span class="hljs-keyword">range</span> commandLineFiles(os.Args[<span class="hljs-number">1</span>:]) &#123;
-        updateFrequencies(filename, frequencyForWord)
-    &#125;
-    reportByWords(frequencyForWord)
-    wordsForFrequency := invertStringIntMap(frequencyForWord)
-    reportByFrequency(wordsForFrequency)
-&#125;</code></pre>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(os.Args) == <span class="hljs-number">1</span> || os.Args[<span class="hljs-number">1</span>] == <span class="hljs-string">&quot;-h&quot;</span> || os.Args[<span class="hljs-number">1</span>] == <span class="hljs-string">&quot;--help&quot;</span> &#123;<br>        fmt.Printf(<span class="hljs-string">&quot;usage: %s &lt;file1&gt; [&lt;file2&gt; [... &lt;fileN&gt;]]\n&quot;</span>,<br>            filepath.Base(os.Args[<span class="hljs-number">0</span>]))<br>        os.Exit(<span class="hljs-number">1</span>)<br>    &#125;<br><br>    frequencyForWord := <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">int</span>&#123;&#125; <span class="hljs-comment">// Same as: make(map[string]int)</span><br>    <span class="hljs-keyword">for</span> _, filename := <span class="hljs-keyword">range</span> commandLineFiles(os.Args[<span class="hljs-number">1</span>:]) &#123;<br>        updateFrequencies(filename, frequencyForWord)<br>    &#125;<br>    reportByWords(frequencyForWord)<br>    wordsForFrequency := invertStringIntMap(frequencyForWord)<br>    reportByFrequency(wordsForFrequency)<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>主函数描述了基本流程，建立空映射，便利文件处理更新映射。得到第一个映射后就输出第一份报告<code>reportByWords()</code>这是以字符为键的，然后进行映射反转构建以频数为键的多值映射，并输出第二份报告<code>reportByFrequency()</code>。</p>
 </li>
 <li><p>Windows 通配符处理函数</p>
-<pre><code class="hljs Go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">commandLineFiles</span><span class="hljs-params">(files []<span class="hljs-keyword">string</span>)</span> []<span class="hljs-title">string</span></span> &#123;
-    <span class="hljs-keyword">if</span> runtime.GOOS == <span class="hljs-string">&quot;windows&quot;</span> &#123;
-        args := <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">string</span>, <span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(files))
-        <span class="hljs-keyword">for</span> _, name := <span class="hljs-keyword">range</span> files &#123;
-            <span class="hljs-keyword">if</span> matches, err := filepath.Glob(name); err != <span class="hljs-literal">nil</span> &#123;
-                args = <span class="hljs-built_in">append</span>(args, name) <span class="hljs-comment">// Invalid pattern</span>
-            &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> matches != <span class="hljs-literal">nil</span> &#123; <span class="hljs-comment">// At least one match</span>
-                args = <span class="hljs-built_in">append</span>(args, matches...)
-            &#125;
-        &#125;
-        <span class="hljs-keyword">return</span> args
-    &#125;
-    <span class="hljs-keyword">return</span> files
-&#125;</code></pre>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">commandLineFiles</span><span class="hljs-params">(files []<span class="hljs-keyword">string</span>)</span> []<span class="hljs-title">string</span></span> &#123;<br>    <span class="hljs-keyword">if</span> runtime.GOOS == <span class="hljs-string">&quot;windows&quot;</span> &#123;<br>        args := <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">string</span>, <span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(files))<br>        <span class="hljs-keyword">for</span> _, name := <span class="hljs-keyword">range</span> files &#123;<br>            <span class="hljs-keyword">if</span> matches, err := filepath.Glob(name); err != <span class="hljs-literal">nil</span> &#123;<br>                args = <span class="hljs-built_in">append</span>(args, name) <span class="hljs-comment">// Invalid pattern</span><br>            &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> matches != <span class="hljs-literal">nil</span> &#123; <span class="hljs-comment">// At least one match</span><br>                args = <span class="hljs-built_in">append</span>(args, matches...)<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">return</span> args<br>    &#125;<br>    <span class="hljs-keyword">return</span> files<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>由于 cmd 不支持通配符，对传入参数（文件名）进行预处理</p>
 </li>
 <li><p>文件处理函数</p>
-<pre><code class="hljs Go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">updateFrequencies</span><span class="hljs-params">(filename <span class="hljs-keyword">string</span>, frequencyForWord <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">int</span>)</span></span> &#123;
-    <span class="hljs-keyword">var</span> file *os.File
-    <span class="hljs-keyword">var</span> err error
-    <span class="hljs-keyword">if</span> file, err = os.Open(filename); err != <span class="hljs-literal">nil</span> &#123;
-        log.Println(<span class="hljs-string">&quot;failed to open the file: &quot;</span>, err)
-        <span class="hljs-keyword">return</span>
-    &#125;
-    <span class="hljs-keyword">defer</span> file.Close()
-    readAndUpdateFrequencies(bufio.NewReader(file), frequencyForWord)
-&#125;</code></pre>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">updateFrequencies</span><span class="hljs-params">(filename <span class="hljs-keyword">string</span>, frequencyForWord <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">int</span>)</span></span> &#123;<br>    <span class="hljs-keyword">var</span> file *os.File<br>    <span class="hljs-keyword">var</span> err error<br>    <span class="hljs-keyword">if</span> file, err = os.Open(filename); err != <span class="hljs-literal">nil</span> &#123;<br>        log.Println(<span class="hljs-string">&quot;failed to open the file: &quot;</span>, err)<br>        <span class="hljs-keyword">return</span><br>    &#125;<br>    <span class="hljs-keyword">defer</span> file.Close()<br>    readAndUpdateFrequencies(bufio.NewReader(file), frequencyForWord)<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>打开文件，并用<code>defer</code>让函数返回时关闭文件句柄，并将文件作为<code>*bufferio.Reader</code>传给实际工作函数，实际工作函数<code>readAndUpdateFrequencies()</code><strong>按行读取而不是读取</strong>字节流。</p>
 </li>
 <li><p>实际工作函数</p>
-<pre><code class="hljs Go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">readAndUpdateFrequencies</span><span class="hljs-params">(reader *bufio.Reader,</span></span>
-<span class="hljs-function"><span class="hljs-params">    frequencyForWord <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">int</span>)</span></span> &#123;
-    <span class="hljs-keyword">for</span> &#123;
-        line, err := reader.ReadString(<span class="hljs-string">&#x27;\n&#x27;</span>)
-        <span class="hljs-keyword">for</span> _, word := <span class="hljs-keyword">range</span> SplitOnNonLetters(strings.TrimSpace(line)) &#123;
-            <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(word) &gt; utf8.UTFMax ||
-                utf8.RuneCountInString(word) &gt; <span class="hljs-number">1</span> &#123;
-                frequencyForWord[strings.ToLower(word)] += <span class="hljs-number">1</span>
-            &#125;
-        &#125;
-        <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;
-            <span class="hljs-keyword">if</span> err != io.EOF &#123;
-                log.Println(<span class="hljs-string">&quot;failed to finish reading the file: &quot;</span>, err)
-            &#125;
-            <span class="hljs-keyword">break</span>
-        &#125;
-    &#125;
-&#125;</code></pre>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">readAndUpdateFrequencies</span><span class="hljs-params">(reader *bufio.Reader,</span></span><br><span class="hljs-function"><span class="hljs-params">    frequencyForWord <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">int</span>)</span></span> &#123;<br>    <span class="hljs-keyword">for</span> &#123;<br>        line, err := reader.ReadString(<span class="hljs-string">&#x27;\n&#x27;</span>)<br>        <span class="hljs-keyword">for</span> _, word := <span class="hljs-keyword">range</span> SplitOnNonLetters(strings.TrimSpace(line)) &#123;<br>            <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(word) &gt; utf8.UTFMax ||<br>                utf8.RuneCountInString(word) &gt; <span class="hljs-number">1</span> &#123;<br>                frequencyForWord[strings.ToLower(word)] += <span class="hljs-number">1</span><br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>            <span class="hljs-keyword">if</span> err != io.EOF &#123;<br>                log.Println(<span class="hljs-string">&quot;failed to finish reading the file: &quot;</span>, err)<br>            &#125;<br>            <span class="hljs-keyword">break</span><br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>一个无限循环一行一行读取文件，出现错误的时候报告并给 log，但不直接退出程序（因为还有其他文件需要处理）。</p>
 <p>按行读取<code>reader.ReadString(&#39;\n&#39;)</code>，然后内循环处理每行，对单词进行分割并忽略掉非单词的字符。一开始使用<code>strings.TrimeSpace(line)</code>去除行开头和结束的空白。</p>
 <p>为了快速检查，使用 if 的两个分句，首先检查其长度是否大于 UTF 最多需要的字节，如果多，则必为符合要求的 word（因为分割是按照非 unicode 的 letter 分割的），如果少，那么再特判断，检查 rune 的个数。</p>
 <ul>
 <li><p>分割函数</p>
-<pre><code class="hljs Go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">SplitOnNonLetters</span><span class="hljs-params">(s <span class="hljs-keyword">string</span>)</span> []<span class="hljs-title">string</span></span> &#123;
-    notALetter := <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(char <span class="hljs-keyword">rune</span>)</span> <span class="hljs-title">bool</span></span> &#123; <span class="hljs-keyword">return</span> !unicode.IsLetter(char) &#125;
-    <span class="hljs-keyword">return</span> strings.FieldsFunc(s, notALetter)
-&#125;</code></pre>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">SplitOnNonLetters</span><span class="hljs-params">(s <span class="hljs-keyword">string</span>)</span> []<span class="hljs-title">string</span></span> &#123;<br>    notALetter := <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(char <span class="hljs-keyword">rune</span>)</span> <span class="hljs-title">bool</span></span> &#123; <span class="hljs-keyword">return</span> !unicode.IsLetter(char) &#125;<br>    <span class="hljs-keyword">return</span> strings.FieldsFunc(s, notALetter)<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>用于对行进行字符切分，应用的是<code>strings.FieldsFunc</code>，传入原始字符串和 bool 类型返回值的函数，进行多字符切分（字符串一节有涉及），<code>strings.Split</code>和<code>strings.FieldsFunc</code>详细解释，可以看着一篇<a target="_blank" rel="noopener" href="https://medium.com/@mlowicki/strings-fieldsfunc-vs-strings-split-96c667912f78">Medium:strings.FieldsFunc vs strings.Split</a>。</p>
 </li>
 </ul>
 </li>
 <li><p>统计、反映射与输出函数</p>
 <p>给出实现，不再分析</p>
-<pre><code class="hljs Go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">reportByWords</span><span class="hljs-params">(frequencyForWord <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">int</span>)</span></span> &#123;
-    words := <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">string</span>, <span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(frequencyForWord))
-    wordWidth, frequencyWidth := <span class="hljs-number">0</span>, <span class="hljs-number">0</span>
-    <span class="hljs-keyword">for</span> word, frequency := <span class="hljs-keyword">range</span> frequencyForWord &#123;
-        words = <span class="hljs-built_in">append</span>(words, word)
-        <span class="hljs-keyword">if</span> width := utf8.RuneCountInString(word); width &gt; wordWidth &#123;
-            wordWidth = width
-        &#125;
-        <span class="hljs-keyword">if</span> width := <span class="hljs-built_in">len</span>(fmt.Sprint(frequency)); width &gt; frequencyWidth &#123;
-            frequencyWidth = width
-        &#125;
-    &#125;
-    sort.Strings(words)
-    gap := wordWidth + frequencyWidth - <span class="hljs-built_in">len</span>(<span class="hljs-string">&quot;Word&quot;</span>) - <span class="hljs-built_in">len</span>(<span class="hljs-string">&quot;Frequency&quot;</span>)
-    fmt.Printf(<span class="hljs-string">&quot;Word %*s%s\n&quot;</span>, gap, <span class="hljs-string">&quot; &quot;</span>, <span class="hljs-string">&quot;Frequency&quot;</span>)
-    <span class="hljs-keyword">for</span> _, word := <span class="hljs-keyword">range</span> words &#123;
-        fmt.Printf(<span class="hljs-string">&quot;%-*s %*d\n&quot;</span>, wordWidth, word, frequencyWidth,
-            frequencyForWord[word])
-    &#125;
-&#125;
-
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">reportByFrequency</span><span class="hljs-params">(wordsForFrequency <span class="hljs-keyword">map</span>[<span class="hljs-keyword">int</span>][]<span class="hljs-keyword">string</span>)</span></span> &#123;
-    frequencies := <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">int</span>, <span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(wordsForFrequency))
-    <span class="hljs-keyword">for</span> frequency := <span class="hljs-keyword">range</span> wordsForFrequency &#123;
-        frequencies = <span class="hljs-built_in">append</span>(frequencies, frequency)
-    &#125;
-    sort.Ints(frequencies)
-    width := <span class="hljs-built_in">len</span>(fmt.Sprint(frequencies[<span class="hljs-built_in">len</span>(frequencies)<span class="hljs-number">-1</span>]))
-    fmt.Println(<span class="hljs-string">&quot;Frequency → Words&quot;</span>)
-    <span class="hljs-keyword">for</span> _, frequency := <span class="hljs-keyword">range</span> frequencies &#123;
-        words := wordsForFrequency[frequency]
-        sort.Strings(words)
-        fmt.Printf(<span class="hljs-string">&quot;%*d %s\n&quot;</span>, width, frequency, strings.Join(words, <span class="hljs-string">&quot;, &quot;</span>))
-    &#125;
-&#125;</code></pre>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">reportByWords</span><span class="hljs-params">(frequencyForWord <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">int</span>)</span></span> &#123;<br>    words := <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">string</span>, <span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(frequencyForWord))<br>    wordWidth, frequencyWidth := <span class="hljs-number">0</span>, <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> word, frequency := <span class="hljs-keyword">range</span> frequencyForWord &#123;<br>        words = <span class="hljs-built_in">append</span>(words, word)<br>        <span class="hljs-keyword">if</span> width := utf8.RuneCountInString(word); width &gt; wordWidth &#123;<br>            wordWidth = width<br>        &#125;<br>        <span class="hljs-keyword">if</span> width := <span class="hljs-built_in">len</span>(fmt.Sprint(frequency)); width &gt; frequencyWidth &#123;<br>            frequencyWidth = width<br>        &#125;<br>    &#125;<br>    sort.Strings(words)<br>    gap := wordWidth + frequencyWidth - <span class="hljs-built_in">len</span>(<span class="hljs-string">&quot;Word&quot;</span>) - <span class="hljs-built_in">len</span>(<span class="hljs-string">&quot;Frequency&quot;</span>)<br>    fmt.Printf(<span class="hljs-string">&quot;Word %*s%s\n&quot;</span>, gap, <span class="hljs-string">&quot; &quot;</span>, <span class="hljs-string">&quot;Frequency&quot;</span>)<br>    <span class="hljs-keyword">for</span> _, word := <span class="hljs-keyword">range</span> words &#123;<br>        fmt.Printf(<span class="hljs-string">&quot;%-*s %*d\n&quot;</span>, wordWidth, word, frequencyWidth,<br>            frequencyForWord[word])<br>    &#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">reportByFrequency</span><span class="hljs-params">(wordsForFrequency <span class="hljs-keyword">map</span>[<span class="hljs-keyword">int</span>][]<span class="hljs-keyword">string</span>)</span></span> &#123;<br>    frequencies := <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">int</span>, <span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(wordsForFrequency))<br>    <span class="hljs-keyword">for</span> frequency := <span class="hljs-keyword">range</span> wordsForFrequency &#123;<br>        frequencies = <span class="hljs-built_in">append</span>(frequencies, frequency)<br>    &#125;<br>    sort.Ints(frequencies)<br>    width := <span class="hljs-built_in">len</span>(fmt.Sprint(frequencies[<span class="hljs-built_in">len</span>(frequencies)<span class="hljs-number">-1</span>]))<br>    fmt.Println(<span class="hljs-string">&quot;Frequency → Words&quot;</span>)<br>    <span class="hljs-keyword">for</span> _, frequency := <span class="hljs-keyword">range</span> frequencies &#123;<br>        words := wordsForFrequency[frequency]<br>        sort.Strings(words)<br>        fmt.Printf(<span class="hljs-string">&quot;%*d %s\n&quot;</span>, width, frequency, strings.Join(words, <span class="hljs-string">&quot;, &quot;</span>))<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 </li>
 </ul>
 
@@ -593,7 +410,7 @@ b = <span class="hljs-built_in">append</span>(b, letters...) <span class="hljs-c
                 <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
               
               
-                <div class="post-prevnext row">
+                <div class="post-prevnext">
                   <article class="post-prev col-6">
                     
                     
@@ -686,23 +503,20 @@ b = <span class="hljs-built_in">append</span>(b, letters...) <span class="hljs-c
 
 <!-- SCRIPTS -->
 
-  <script  src="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.css" />
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
 
   <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":200})
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
     NProgress.start()
-    document.addEventListener('DOMContentLoaded', function() {
-      window.NProgress && window.NProgress.inc();
-    })
     window.addEventListener('load', function() {
       NProgress.done();
     })
   </script>
 
 
-<script  src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js" ></script>
-<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/js/bootstrap.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
 <script  src="/js/debouncer.js" ></script>
 <script  src="/js/events.js" ></script>
 <script  src="/js/plugins.js" ></script>
@@ -720,25 +534,26 @@ b = <span class="hljs-built_in">append</span>(b, letters...) <span class="hljs-c
 
 
 
-  <script  src="https://cdn.staticfile.org/tocbot/4.12.0/tocbot.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
 
 
 
-  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
 
 
 
-  <script  src="https://cdn.staticfile.org/anchor-js/4.3.0/anchor.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
 
 
 
-  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
 
 
 
 
 
-  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
   <script>
     (function (window, document) {
       var typing = Fluid.plugins.typing;
@@ -802,7 +617,7 @@ b = <span class="hljs-built_in">append</span>(b, letters...) <span class="hljs-c
       };
     </script>
 
-    <script async src="https://cdn.staticfile.org/mathjax/3.1.2/es5/tex-svg.js" ></script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-svg.js" ></script>
 
   
 

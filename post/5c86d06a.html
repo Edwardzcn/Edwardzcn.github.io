@@ -21,22 +21,22 @@
   <meta name="keywords" content="Edward&#39;s blog">
   <title>【HDU-2717】解题报告（BFS） - Edward&#39;s blog</title>
 
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/css/bootstrap.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
 
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
   <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
   
     
     
       
-      <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.1.2/styles/github-gist.min.css" />
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
     
   
 
   
-    <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
   
 
 
@@ -57,7 +57,7 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"copy_btn":true,"image_zoom":{"enable":true},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
@@ -206,7 +206,7 @@
   </div>
 </nav>
 
-    <div class="banner intro-2" id="background" parallax=true
+    <div class="banner" id="banner" parallax=true
          style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
@@ -239,7 +239,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      867 字
+      868 字
     </span>
   
 
@@ -271,11 +271,11 @@
     
       
 
-<div class="container-fluid">
-  <div class="row">
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
     <div class="d-none d-lg-block col-lg-2"></div>
-    <div class="col-lg-8 nopadding-md">
-      <div class="container nopadding-md" id="board-ctn">
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
@@ -306,90 +306,7 @@
 <h3 id="Recommend"><a href="#Recommend" class="headerlink" title="Recommend"></a>Recommend</h3><p>teddy</p>
 <h1 id="题目大意"><a href="#题目大意" class="headerlink" title="题目大意"></a>题目大意</h1><p>一个人想用最短的时间去抓住一头牛，牛不会动，人的移动规则是：下一次移动可以移动到X+1位置，X-1位置，或者2*X位置（X为当前位置坐标），现在给定人和牛的坐标，求人抓到牛所需要的最短时间（次数）</p>
 <h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><p>很直接的广搜，搜索规则可以理解成三个direction，+1，-1，*2；最后可以加上一点处理（不知道算不算剪枝）因为坐标横大于0，那么若牛的初始坐标值小于人，那么无需广搜可以得到最短次数即坐标值之差（每次左移一个单位），另由于广搜深度增加，每次搜索的量会很大，可以加入判断搜索到结果时立即跳脱循环。</p>
-<h1 id="解题代码"><a href="#解题代码" class="headerlink" title="解题代码"></a>解题代码</h1><pre><code class="hljs C++"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;queue&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cstdio&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cstring&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cmath&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cstdlib&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span><span class="hljs-meta-string">&lt;algorithm&gt;</span></span>
-<span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> <span class="hljs-built_in">std</span>;
-<span class="hljs-keyword">const</span> <span class="hljs-keyword">int</span> maxn=<span class="hljs-number">100001</span>;  
-<span class="hljs-keyword">int</span> n,m; 
-<span class="hljs-keyword">bool</span> vis[maxn]; <span class="hljs-comment">// 访问标记</span>
-<span class="hljs-keyword">int</span> dir[<span class="hljs-number">3</span>]; 
-<span class="hljs-comment">//struct State // BFS 队列中的状态数据结构</span>
-<span class="hljs-comment">//&#123;</span>
-<span class="hljs-comment">//	int x;</span>
-<span class="hljs-comment">//	int Step_Counter; // 搜索步数统计器</span>
-<span class="hljs-comment">//&#125;;</span>
-<span class="hljs-built_in">queue</span> &lt;<span class="hljs-keyword">int</span>&gt; q;
-<span class="hljs-keyword">int</span> step[maxn];
-<span class="hljs-function"><span class="hljs-keyword">bool</span> <span class="hljs-title">CheckState</span><span class="hljs-params">(<span class="hljs-keyword">int</span> X)</span> <span class="hljs-comment">// 约束条件检验</span></span>
-<span class="hljs-function"></span>&#123;
-<span class="hljs-comment">//	int X=now.x;</span>
-	<span class="hljs-keyword">if</span>(X&gt;=<span class="hljs-number">0</span>&amp;&amp;X&lt;=<span class="hljs-number">100000</span>&amp;&amp;!vis[X]) <span class="hljs-comment">// 满足条件	</span>
-	&#123;
-<span class="hljs-comment">//		printf(&quot;next X=%d, step=%d\n&quot;,X,now.Step_Counter+1);</span>
-		<span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;
-	&#125;	
-	<span class="hljs-keyword">else</span> <span class="hljs-comment">// 约束条件冲突</span>
-		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
-&#125;
-
-<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">bfs</span><span class="hljs-params">(<span class="hljs-keyword">int</span> st)</span></span>
-<span class="hljs-function"></span>&#123;
-	<span class="hljs-keyword">int</span> now,next; <span class="hljs-comment">// 定义2个状态，当前和下一个</span>
-	q.push(st);
-	step[st]=<span class="hljs-number">0</span>;
-	vis[st]=<span class="hljs-literal">true</span>; <span class="hljs-comment">// 访问标记</span>
-	<span class="hljs-keyword">while</span>(!q.empty())
-	&#123;
-		now=q.front(); <span class="hljs-comment">// 取队首元素进行扩展</span>
-		<span class="hljs-keyword">if</span>(now==m) <span class="hljs-comment">// 出现目标态，此时为Step_Counter 的最小值，可以退出即可</span>
-		&#123;
-			<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d\n&quot;</span>,step[now]);
-			<span class="hljs-keyword">return</span>;
-		&#125;
-		<span class="hljs-comment">//按照规则搜索下一组数</span>
-		<span class="hljs-comment">//两种形式，一种左右，一种倍乘。 </span>
-		dir[<span class="hljs-number">0</span>]=<span class="hljs-number">-1</span>;dir[<span class="hljs-number">1</span>]=<span class="hljs-number">1</span>;dir[<span class="hljs-number">2</span>]=now;
-		<span class="hljs-keyword">int</span> flag=<span class="hljs-number">0</span>; 
-		<span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">3</span>;i++)
-		&#123;
-			next=now+dir[i];
-<span class="hljs-comment">//			printf(&quot;check X=%d, step=%d\n&quot;,next,step[now]+1); </span>
-			<span class="hljs-keyword">if</span>(next==m)<span class="hljs-comment">//剪枝，立即跳出循环</span>
-			&#123;
-				<span class="hljs-keyword">while</span>(!q.empty()) q.pop();
-				step[next]=step[now]+<span class="hljs-number">1</span>;
-				q.push(now);
-				q.push(next);
-				<span class="hljs-keyword">break</span>;
-			&#125;
-			<span class="hljs-keyword">if</span>(CheckState(next))
-			&#123;
-				step[next]=step[now]+<span class="hljs-number">1</span>;
-				vis[next]=<span class="hljs-literal">true</span>;		<span class="hljs-comment">//不要忘了标记已访问</span>
-				q.push(next);
-			&#125;
-		&#125;
-		q.pop(); <span class="hljs-comment">// 队首元素出队</span>
-	&#125;
- 	<span class="hljs-keyword">return</span>;
-&#125;
-
-<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>
-<span class="hljs-function"></span>&#123;
-<span class="hljs-comment">//	freopen(&quot;in.txt&quot;,&quot;r&quot;,stdin);</span>
-	<span class="hljs-keyword">while</span>(~<span class="hljs-built_in">scanf</span>(<span class="hljs-string">&quot;%d%d&quot;</span>,&amp;n,&amp;m))
-	&#123;
-		<span class="hljs-keyword">while</span>(!q.empty()) q.pop();
-		<span class="hljs-built_in">memset</span>(vis,<span class="hljs-number">0</span>,<span class="hljs-keyword">sizeof</span>(vis));
-		<span class="hljs-built_in">memset</span>(step,<span class="hljs-number">0</span>,<span class="hljs-keyword">sizeof</span>(step));
-		<span class="hljs-keyword">if</span>(n&gt;=m) <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d\n&quot;</span>,n-m);
-		<span class="hljs-keyword">else</span> bfs(n);
-	&#125;
-&#125;</code></pre>
+<h1 id="解题代码"><a href="#解题代码" class="headerlink" title="解题代码"></a>解题代码</h1><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;queue&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cstdio&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cstring&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cmath&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cstdlib&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span><span class="hljs-meta-string">&lt;algorithm&gt;</span></span><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> <span class="hljs-built_in">std</span>;<br><span class="hljs-keyword">const</span> <span class="hljs-keyword">int</span> maxn=<span class="hljs-number">100001</span>;  <br><span class="hljs-keyword">int</span> n,m; <br><span class="hljs-keyword">bool</span> vis[maxn]; <span class="hljs-comment">// 访问标记</span><br><span class="hljs-keyword">int</span> dir[<span class="hljs-number">3</span>]; <br><span class="hljs-comment">//struct State // BFS 队列中的状态数据结构</span><br><span class="hljs-comment">//&#123;</span><br><span class="hljs-comment">//	int x;</span><br><span class="hljs-comment">//	int Step_Counter; // 搜索步数统计器</span><br><span class="hljs-comment">//&#125;;</span><br><span class="hljs-built_in">queue</span> &lt;<span class="hljs-keyword">int</span>&gt; q;<br><span class="hljs-keyword">int</span> step[maxn];<br><span class="hljs-function"><span class="hljs-keyword">bool</span> <span class="hljs-title">CheckState</span><span class="hljs-params">(<span class="hljs-keyword">int</span> X)</span> <span class="hljs-comment">// 约束条件检验</span></span><br><span class="hljs-function"></span>&#123;<br><span class="hljs-comment">//	int X=now.x;</span><br>	<span class="hljs-keyword">if</span>(X&gt;=<span class="hljs-number">0</span>&amp;&amp;X&lt;=<span class="hljs-number">100000</span>&amp;&amp;!vis[X]) <span class="hljs-comment">// 满足条件	</span><br>	&#123;<br><span class="hljs-comment">//		printf(&quot;next X=%d, step=%d\n&quot;,X,now.Step_Counter+1);</span><br>		<span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>	&#125;	<br>	<span class="hljs-keyword">else</span> <span class="hljs-comment">// 约束条件冲突</span><br>		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">bfs</span><span class="hljs-params">(<span class="hljs-keyword">int</span> st)</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-keyword">int</span> now,next; <span class="hljs-comment">// 定义2个状态，当前和下一个</span><br>	q.push(st);<br>	step[st]=<span class="hljs-number">0</span>;<br>	vis[st]=<span class="hljs-literal">true</span>; <span class="hljs-comment">// 访问标记</span><br>	<span class="hljs-keyword">while</span>(!q.empty())<br>	&#123;<br>		now=q.front(); <span class="hljs-comment">// 取队首元素进行扩展</span><br>		<span class="hljs-keyword">if</span>(now==m) <span class="hljs-comment">// 出现目标态，此时为Step_Counter 的最小值，可以退出即可</span><br>		&#123;<br>			<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d\n&quot;</span>,step[now]);<br>			<span class="hljs-keyword">return</span>;<br>		&#125;<br>		<span class="hljs-comment">//按照规则搜索下一组数</span><br>		<span class="hljs-comment">//两种形式，一种左右，一种倍乘。 </span><br>		dir[<span class="hljs-number">0</span>]=<span class="hljs-number">-1</span>;dir[<span class="hljs-number">1</span>]=<span class="hljs-number">1</span>;dir[<span class="hljs-number">2</span>]=now;<br>		<span class="hljs-keyword">int</span> flag=<span class="hljs-number">0</span>; <br>		<span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">3</span>;i++)<br>		&#123;<br>			next=now+dir[i];<br><span class="hljs-comment">//			printf(&quot;check X=%d, step=%d\n&quot;,next,step[now]+1); </span><br>			<span class="hljs-keyword">if</span>(next==m)<span class="hljs-comment">//剪枝，立即跳出循环</span><br>			&#123;<br>				<span class="hljs-keyword">while</span>(!q.empty()) q.pop();<br>				step[next]=step[now]+<span class="hljs-number">1</span>;<br>				q.push(now);<br>				q.push(next);<br>				<span class="hljs-keyword">break</span>;<br>			&#125;<br>			<span class="hljs-keyword">if</span>(CheckState(next))<br>			&#123;<br>				step[next]=step[now]+<span class="hljs-number">1</span>;<br>				vis[next]=<span class="hljs-literal">true</span>;		<span class="hljs-comment">//不要忘了标记已访问</span><br>				q.push(next);<br>			&#125;<br>		&#125;<br>		q.pop(); <span class="hljs-comment">// 队首元素出队</span><br>	&#125;<br> 	<span class="hljs-keyword">return</span>;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br><span class="hljs-comment">//	freopen(&quot;in.txt&quot;,&quot;r&quot;,stdin);</span><br>	<span class="hljs-keyword">while</span>(~<span class="hljs-built_in">scanf</span>(<span class="hljs-string">&quot;%d%d&quot;</span>,&amp;n,&amp;m))<br>	&#123;<br>		<span class="hljs-keyword">while</span>(!q.empty()) q.pop();<br>		<span class="hljs-built_in">memset</span>(vis,<span class="hljs-number">0</span>,<span class="hljs-keyword">sizeof</span>(vis));<br>		<span class="hljs-built_in">memset</span>(step,<span class="hljs-number">0</span>,<span class="hljs-keyword">sizeof</span>(step));<br>		<span class="hljs-keyword">if</span>(n&gt;=m) <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d\n&quot;</span>,n-m);<br>		<span class="hljs-keyword">else</span> bfs(n);<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <h1 id="收获与反思"><a href="#收获与反思" class="headerlink" title="收获与反思"></a>收获与反思</h1><p>使用模板里的结构时出现了两次MLE，不知道是什么个情况，有待检查。</p>
 
             </div>
@@ -423,7 +340,7 @@
                 <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
               
               
-                <div class="post-prevnext row">
+                <div class="post-prevnext">
                   <article class="post-prev col-6">
                     
                     
@@ -516,23 +433,20 @@
 
 <!-- SCRIPTS -->
 
-  <script  src="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.css" />
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
 
   <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":200})
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
     NProgress.start()
-    document.addEventListener('DOMContentLoaded', function() {
-      window.NProgress && window.NProgress.inc();
-    })
     window.addEventListener('load', function() {
       NProgress.done();
     })
   </script>
 
 
-<script  src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js" ></script>
-<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/js/bootstrap.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
 <script  src="/js/debouncer.js" ></script>
 <script  src="/js/events.js" ></script>
 <script  src="/js/plugins.js" ></script>
@@ -550,25 +464,26 @@
 
 
 
-  <script  src="https://cdn.staticfile.org/tocbot/4.12.0/tocbot.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
 
 
 
-  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
 
 
 
-  <script  src="https://cdn.staticfile.org/anchor-js/4.3.0/anchor.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
 
 
 
-  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
 
 
 
 
 
-  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
   <script>
     (function (window, document) {
       var typing = Fluid.plugins.typing;
@@ -632,7 +547,7 @@
       };
     </script>
 
-    <script async src="https://cdn.staticfile.org/mathjax/3.1.2/es5/tex-svg.js" ></script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-svg.js" ></script>
 
   
 

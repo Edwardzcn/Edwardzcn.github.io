@@ -21,22 +21,22 @@
   <meta name="keywords" content="Edward&#39;s blog">
   <title>数字图像处理——理想滤波器与振铃特性 - Edward&#39;s blog</title>
 
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/css/bootstrap.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
 
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
   <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
   
     
     
       
-      <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.1.2/styles/github-gist.min.css" />
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
     
   
 
   
-    <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
   
 
 
@@ -57,7 +57,7 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"copy_btn":true,"image_zoom":{"enable":true},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
@@ -206,7 +206,7 @@
   </div>
 </nav>
 
-    <div class="banner intro-2" id="background" parallax=true
+    <div class="banner" id="banner" parallax=true
          style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
@@ -271,11 +271,11 @@
     
       
 
-<div class="container-fluid">
-  <div class="row">
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
     <div class="d-none d-lg-block col-lg-2"></div>
-    <div class="col-lg-8 nopadding-md">
-      <div class="container nopadding-md" id="board-ctn">
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
@@ -303,32 +303,7 @@ H_{IHPF}(u,v) = \left \{
 <p>两组测试均为 100x100 大小，截至半径为 20 的低通和高通滤波器实验结果。</p>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/3.png" srcset="/img/loading.gif" alt="png"></p>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/4.png" srcset="/img/loading.gif" alt="png"></p>
-<h2 id="使用一个-ILPF-平滑图像"><a href="#使用一个-ILPF-平滑图像" class="headerlink" title="使用一个 ILPF 平滑图像"></a>使用一个 ILPF 平滑图像</h2><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getIdealFilterPassImg</span>(<span class="hljs-params">input_img : np.array, filter_type : <span class="hljs-built_in">str</span> , filter_d0, size = <span class="hljs-literal">None</span></span>):</span>
-    <span class="hljs-keyword">assert</span> filter_type <span class="hljs-keyword">in</span> (<span class="hljs-string">&quot;lpf&quot;</span>,<span class="hljs-string">&quot;hpf&quot;</span>)
-    <span class="hljs-comment"># 内部进行填充 （mask大小与原图相等 进行2K-1的0填充）</span>
-    pad_img = getPaddingImg(input_img,input_img.shape,<span class="hljs-string">&quot;corner&quot;</span>)
-
-    f_img = np.fft.fft2(input_img , s = size)
-    shift_img = np.fft.fftshift(f_img)
-    mask_shift_img = getIdealMask(f_img.shape,filter_d0,filter_type)
-    new_shift_img = mask_shift_img*shift_img
-    new_manitude_img = <span class="hljs-number">20</span>*np.log(np.<span class="hljs-built_in">abs</span>(new_shift_img+eps))
-    new_f_img = np.fft.ifftshift(new_shift_img)
-    new_img = np.fft.ifft2(new_f_img)
-    new_img = np.<span class="hljs-built_in">abs</span>(new_img)
-
-    <span class="hljs-comment"># 内部进行裁剪</span>
-    new_img = cutOriginalImg(new_img, input_img.shape, <span class="hljs-string">&quot;corner&quot;</span>)
-    <span class="hljs-keyword">return</span> new_img,new_manitude_img,mask_shift_img
-
-<span class="hljs-comment"># 使用书上例子，cv库读取图像</span>
-original_img = cv2.imread(<span class="hljs-string">&#x27;./DIP3E_Original_Images_CH04/Fig0441(a)(characters_test_pattern).tif&#x27;</span>,<span class="hljs-number">0</span>)
-<span class="hljs-comment"># 设定截止半径</span>
-d_list = [<span class="hljs-number">10</span>,<span class="hljs-number">30</span>,<span class="hljs-number">60</span>,<span class="hljs-number">160</span>,<span class="hljs-number">460</span>]
-
-<span class="hljs-keyword">for</span> d <span class="hljs-keyword">in</span> d_list:
-    smmoth_img,manitude_img,mask_img = getIdealFilterPassImg(original_img, <span class="hljs-string">&quot;lpf&quot;</span> , d)
-    showTwoImg(smmoth_img,manitude_img,<span class="hljs-string">f&quot;Smooth Img with $D_0$ = <span class="hljs-subst">&#123;d&#125;</span>&quot;</span>, <span class="hljs-string">f&quot;Manitude with $D_0$ = <span class="hljs-subst">&#123;d&#125;</span>&quot;</span>)</code></pre>
+<h2 id="使用一个-ILPF-平滑图像"><a href="#使用一个-ILPF-平滑图像" class="headerlink" title="使用一个 ILPF 平滑图像"></a>使用一个 ILPF 平滑图像</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getIdealFilterPassImg</span>(<span class="hljs-params">input_img : np.array, filter_type : <span class="hljs-built_in">str</span> , filter_d0, size = <span class="hljs-literal">None</span></span>):</span><br>    <span class="hljs-keyword">assert</span> filter_type <span class="hljs-keyword">in</span> (<span class="hljs-string">&quot;lpf&quot;</span>,<span class="hljs-string">&quot;hpf&quot;</span>)<br>    <span class="hljs-comment"># 内部进行填充 （mask大小与原图相等 进行2K-1的0填充）</span><br>    pad_img = getPaddingImg(input_img,input_img.shape,<span class="hljs-string">&quot;corner&quot;</span>)<br><br>    f_img = np.fft.fft2(input_img , s = size)<br>    shift_img = np.fft.fftshift(f_img)<br>    mask_shift_img = getIdealMask(f_img.shape,filter_d0,filter_type)<br>    new_shift_img = mask_shift_img*shift_img<br>    new_manitude_img = <span class="hljs-number">20</span>*np.log(np.<span class="hljs-built_in">abs</span>(new_shift_img+eps))<br>    new_f_img = np.fft.ifftshift(new_shift_img)<br>    new_img = np.fft.ifft2(new_f_img)<br>    new_img = np.<span class="hljs-built_in">abs</span>(new_img)<br><br>    <span class="hljs-comment"># 内部进行裁剪</span><br>    new_img = cutOriginalImg(new_img, input_img.shape, <span class="hljs-string">&quot;corner&quot;</span>)<br>    <span class="hljs-keyword">return</span> new_img,new_manitude_img,mask_shift_img<br><br><span class="hljs-comment"># 使用书上例子，cv库读取图像</span><br>original_img = cv2.imread(<span class="hljs-string">&#x27;./DIP3E_Original_Images_CH04/Fig0441(a)(characters_test_pattern).tif&#x27;</span>,<span class="hljs-number">0</span>)<br><span class="hljs-comment"># 设定截止半径</span><br>d_list = [<span class="hljs-number">10</span>,<span class="hljs-number">30</span>,<span class="hljs-number">60</span>,<span class="hljs-number">160</span>,<span class="hljs-number">460</span>]<br><br><span class="hljs-keyword">for</span> d <span class="hljs-keyword">in</span> d_list:<br>    smmoth_img,manitude_img,mask_img = getIdealFilterPassImg(original_img, <span class="hljs-string">&quot;lpf&quot;</span> , d)<br>    showTwoImg(smmoth_img,manitude_img,<span class="hljs-string">f&quot;Smooth Img with $D_0$ = <span class="hljs-subst">&#123;d&#125;</span>&quot;</span>, <span class="hljs-string">f&quot;Manitude with $D_0$ = <span class="hljs-subst">&#123;d&#125;</span>&quot;</span>)<br></code></pre></td></tr></table></figure>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/IdealFilter/1.png" srcset="/img/loading.gif" alt="png"></p>
 <a id="more"></a>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/IdealFilter/2.png" srcset="/img/loading.gif" alt="png"></p>
@@ -340,25 +315,7 @@ d_list = [<span class="hljs-number">10</span>,<span class="hljs-number">30</span
 <blockquote>
 <p>这种振铃现象是理想滤波器的一种特性，从这个例子我们可以清楚地看到，理想低通滤波器并不是非常实用。然而，作为滤波概念发展的一部分，研究这种滤波器的特性非常有用。</p>
 </blockquote>
-<h2 id="振铃现象的一些见解"><a href="#振铃现象的一些见解" class="headerlink" title="振铃现象的一些见解"></a>振铃现象的一些见解</h2><pre><code class="hljs python"><span class="hljs-comment"># 绘制空间域表示图和水平线灰度剖面图</span>
-
-<span class="hljs-keyword">for</span> d <span class="hljs-keyword">in</span> d_list:
-    fre_mask=getIdealMask((<span class="hljs-number">688</span>,<span class="hljs-number">688</span>),d,<span class="hljs-string">&quot;lpf&quot;</span>)
-    spa_mask=frequencyToSpatial(fre_mask)
-    X = [i <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(spa_mask.shape[<span class="hljs-number">0</span>])]
-    Y = spa_mask[spa_mask.shape[<span class="hljs-number">0</span>]//<span class="hljs-number">2</span>]
-    plt.figure(figsize=(<span class="hljs-number">8</span>,<span class="hljs-number">4</span>))
-    ax1 = plt.subplot(<span class="hljs-number">121</span>)
-    ax2 = plt.subplot(<span class="hljs-number">122</span>)
-    ax1.set_title(<span class="hljs-string">f&quot;Spatial Img with $D_0 = <span class="hljs-subst">&#123;d&#125;</span>$&quot;</span>)
-    ax2.set_title(<span class="hljs-string">f&quot;Grayscale with $D_0 = <span class="hljs-subst">&#123;d&#125;</span>$&quot;</span>)
-    ax1.imshow(spa_mask,cmap = <span class="hljs-string">&quot;gray&quot;</span>)
-    ax2.plot(X,Y)
-    ax2.spines[<span class="hljs-string">&#x27;left&#x27;</span>].set_color(<span class="hljs-string">&#x27;none&#x27;</span>)
-    ax2.spines[<span class="hljs-string">&#x27;top&#x27;</span>].set_color(<span class="hljs-string">&#x27;none&#x27;</span>)
-    ax2.spines[<span class="hljs-string">&#x27;right&#x27;</span>].set_color(<span class="hljs-string">&#x27;none&#x27;</span>)
-    ax2.set_yticks([])
-    ax2.set_yticklabels([])</code></pre>
+<h2 id="振铃现象的一些见解"><a href="#振铃现象的一些见解" class="headerlink" title="振铃现象的一些见解"></a>振铃现象的一些见解</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 绘制空间域表示图和水平线灰度剖面图</span><br><br><span class="hljs-keyword">for</span> d <span class="hljs-keyword">in</span> d_list:<br>    fre_mask=getIdealMask((<span class="hljs-number">688</span>,<span class="hljs-number">688</span>),d,<span class="hljs-string">&quot;lpf&quot;</span>)<br>    spa_mask=frequencyToSpatial(fre_mask)<br>    X = [i <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(spa_mask.shape[<span class="hljs-number">0</span>])]<br>    Y = spa_mask[spa_mask.shape[<span class="hljs-number">0</span>]//<span class="hljs-number">2</span>]<br>    plt.figure(figsize=(<span class="hljs-number">8</span>,<span class="hljs-number">4</span>))<br>    ax1 = plt.subplot(<span class="hljs-number">121</span>)<br>    ax2 = plt.subplot(<span class="hljs-number">122</span>)<br>    ax1.set_title(<span class="hljs-string">f&quot;Spatial Img with $D_0 = <span class="hljs-subst">&#123;d&#125;</span>$&quot;</span>)<br>    ax2.set_title(<span class="hljs-string">f&quot;Grayscale with $D_0 = <span class="hljs-subst">&#123;d&#125;</span>$&quot;</span>)<br>    ax1.imshow(spa_mask,cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>    ax2.plot(X,Y)<br>    ax2.spines[<span class="hljs-string">&#x27;left&#x27;</span>].set_color(<span class="hljs-string">&#x27;none&#x27;</span>)<br>    ax2.spines[<span class="hljs-string">&#x27;top&#x27;</span>].set_color(<span class="hljs-string">&#x27;none&#x27;</span>)<br>    ax2.spines[<span class="hljs-string">&#x27;right&#x27;</span>].set_color(<span class="hljs-string">&#x27;none&#x27;</span>)<br>    ax2.set_yticks([])<br>    ax2.set_yticklabels([])<br></code></pre></td></tr></table></figure>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/IdealFilter/6.png" srcset="/img/loading.gif" alt="png"></p>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/IdealFilter/7.png" srcset="/img/loading.gif" alt="png"></p>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/IdealFilter/8.png" srcset="/img/loading.gif" alt="png"></p>
@@ -396,7 +353,7 @@ d_list = [<span class="hljs-number">10</span>,<span class="hljs-number">30</span
                 <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
               
               
-                <div class="post-prevnext row">
+                <div class="post-prevnext">
                   <article class="post-prev col-6">
                     
                     
@@ -489,23 +446,20 @@ d_list = [<span class="hljs-number">10</span>,<span class="hljs-number">30</span
 
 <!-- SCRIPTS -->
 
-  <script  src="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.css" />
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
 
   <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":200})
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
     NProgress.start()
-    document.addEventListener('DOMContentLoaded', function() {
-      window.NProgress && window.NProgress.inc();
-    })
     window.addEventListener('load', function() {
       NProgress.done();
     })
   </script>
 
 
-<script  src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js" ></script>
-<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/js/bootstrap.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
 <script  src="/js/debouncer.js" ></script>
 <script  src="/js/events.js" ></script>
 <script  src="/js/plugins.js" ></script>
@@ -523,25 +477,26 @@ d_list = [<span class="hljs-number">10</span>,<span class="hljs-number">30</span
 
 
 
-  <script  src="https://cdn.staticfile.org/tocbot/4.12.0/tocbot.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
 
 
 
-  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
 
 
 
-  <script  src="https://cdn.staticfile.org/anchor-js/4.3.0/anchor.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
 
 
 
-  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
 
 
 
 
 
-  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
   <script>
     (function (window, document) {
       var typing = Fluid.plugins.typing;
@@ -605,7 +560,7 @@ d_list = [<span class="hljs-number">10</span>,<span class="hljs-number">30</span
       };
     </script>
 
-    <script async src="https://cdn.staticfile.org/mathjax/3.1.2/es5/tex-svg.js" ></script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-svg.js" ></script>
 
   
 

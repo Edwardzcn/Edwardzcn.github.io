@@ -21,22 +21,22 @@
   <meta name="keywords" content="Edward&#39;s blog">
   <title>数字图像处理——章节总复习 - Edward&#39;s blog</title>
 
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/css/bootstrap.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
 
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
   <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
   
     
     
       
-      <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.1.2/styles/github-gist.min.css" />
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
     
   
 
   
-    <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
   
 
 
@@ -57,7 +57,7 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"copy_btn":true,"image_zoom":{"enable":true},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
@@ -206,7 +206,7 @@
   </div>
 </nav>
 
-    <div class="banner intro-2" id="background" parallax=true
+    <div class="banner" id="banner" parallax=true
          style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
@@ -239,7 +239,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      11.8k 字
+      11.7k 字
     </span>
   
 
@@ -271,11 +271,11 @@
     
       
 
-<div class="container-fluid">
-  <div class="row">
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
     <div class="d-none d-lg-block col-lg-2"></div>
-    <div class="col-lg-8 nopadding-md">
-      <div class="container nopadding-md" id="board-ctn">
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
@@ -382,61 +382,10 @@
 </ul>
 <h3 id="gamma-矫正和二值化的代码实现"><a href="#gamma-矫正和二值化的代码实现" class="headerlink" title="gamma 矫正和二值化的代码实现"></a>gamma 矫正和二值化的代码实现</h3><ul>
 <li><p>gamma 矫正</p>
-<pre><code class="hljs python">  <span class="hljs-comment"># 建表以后LUT</span>
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">GammaTable</span>(<span class="hljs-params">gamma</span>):</span>
-  invGamma = <span class="hljs-number">1.0</span> / gamma
-  table = np.array([((i / <span class="hljs-number">255.0</span>) ** invGamma) * <span class="hljs-number">255</span>
-                    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> np.arange(<span class="hljs-number">0</span>, <span class="hljs-number">256</span>)]).astype(<span class="hljs-string">&quot;uint8&quot;</span>)
-  <span class="hljs-keyword">return</span> table
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">LUT</span>(<span class="hljs-params">image , lutTable</span>):</span>
-  <span class="hljs-comment"># image: grayscale or RGB color image</span>
-  <span class="hljs-comment"># luTable: [255,] 1D numpy array mapping 0-255 values to ohter values</span>
-  lut = <span class="hljs-keyword">lambda</span> x: lutTable[x]
-  <span class="hljs-keyword">return</span> lut(image)
-  <span class="hljs-comment"># 直接伽马函数映射</span>
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">DirectGammaFunc</span>(<span class="hljs-params">image,gamma</span>):</span>
-  invGamma = <span class="hljs-number">1.0</span>/gamma
-  fuc =  <span class="hljs-keyword">lambda</span> x: ((x/<span class="hljs-number">255.0</span>)**invGamma)*<span class="hljs-number">255</span>
-  <span class="hljs-keyword">return</span> fuc(image).astype(<span class="hljs-string">&quot;uint8&quot;</span>)
-  <span class="hljs-comment"># R为单通道灰度图</span>
-  <span class="hljs-comment"># 调用</span>
-  R_crrt = LUT(R,GammaTable(<span class="hljs-number">1.5</span>))
-  R_crrt = DirectGammaFunc(R,<span class="hljs-number">1.5</span>)</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python">  <span class="hljs-comment"># 建表以后LUT</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">GammaTable</span>(<span class="hljs-params">gamma</span>):</span><br>  invGamma = <span class="hljs-number">1.0</span> / gamma<br>  table = np.array([((i / <span class="hljs-number">255.0</span>) ** invGamma) * <span class="hljs-number">255</span><br>                    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> np.arange(<span class="hljs-number">0</span>, <span class="hljs-number">256</span>)]).astype(<span class="hljs-string">&quot;uint8&quot;</span>)<br>  <span class="hljs-keyword">return</span> table<br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">LUT</span>(<span class="hljs-params">image , lutTable</span>):</span><br>  <span class="hljs-comment"># image: grayscale or RGB color image</span><br>  <span class="hljs-comment"># luTable: [255,] 1D numpy array mapping 0-255 values to ohter values</span><br>  lut = <span class="hljs-keyword">lambda</span> x: lutTable[x]<br>  <span class="hljs-keyword">return</span> lut(image)<br>  <span class="hljs-comment"># 直接伽马函数映射</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">DirectGammaFunc</span>(<span class="hljs-params">image,gamma</span>):</span><br>  invGamma = <span class="hljs-number">1.0</span>/gamma<br>  fuc =  <span class="hljs-keyword">lambda</span> x: ((x/<span class="hljs-number">255.0</span>)**invGamma)*<span class="hljs-number">255</span><br>  <span class="hljs-keyword">return</span> fuc(image).astype(<span class="hljs-string">&quot;uint8&quot;</span>)<br>  <span class="hljs-comment"># R为单通道灰度图</span><br>  <span class="hljs-comment"># 调用</span><br>  R_crrt = LUT(R,GammaTable(<span class="hljs-number">1.5</span>))<br>  R_crrt = DirectGammaFunc(R,<span class="hljs-number">1.5</span>)<br></code></pre></td></tr></table></figure>
 </li>
 <li><p>二值化（三种写法，见注释）</p>
-<pre><code class="hljs python"><span class="hljs-comment"># 朴素循环</span>
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">ImThresh</span>(<span class="hljs-params">im, minv, maxv</span>):</span>
-    BinImg = np.zeros(im.shape, dtype=im.dtype)
-    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(im.shape[<span class="hljs-number">0</span>]):
-        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(im.shape[<span class="hljs-number">1</span>]):
-            <span class="hljs-keyword">if</span> im[i,j]&gt;=minv <span class="hljs-keyword">and</span> im[i,j]&lt;=maxv:
-                BinImg[i,j]=<span class="hljs-number">1</span>
-            <span class="hljs-keyword">else</span>:
-                BinImg[i,j]=<span class="hljs-number">0</span>
-    <span class="hljs-keyword">return</span> BinImg
-
-<span class="hljs-comment"># 向量运算</span>
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">ImThreshv2</span>(<span class="hljs-params">image, minv, maxv</span>):</span>
-    <span class="hljs-keyword">assert</span>(<span class="hljs-built_in">len</span>(image.shape)==<span class="hljs-number">2</span>)
-    <span class="hljs-comment"># 二值逻辑</span>
-    group1 = image &gt;= minv
-    group2 = image &lt;= maxv
-    <span class="hljs-comment"># 与操作 即要求满足 像素值&gt;=minv 又要 &lt;=maxv</span>
-    <span class="hljs-keyword">return</span> (group1*group2).astype(np.uint8)
-
-<span class="hljs-comment"># 杰哥的写法（也是向量运算）</span>
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">ImThreshv3</span>(<span class="hljs-params">image, minv, maxv</span>):</span>
-    <span class="hljs-keyword">assert</span>(<span class="hljs-built_in">len</span>(image.shape)==<span class="hljs-number">2</span>)
-    <span class="hljs-comment"># 只是这里用的非逻辑值，数字化为0，1（uint8类型）</span>
-    newimg = np.copy(image)
-    newimg[newimg &gt; maxv] = <span class="hljs-number">0</span>
-    newimg[newimg &lt; minv] = <span class="hljs-number">0</span>
-    newimg[newimg != <span class="hljs-number">0</span>] = <span class="hljs-number">1</span>
-    <span class="hljs-keyword">return</span> newimg.astype(np.uint8)
-
-<span class="hljs-comment"># 调用</span>
-Threshimg = Imthresh(R,<span class="hljs-number">120</span>,<span class="hljs-number">256</span>)
-Threshimg2  = Imthreshv2(R,<span class="hljs-number">120</span>,<span class="hljs-number">256</span>)</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 朴素循环</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">ImThresh</span>(<span class="hljs-params">im, minv, maxv</span>):</span><br>    BinImg = np.zeros(im.shape, dtype=im.dtype)<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(im.shape[<span class="hljs-number">0</span>]):<br>        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(im.shape[<span class="hljs-number">1</span>]):<br>            <span class="hljs-keyword">if</span> im[i,j]&gt;=minv <span class="hljs-keyword">and</span> im[i,j]&lt;=maxv:<br>                BinImg[i,j]=<span class="hljs-number">1</span><br>            <span class="hljs-keyword">else</span>:<br>                BinImg[i,j]=<span class="hljs-number">0</span><br>    <span class="hljs-keyword">return</span> BinImg<br><br><span class="hljs-comment"># 向量运算</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">ImThreshv2</span>(<span class="hljs-params">image, minv, maxv</span>):</span><br>    <span class="hljs-keyword">assert</span>(<span class="hljs-built_in">len</span>(image.shape)==<span class="hljs-number">2</span>)<br>    <span class="hljs-comment"># 二值逻辑</span><br>    group1 = image &gt;= minv<br>    group2 = image &lt;= maxv<br>    <span class="hljs-comment"># 与操作 即要求满足 像素值&gt;=minv 又要 &lt;=maxv</span><br>    <span class="hljs-keyword">return</span> (group1*group2).astype(np.uint8)<br><br><span class="hljs-comment"># 杰哥的写法（也是向量运算）</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">ImThreshv3</span>(<span class="hljs-params">image, minv, maxv</span>):</span><br>    <span class="hljs-keyword">assert</span>(<span class="hljs-built_in">len</span>(image.shape)==<span class="hljs-number">2</span>)<br>    <span class="hljs-comment"># 只是这里用的非逻辑值，数字化为0，1（uint8类型）</span><br>    newimg = np.copy(image)<br>    newimg[newimg &gt; maxv] = <span class="hljs-number">0</span><br>    newimg[newimg &lt; minv] = <span class="hljs-number">0</span><br>    newimg[newimg != <span class="hljs-number">0</span>] = <span class="hljs-number">1</span><br>    <span class="hljs-keyword">return</span> newimg.astype(np.uint8)<br><br><span class="hljs-comment"># 调用</span><br>Threshimg = Imthresh(R,<span class="hljs-number">120</span>,<span class="hljs-number">256</span>)<br>Threshimg2  = Imthreshv2(R,<span class="hljs-number">120</span>,<span class="hljs-number">256</span>)<br></code></pre></td></tr></table></figure>
 </li>
 </ul>
 <h2 id="直方图均衡"><a href="#直方图均衡" class="headerlink" title="直方图均衡"></a>直方图均衡</h2><h3 id="直方图"><a href="#直方图" class="headerlink" title="直方图"></a>直方图</h3><ul>
@@ -466,41 +415,7 @@ Threshimg2  = Imthreshv2(R,<span class="hljs-number">120</span>,<span class="hlj
 </li>
 </ol>
 <p>这便是我们想要的函数变换，<strong>无论$p_r(r)$分布如何</strong>，经过这种类分布函数的函数变换，得到的$p_s(s)$就是一个<strong>均匀分布</strong>。</p>
-<h3 id="直方图均衡化代码实现"><a href="#直方图均衡化代码实现" class="headerlink" title="直方图均衡化代码实现"></a>直方图均衡化代码实现</h3><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">CaculateHistogram</span>(<span class="hljs-params">input_image</span>):</span>
-    <span class="hljs-comment"># 参数1. 图像</span>
-    <span class="hljs-comment"># 输出1. 总像素值</span>
-    <span class="hljs-comment"># 输出2. 灰度值分布计数</span>
-    <span class="hljs-comment"># 输出3. 灰度值分布前缀和（用来做后续直方图平局奴化）</span>
-    <span class="hljs-comment"># 区分单通道还是三通道图像</span>
-    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(np.shape(input_image)) == <span class="hljs-number">3</span>:
-           height,width,level = np.shape(input_image)
-           summ = height*width*level
-    <span class="hljs-keyword">else</span> :
-           height,width = np.shape(input_image)
-           summ = height*width
-    caculate_num,index_x = np.histogram(input_image,np.arange(<span class="hljs-number">0</span>,<span class="hljs-number">256</span>))
-    caculate_num = np.append(caculate_num,<span class="hljs-number">1</span>)
-    <span class="hljs-comment"># 前缀和</span>
-    sum_num = np.copy(caculate_num)
-    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">256</span>):
-        sum_num[i] = sum_num[i<span class="hljs-number">-1</span>] + sum_num[i]
-    <span class="hljs-keyword">return</span> summ,caculate_num,sum_num
-
-<span class="hljs-comment"># 计算直方图数组</span>
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cumsum</span>(<span class="hljs-params">img, bins</span>):</span>
-    histogram = np.zeros(bins)
-    <span class="hljs-keyword">for</span> pixel <span class="hljs-keyword">in</span> np.arange(<span class="hljs-number">0</span>, bins, <span class="hljs-number">1</span>):
-        <span class="hljs-comment"># 向量化计算像素值为piexel的像素数量</span>
-        histogram[pixel] += <span class="hljs-built_in">len</span>(img[img==pixel])
-    <span class="hljs-keyword">return</span> histogram
-
-<span class="hljs-comment"># 直方图均衡接口函数，利用了LUT</span>
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">HistogramEqualizationLUT</span>(<span class="hljs-params">input_image</span>):</span>
-    size,data,data_sum = CaculateHistogram(input_image)
-    fxy  = <span class="hljs-keyword">lambda</span> x: (<span class="hljs-number">255</span>*data_sum[x])//size
-    table = np.array([fxy(i) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">256</span>)])
-    lut = <span class="hljs-keyword">lambda</span> x: table[x]
-    <span class="hljs-keyword">return</span> lut(input_image),table</code></pre>
+<h3 id="直方图均衡化代码实现"><a href="#直方图均衡化代码实现" class="headerlink" title="直方图均衡化代码实现"></a>直方图均衡化代码实现</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">CaculateHistogram</span>(<span class="hljs-params">input_image</span>):</span><br>    <span class="hljs-comment"># 参数1. 图像</span><br>    <span class="hljs-comment"># 输出1. 总像素值</span><br>    <span class="hljs-comment"># 输出2. 灰度值分布计数</span><br>    <span class="hljs-comment"># 输出3. 灰度值分布前缀和（用来做后续直方图平局奴化）</span><br>    <span class="hljs-comment"># 区分单通道还是三通道图像</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(np.shape(input_image)) == <span class="hljs-number">3</span>:<br>           height,width,level = np.shape(input_image)<br>           summ = height*width*level<br>    <span class="hljs-keyword">else</span> :<br>           height,width = np.shape(input_image)<br>           summ = height*width<br>    caculate_num,index_x = np.histogram(input_image,np.arange(<span class="hljs-number">0</span>,<span class="hljs-number">256</span>))<br>    caculate_num = np.append(caculate_num,<span class="hljs-number">1</span>)<br>    <span class="hljs-comment"># 前缀和</span><br>    sum_num = np.copy(caculate_num)<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">256</span>):<br>        sum_num[i] = sum_num[i<span class="hljs-number">-1</span>] + sum_num[i]<br>    <span class="hljs-keyword">return</span> summ,caculate_num,sum_num<br><br><span class="hljs-comment"># 计算直方图数组</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cumsum</span>(<span class="hljs-params">img, bins</span>):</span><br>    histogram = np.zeros(bins)<br>    <span class="hljs-keyword">for</span> pixel <span class="hljs-keyword">in</span> np.arange(<span class="hljs-number">0</span>, bins, <span class="hljs-number">1</span>):<br>        <span class="hljs-comment"># 向量化计算像素值为piexel的像素数量</span><br>        histogram[pixel] += <span class="hljs-built_in">len</span>(img[img==pixel])<br>    <span class="hljs-keyword">return</span> histogram<br><br><span class="hljs-comment"># 直方图均衡接口函数，利用了LUT</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">HistogramEqualizationLUT</span>(<span class="hljs-params">input_image</span>):</span><br>    size,data,data_sum = CaculateHistogram(input_image)<br>    fxy  = <span class="hljs-keyword">lambda</span> x: (<span class="hljs-number">255</span>*data_sum[x])//size<br>    table = np.array([fxy(i) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">256</span>)])<br>    lut = <span class="hljs-keyword">lambda</span> x: table[x]<br>    <span class="hljs-keyword">return</span> lut(input_image),table<br></code></pre></td></tr></table></figure>
 <h2 id="直方图匹配"><a href="#直方图匹配" class="headerlink" title="直方图匹配"></a>直方图匹配</h2><p>方法：求两图均衡化，有逆函数存在，可实现匹配。</p>
 <h3 id="证明"><a href="#证明" class="headerlink" title="证明"></a>证明</h3><p>我们易知$s$服从均匀分布，我们寻找一个$z$随机变量符合另一特殊分布$p_z(z)$，易知存在一函数（变换）：</p>
 <script type="math/tex; mode=display">s = G(z) = (L-1) \int_{0}^{z} p_z(m) \mathrm{d}m</script><p>由于$G(z)$为累积分布函数，单调，故存在反函数$G^{-1}(z)$，则有新变换 $N = G^{-1} \cdot T$，使得$r$随机变量经$N$变换后符合$z$的分布特征。</p>
@@ -521,98 +436,9 @@ Threshimg2  = Imthreshv2(R,<span class="hljs-number">120</span>,<span class="hlj
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/Review/Review_17.PNG" srcset="/img/loading.gif" alt="17"></p>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/Review/Review_18.PNG" srcset="/img/loading.gif" alt="18"></p>
 <h3 id="添加噪声代码实现"><a href="#添加噪声代码实现" class="headerlink" title="添加噪声代码实现"></a>添加噪声代码实现</h3><p>注意椒盐</p>
-<pre><code class="hljs python"><span class="hljs-comment"># 参考资料上的</span>
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">noisy</span>(<span class="hljs-params">noise_typ,image</span>):</span>
-    <span class="hljs-keyword">if</span> noise_typ == <span class="hljs-string">&quot;gauss&quot;</span>:
-        row,col,ch= image.shape
-        mean = <span class="hljs-number">0</span>
-        var = <span class="hljs-number">0.1</span>
-        sigma = var**<span class="hljs-number">0.5</span>
-        gauss = np.random.normal(mean,sigma,(row,col,ch))
-        gauss = gauss.reshape(row,col,ch)
-        noisy = image + gauss
-        <span class="hljs-keyword">return</span> noisy
-    <span class="hljs-keyword">elif</span> noise_typ == <span class="hljs-string">&quot;s&amp;p&quot;</span>:
-        row,col,ch = image.shape
-        s_vs_p = <span class="hljs-number">0.5</span>
-        amount = <span class="hljs-number">0.004</span>
-        out = np.copy(image)
-        <span class="hljs-comment"># Salt mode</span>
-        num_salt = np.ceil(amount * image.size * s_vs_p)
-        coords = [np.random.randint(<span class="hljs-number">0</span>, i - <span class="hljs-number">1</span>, <span class="hljs-built_in">int</span>(num_salt)) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> image.shape]
-        out[coords] = <span class="hljs-number">1</span>
-        <span class="hljs-comment"># Pepper mode</span>
-        num_pepper = np.ceil(amount* image.size * (<span class="hljs-number">1.</span> - s_vs_p))
-        coords = [np.random.randint(<span class="hljs-number">0</span>, i - <span class="hljs-number">1</span>, <span class="hljs-built_in">int</span>(num_pepper)) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> image.shape]
-        out[coords] = <span class="hljs-number">0</span>
-        <span class="hljs-keyword">return</span> out
-    <span class="hljs-keyword">elif</span> noise_typ == <span class="hljs-string">&quot;poisson&quot;</span>:
-        vals = <span class="hljs-built_in">len</span>(np.unique(image))
-        vals = <span class="hljs-number">2</span> ** np.ceil(np.log2(vals))
-        noisy = np.random.poisson(image * vals) / <span class="hljs-built_in">float</span>(vals)
-        <span class="hljs-keyword">return</span> noisy
-    <span class="hljs-keyword">elif</span> noise_typ ==<span class="hljs-string">&quot;speckle&quot;</span>:
-        row,col,ch = image.shape
-        gauss = np.random.randn(row,col,ch)
-        gauss = gauss.reshape(row,col,ch)
-        noisy = image + image * gauss
-        <span class="hljs-keyword">return</span> noisy
-
-<span class="hljs-comment"># 自己写的</span>
-<span class="hljs-comment"># 生成随机椒盐噪点</span>
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">MakeNoise</span>(<span class="hljs-params">input_image,number_of_noise=<span class="hljs-number">1000</span></span>):</span>
-    res_image = np.copy(input_image)
-    row,column = np.shape(input_image)
-<span class="hljs-comment">#     还可以加对三通道的特判</span>
-    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(number_of_noise):
-        x = np.random.randint(<span class="hljs-number">0</span>,row)
-        y = np.random.randint(<span class="hljs-number">0</span>,column)
-        borw = np.random.randint(<span class="hljs-number">0</span>,<span class="hljs-number">2</span>)
-        <span class="hljs-keyword">if</span> borw == <span class="hljs-number">0</span>:
-            res_image[x][y] = <span class="hljs-number">0</span>
-        <span class="hljs-keyword">else</span>:
-            res_image[x][y] = <span class="hljs-number">255</span>
-    <span class="hljs-keyword">return</span> res_image</code></pre>
-<h3 id="均值滤波代码实现"><a href="#均值滤波代码实现" class="headerlink" title="均值滤波代码实现"></a>均值滤波代码实现</h3><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">Smooth</span>(<span class="hljs-params">input_image,kernal_size = <span class="hljs-number">3</span></span>):</span>
-    ans = input_image.copy()
-    border = np.uint8(kernal_size/<span class="hljs-number">2</span>)
-    <span class="hljs-comment"># 根据核大小扩充边界</span>
-    addBorder = cv2.copyMakeBorder(input_image,border,border,border,border,cv2.BORDER_REFLECT_101)
-    filWin = np.ones((kernal_size,kernal_size),dtype=np.int64)
-    row,column = np.shape(addBorder)
-    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(border,row-border):
-        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(border,column-border):
-            <span class="hljs-comment"># 以图像i,j为中心，大小为2border+1的区域</span>
-            temp = addBorder[i-border:i+border+<span class="hljs-number">1</span>,j-border:j+border+<span class="hljs-number">1</span>]
-            temp_sum = np.<span class="hljs-built_in">sum</span>(temp*filWin)
-            ans[i-border][j-border] = temp_sum/(kernal_size**<span class="hljs-number">2</span>)
-    <span class="hljs-keyword">return</span> ans</code></pre>
-<h3 id="Laplace-锐化滤波代码实现"><a href="#Laplace-锐化滤波代码实现" class="headerlink" title="Laplace 锐化滤波代码实现"></a>Laplace 锐化滤波代码实现</h3><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">Laplace</span>(<span class="hljs-params">input_image,lap_template</span>):</span>
-    x,y = np.shape(lap_template)
-    <span class="hljs-keyword">if</span>(x!=y):
-        print(<span class="hljs-string">&quot;Shape of Laplace template wrong!&quot;</span>)
-        <span class="hljs-keyword">pass</span>
-
-    print(<span class="hljs-string">&quot;The Laplace template is: &quot;</span>)
-    print(lap_template)
-    border = x//<span class="hljs-number">2</span>
-    ans = np.zeros(np.shape(input_image), dtype = np.int64)
-
-    <span class="hljs-comment"># 扩充边界</span>
-    addBorder = cv2.copyMakeBorder(input_image,border,border,border,border,cv2.BORDER_REFLECT_101)
-
-    row,column = np.shape(addBorder)
-    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(border,row-border):
-        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(border,column-border):
-            ans[i-border][j-border] = np.<span class="hljs-built_in">sum</span>(lap_template*addBorder[i-border:i+border+<span class="hljs-number">1</span> , j-border: j+border+<span class="hljs-number">1</span>])
-    <span class="hljs-keyword">return</span> ans
-
-<span class="hljs-comment"># Laplace 常用算子 [[-1,-1,-1],[-1,8,-1],[-1,-1,-1]]</span>
-laplace_template_4 = np.array([[<span class="hljs-number">0</span>,<span class="hljs-number">-1</span>,<span class="hljs-number">0</span>],[<span class="hljs-number">-1</span>,<span class="hljs-number">4</span>,<span class="hljs-number">-1</span>],[<span class="hljs-number">0</span>,<span class="hljs-number">-1</span>,<span class="hljs-number">0</span>]])
-laplace_template_8 = np.array([[<span class="hljs-number">-1</span>,<span class="hljs-number">-1</span>,<span class="hljs-number">-1</span>],[<span class="hljs-number">-1</span>,<span class="hljs-number">8</span>,<span class="hljs-number">-1</span>],[<span class="hljs-number">-1</span>,<span class="hljs-number">-1</span>,<span class="hljs-number">-1</span>]])
-
-
-lap_img_4 = Laplace(im,laplace_template_4)</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 参考资料上的</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">noisy</span>(<span class="hljs-params">noise_typ,image</span>):</span><br>    <span class="hljs-keyword">if</span> noise_typ == <span class="hljs-string">&quot;gauss&quot;</span>:<br>        row,col,ch= image.shape<br>        mean = <span class="hljs-number">0</span><br>        var = <span class="hljs-number">0.1</span><br>        sigma = var**<span class="hljs-number">0.5</span><br>        gauss = np.random.normal(mean,sigma,(row,col,ch))<br>        gauss = gauss.reshape(row,col,ch)<br>        noisy = image + gauss<br>        <span class="hljs-keyword">return</span> noisy<br>    <span class="hljs-keyword">elif</span> noise_typ == <span class="hljs-string">&quot;s&amp;p&quot;</span>:<br>        row,col,ch = image.shape<br>        s_vs_p = <span class="hljs-number">0.5</span><br>        amount = <span class="hljs-number">0.004</span><br>        out = np.copy(image)<br>        <span class="hljs-comment"># Salt mode</span><br>        num_salt = np.ceil(amount * image.size * s_vs_p)<br>        coords = [np.random.randint(<span class="hljs-number">0</span>, i - <span class="hljs-number">1</span>, <span class="hljs-built_in">int</span>(num_salt)) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> image.shape]<br>        out[coords] = <span class="hljs-number">1</span><br>        <span class="hljs-comment"># Pepper mode</span><br>        num_pepper = np.ceil(amount* image.size * (<span class="hljs-number">1.</span> - s_vs_p))<br>        coords = [np.random.randint(<span class="hljs-number">0</span>, i - <span class="hljs-number">1</span>, <span class="hljs-built_in">int</span>(num_pepper)) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> image.shape]<br>        out[coords] = <span class="hljs-number">0</span><br>        <span class="hljs-keyword">return</span> out<br>    <span class="hljs-keyword">elif</span> noise_typ == <span class="hljs-string">&quot;poisson&quot;</span>:<br>        vals = <span class="hljs-built_in">len</span>(np.unique(image))<br>        vals = <span class="hljs-number">2</span> ** np.ceil(np.log2(vals))<br>        noisy = np.random.poisson(image * vals) / <span class="hljs-built_in">float</span>(vals)<br>        <span class="hljs-keyword">return</span> noisy<br>    <span class="hljs-keyword">elif</span> noise_typ ==<span class="hljs-string">&quot;speckle&quot;</span>:<br>        row,col,ch = image.shape<br>        gauss = np.random.randn(row,col,ch)<br>        gauss = gauss.reshape(row,col,ch)<br>        noisy = image + image * gauss<br>        <span class="hljs-keyword">return</span> noisy<br><br><span class="hljs-comment"># 自己写的</span><br><span class="hljs-comment"># 生成随机椒盐噪点</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">MakeNoise</span>(<span class="hljs-params">input_image,number_of_noise=<span class="hljs-number">1000</span></span>):</span><br>    res_image = np.copy(input_image)<br>    row,column = np.shape(input_image)<br><span class="hljs-comment">#     还可以加对三通道的特判</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(number_of_noise):<br>        x = np.random.randint(<span class="hljs-number">0</span>,row)<br>        y = np.random.randint(<span class="hljs-number">0</span>,column)<br>        borw = np.random.randint(<span class="hljs-number">0</span>,<span class="hljs-number">2</span>)<br>        <span class="hljs-keyword">if</span> borw == <span class="hljs-number">0</span>:<br>            res_image[x][y] = <span class="hljs-number">0</span><br>        <span class="hljs-keyword">else</span>:<br>            res_image[x][y] = <span class="hljs-number">255</span><br>    <span class="hljs-keyword">return</span> res_image<br></code></pre></td></tr></table></figure>
+<h3 id="均值滤波代码实现"><a href="#均值滤波代码实现" class="headerlink" title="均值滤波代码实现"></a>均值滤波代码实现</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">Smooth</span>(<span class="hljs-params">input_image,kernal_size = <span class="hljs-number">3</span></span>):</span><br>    ans = input_image.copy()<br>    border = np.uint8(kernal_size/<span class="hljs-number">2</span>)<br>    <span class="hljs-comment"># 根据核大小扩充边界</span><br>    addBorder = cv2.copyMakeBorder(input_image,border,border,border,border,cv2.BORDER_REFLECT_101)<br>    filWin = np.ones((kernal_size,kernal_size),dtype=np.int64)<br>    row,column = np.shape(addBorder)<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(border,row-border):<br>        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(border,column-border):<br>            <span class="hljs-comment"># 以图像i,j为中心，大小为2border+1的区域</span><br>            temp = addBorder[i-border:i+border+<span class="hljs-number">1</span>,j-border:j+border+<span class="hljs-number">1</span>]<br>            temp_sum = np.<span class="hljs-built_in">sum</span>(temp*filWin)<br>            ans[i-border][j-border] = temp_sum/(kernal_size**<span class="hljs-number">2</span>)<br>    <span class="hljs-keyword">return</span> ans<br></code></pre></td></tr></table></figure>
+<h3 id="Laplace-锐化滤波代码实现"><a href="#Laplace-锐化滤波代码实现" class="headerlink" title="Laplace 锐化滤波代码实现"></a>Laplace 锐化滤波代码实现</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">Laplace</span>(<span class="hljs-params">input_image,lap_template</span>):</span><br>    x,y = np.shape(lap_template)<br>    <span class="hljs-keyword">if</span>(x!=y):<br>        print(<span class="hljs-string">&quot;Shape of Laplace template wrong!&quot;</span>)<br>        <span class="hljs-keyword">pass</span><br><br>    print(<span class="hljs-string">&quot;The Laplace template is: &quot;</span>)<br>    print(lap_template)<br>    border = x//<span class="hljs-number">2</span><br>    ans = np.zeros(np.shape(input_image), dtype = np.int64)<br><br>    <span class="hljs-comment"># 扩充边界</span><br>    addBorder = cv2.copyMakeBorder(input_image,border,border,border,border,cv2.BORDER_REFLECT_101)<br><br>    row,column = np.shape(addBorder)<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(border,row-border):<br>        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(border,column-border):<br>            ans[i-border][j-border] = np.<span class="hljs-built_in">sum</span>(lap_template*addBorder[i-border:i+border+<span class="hljs-number">1</span> , j-border: j+border+<span class="hljs-number">1</span>])<br>    <span class="hljs-keyword">return</span> ans<br><br><span class="hljs-comment"># Laplace 常用算子 [[-1,-1,-1],[-1,8,-1],[-1,-1,-1]]</span><br>laplace_template_4 = np.array([[<span class="hljs-number">0</span>,<span class="hljs-number">-1</span>,<span class="hljs-number">0</span>],[<span class="hljs-number">-1</span>,<span class="hljs-number">4</span>,<span class="hljs-number">-1</span>],[<span class="hljs-number">0</span>,<span class="hljs-number">-1</span>,<span class="hljs-number">0</span>]])<br>laplace_template_8 = np.array([[<span class="hljs-number">-1</span>,<span class="hljs-number">-1</span>,<span class="hljs-number">-1</span>],[<span class="hljs-number">-1</span>,<span class="hljs-number">8</span>,<span class="hljs-number">-1</span>],[<span class="hljs-number">-1</span>,<span class="hljs-number">-1</span>,<span class="hljs-number">-1</span>]])<br><br><br>lap_img_4 = Laplace(im,laplace_template_4)<br></code></pre></td></tr></table></figure>
 <h1 id="频率域图像处理"><a href="#频率域图像处理" class="headerlink" title="频率域图像处理"></a>频率域图像处理</h1><h2 id="频率域分析基础"><a href="#频率域分析基础" class="headerlink" title="频率域分析基础"></a>频率域分析基础</h2><p>这次课，我们首次接触了“频率域分析”方法。我们从高数中学习过的“无穷级数”概念切入，讲到基于三角函数的傅里叶级数。其中的关键思路是：任意周期函数都可以用傅里叶级数展开，而傅里叶级数的基函数是频率各异的三角函数；也就是说任意周期函数都可以用一组频率各异的三角函数的线性组合来表示。而线性组合系数，即基函数的加权系数，就可以解读为原函数在基函数上的“投影系数”（或坐标，或两者的相似度）。</p>
 <p>如果能够求出傅里叶级数中的加权系数，那么就可以实现对原函数的“频域分解”，即原函数主要可以由哪些频率的三角函数叠加而成，也可以解读为原函数主要包含哪些频率的分量。而“频率”对于图像而言是有直观意义的。一般而言，低频成分对应图像中的总体形状和总体色彩和明暗分布；而高频成分对应图像中的细节和边缘信息。如果我们把图像看作是二维函数，并能够将其进行频域分解，那么增强其低频分量就是相当于平滑操作，增强其高频分量就相当于锐化操作。这就是我们除了前几章学习的“空间域分析”方法之外，又多了一个全新的视角和全新的方法。</p>
 <p>傅里叶变换就是求解傅里叶级数中的加权系数的方法。其思路很简单，由于加权系数对应原函数与基函数的相似程度，我们可以用两者的离散采样点组成的向量的点积来估计二者的相似程度。因为向量的点积与向量的夹角的余弦成正比，夹角越小代表两个向量越相似，其余弦值就越大。工程上有一种名为“快速傅里叶变换”（FFT）的数值运算方法，可以快速求解傅里叶变换。但对于图像而言，它要求图像的长宽为 2 的整数次幂。</p>
@@ -620,33 +446,7 @@ lap_img_4 = Laplace(im,laplace_template_4)</code></pre>
 <p>在工程上，傅里叶变换（FT）一般是对离散数据进行处理的，故名为离散傅里叶变换(DFT)。又因为常用快速傅里叶变换算法来求解，所以常用快速傅里叶变换(FFT)表示，其逆变换为 iFFT。无论是 FFT 还是 iFFT 都有现成的高度优化过的软件包使用，一般不用你自己实现。在 Python 语言中的 Numpy 包中就有相关实现，在 C++语言中也有 OpenCV 包中的对应实现。</p>
 <p>我们在讲解了上述原理后，就尝试对一张图像（黑色背景的中央有个白色长方形）进行了傅里叶变换，对变换系数矩阵组成的图像进行了对数化（压缩值的分布，以便看清楚微弱的分布细节），观察了图像的频率域分解效果。然后我们分别演示了基于频率域分析的图像平滑（将 FFT 系数矩阵的边缘区域置零，再逆变换回空间域）和图像锐化（将 FFT 系数矩阵的中央区域置零，再逆变换回空间域，得到边缘图，再与原图进行叠加以便锐化图像）。这部分的演示，请看附件中的代码。</p>
 <h2 id="使用-OpenCV-实现-DFT"><a href="#使用-OpenCV-实现-DFT" class="headerlink" title="使用 OpenCV 实现 DFT"></a>使用 OpenCV 实现 DFT</h2><p>OpenCV 也提供的工具用于实现离散傅里叶变换，分别是<code>cv2.dft()</code>和<code>cv2.idft()</code>函数。返回有两个通道，第一个通道是结果的实部，第二个通道是结果的虚部。所以在计算其幅度的时候需要先手动转化一次。</p>
-<pre><code class="hljs python"><span class="hljs-comment">## Magnitude spectrum</span>
-
-
-<span class="hljs-comment">## 使用Numpy实现DFT</span>
-<span class="hljs-comment">## 进行二维DFT变换</span>
-f_img1 = np.fft.fft2(img1)
-<span class="hljs-comment">## 对换象限</span>
-fshift_img1 = np.fft.fftshift(f_img1)
-<span class="hljs-comment">## 幅度谱 对数化？</span>
-manitude_img1 = <span class="hljs-number">20</span>*np.log(np.<span class="hljs-built_in">abs</span>(fshift_img1))
-<span class="hljs-comment">## img2图像也做相同的处理</span>
-f_img2 = np.fft.fft2(img2)
-fshift_img2 = np.fft.fftshift(f_img2)
-manitude_img2 = <span class="hljs-number">20</span>*np.log(np.<span class="hljs-built_in">abs</span>(fshift_img2))
-
-<span class="hljs-comment">## 使用OpenCV实现DFT</span>
-f_img3 = cv2.dft(np.float32(img3), flags = cv2.DFT_COMPLEX_OUTPUT)
-fshift_img3 = np.fft.fftshift(f_img3)
-<span class="hljs-comment"># manitude_img3 = 20*np.log(np.abs(fshift_img3))</span>
-<span class="hljs-comment"># 手动转化计算magnitude</span>
-manitude_img3 = <span class="hljs-number">20</span>*np.log(cv2.magnitude(fshift_img3[:,:,<span class="hljs-number">0</span>],fshift_img3[:,:,<span class="hljs-number">1</span>])+<span class="hljs-number">1e-15</span>)
-
-
-<span class="hljs-comment">## 使用OpenCV实现DFT</span>
-f_img4 = cv2.dft(np.float32(img4), flags = cv2.DFT_COMPLEX_OUTPUT)
-fshift_img4 = np.fft.fftshift(f_img4)
-manitude_img4 = <span class="hljs-number">20</span>*np.log(cv2.magnitude(fshift_img4[:,:,<span class="hljs-number">0</span>],fshift_img4[:,:,<span class="hljs-number">1</span>]))</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">## Magnitude spectrum</span><br><br><br><span class="hljs-comment">## 使用Numpy实现DFT</span><br><span class="hljs-comment">## 进行二维DFT变换</span><br>f_img1 = np.fft.fft2(img1)<br><span class="hljs-comment">## 对换象限</span><br>fshift_img1 = np.fft.fftshift(f_img1)<br><span class="hljs-comment">## 幅度谱 对数化？</span><br>manitude_img1 = <span class="hljs-number">20</span>*np.log(np.<span class="hljs-built_in">abs</span>(fshift_img1))<br><span class="hljs-comment">## img2图像也做相同的处理</span><br>f_img2 = np.fft.fft2(img2)<br>fshift_img2 = np.fft.fftshift(f_img2)<br>manitude_img2 = <span class="hljs-number">20</span>*np.log(np.<span class="hljs-built_in">abs</span>(fshift_img2))<br><br><span class="hljs-comment">## 使用OpenCV实现DFT</span><br>f_img3 = cv2.dft(np.float32(img3), flags = cv2.DFT_COMPLEX_OUTPUT)<br>fshift_img3 = np.fft.fftshift(f_img3)<br><span class="hljs-comment"># manitude_img3 = 20*np.log(np.abs(fshift_img3))</span><br><span class="hljs-comment"># 手动转化计算magnitude</span><br>manitude_img3 = <span class="hljs-number">20</span>*np.log(cv2.magnitude(fshift_img3[:,:,<span class="hljs-number">0</span>],fshift_img3[:,:,<span class="hljs-number">1</span>])+<span class="hljs-number">1e-15</span>)<br><br><br><span class="hljs-comment">## 使用OpenCV实现DFT</span><br>f_img4 = cv2.dft(np.float32(img4), flags = cv2.DFT_COMPLEX_OUTPUT)<br>fshift_img4 = np.fft.fftshift(f_img4)<br>manitude_img4 = <span class="hljs-number">20</span>*np.log(cv2.magnitude(fshift_img4[:,:,<span class="hljs-number">0</span>],fshift_img4[:,:,<span class="hljs-number">1</span>]))<br></code></pre></td></tr></table></figure>
 <h2 id="理想滤波器"><a href="#理想滤波器" class="headerlink" title="理想滤波器"></a>理想滤波器</h2><p>所谓”理想”是指无法通过硬件实现的硬截断</p>
 <h3 id="理想低通滤波器-ILPF"><a href="#理想低通滤波器-ILPF" class="headerlink" title="理想低通滤波器 ILPF"></a>理想低通滤波器 ILPF</h3><p>在圆外“阻断”所有频率，而在圆内无衰减的通过所有频率，这种二维低通滤波器称为理想低通滤波器（ILPF），由下面的函数确定</p>
 <script type="math/tex; mode=display">
@@ -664,68 +464,7 @@ H_{IHPF}(u,v) = \left \{
 1, & D(u,b) > D_0
 \end{aligned}
 \right.</script><h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><p>代码实现低通滤波器并展示其频率域透视图、频率域图像显示、空间域图像显示和径向剖面图。</p>
-<pre><code class="hljs python"><span class="hljs-comment"># 获得指定大小的理想滤波器</span>
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getIdealMask</span>(<span class="hljs-params">mask_shape, filter_d0,hl_type</span>):</span>
-    <span class="hljs-keyword">assert</span> hl_type <span class="hljs-keyword">in</span> (<span class="hljs-string">&quot;lpf&quot;</span>,<span class="hljs-string">&quot;hpf&quot;</span>)
-    rows,cols = mask_shape[<span class="hljs-number">0</span>],mask_shape[<span class="hljs-number">1</span>]
-    crow = rows/<span class="hljs-number">2</span>
-    ccol = cols/<span class="hljs-number">2</span>
-    mask = np.zeros((rows,cols))
-    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(rows):
-        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(cols):
-            dis = sqrt((i-crow)**<span class="hljs-number">2</span> + (j-ccol)**<span class="hljs-number">2</span>)
-            <span class="hljs-keyword">if</span> hl_type == <span class="hljs-string">&quot;lpf&quot;</span>:
-                <span class="hljs-keyword">if</span> dis &lt;= filter_d0:
-                    mask[i,j] = <span class="hljs-number">1</span>
-                <span class="hljs-keyword">else</span>:
-                    mask[i,j] = <span class="hljs-number">0</span>
-            <span class="hljs-keyword">elif</span> hl_type == <span class="hljs-string">&quot;hpf&quot;</span>:
-                <span class="hljs-keyword">if</span> dis &lt;= filter_d0:
-                    mask[i,j] = <span class="hljs-number">0</span>
-                <span class="hljs-keyword">else</span>:
-                    mask[i,j] = <span class="hljs-number">1</span>
-    <span class="hljs-keyword">return</span> mask
-
-<span class="hljs-comment"># 测试ILPF</span>
-<span class="hljs-comment"># 参数设置</span>
-mask_shape = (<span class="hljs-number">100</span>,<span class="hljs-number">100</span>)
-d = <span class="hljs-number">20</span>
-filter_type = <span class="hljs-string">&quot;lpf&quot;</span>
-<span class="hljs-comment"># 获得滤波器</span>
-myfilter = getIdealMask(mask_shape,d,filter_type)
-<span class="hljs-comment"># 绘图</span>
-plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">12</span>))
-ax1=plt.subplot(<span class="hljs-number">221</span>,projection = <span class="hljs-string">&quot;3d&quot;</span>)
-ax2=plt.subplot(<span class="hljs-number">222</span>)
-ax3=plt.subplot(<span class="hljs-number">223</span>)
-ax4=plt.subplot(<span class="hljs-number">224</span>)
-drawPerspective(ax1,myfilter,title = <span class="hljs-string">&quot;ILPF Perspective Axes3D&quot;</span>, cmap = <span class="hljs-string">&quot;gray&quot;</span>)
-<span class="hljs-comment"># 不想进行列表解析,需要调用frompyfunc构建np可以用的分段函数</span>
-ufunc1 = np.frompyfunc(<span class="hljs-keyword">lambda</span> x: <span class="hljs-number">0</span> <span class="hljs-keyword">if</span> (x-d)&gt;<span class="hljs-number">0</span> <span class="hljs-keyword">else</span> <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)
-drawCurv(ax2,[ufunc1],[<span class="hljs-string">&quot;ILPF&quot;</span>],d,title = <span class="hljs-string">&quot;ILPF Curv&quot;</span>)
-drawPanel(ax3,myfilter,title = <span class="hljs-string">&quot;ILPF Frequency Panel Axes2D&quot;</span>)
-spatial_myfilter = frequencyToSpatial(myfilter)
-drawPanel(ax4,spatial_myfilter,title = <span class="hljs-string">&quot;ILPF Spatial Panel Axes2D&quot;</span>)
-plt.show()
-
-<span class="hljs-comment"># 测试IHPF</span>
-d = <span class="hljs-number">20</span>
-filter_type = <span class="hljs-string">&quot;hpf&quot;</span>
-myfilter = getIdealMask(mask_shape,d,filter_type)
-plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">12</span>))
-ax1=plt.subplot(<span class="hljs-number">221</span>,projection = <span class="hljs-string">&quot;3d&quot;</span>)
-ax2=plt.subplot(<span class="hljs-number">222</span>)
-ax3=plt.subplot(<span class="hljs-number">223</span>)
-ax4=plt.subplot(<span class="hljs-number">224</span>)
-drawPerspective(ax1,myfilter,title = <span class="hljs-string">&quot;IHPF Perspective Axes3D&quot;</span>, cmap = <span class="hljs-string">&quot;gray&quot;</span>)
-<span class="hljs-comment"># 不想进行列表解析,需要调用frompyfunc构建np可以用的分段函数</span>
-ufunc1 = np.frompyfunc(<span class="hljs-keyword">lambda</span> x: <span class="hljs-number">1</span> <span class="hljs-keyword">if</span> (x-d)&gt;<span class="hljs-number">0</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)
-drawCurv(ax2,[ufunc1],[<span class="hljs-string">&quot;IHPF&quot;</span>],d,title = <span class="hljs-string">&quot;Curv&quot;</span>)
-drawPanel(ax3,myfilter,title = <span class="hljs-string">&quot;IHPF Frequency Panel Axes2D&quot;</span>)
-spatial_myfilter = frequencyToSpatial(myfilter)
-drawPanel(ax4,spatial_myfilter,title = <span class="hljs-string">&quot;IHPF Spatial Panel Axes2D&quot;</span>)
-plt.show()
-</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 获得指定大小的理想滤波器</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getIdealMask</span>(<span class="hljs-params">mask_shape, filter_d0,hl_type</span>):</span><br>    <span class="hljs-keyword">assert</span> hl_type <span class="hljs-keyword">in</span> (<span class="hljs-string">&quot;lpf&quot;</span>,<span class="hljs-string">&quot;hpf&quot;</span>)<br>    rows,cols = mask_shape[<span class="hljs-number">0</span>],mask_shape[<span class="hljs-number">1</span>]<br>    crow = rows/<span class="hljs-number">2</span><br>    ccol = cols/<span class="hljs-number">2</span><br>    mask = np.zeros((rows,cols))<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(rows):<br>        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(cols):<br>            dis = sqrt((i-crow)**<span class="hljs-number">2</span> + (j-ccol)**<span class="hljs-number">2</span>)<br>            <span class="hljs-keyword">if</span> hl_type == <span class="hljs-string">&quot;lpf&quot;</span>:<br>                <span class="hljs-keyword">if</span> dis &lt;= filter_d0:<br>                    mask[i,j] = <span class="hljs-number">1</span><br>                <span class="hljs-keyword">else</span>:<br>                    mask[i,j] = <span class="hljs-number">0</span><br>            <span class="hljs-keyword">elif</span> hl_type == <span class="hljs-string">&quot;hpf&quot;</span>:<br>                <span class="hljs-keyword">if</span> dis &lt;= filter_d0:<br>                    mask[i,j] = <span class="hljs-number">0</span><br>                <span class="hljs-keyword">else</span>:<br>                    mask[i,j] = <span class="hljs-number">1</span><br>    <span class="hljs-keyword">return</span> mask<br><br><span class="hljs-comment"># 测试ILPF</span><br><span class="hljs-comment"># 参数设置</span><br>mask_shape = (<span class="hljs-number">100</span>,<span class="hljs-number">100</span>)<br>d = <span class="hljs-number">20</span><br>filter_type = <span class="hljs-string">&quot;lpf&quot;</span><br><span class="hljs-comment"># 获得滤波器</span><br>myfilter = getIdealMask(mask_shape,d,filter_type)<br><span class="hljs-comment"># 绘图</span><br>plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">12</span>))<br>ax1=plt.subplot(<span class="hljs-number">221</span>,projection = <span class="hljs-string">&quot;3d&quot;</span>)<br>ax2=plt.subplot(<span class="hljs-number">222</span>)<br>ax3=plt.subplot(<span class="hljs-number">223</span>)<br>ax4=plt.subplot(<span class="hljs-number">224</span>)<br>drawPerspective(ax1,myfilter,title = <span class="hljs-string">&quot;ILPF Perspective Axes3D&quot;</span>, cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br><span class="hljs-comment"># 不想进行列表解析,需要调用frompyfunc构建np可以用的分段函数</span><br>ufunc1 = np.frompyfunc(<span class="hljs-keyword">lambda</span> x: <span class="hljs-number">0</span> <span class="hljs-keyword">if</span> (x-d)&gt;<span class="hljs-number">0</span> <span class="hljs-keyword">else</span> <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)<br>drawCurv(ax2,[ufunc1],[<span class="hljs-string">&quot;ILPF&quot;</span>],d,title = <span class="hljs-string">&quot;ILPF Curv&quot;</span>)<br>drawPanel(ax3,myfilter,title = <span class="hljs-string">&quot;ILPF Frequency Panel Axes2D&quot;</span>)<br>spatial_myfilter = frequencyToSpatial(myfilter)<br>drawPanel(ax4,spatial_myfilter,title = <span class="hljs-string">&quot;ILPF Spatial Panel Axes2D&quot;</span>)<br>plt.show()<br><br><span class="hljs-comment"># 测试IHPF</span><br>d = <span class="hljs-number">20</span><br>filter_type = <span class="hljs-string">&quot;hpf&quot;</span><br>myfilter = getIdealMask(mask_shape,d,filter_type)<br>plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">12</span>))<br>ax1=plt.subplot(<span class="hljs-number">221</span>,projection = <span class="hljs-string">&quot;3d&quot;</span>)<br>ax2=plt.subplot(<span class="hljs-number">222</span>)<br>ax3=plt.subplot(<span class="hljs-number">223</span>)<br>ax4=plt.subplot(<span class="hljs-number">224</span>)<br>drawPerspective(ax1,myfilter,title = <span class="hljs-string">&quot;IHPF Perspective Axes3D&quot;</span>, cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br><span class="hljs-comment"># 不想进行列表解析,需要调用frompyfunc构建np可以用的分段函数</span><br>ufunc1 = np.frompyfunc(<span class="hljs-keyword">lambda</span> x: <span class="hljs-number">1</span> <span class="hljs-keyword">if</span> (x-d)&gt;<span class="hljs-number">0</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)<br>drawCurv(ax2,[ufunc1],[<span class="hljs-string">&quot;IHPF&quot;</span>],d,title = <span class="hljs-string">&quot;Curv&quot;</span>)<br>drawPanel(ax3,myfilter,title = <span class="hljs-string">&quot;IHPF Frequency Panel Axes2D&quot;</span>)<br>spatial_myfilter = frequencyToSpatial(myfilter)<br>drawPanel(ax4,spatial_myfilter,title = <span class="hljs-string">&quot;IHPF Spatial Panel Axes2D&quot;</span>)<br>plt.show()<br><br></code></pre></td></tr></table></figure>
 <p>理想低通 ILPF 结果四图</p>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/3.png" srcset="/img/loading.gif" alt="png"></p>
 <p>理想高通 IHPF 结果四图</p>
@@ -735,92 +474,7 @@ plt.show()
 <script type="math/tex; mode=display">H_{BLPF}(u,v) = \dfrac{1}{ 1 + {[ \dfrac {D(u,v)}{D_0} ]}^{2n} }</script><h3 id="布特沃斯高通滤波器-BHPF"><a href="#布特沃斯高通滤波器-BHPF" class="headerlink" title="布特沃斯高通滤波器 BHPF"></a>布特沃斯高通滤波器 BHPF</h3><p>对应的传递函数定义为：</p>
 <script type="math/tex; mode=display">H_{BHPF}(u,v) = \dfrac{1}{ 1 + {[ \dfrac {D_0}{D_(u,v)} ]}^{2n} }</script><p>（分母分子颠倒）</p>
 <p>两式中$n$对应了即阶参数，下面的代码给出巴特沃斯滤波器的实现，其频率域透视图、频率域图像显示、空间域图像显示和径向剖面图，曲线图绘制出不同阶下的取值。</p>
-<h3 id="代码实现-1"><a href="#代码实现-1" class="headerlink" title="代码实现"></a>代码实现</h3><pre><code class="hljs python"><span class="hljs-comment"># 获得指定大小的布特沃斯滤波器</span>
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getButterworthMask</span>(<span class="hljs-params">mask_shape,filter_d0,hl_type,butter_n = <span class="hljs-number">1</span></span>):</span>
-    <span class="hljs-keyword">assert</span> hl_type <span class="hljs-keyword">in</span> (<span class="hljs-string">&quot;lpf&quot;</span>,<span class="hljs-string">&quot;hpf&quot;</span>)
-    rows,cols = mask_shape[<span class="hljs-number">0</span>],mask_shape[<span class="hljs-number">1</span>]
-    crow = rows/<span class="hljs-number">2</span>
-    ccol = cols/<span class="hljs-number">2</span>
-    mask = np.zeros((rows,cols))
-    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(rows):
-        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(cols):
-            dis = sqrt((i-crow)**<span class="hljs-number">2</span> + (j-ccol)**<span class="hljs-number">2</span>)
-            <span class="hljs-keyword">if</span> hl_type == <span class="hljs-string">&quot;lpf&quot;</span>:
-                mask[i,j] = <span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(dis/filter_d0)**(<span class="hljs-number">2</span>*butter_n))
-            <span class="hljs-keyword">elif</span> hl_type == <span class="hljs-string">&quot;hpf&quot;</span>:
-                <span class="hljs-comment"># 除以0情况特判一下</span>
-                <span class="hljs-keyword">if</span> np.<span class="hljs-built_in">abs</span>(dis)&lt;eps:
-                    mask[i,j] = <span class="hljs-number">0</span>
-                <span class="hljs-keyword">else</span>:
-                    mask[i,j] = <span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(filter_d0/dis)**(<span class="hljs-number">2</span>*butter_n))
-
-    <span class="hljs-keyword">return</span> mask
-
-<span class="hljs-comment"># 测试BLPF</span>
-<span class="hljs-comment"># 参数设置</span>
-mask_shape = (<span class="hljs-number">100</span>,<span class="hljs-number">100</span>)
-d = <span class="hljs-number">20</span>
-filter_type = <span class="hljs-string">&quot;lpf&quot;</span>
-<span class="hljs-comment"># 获得滤波器</span>
-myfilter = getButterworthMask(mask_shape,d,filter_type, butter_n=<span class="hljs-number">2</span>)
-<span class="hljs-comment"># 绘图</span>
-plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">12</span>))
-ax1=plt.subplot(<span class="hljs-number">221</span>,projection = <span class="hljs-string">&quot;3d&quot;</span>)
-ax2=plt.subplot(<span class="hljs-number">222</span>)
-ax3=plt.subplot(<span class="hljs-number">223</span>)
-ax4=plt.subplot(<span class="hljs-number">224</span>)
-drawPerspective(ax1,myfilter,title = <span class="hljs-string">&quot;BLPF(n=2) Perspective Axes3D&quot;</span>, cmap = <span class="hljs-string">&quot;gray&quot;</span>)
-funcs = []
-labels = []
-<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">6</span>):
-    labels.append(<span class="hljs-string">&quot;BLPF &quot;</span>+<span class="hljs-string">&quot;n=&quot;</span>+<span class="hljs-built_in">str</span>(i))
-funcs.append(<span class="hljs-keyword">lambda</span> x:<span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(x/d)**(<span class="hljs-number">2</span>*<span class="hljs-number">1</span>)))
-funcs.append(<span class="hljs-keyword">lambda</span> x:<span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(x/d)**(<span class="hljs-number">2</span>*<span class="hljs-number">2</span>)))
-funcs.append(<span class="hljs-keyword">lambda</span> x:<span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(x/d)**(<span class="hljs-number">2</span>*<span class="hljs-number">3</span>)))
-funcs.append(<span class="hljs-keyword">lambda</span> x:<span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(x/d)**(<span class="hljs-number">2</span>*<span class="hljs-number">4</span>)))
-funcs.append(<span class="hljs-keyword">lambda</span> x:<span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(x/d)**(<span class="hljs-number">2</span>*<span class="hljs-number">5</span>)))
-
-drawCurv(ax2,funcs,labels,d,title = <span class="hljs-string">&quot;BLPF(n=1,2,3,4,5) Curv&quot;</span>)
-drawPanel(ax3,myfilter,title = <span class="hljs-string">&quot;BLPF(n=2) Frequency Panel Axes2D&quot;</span>)
-spatial_myfilter = frequencyToSpatial(myfilter)
-drawPanel(ax4,spatial_myfilter,title = <span class="hljs-string">&quot;BLPF(n=2) Spatial Panel Axes2D&quot;</span>)
-plt.show()
-
-<span class="hljs-comment"># 测试BHPF</span>
-d = <span class="hljs-number">20</span>
-filter_type = <span class="hljs-string">&quot;hpf&quot;</span>
-myfilter = getButterworthMask(mask_shape,d,filter_type, butter_n=<span class="hljs-number">1</span>)
-plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">12</span>))
-ax1=plt.subplot(<span class="hljs-number">221</span>,projection = <span class="hljs-string">&quot;3d&quot;</span>)
-ax2=plt.subplot(<span class="hljs-number">222</span>)
-ax3=plt.subplot(<span class="hljs-number">223</span>)
-ax4=plt.subplot(<span class="hljs-number">224</span>)
-drawPerspective(ax1,myfilter,title = <span class="hljs-string">&quot;BHPF(n=2) Perspective Axes3D&quot;</span>, cmap = <span class="hljs-string">&quot;gray&quot;</span>)
-funcs = []
-labels = []
-<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">6</span>):
-<span class="hljs-comment">#     funcs.append(lambda x:1.0/(1+(d/x)**(2*i)))</span>
-<span class="hljs-comment">#     ufunc = np.frompyfunc(lambda x: 0 if np.abs(x)&lt;eps else 1.0/(1+(d/x)**(2*i)), 1, 1)</span>
-<span class="hljs-comment">#     funcs.append(ufunc)</span>
-    labels.append(<span class="hljs-string">&quot;BHPF &quot;</span>+<span class="hljs-string">&quot;n=&quot;</span>+<span class="hljs-built_in">str</span>(i))
-ufunc1 = np.frompyfunc(<span class="hljs-keyword">lambda</span> x: <span class="hljs-number">0</span> <span class="hljs-keyword">if</span> np.<span class="hljs-built_in">abs</span>(x)&lt;eps <span class="hljs-keyword">else</span> <span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(d/x)**(<span class="hljs-number">2</span>*<span class="hljs-number">1</span>)), <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)
-ufunc2 = np.frompyfunc(<span class="hljs-keyword">lambda</span> x: <span class="hljs-number">0</span> <span class="hljs-keyword">if</span> np.<span class="hljs-built_in">abs</span>(x)&lt;eps <span class="hljs-keyword">else</span> <span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(d/x)**(<span class="hljs-number">2</span>*<span class="hljs-number">2</span>)), <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)
-ufunc3 = np.frompyfunc(<span class="hljs-keyword">lambda</span> x: <span class="hljs-number">0</span> <span class="hljs-keyword">if</span> np.<span class="hljs-built_in">abs</span>(x)&lt;eps <span class="hljs-keyword">else</span> <span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(d/x)**(<span class="hljs-number">2</span>*<span class="hljs-number">3</span>)), <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)
-ufunc4 = np.frompyfunc(<span class="hljs-keyword">lambda</span> x: <span class="hljs-number">0</span> <span class="hljs-keyword">if</span> np.<span class="hljs-built_in">abs</span>(x)&lt;eps <span class="hljs-keyword">else</span> <span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(d/x)**(<span class="hljs-number">2</span>*<span class="hljs-number">4</span>)), <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)
-ufunc5 = np.frompyfunc(<span class="hljs-keyword">lambda</span> x: <span class="hljs-number">0</span> <span class="hljs-keyword">if</span> np.<span class="hljs-built_in">abs</span>(x)&lt;eps <span class="hljs-keyword">else</span> <span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(d/x)**(<span class="hljs-number">2</span>*<span class="hljs-number">5</span>)), <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)
-funcs.append(ufunc1)
-funcs.append(ufunc2)
-funcs.append(ufunc3)
-funcs.append(ufunc4)
-funcs.append(ufunc5)
-
-
-drawCurv(ax2,funcs,labels,d,title = <span class="hljs-string">&quot;BHPF(n=1,2,3,4,5) Curv&quot;</span>)
-drawPanel(ax3,myfilter,title = <span class="hljs-string">&quot;BHPF(n=2) Frequency Panel Axes2D&quot;</span>)
-spatial_myfilter = frequencyToSpatial(myfilter)
-drawPanel(ax4,spatial_myfilter,title = <span class="hljs-string">&quot;BHPF(n=2) Spatial Panel Axes2D&quot;</span>)
-plt.show()
-</code></pre>
+<h3 id="代码实现-1"><a href="#代码实现-1" class="headerlink" title="代码实现"></a>代码实现</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 获得指定大小的布特沃斯滤波器</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getButterworthMask</span>(<span class="hljs-params">mask_shape,filter_d0,hl_type,butter_n = <span class="hljs-number">1</span></span>):</span><br>    <span class="hljs-keyword">assert</span> hl_type <span class="hljs-keyword">in</span> (<span class="hljs-string">&quot;lpf&quot;</span>,<span class="hljs-string">&quot;hpf&quot;</span>)<br>    rows,cols = mask_shape[<span class="hljs-number">0</span>],mask_shape[<span class="hljs-number">1</span>]<br>    crow = rows/<span class="hljs-number">2</span><br>    ccol = cols/<span class="hljs-number">2</span><br>    mask = np.zeros((rows,cols))<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(rows):<br>        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(cols):<br>            dis = sqrt((i-crow)**<span class="hljs-number">2</span> + (j-ccol)**<span class="hljs-number">2</span>)<br>            <span class="hljs-keyword">if</span> hl_type == <span class="hljs-string">&quot;lpf&quot;</span>:<br>                mask[i,j] = <span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(dis/filter_d0)**(<span class="hljs-number">2</span>*butter_n))<br>            <span class="hljs-keyword">elif</span> hl_type == <span class="hljs-string">&quot;hpf&quot;</span>:<br>                <span class="hljs-comment"># 除以0情况特判一下</span><br>                <span class="hljs-keyword">if</span> np.<span class="hljs-built_in">abs</span>(dis)&lt;eps:<br>                    mask[i,j] = <span class="hljs-number">0</span><br>                <span class="hljs-keyword">else</span>:<br>                    mask[i,j] = <span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(filter_d0/dis)**(<span class="hljs-number">2</span>*butter_n))<br><br>    <span class="hljs-keyword">return</span> mask<br><br><span class="hljs-comment"># 测试BLPF</span><br><span class="hljs-comment"># 参数设置</span><br>mask_shape = (<span class="hljs-number">100</span>,<span class="hljs-number">100</span>)<br>d = <span class="hljs-number">20</span><br>filter_type = <span class="hljs-string">&quot;lpf&quot;</span><br><span class="hljs-comment"># 获得滤波器</span><br>myfilter = getButterworthMask(mask_shape,d,filter_type, butter_n=<span class="hljs-number">2</span>)<br><span class="hljs-comment"># 绘图</span><br>plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">12</span>))<br>ax1=plt.subplot(<span class="hljs-number">221</span>,projection = <span class="hljs-string">&quot;3d&quot;</span>)<br>ax2=plt.subplot(<span class="hljs-number">222</span>)<br>ax3=plt.subplot(<span class="hljs-number">223</span>)<br>ax4=plt.subplot(<span class="hljs-number">224</span>)<br>drawPerspective(ax1,myfilter,title = <span class="hljs-string">&quot;BLPF(n=2) Perspective Axes3D&quot;</span>, cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>funcs = []<br>labels = []<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">6</span>):<br>    labels.append(<span class="hljs-string">&quot;BLPF &quot;</span>+<span class="hljs-string">&quot;n=&quot;</span>+<span class="hljs-built_in">str</span>(i))<br>funcs.append(<span class="hljs-keyword">lambda</span> x:<span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(x/d)**(<span class="hljs-number">2</span>*<span class="hljs-number">1</span>)))<br>funcs.append(<span class="hljs-keyword">lambda</span> x:<span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(x/d)**(<span class="hljs-number">2</span>*<span class="hljs-number">2</span>)))<br>funcs.append(<span class="hljs-keyword">lambda</span> x:<span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(x/d)**(<span class="hljs-number">2</span>*<span class="hljs-number">3</span>)))<br>funcs.append(<span class="hljs-keyword">lambda</span> x:<span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(x/d)**(<span class="hljs-number">2</span>*<span class="hljs-number">4</span>)))<br>funcs.append(<span class="hljs-keyword">lambda</span> x:<span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(x/d)**(<span class="hljs-number">2</span>*<span class="hljs-number">5</span>)))<br><br>drawCurv(ax2,funcs,labels,d,title = <span class="hljs-string">&quot;BLPF(n=1,2,3,4,5) Curv&quot;</span>)<br>drawPanel(ax3,myfilter,title = <span class="hljs-string">&quot;BLPF(n=2) Frequency Panel Axes2D&quot;</span>)<br>spatial_myfilter = frequencyToSpatial(myfilter)<br>drawPanel(ax4,spatial_myfilter,title = <span class="hljs-string">&quot;BLPF(n=2) Spatial Panel Axes2D&quot;</span>)<br>plt.show()<br><br><span class="hljs-comment"># 测试BHPF</span><br>d = <span class="hljs-number">20</span><br>filter_type = <span class="hljs-string">&quot;hpf&quot;</span><br>myfilter = getButterworthMask(mask_shape,d,filter_type, butter_n=<span class="hljs-number">1</span>)<br>plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">12</span>))<br>ax1=plt.subplot(<span class="hljs-number">221</span>,projection = <span class="hljs-string">&quot;3d&quot;</span>)<br>ax2=plt.subplot(<span class="hljs-number">222</span>)<br>ax3=plt.subplot(<span class="hljs-number">223</span>)<br>ax4=plt.subplot(<span class="hljs-number">224</span>)<br>drawPerspective(ax1,myfilter,title = <span class="hljs-string">&quot;BHPF(n=2) Perspective Axes3D&quot;</span>, cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>funcs = []<br>labels = []<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">6</span>):<br><span class="hljs-comment">#     funcs.append(lambda x:1.0/(1+(d/x)**(2*i)))</span><br><span class="hljs-comment">#     ufunc = np.frompyfunc(lambda x: 0 if np.abs(x)&lt;eps else 1.0/(1+(d/x)**(2*i)), 1, 1)</span><br><span class="hljs-comment">#     funcs.append(ufunc)</span><br>    labels.append(<span class="hljs-string">&quot;BHPF &quot;</span>+<span class="hljs-string">&quot;n=&quot;</span>+<span class="hljs-built_in">str</span>(i))<br>ufunc1 = np.frompyfunc(<span class="hljs-keyword">lambda</span> x: <span class="hljs-number">0</span> <span class="hljs-keyword">if</span> np.<span class="hljs-built_in">abs</span>(x)&lt;eps <span class="hljs-keyword">else</span> <span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(d/x)**(<span class="hljs-number">2</span>*<span class="hljs-number">1</span>)), <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)<br>ufunc2 = np.frompyfunc(<span class="hljs-keyword">lambda</span> x: <span class="hljs-number">0</span> <span class="hljs-keyword">if</span> np.<span class="hljs-built_in">abs</span>(x)&lt;eps <span class="hljs-keyword">else</span> <span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(d/x)**(<span class="hljs-number">2</span>*<span class="hljs-number">2</span>)), <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)<br>ufunc3 = np.frompyfunc(<span class="hljs-keyword">lambda</span> x: <span class="hljs-number">0</span> <span class="hljs-keyword">if</span> np.<span class="hljs-built_in">abs</span>(x)&lt;eps <span class="hljs-keyword">else</span> <span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(d/x)**(<span class="hljs-number">2</span>*<span class="hljs-number">3</span>)), <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)<br>ufunc4 = np.frompyfunc(<span class="hljs-keyword">lambda</span> x: <span class="hljs-number">0</span> <span class="hljs-keyword">if</span> np.<span class="hljs-built_in">abs</span>(x)&lt;eps <span class="hljs-keyword">else</span> <span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(d/x)**(<span class="hljs-number">2</span>*<span class="hljs-number">4</span>)), <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)<br>ufunc5 = np.frompyfunc(<span class="hljs-keyword">lambda</span> x: <span class="hljs-number">0</span> <span class="hljs-keyword">if</span> np.<span class="hljs-built_in">abs</span>(x)&lt;eps <span class="hljs-keyword">else</span> <span class="hljs-number">1.0</span>/(<span class="hljs-number">1</span>+(d/x)**(<span class="hljs-number">2</span>*<span class="hljs-number">5</span>)), <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)<br>funcs.append(ufunc1)<br>funcs.append(ufunc2)<br>funcs.append(ufunc3)<br>funcs.append(ufunc4)<br>funcs.append(ufunc5)<br><br><br>drawCurv(ax2,funcs,labels,d,title = <span class="hljs-string">&quot;BHPF(n=1,2,3,4,5) Curv&quot;</span>)<br>drawPanel(ax3,myfilter,title = <span class="hljs-string">&quot;BHPF(n=2) Frequency Panel Axes2D&quot;</span>)<br>spatial_myfilter = frequencyToSpatial(myfilter)<br>drawPanel(ax4,spatial_myfilter,title = <span class="hljs-string">&quot;BHPF(n=2) Spatial Panel Axes2D&quot;</span>)<br>plt.show()<br><br></code></pre></td></tr></table></figure>
 <p>布特沃斯低通 BLPF 结果四图</p>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/5.png" srcset="/img/loading.gif" alt="png"></p>
 <p>布特沃斯高通 BHPF 结果四图</p>
@@ -829,57 +483,7 @@ plt.show()
 <h3 id="高斯低通滤波器-GLPF"><a href="#高斯低通滤波器-GLPF" class="headerlink" title="高斯低通滤波器 GLPF"></a>高斯低通滤波器 GLPF</h3><p>高斯低通滤波器二维形式由下式给处：</p>
 <script type="math/tex; mode=display">H_{GLPF}(u,v) = e^{\dfrac{-D^2(u,v)}{2 \sigma^2}}</script><p>$\sigma$描述了中心的扩散速度，和其他滤波器描述式统一，通过令$\sigma = D_0$，可以用表示其他滤波器的方法表示高斯滤波器。</p>
 <script type="math/tex; mode=display">H_{GLPF}(u,v) = e^{\dfrac{-D^2(u,v)}{2 D_0^2}}</script><h3 id="高斯高通滤波器-GHPF"><a href="#高斯高通滤波器-GHPF" class="headerlink" title="高斯高通滤波器 GHPF"></a>高斯高通滤波器 GHPF</h3><p>如下：</p>
-<script type="math/tex; mode=display">H_{GHPF}(u,v) =1 - e^{\dfrac{-D^2(u,v)}{2 D_0^2}}</script><h3 id="代码实现-2"><a href="#代码实现-2" class="headerlink" title="代码实现"></a>代码实现</h3><pre><code class="hljs python"><span class="hljs-comment"># 获得指定大小的高斯滤波器</span>
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getGaussianMask</span>(<span class="hljs-params">mask_shape,filter_d0,hl_type</span>):</span>
-    <span class="hljs-keyword">assert</span> hl_type <span class="hljs-keyword">in</span> (<span class="hljs-string">&quot;lpf&quot;</span>,<span class="hljs-string">&quot;hpf&quot;</span>)
-    rows,cols = mask_shape[<span class="hljs-number">0</span>],mask_shape[<span class="hljs-number">1</span>]
-    crow = rows/<span class="hljs-number">2</span>
-    ccol = cols/<span class="hljs-number">2</span>
-    mask = np.zeros((rows,cols))
-    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(rows):
-        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(cols):
-            dis = sqrt((i-crow)**<span class="hljs-number">2</span> + (j-ccol)**<span class="hljs-number">2</span>)
-            <span class="hljs-keyword">if</span> hl_type == <span class="hljs-string">&quot;hpf&quot;</span>:
-                mask[i,j] = <span class="hljs-number">1</span>-np.exp(-(dis**<span class="hljs-number">2</span>) / (<span class="hljs-number">2</span>*(filter_d0**<span class="hljs-number">2</span>)))
-            <span class="hljs-keyword">elif</span> hl_type == <span class="hljs-string">&quot;lpf&quot;</span>:
-                mask[i,j] = np.exp(-(dis**<span class="hljs-number">2</span>)/(<span class="hljs-number">2</span>*(filter_d0**<span class="hljs-number">2</span>)))
-    <span class="hljs-keyword">return</span> mask
-
-<span class="hljs-comment"># 测试GLPF</span>
-<span class="hljs-comment"># 参数设置</span>
-mask_shape = (<span class="hljs-number">200</span>,<span class="hljs-number">200</span>)
-d = <span class="hljs-number">20</span>
-filter_type = <span class="hljs-string">&quot;lpf&quot;</span>
-<span class="hljs-comment"># 获得滤波器</span>
-myfilter = getGaussianMask(mask_shape,d,filter_type)
-<span class="hljs-comment"># 绘图</span>
-plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">12</span>))
-ax1=plt.subplot(<span class="hljs-number">221</span>,projection = <span class="hljs-string">&quot;3d&quot;</span>)
-ax2=plt.subplot(<span class="hljs-number">222</span>)
-ax3=plt.subplot(<span class="hljs-number">223</span>)
-ax4=plt.subplot(<span class="hljs-number">224</span>)
-drawPerspective(ax1,myfilter,title = <span class="hljs-string">&quot;GLPF Perspective Axes3D&quot;</span>, cmap = <span class="hljs-string">&quot;gray&quot;</span>)
-drawCurv(ax2,[<span class="hljs-keyword">lambda</span> x:np.exp(-(x**<span class="hljs-number">2</span>)/(<span class="hljs-number">2</span>*(d**<span class="hljs-number">2</span>)))],[<span class="hljs-string">&quot;GLPF&quot;</span>],d,title = <span class="hljs-string">&quot;GLPF Curv&quot;</span>)
-drawPanel(ax3,myfilter,title = <span class="hljs-string">&quot;GLPF Frequency Panel Axes2D&quot;</span>)
-spatial_myfilter = frequencyToSpatial(myfilter)
-drawPanel(ax4,spatial_myfilter,title = <span class="hljs-string">&quot;GLPF Spatial Panel Axes2D&quot;</span>)
-plt.show()
-
-<span class="hljs-comment"># 测试GHPF</span>
-d = <span class="hljs-number">20</span>
-filter_type = <span class="hljs-string">&quot;hpf&quot;</span>
-myfilter = getGaussianMask(mask_shape,d,filter_type)
-plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">12</span>))
-ax1=plt.subplot(<span class="hljs-number">221</span>,projection = <span class="hljs-string">&quot;3d&quot;</span>)
-ax2=plt.subplot(<span class="hljs-number">222</span>)
-ax3=plt.subplot(<span class="hljs-number">223</span>)
-ax4=plt.subplot(<span class="hljs-number">224</span>)
-drawPerspective(ax1,myfilter,title = <span class="hljs-string">&quot;GLPF Perspective Axes3D&quot;</span>, cmap = <span class="hljs-string">&quot;gray&quot;</span>)
-drawCurv(ax2,[<span class="hljs-keyword">lambda</span> x:<span class="hljs-number">1</span>-np.exp(-(x**<span class="hljs-number">2</span>)/(<span class="hljs-number">2</span>*(d**<span class="hljs-number">2</span>)))],[<span class="hljs-string">&quot;GHPF&quot;</span>],d,title = <span class="hljs-string">&quot;GLPF Curv&quot;</span>)
-drawPanel(ax3,myfilter,title = <span class="hljs-string">&quot;GLPF Frequency Panel Axes2D&quot;</span>)
-spatial_myfilter = frequencyToSpatial(myfilter)
-drawPanel(ax4,spatial_myfilter,title = <span class="hljs-string">&quot;GLPF Spatial Panel Axes2D&quot;</span>)
-plt.show()</code></pre>
+<script type="math/tex; mode=display">H_{GHPF}(u,v) =1 - e^{\dfrac{-D^2(u,v)}{2 D_0^2}}</script><h3 id="代码实现-2"><a href="#代码实现-2" class="headerlink" title="代码实现"></a>代码实现</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 获得指定大小的高斯滤波器</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getGaussianMask</span>(<span class="hljs-params">mask_shape,filter_d0,hl_type</span>):</span><br>    <span class="hljs-keyword">assert</span> hl_type <span class="hljs-keyword">in</span> (<span class="hljs-string">&quot;lpf&quot;</span>,<span class="hljs-string">&quot;hpf&quot;</span>)<br>    rows,cols = mask_shape[<span class="hljs-number">0</span>],mask_shape[<span class="hljs-number">1</span>]<br>    crow = rows/<span class="hljs-number">2</span><br>    ccol = cols/<span class="hljs-number">2</span><br>    mask = np.zeros((rows,cols))<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(rows):<br>        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(cols):<br>            dis = sqrt((i-crow)**<span class="hljs-number">2</span> + (j-ccol)**<span class="hljs-number">2</span>)<br>            <span class="hljs-keyword">if</span> hl_type == <span class="hljs-string">&quot;hpf&quot;</span>:<br>                mask[i,j] = <span class="hljs-number">1</span>-np.exp(-(dis**<span class="hljs-number">2</span>) / (<span class="hljs-number">2</span>*(filter_d0**<span class="hljs-number">2</span>)))<br>            <span class="hljs-keyword">elif</span> hl_type == <span class="hljs-string">&quot;lpf&quot;</span>:<br>                mask[i,j] = np.exp(-(dis**<span class="hljs-number">2</span>)/(<span class="hljs-number">2</span>*(filter_d0**<span class="hljs-number">2</span>)))<br>    <span class="hljs-keyword">return</span> mask<br><br><span class="hljs-comment"># 测试GLPF</span><br><span class="hljs-comment"># 参数设置</span><br>mask_shape = (<span class="hljs-number">200</span>,<span class="hljs-number">200</span>)<br>d = <span class="hljs-number">20</span><br>filter_type = <span class="hljs-string">&quot;lpf&quot;</span><br><span class="hljs-comment"># 获得滤波器</span><br>myfilter = getGaussianMask(mask_shape,d,filter_type)<br><span class="hljs-comment"># 绘图</span><br>plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">12</span>))<br>ax1=plt.subplot(<span class="hljs-number">221</span>,projection = <span class="hljs-string">&quot;3d&quot;</span>)<br>ax2=plt.subplot(<span class="hljs-number">222</span>)<br>ax3=plt.subplot(<span class="hljs-number">223</span>)<br>ax4=plt.subplot(<span class="hljs-number">224</span>)<br>drawPerspective(ax1,myfilter,title = <span class="hljs-string">&quot;GLPF Perspective Axes3D&quot;</span>, cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>drawCurv(ax2,[<span class="hljs-keyword">lambda</span> x:np.exp(-(x**<span class="hljs-number">2</span>)/(<span class="hljs-number">2</span>*(d**<span class="hljs-number">2</span>)))],[<span class="hljs-string">&quot;GLPF&quot;</span>],d,title = <span class="hljs-string">&quot;GLPF Curv&quot;</span>)<br>drawPanel(ax3,myfilter,title = <span class="hljs-string">&quot;GLPF Frequency Panel Axes2D&quot;</span>)<br>spatial_myfilter = frequencyToSpatial(myfilter)<br>drawPanel(ax4,spatial_myfilter,title = <span class="hljs-string">&quot;GLPF Spatial Panel Axes2D&quot;</span>)<br>plt.show()<br><br><span class="hljs-comment"># 测试GHPF</span><br>d = <span class="hljs-number">20</span><br>filter_type = <span class="hljs-string">&quot;hpf&quot;</span><br>myfilter = getGaussianMask(mask_shape,d,filter_type)<br>plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">12</span>))<br>ax1=plt.subplot(<span class="hljs-number">221</span>,projection = <span class="hljs-string">&quot;3d&quot;</span>)<br>ax2=plt.subplot(<span class="hljs-number">222</span>)<br>ax3=plt.subplot(<span class="hljs-number">223</span>)<br>ax4=plt.subplot(<span class="hljs-number">224</span>)<br>drawPerspective(ax1,myfilter,title = <span class="hljs-string">&quot;GLPF Perspective Axes3D&quot;</span>, cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>drawCurv(ax2,[<span class="hljs-keyword">lambda</span> x:<span class="hljs-number">1</span>-np.exp(-(x**<span class="hljs-number">2</span>)/(<span class="hljs-number">2</span>*(d**<span class="hljs-number">2</span>)))],[<span class="hljs-string">&quot;GHPF&quot;</span>],d,title = <span class="hljs-string">&quot;GLPF Curv&quot;</span>)<br>drawPanel(ax3,myfilter,title = <span class="hljs-string">&quot;GLPF Frequency Panel Axes2D&quot;</span>)<br>spatial_myfilter = frequencyToSpatial(myfilter)<br>drawPanel(ax4,spatial_myfilter,title = <span class="hljs-string">&quot;GLPF Spatial Panel Axes2D&quot;</span>)<br>plt.show()<br></code></pre></td></tr></table></figure>
 <p>高斯低通 GLPF 结果四图</p>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/TypeOfFilter/7.png" srcset="/img/loading.gif" alt="png"></p>
 <p>高斯高通 GHPF 结果四图</p>
@@ -890,25 +494,7 @@ plt.show()</code></pre>
 <blockquote>
 <p>这种振铃现象是理想滤波器的一种特性，从这个例子我们可以清楚地看到，理想低通滤波器并不是非常实用。然而，作为滤波概念发展的一部分，研究这种滤波器的特性非常有用。</p>
 </blockquote>
-<h3 id="振铃现象的一些见解"><a href="#振铃现象的一些见解" class="headerlink" title="振铃现象的一些见解"></a>振铃现象的一些见解</h3><pre><code class="hljs python"><span class="hljs-comment"># 绘制空间域表示图和水平线灰度剖面图</span>
-
-<span class="hljs-keyword">for</span> d <span class="hljs-keyword">in</span> d_list:
-    fre_mask=getIdealMask((<span class="hljs-number">688</span>,<span class="hljs-number">688</span>),d,<span class="hljs-string">&quot;lpf&quot;</span>)
-    spa_mask=frequencyToSpatial(fre_mask)
-    X = [i <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(spa_mask.shape[<span class="hljs-number">0</span>])]
-    Y = spa_mask[spa_mask.shape[<span class="hljs-number">0</span>]//<span class="hljs-number">2</span>]
-    plt.figure(figsize=(<span class="hljs-number">8</span>,<span class="hljs-number">4</span>))
-    ax1 = plt.subplot(<span class="hljs-number">121</span>)
-    ax2 = plt.subplot(<span class="hljs-number">122</span>)
-    ax1.set_title(<span class="hljs-string">f&quot;Spatial Img with $D_0 = <span class="hljs-subst">&#123;d&#125;</span>$&quot;</span>)
-    ax2.set_title(<span class="hljs-string">f&quot;Grayscale with $D_0 = <span class="hljs-subst">&#123;d&#125;</span>$&quot;</span>)
-    ax1.imshow(spa_mask,cmap = <span class="hljs-string">&quot;gray&quot;</span>)
-    ax2.plot(X,Y)
-    ax2.spines[<span class="hljs-string">&#x27;left&#x27;</span>].set_color(<span class="hljs-string">&#x27;none&#x27;</span>)
-    ax2.spines[<span class="hljs-string">&#x27;top&#x27;</span>].set_color(<span class="hljs-string">&#x27;none&#x27;</span>)
-    ax2.spines[<span class="hljs-string">&#x27;right&#x27;</span>].set_color(<span class="hljs-string">&#x27;none&#x27;</span>)
-    ax2.set_yticks([])
-    ax2.set_yticklabels([])</code></pre>
+<h3 id="振铃现象的一些见解"><a href="#振铃现象的一些见解" class="headerlink" title="振铃现象的一些见解"></a>振铃现象的一些见解</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 绘制空间域表示图和水平线灰度剖面图</span><br><br><span class="hljs-keyword">for</span> d <span class="hljs-keyword">in</span> d_list:<br>    fre_mask=getIdealMask((<span class="hljs-number">688</span>,<span class="hljs-number">688</span>),d,<span class="hljs-string">&quot;lpf&quot;</span>)<br>    spa_mask=frequencyToSpatial(fre_mask)<br>    X = [i <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(spa_mask.shape[<span class="hljs-number">0</span>])]<br>    Y = spa_mask[spa_mask.shape[<span class="hljs-number">0</span>]//<span class="hljs-number">2</span>]<br>    plt.figure(figsize=(<span class="hljs-number">8</span>,<span class="hljs-number">4</span>))<br>    ax1 = plt.subplot(<span class="hljs-number">121</span>)<br>    ax2 = plt.subplot(<span class="hljs-number">122</span>)<br>    ax1.set_title(<span class="hljs-string">f&quot;Spatial Img with $D_0 = <span class="hljs-subst">&#123;d&#125;</span>$&quot;</span>)<br>    ax2.set_title(<span class="hljs-string">f&quot;Grayscale with $D_0 = <span class="hljs-subst">&#123;d&#125;</span>$&quot;</span>)<br>    ax1.imshow(spa_mask,cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>    ax2.plot(X,Y)<br>    ax2.spines[<span class="hljs-string">&#x27;left&#x27;</span>].set_color(<span class="hljs-string">&#x27;none&#x27;</span>)<br>    ax2.spines[<span class="hljs-string">&#x27;top&#x27;</span>].set_color(<span class="hljs-string">&#x27;none&#x27;</span>)<br>    ax2.spines[<span class="hljs-string">&#x27;right&#x27;</span>].set_color(<span class="hljs-string">&#x27;none&#x27;</span>)<br>    ax2.set_yticks([])<br>    ax2.set_yticklabels([])<br></code></pre></td></tr></table></figure>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/IdealFilter/6.png" srcset="/img/loading.gif" alt="png"></p>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/IdealFilter/7.png" srcset="/img/loading.gif" alt="png"></p>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/IdealFilter/8.png" srcset="/img/loading.gif" alt="png"></p>
@@ -977,27 +563,7 @@ plt.show()</code></pre>
 <li>当频域某处噪声大时， 𝑁/𝑆 的值比较大，方括号表达式的值小于 1，相当于对此处 𝐺/𝐻 的值进行抑制，以降低噪声的影响。</li>
 </ul>
 <p>实现：</p>
-<pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">wienerFiltering</span>(<span class="hljs-params">input_img, h, NSR ,htype = <span class="hljs-string">&quot;frequency&quot;</span></span>):</span>
-    <span class="hljs-keyword">assert</span> htype <span class="hljs-keyword">in</span> (<span class="hljs-string">&quot;frequency&quot;</span>,<span class="hljs-string">&quot;spatial&quot;</span>)
-    <span class="hljs-comment"># 输入图像的傅里叶变换</span>
-    input_img_fft = np.fft.fft2(input_img)
-    input_img_fft = np.fft.ifftshift(input_img_fft)
-
-    <span class="hljs-keyword">if</span>(htype == <span class="hljs-string">&quot;spatial&quot;</span>):
-        <span class="hljs-comment"># 模糊化函数的傅里叶变换</span>
-        h_fft = np.fft.fft2(h)
-    <span class="hljs-keyword">else</span> :
-        h_fft = h
-    <span class="hljs-comment"># 退化函数模值的平方</span>
-    h_abs_square = np.<span class="hljs-built_in">abs</span>(h_fft)**<span class="hljs-number">2</span>
-    <span class="hljs-comment"># 维纳滤波</span>
-    <span class="hljs-comment"># 使用的是 共轭/模方+NSR的形式，并非 9 10 式</span>
-    output_image_fft = np.conj(h_fft) / (h_abs_square + NSR)
-
-    <span class="hljs-comment"># 输出图像傅里叶反变换</span>
-    output_image = np.fft.ifft2(output_image_fft * input_img_fft)
-    output_image = np.<span class="hljs-built_in">abs</span>(np.fft.fftshift(output_image))
-    <span class="hljs-keyword">return</span> output_image</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">wienerFiltering</span>(<span class="hljs-params">input_img, h, NSR ,htype = <span class="hljs-string">&quot;frequency&quot;</span></span>):</span><br>    <span class="hljs-keyword">assert</span> htype <span class="hljs-keyword">in</span> (<span class="hljs-string">&quot;frequency&quot;</span>,<span class="hljs-string">&quot;spatial&quot;</span>)<br>    <span class="hljs-comment"># 输入图像的傅里叶变换</span><br>    input_img_fft = np.fft.fft2(input_img)<br>    input_img_fft = np.fft.ifftshift(input_img_fft)<br><br>    <span class="hljs-keyword">if</span>(htype == <span class="hljs-string">&quot;spatial&quot;</span>):<br>        <span class="hljs-comment"># 模糊化函数的傅里叶变换</span><br>        h_fft = np.fft.fft2(h)<br>    <span class="hljs-keyword">else</span> :<br>        h_fft = h<br>    <span class="hljs-comment"># 退化函数模值的平方</span><br>    h_abs_square = np.<span class="hljs-built_in">abs</span>(h_fft)**<span class="hljs-number">2</span><br>    <span class="hljs-comment"># 维纳滤波</span><br>    <span class="hljs-comment"># 使用的是 共轭/模方+NSR的形式，并非 9 10 式</span><br>    output_image_fft = np.conj(h_fft) / (h_abs_square + NSR)<br><br>    <span class="hljs-comment"># 输出图像傅里叶反变换</span><br>    output_image = np.fft.ifft2(output_image_fft * input_img_fft)<br>    output_image = np.<span class="hljs-built_in">abs</span>(np.fft.fftshift(output_image))<br>    <span class="hljs-keyword">return</span> output_image<br></code></pre></td></tr></table></figure>
 <h1 id="多重曝光融合"><a href="#多重曝光融合" class="headerlink" title="多重曝光融合"></a>多重曝光融合</h1><ul>
 <li>曝光程度对照片质量有影响</li>
 <li>不同曝光程度的照片中都包含有用场景信息</li>
@@ -1029,129 +595,14 @@ plt.show()</code></pre>
 <li>把 wa 输入词典，其中 a 是最大匹配后面的字符</li>
 <li>可用字典树加速查询最大匹配</li>
 </ul>
-<h3 id="代码实现-3"><a href="#代码实现-3" class="headerlink" title="代码实现"></a>代码实现</h3><pre><code class="hljs Go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(c *Encoder)</span> <span class="hljs-title">Circle</span><span class="hljs-params">()</span></span> &#123;
-	fmt.Println(<span class="hljs-string">&quot;Start Encode Circle!&quot;</span>)
-	<span class="hljs-keyword">for</span> key, char := <span class="hljs-keyword">range</span> c.befComp &#123;
-		outIndex, addflag, _ := c.Digest(char)
-		<span class="hljs-keyword">if</span> addflag == <span class="hljs-literal">true</span> &#123;
-			c.preString = []<span class="hljs-keyword">byte</span>&#123;&#125;
-			c.preString = <span class="hljs-built_in">append</span>(c.preString, char)
-			c.aftComp = <span class="hljs-built_in">append</span>(c.aftComp, outIndex)
-			<span class="hljs-keyword">if</span> key == <span class="hljs-built_in">len</span>(c.befComp)<span class="hljs-number">-1</span> &#123;
-				c.aftComp = <span class="hljs-built_in">append</span>(c.aftComp, char)
-			&#125;
-		&#125; <span class="hljs-keyword">else</span> &#123;
-			<span class="hljs-comment">// 在末尾的时候特判</span>
-			<span class="hljs-keyword">if</span> key == <span class="hljs-built_in">len</span>(c.befComp)<span class="hljs-number">-1</span> &#123;
-				<span class="hljs-comment">// c.preString = []byte&#123;&#125;</span>
-				c.aftComp = <span class="hljs-built_in">append</span>(c.aftComp, outIndex)
-			&#125;
-		&#125;
-	&#125;
-	<span class="hljs-comment">// fmt.Println(&quot;Test print:&quot;)</span>
-	<span class="hljs-comment">// fmt.Println(&quot;before compression: &quot;, c.befComp)</span>
-	<span class="hljs-comment">// fmt.Println(&quot;after compression: &quot;, c.aftComp)</span>
-&#125;
-
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(c *Encoder)</span> <span class="hljs-title">Digest</span><span class="hljs-params">(scanChar <span class="hljs-keyword">byte</span>)</span> <span class="hljs-params">(outIndex <span class="hljs-keyword">byte</span>, flag <span class="hljs-keyword">bool</span>, err error)</span></span> &#123;
-	<span class="hljs-comment">// 将Pre字符串和扫描的字符组合成为checkString</span>
-	checkString := <span class="hljs-built_in">append</span>(c.preString, scanChar)
-	<span class="hljs-comment">// 这列可以换成 lastroot 有待改进</span>
-	nowPtr, isFind := c.FindTreeptr(checkString, c.root)
-	<span class="hljs-keyword">if</span> isFind == <span class="hljs-literal">true</span> &#123;
-		<span class="hljs-comment">// 变更pre continue</span>
-		<span class="hljs-comment">// 不做输出</span>
-		c.preString = checkString
-		<span class="hljs-keyword">return</span> <span class="hljs-keyword">byte</span>(nowPtr.index), <span class="hljs-literal">false</span>, <span class="hljs-literal">nil</span>
-	&#125; <span class="hljs-keyword">else</span> &#123;
-		<span class="hljs-comment">// 加入新结点</span>
-		outIndex, err := c.AddTreeptr(nowPtr, scanChar)
-		<span class="hljs-comment">// 先输出</span>
-		<span class="hljs-keyword">return</span> outIndex, <span class="hljs-literal">true</span>, err
-	&#125;
-
-&#125;
-
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(c *Encoder)</span> <span class="hljs-title">FindTreeptr</span><span class="hljs-params">(leftString []<span class="hljs-keyword">byte</span>, treeRoot *TreeNode)</span> <span class="hljs-params">(addptr *TreeNode, flag <span class="hljs-keyword">bool</span>)</span></span> &#123;
-	tempChar := leftString[<span class="hljs-number">0</span>]
-	<span class="hljs-keyword">if</span> treeRoot.childNode[tempChar] != <span class="hljs-literal">nil</span> &#123;
-		<span class="hljs-comment">// 已经有节点</span>
-		<span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(leftString) == <span class="hljs-number">1</span> &#123;
-			<span class="hljs-comment">// 返回本结点</span>
-			<span class="hljs-keyword">return</span> treeRoot.childNode[tempChar], <span class="hljs-literal">true</span>
-		&#125; <span class="hljs-keyword">else</span> &#123;
-			<span class="hljs-comment">// 递归</span>
-			<span class="hljs-keyword">return</span> c.FindTreeptr(leftString[<span class="hljs-number">1</span>:], treeRoot.childNode[tempChar])
-		&#125;
-	&#125; <span class="hljs-keyword">else</span> &#123;
-		<span class="hljs-comment">// 未有节点</span>
-		<span class="hljs-comment">// 返回父亲结点（输出过程需要知道index）</span>
-		<span class="hljs-keyword">return</span> treeRoot, <span class="hljs-literal">false</span>
-	&#125;
-&#125;
-
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(c *Encoder)</span> <span class="hljs-title">AddTreeptr</span><span class="hljs-params">(faptr *TreeNode, addchar <span class="hljs-keyword">byte</span>)</span> <span class="hljs-params">(outIndex <span class="hljs-keyword">byte</span>, err error)</span></span> &#123;
-	outIndex = <span class="hljs-keyword">byte</span>(faptr.index)
-	<span class="hljs-keyword">if</span> c.capacity &gt;= <span class="hljs-number">256</span> &#123;
-		<span class="hljs-keyword">return</span> outIndex, errors.New(<span class="hljs-string">&quot;Dictionary Full!&quot;</span>)
-	&#125;
-	<span class="hljs-comment">// 由于获取父结点index需要所以这么操作</span>
-	faptr.childNode[addchar] = <span class="hljs-built_in">new</span>(TreeNode)
-	faptr.childNode[addchar].index = <span class="hljs-keyword">int</span>(c.capacity)
-	c.capacity++
-	<span class="hljs-comment">// c.dict[newIndex] =</span>
-	<span class="hljs-keyword">return</span> outIndex, <span class="hljs-literal">nil</span>
-&#125;</code></pre>
+<h3 id="代码实现-3"><a href="#代码实现-3" class="headerlink" title="代码实现"></a>代码实现</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(c *Encoder)</span> <span class="hljs-title">Circle</span><span class="hljs-params">()</span></span> &#123;<br>	fmt.Println(<span class="hljs-string">&quot;Start Encode Circle!&quot;</span>)<br>	<span class="hljs-keyword">for</span> key, char := <span class="hljs-keyword">range</span> c.befComp &#123;<br>		outIndex, addflag, _ := c.Digest(char)<br>		<span class="hljs-keyword">if</span> addflag == <span class="hljs-literal">true</span> &#123;<br>			c.preString = []<span class="hljs-keyword">byte</span>&#123;&#125;<br>			c.preString = <span class="hljs-built_in">append</span>(c.preString, char)<br>			c.aftComp = <span class="hljs-built_in">append</span>(c.aftComp, outIndex)<br>			<span class="hljs-keyword">if</span> key == <span class="hljs-built_in">len</span>(c.befComp)<span class="hljs-number">-1</span> &#123;<br>				c.aftComp = <span class="hljs-built_in">append</span>(c.aftComp, char)<br>			&#125;<br>		&#125; <span class="hljs-keyword">else</span> &#123;<br>			<span class="hljs-comment">// 在末尾的时候特判</span><br>			<span class="hljs-keyword">if</span> key == <span class="hljs-built_in">len</span>(c.befComp)<span class="hljs-number">-1</span> &#123;<br>				<span class="hljs-comment">// c.preString = []byte&#123;&#125;</span><br>				c.aftComp = <span class="hljs-built_in">append</span>(c.aftComp, outIndex)<br>			&#125;<br>		&#125;<br>	&#125;<br>	<span class="hljs-comment">// fmt.Println(&quot;Test print:&quot;)</span><br>	<span class="hljs-comment">// fmt.Println(&quot;before compression: &quot;, c.befComp)</span><br>	<span class="hljs-comment">// fmt.Println(&quot;after compression: &quot;, c.aftComp)</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(c *Encoder)</span> <span class="hljs-title">Digest</span><span class="hljs-params">(scanChar <span class="hljs-keyword">byte</span>)</span> <span class="hljs-params">(outIndex <span class="hljs-keyword">byte</span>, flag <span class="hljs-keyword">bool</span>, err error)</span></span> &#123;<br>	<span class="hljs-comment">// 将Pre字符串和扫描的字符组合成为checkString</span><br>	checkString := <span class="hljs-built_in">append</span>(c.preString, scanChar)<br>	<span class="hljs-comment">// 这列可以换成 lastroot 有待改进</span><br>	nowPtr, isFind := c.FindTreeptr(checkString, c.root)<br>	<span class="hljs-keyword">if</span> isFind == <span class="hljs-literal">true</span> &#123;<br>		<span class="hljs-comment">// 变更pre continue</span><br>		<span class="hljs-comment">// 不做输出</span><br>		c.preString = checkString<br>		<span class="hljs-keyword">return</span> <span class="hljs-keyword">byte</span>(nowPtr.index), <span class="hljs-literal">false</span>, <span class="hljs-literal">nil</span><br>	&#125; <span class="hljs-keyword">else</span> &#123;<br>		<span class="hljs-comment">// 加入新结点</span><br>		outIndex, err := c.AddTreeptr(nowPtr, scanChar)<br>		<span class="hljs-comment">// 先输出</span><br>		<span class="hljs-keyword">return</span> outIndex, <span class="hljs-literal">true</span>, err<br>	&#125;<br><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(c *Encoder)</span> <span class="hljs-title">FindTreeptr</span><span class="hljs-params">(leftString []<span class="hljs-keyword">byte</span>, treeRoot *TreeNode)</span> <span class="hljs-params">(addptr *TreeNode, flag <span class="hljs-keyword">bool</span>)</span></span> &#123;<br>	tempChar := leftString[<span class="hljs-number">0</span>]<br>	<span class="hljs-keyword">if</span> treeRoot.childNode[tempChar] != <span class="hljs-literal">nil</span> &#123;<br>		<span class="hljs-comment">// 已经有节点</span><br>		<span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(leftString) == <span class="hljs-number">1</span> &#123;<br>			<span class="hljs-comment">// 返回本结点</span><br>			<span class="hljs-keyword">return</span> treeRoot.childNode[tempChar], <span class="hljs-literal">true</span><br>		&#125; <span class="hljs-keyword">else</span> &#123;<br>			<span class="hljs-comment">// 递归</span><br>			<span class="hljs-keyword">return</span> c.FindTreeptr(leftString[<span class="hljs-number">1</span>:], treeRoot.childNode[tempChar])<br>		&#125;<br>	&#125; <span class="hljs-keyword">else</span> &#123;<br>		<span class="hljs-comment">// 未有节点</span><br>		<span class="hljs-comment">// 返回父亲结点（输出过程需要知道index）</span><br>		<span class="hljs-keyword">return</span> treeRoot, <span class="hljs-literal">false</span><br>	&#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(c *Encoder)</span> <span class="hljs-title">AddTreeptr</span><span class="hljs-params">(faptr *TreeNode, addchar <span class="hljs-keyword">byte</span>)</span> <span class="hljs-params">(outIndex <span class="hljs-keyword">byte</span>, err error)</span></span> &#123;<br>	outIndex = <span class="hljs-keyword">byte</span>(faptr.index)<br>	<span class="hljs-keyword">if</span> c.capacity &gt;= <span class="hljs-number">256</span> &#123;<br>		<span class="hljs-keyword">return</span> outIndex, errors.New(<span class="hljs-string">&quot;Dictionary Full!&quot;</span>)<br>	&#125;<br>	<span class="hljs-comment">// 由于获取父结点index需要所以这么操作</span><br>	faptr.childNode[addchar] = <span class="hljs-built_in">new</span>(TreeNode)<br>	faptr.childNode[addchar].index = <span class="hljs-keyword">int</span>(c.capacity)<br>	c.capacity++<br>	<span class="hljs-comment">// c.dict[newIndex] =</span><br>	<span class="hljs-keyword">return</span> outIndex, <span class="hljs-literal">nil</span><br>&#125;<br></code></pre></td></tr></table></figure>
 <h2 id="LZW-解码步骤"><a href="#LZW-解码步骤" class="headerlink" title="LZW 解码步骤"></a>LZW 解码步骤</h2><ul>
 <li>解码步骤</li>
 <li>初始化词典；</li>
 <li>翻译首个索引值为 w，输出 w；</li>
 <li>把 w？放入词典，其中？为待定字符；</li>
 </ul>
-<h3 id="代码实现-4"><a href="#代码实现-4" class="headerlink" title="代码实现"></a>代码实现</h3><pre><code class="hljs Go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(c *Decoder)</span> <span class="hljs-title">Circle</span><span class="hljs-params">()</span></span> &#123;
-	fmt.Println(<span class="hljs-string">&quot;Start Decoder Circle!&quot;</span>)
-	<span class="hljs-keyword">for</span> _, value := <span class="hljs-keyword">range</span> c.befComp &#123;
-		<span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(c.storeString) == <span class="hljs-number">0</span> &#123;
-			c.aftComp = <span class="hljs-built_in">append</span>(c.aftComp, value)
-			<span class="hljs-comment">// 第一个 特判 变更storeString</span>
-			c.storeString = <span class="hljs-built_in">append</span>(c.storeString, value)
-			<span class="hljs-keyword">continue</span>
-		&#125;
-		<span class="hljs-comment">// 其他情况</span>
-		<span class="hljs-comment">// (错误)写： aftComp是byte切片   storeString 也是byte切片</span>
-		<span class="hljs-comment">// 先从字典获取现在值对应的字符串</span>
-		lookUpString := c.dict[value]
-		<span class="hljs-comment">// 加入输出</span>
-		c.aftComp = <span class="hljs-built_in">append</span>(c.aftComp, []<span class="hljs-keyword">byte</span>(lookUpString)...)
-
-		<span class="hljs-comment">// XX? 变成XXX</span>
-		<span class="hljs-comment">// 把查到的字典加进来</span>
-		<span class="hljs-keyword">if</span> flag := c.CheckDicFull(); flag == <span class="hljs-literal">true</span> &#123;
-			<span class="hljs-keyword">continue</span>
-		&#125; <span class="hljs-keyword">else</span> &#123;
-
-			c.StoreDic(c.storeString, lookUpString)
-			<span class="hljs-comment">// 将storeString 转化为当前 XX？</span>
-			c.storeString = []<span class="hljs-keyword">byte</span>(lookUpString)
-		&#125;
-
-	&#125;
-&#125;
-
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(c *Decoder)</span> <span class="hljs-title">CheckDicFull</span><span class="hljs-params">()</span> <span class="hljs-params">(flag <span class="hljs-keyword">bool</span>)</span></span> &#123;
-	<span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(c.dict) == <span class="hljs-number">256</span> &#123;
-		<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
-	&#125;
-	<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>
-&#125;
-
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(c *Decoder)</span> <span class="hljs-title">StoreDic</span><span class="hljs-params">(original []<span class="hljs-keyword">byte</span>, prefix <span class="hljs-keyword">string</span>)</span></span> &#123;
-	<span class="hljs-comment">// 原始+这次扫描的第一个byte（）</span>
-	newcontent := <span class="hljs-built_in">append</span>(original, prefix[<span class="hljs-number">0</span>])
-	length := <span class="hljs-built_in">len</span>(c.dict)
-	fmt.Println(length, <span class="hljs-keyword">string</span>(newcontent))
-	c.dict[<span class="hljs-keyword">byte</span>(length)] = <span class="hljs-keyword">string</span>(newcontent)
-&#125;</code></pre>
+<h3 id="代码实现-4"><a href="#代码实现-4" class="headerlink" title="代码实现"></a>代码实现</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(c *Decoder)</span> <span class="hljs-title">Circle</span><span class="hljs-params">()</span></span> &#123;<br>	fmt.Println(<span class="hljs-string">&quot;Start Decoder Circle!&quot;</span>)<br>	<span class="hljs-keyword">for</span> _, value := <span class="hljs-keyword">range</span> c.befComp &#123;<br>		<span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(c.storeString) == <span class="hljs-number">0</span> &#123;<br>			c.aftComp = <span class="hljs-built_in">append</span>(c.aftComp, value)<br>			<span class="hljs-comment">// 第一个 特判 变更storeString</span><br>			c.storeString = <span class="hljs-built_in">append</span>(c.storeString, value)<br>			<span class="hljs-keyword">continue</span><br>		&#125;<br>		<span class="hljs-comment">// 其他情况</span><br>		<span class="hljs-comment">// (错误)写： aftComp是byte切片   storeString 也是byte切片</span><br>		<span class="hljs-comment">// 先从字典获取现在值对应的字符串</span><br>		lookUpString := c.dict[value]<br>		<span class="hljs-comment">// 加入输出</span><br>		c.aftComp = <span class="hljs-built_in">append</span>(c.aftComp, []<span class="hljs-keyword">byte</span>(lookUpString)...)<br><br>		<span class="hljs-comment">// XX? 变成XXX</span><br>		<span class="hljs-comment">// 把查到的字典加进来</span><br>		<span class="hljs-keyword">if</span> flag := c.CheckDicFull(); flag == <span class="hljs-literal">true</span> &#123;<br>			<span class="hljs-keyword">continue</span><br>		&#125; <span class="hljs-keyword">else</span> &#123;<br><br>			c.StoreDic(c.storeString, lookUpString)<br>			<span class="hljs-comment">// 将storeString 转化为当前 XX？</span><br>			c.storeString = []<span class="hljs-keyword">byte</span>(lookUpString)<br>		&#125;<br><br>	&#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(c *Decoder)</span> <span class="hljs-title">CheckDicFull</span><span class="hljs-params">()</span> <span class="hljs-params">(flag <span class="hljs-keyword">bool</span>)</span></span> &#123;<br>	<span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(c.dict) == <span class="hljs-number">256</span> &#123;<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span><br>	&#125;<br>	<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(c *Decoder)</span> <span class="hljs-title">StoreDic</span><span class="hljs-params">(original []<span class="hljs-keyword">byte</span>, prefix <span class="hljs-keyword">string</span>)</span></span> &#123;<br>	<span class="hljs-comment">// 原始+这次扫描的第一个byte（）</span><br>	newcontent := <span class="hljs-built_in">append</span>(original, prefix[<span class="hljs-number">0</span>])<br>	length := <span class="hljs-built_in">len</span>(c.dict)<br>	fmt.Println(length, <span class="hljs-keyword">string</span>(newcontent))<br>	c.dict[<span class="hljs-keyword">byte</span>(length)] = <span class="hljs-keyword">string</span>(newcontent)<br>&#125;<br></code></pre></td></tr></table></figure>
 <h3 id="阶段总结"><a href="#阶段总结" class="headerlink" title="阶段总结"></a>阶段总结</h3><ul>
 <li>行程编码是利用数据的稀疏分布特点进行编码</li>
 <li>词典编码是根据词典将输入字符转换为对应词条的索引输出</li>
@@ -1269,9 +720,7 @@ plt.show()</code></pre>
 <p>CMYK 减法混色法</p>
 <p>HSV 艺术家们常用，使用色相饱和度和明度<br>HSL 用亮度（Lightness）代替明度（Value/Brightness）</p>
 <h1 id="其他讨论区问题"><a href="#其他讨论区问题" class="headerlink" title="其他讨论区问题"></a>其他讨论区问题</h1><h2 id="调研-C-C-语言中-main-函数的两个常见参数的意义和用法，将调研结果写在下面的讨论区"><a href="#调研-C-C-语言中-main-函数的两个常见参数的意义和用法，将调研结果写在下面的讨论区" class="headerlink" title="调研 C/C++语言中 main 函数的两个常见参数的意义和用法，将调研结果写在下面的讨论区"></a>调研 C/C++语言中 main 函数的两个常见参数的意义和用法，将调研结果写在下面的讨论区</h2><p>主函数程序应当含有一个名为 main 的全局函数，它被指定为程序的启动点。它应当有下列形式之一：</p>
-<pre><code class="hljs C++"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span> <span class="hljs-params">()</span> </span>&#123; body &#125; (<span class="hljs-number">1</span>)
-<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span> <span class="hljs-params">(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span> _argv[])</span> </span>&#123; body &#125; (<span class="hljs-number">2</span>)
-<span class="hljs-comment">// 其他由实现定义的形式，返回类型为 int (3)</span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span> <span class="hljs-params">()</span> </span>&#123; body &#125; (<span class="hljs-number">1</span>)<br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span> <span class="hljs-params">(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span> _argv[])</span> </span>&#123; body &#125; (<span class="hljs-number">2</span>)<br><span class="hljs-comment">// 其他由实现定义的形式，返回类型为 int (3)</span><br></code></pre></td></tr></table></figure>
 <ul>
 <li>argc - 非负数，表示从程序运行的环境传递给程序的实参个数。</li>
 <li><p>argv - 指针，指向包含 argc + 1 个指针的数组的首元素。数组末元素为空指针，若其前面有任何元素，则它们指向空终止多字节字符串，表示从执行环境传递给程序的若干参数。若 argv[0] 不是空指针，或等价地 argc &gt; 0 ，则它指向表示用于调用程序的名称的字符串，或空字符串。</p>
@@ -1308,7 +757,7 @@ plt.show()</code></pre>
                 <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
               
               
-                <div class="post-prevnext row">
+                <div class="post-prevnext">
                   <article class="post-prev col-6">
                     
                     
@@ -1401,23 +850,20 @@ plt.show()</code></pre>
 
 <!-- SCRIPTS -->
 
-  <script  src="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.css" />
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
 
   <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":200})
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
     NProgress.start()
-    document.addEventListener('DOMContentLoaded', function() {
-      window.NProgress && window.NProgress.inc();
-    })
     window.addEventListener('load', function() {
       NProgress.done();
     })
   </script>
 
 
-<script  src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js" ></script>
-<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/js/bootstrap.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
 <script  src="/js/debouncer.js" ></script>
 <script  src="/js/events.js" ></script>
 <script  src="/js/plugins.js" ></script>
@@ -1435,25 +881,26 @@ plt.show()</code></pre>
 
 
 
-  <script  src="https://cdn.staticfile.org/tocbot/4.12.0/tocbot.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
 
 
 
-  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
 
 
 
-  <script  src="https://cdn.staticfile.org/anchor-js/4.3.0/anchor.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
 
 
 
-  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
 
 
 
 
 
-  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
   <script>
     (function (window, document) {
       var typing = Fluid.plugins.typing;
@@ -1517,7 +964,7 @@ plt.show()</code></pre>
       };
     </script>
 
-    <script async src="https://cdn.staticfile.org/mathjax/3.1.2/es5/tex-svg.js" ></script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-svg.js" ></script>
 
   
 

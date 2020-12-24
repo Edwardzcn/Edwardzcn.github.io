@@ -21,22 +21,22 @@
   <meta name="keywords" content="Edward&#39;s blog">
   <title>【HDU-1430】解题报告（数论，康拓展开逆展开，简单哈希，BFS） - Edward&#39;s blog</title>
 
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/css/bootstrap.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
 
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
   <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
   
     
     
       
-      <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.1.2/styles/github-gist.min.css" />
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
     
   
 
   
-    <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
   
 
 
@@ -57,7 +57,7 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"copy_btn":true,"image_zoom":{"enable":true},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
@@ -206,7 +206,7 @@
   </div>
 </nav>
 
-    <div class="banner intro-2" id="background" parallax=true
+    <div class="banner" id="banner" parallax=true
          style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
@@ -271,11 +271,11 @@
     
       
 
-<div class="container-fluid">
-  <div class="row">
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
     <div class="d-none d-lg-block col-lg-2"></div>
-    <div class="col-lg-8 nopadding-md">
-      <div class="container nopadding-md" id="board-ctn">
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
@@ -335,141 +335,7 @@ rep(i,0,len1)&#123;
     b[i]=hhash[raw2[i]-&#39;0&#39;];    
 &#125;
 </code></pre><p>保留板子相对移动的位置不变化即可，这样我们只要预处理一下’12345678’到各个排列的末态，然后对每组输入，做映射到’12345678’，输出新末态的结果即可。   </p>
-<h1 id="解题代码"><a href="#解题代码" class="headerlink" title="解题代码"></a>解题代码</h1><pre><code class="hljs C++"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cstdio&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cstring&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cmath&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;string&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;iostream&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;iomanip&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;sstream&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;set&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;map&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;queue&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;vector&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;bits/stdc++.h&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> INF 0x3f3f3f3f</span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> eps 1e-8</span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> mp make_pair</span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> np next_permutation</span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> pb push_back</span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> all(x) x.begin(),x.end()</span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> rep(i,a,n) for(int i=a;i&lt;n;++i)</span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> per(i,a,n) for(int i=n-1;i&gt;=a;--i)</span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> ms(x,a) memset((x),a,sizeof((x))) </span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> mod 998244353 </span>
-<span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> gapline  cout&lt;&lt;<span class="hljs-meta-string">&quot;##---------------##&quot;</span>&lt;&lt;endl</span>
-<span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> <span class="hljs-built_in">std</span>;
-<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">long</span> <span class="hljs-keyword">long</span> ll;
-<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> <span class="hljs-keyword">long</span> ull;
-<span class="hljs-keyword">typedef</span> <span class="hljs-built_in">vector</span>&lt;<span class="hljs-keyword">int</span>&gt; vi;
-<span class="hljs-keyword">typedef</span> <span class="hljs-built_in">pair</span>&lt;<span class="hljs-keyword">int</span>,<span class="hljs-keyword">int</span>&gt; pii;
-<span class="hljs-keyword">const</span> <span class="hljs-keyword">int</span> maxl=<span class="hljs-number">8</span>;
-<span class="hljs-keyword">const</span> <span class="hljs-keyword">int</span> maxn=<span class="hljs-number">1e5</span>+<span class="hljs-number">5</span>;
-<span class="hljs-keyword">int</span> A[maxl];<span class="hljs-comment">//阶乘； </span>
-<span class="hljs-keyword">int</span> ans_cantor[maxl];<span class="hljs-comment">//康托展开数组 </span>
-<span class="hljs-keyword">int</span> next_cantor[maxl];
-<span class="hljs-keyword">bool</span> vis_cantor[maxl];<span class="hljs-comment">//康托标记数组 </span>
-<span class="hljs-keyword">bool</span> vis[maxn];
-<span class="hljs-keyword">int</span> hhash[<span class="hljs-number">20</span>],b[<span class="hljs-number">20</span>];
-<span class="hljs-built_in">string</span> ans[maxn];
-<span class="hljs-built_in">string</span> raw1,raw2;
-<span class="hljs-built_in">queue</span> &lt;ll&gt; q;
-<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">prechange</span><span class="hljs-params">()</span></span>&#123;
-	<span class="hljs-keyword">int</span> len1=raw1.length();
-	rep(i,<span class="hljs-number">0</span>,len1)&#123;
-		hhash[raw1[i]-<span class="hljs-string">&#x27;0&#x27;</span>]=i+<span class="hljs-number">1</span>;
-	&#125;
-	rep(i,<span class="hljs-number">0</span>,len1)&#123;
-		b[i]=hhash[raw2[i]-<span class="hljs-string">&#x27;0&#x27;</span>];	
-	&#125;
-&#125;
-<span class="hljs-comment">//contar展开，逆展开，数组标号都是从0开始 </span>
-<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">cantor</span><span class="hljs-params">(<span class="hljs-keyword">int</span> contar_s[], ll num, <span class="hljs-keyword">int</span> contar_k)</span></span>&#123;<span class="hljs-comment">//康托展开，把一个数字num展开成一个数组contar_s，contar_k是数组长度</span>
-    <span class="hljs-keyword">int</span> t;
-    <span class="hljs-built_in">memset</span>(vis_cantor, <span class="hljs-number">0</span>, <span class="hljs-keyword">sizeof</span>(vis_cantor)); 
-    <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; contar_k; i ++)&#123;
-        t = num / A[contar_k-i<span class="hljs-number">-1</span>];
-        num%=A[contar_k-i<span class="hljs-number">-1</span>];
-		<span class="hljs-keyword">int</span> cnt_cantor=<span class="hljs-number">0</span>;
-		rep(j,<span class="hljs-number">0</span>,contar_k)&#123;	<span class="hljs-comment">//计算每位的逆序数 </span>
-			<span class="hljs-keyword">if</span>(vis_cantor[j]) <span class="hljs-keyword">continue</span>;
-			<span class="hljs-keyword">if</span>(cnt_cantor==t)&#123;
-				contar_s[i]=j+<span class="hljs-number">1</span>,vis_cantor[j]=<span class="hljs-number">1</span>;<span class="hljs-keyword">break</span>;	
-			&#125; 
-			++cnt_cantor;
-			
-		&#125;
-    &#125;
-<span class="hljs-comment">//    rep(i,0,contar_k) cout&lt;&lt;contar_s[i]&lt;&lt;&#x27; &#x27;; //输出康拖展开的结果 </span>
-<span class="hljs-comment">//    cout&lt;&lt;endl;</span>
-<span class="hljs-comment">//    gapline;</span>
-&#125;
-<span class="hljs-function">ll <span class="hljs-title">inv_cantor</span><span class="hljs-params">(<span class="hljs-keyword">int</span> contar_s[], <span class="hljs-keyword">int</span> contar_k)</span></span>&#123;<span class="hljs-comment">//康托逆展开，把一个数组contar_s换算成一个数字num </span>
-    <span class="hljs-keyword">int</span> cnt;ll num=<span class="hljs-number">0</span>;
-    num = <span class="hljs-number">0</span>;
-    <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; contar_k; i ++)&#123;
-        cnt = <span class="hljs-number">0</span>;
-        <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> j = i + <span class="hljs-number">1</span>; j &lt; contar_k; j ++)&#123;
-            <span class="hljs-keyword">if</span>(contar_s[i] &gt; contar_s[j]) cnt ++;<span class="hljs-comment">//判断几个数小于它,即求逆序数。 </span>
-        &#125;
-        num += A[contar_k-i<span class="hljs-number">-1</span>] * cnt;
-    &#125;
-    <span class="hljs-keyword">return</span> num;
-&#125;
-<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">change</span><span class="hljs-params">(<span class="hljs-keyword">int</span> i)</span></span>&#123;
-	<span class="hljs-keyword">switch</span>(i)&#123;
-		<span class="hljs-keyword">case</span> <span class="hljs-number">0</span>: <span class="hljs-comment">//操作A </span>
-			rep(j,<span class="hljs-number">0</span>,<span class="hljs-number">4</span>) swap(next_cantor[j],next_cantor[maxl<span class="hljs-number">-1</span>-j]);
-			<span class="hljs-keyword">break</span>;
-		<span class="hljs-keyword">case</span> <span class="hljs-number">1</span>: <span class="hljs-comment">//操作B</span>
-			per(j,<span class="hljs-number">1</span>,<span class="hljs-number">4</span>) swap(next_cantor[(j+<span class="hljs-number">1</span>)%<span class="hljs-number">4</span>],next_cantor[j]);
-			swap(next_cantor[<span class="hljs-number">4</span>],next_cantor[<span class="hljs-number">7</span>]);
-			swap(next_cantor[<span class="hljs-number">5</span>],next_cantor[<span class="hljs-number">4</span>]);
-			swap(next_cantor[<span class="hljs-number">6</span>],next_cantor[<span class="hljs-number">5</span>]); 
-			<span class="hljs-keyword">break</span>;
-		<span class="hljs-keyword">case</span> <span class="hljs-number">2</span>: <span class="hljs-comment">//操作C</span>
-			swap(next_cantor[<span class="hljs-number">1</span>],next_cantor[<span class="hljs-number">2</span>]);
-			swap(next_cantor[<span class="hljs-number">1</span>],next_cantor[<span class="hljs-number">6</span>]);
-			swap(next_cantor[<span class="hljs-number">6</span>],next_cantor[<span class="hljs-number">5</span>]);
-			<span class="hljs-keyword">break</span>; 
-	&#125;
-&#125;
-<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">bfs</span><span class="hljs-params">()</span></span>&#123;
-	A[<span class="hljs-number">0</span>]=A[<span class="hljs-number">1</span>]=<span class="hljs-number">1</span>;
-	A[<span class="hljs-number">2</span>]=<span class="hljs-number">2</span>;
-	rep(i,<span class="hljs-number">3</span>,maxl+<span class="hljs-number">1</span>) A[i]=A[i<span class="hljs-number">-1</span>]*i;
-	<span class="hljs-keyword">while</span>(!q.empty()) q.pop();
-	q.push(<span class="hljs-number">0</span>);
-	vis[<span class="hljs-number">0</span>]=<span class="hljs-number">1</span>;
-	<span class="hljs-keyword">while</span>(!q.empty())&#123;
-		ll temp1=q.front();q.pop();
-		cantor(ans_cantor,temp1,maxl);
-		rep(i,<span class="hljs-number">0</span>,<span class="hljs-number">3</span>)&#123;
-			rep(j,<span class="hljs-number">0</span>,maxl) next_cantor[j]=ans_cantor[j];
-			change(i);
-			ll temp2=inv_cantor(next_cantor,maxl);
-			<span class="hljs-keyword">if</span>(!vis[temp2])&#123;
-				q.push(temp2);
-				vis[temp2]=<span class="hljs-number">1</span>;
-				ans[temp2]=ans[temp1]+(<span class="hljs-keyword">char</span>)(<span class="hljs-string">&#x27;A&#x27;</span>+i);
-			&#125;
-		&#125;
-	&#125;
-&#125;
-
- 
-
-
-<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;
-	ios::sync_with_stdio(<span class="hljs-literal">false</span>);
-	bfs();
-	<span class="hljs-keyword">while</span>(<span class="hljs-built_in">cin</span>&gt;&gt;raw1&gt;&gt;raw2)&#123;
-		prechange();
-		<span class="hljs-comment">//b[]为最终目标态 </span>
-		ll cnt=inv_cantor(b,maxl);
-		<span class="hljs-built_in">cout</span>&lt;&lt;ans[cnt]&lt;&lt;<span class="hljs-built_in">endl</span>;
-	&#125; 
-&#125;</code></pre>
+<h1 id="解题代码"><a href="#解题代码" class="headerlink" title="解题代码"></a>解题代码</h1><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cstdio&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cstring&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cmath&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;string&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;iomanip&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;sstream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;set&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;map&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;queue&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;vector&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;bits/stdc++.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> INF 0x3f3f3f3f</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> eps 1e-8</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> mp make_pair</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> np next_permutation</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> pb push_back</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> all(x) x.begin(),x.end()</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> rep(i,a,n) for(int i=a;i&lt;n;++i)</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> per(i,a,n) for(int i=n-1;i&gt;=a;--i)</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> ms(x,a) memset((x),a,sizeof((x))) </span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> mod 998244353 </span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> gapline  cout&lt;&lt;<span class="hljs-meta-string">&quot;##---------------##&quot;</span>&lt;&lt;endl</span><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> <span class="hljs-built_in">std</span>;<br><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">long</span> <span class="hljs-keyword">long</span> ll;<br><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> <span class="hljs-keyword">long</span> ull;<br><span class="hljs-keyword">typedef</span> <span class="hljs-built_in">vector</span>&lt;<span class="hljs-keyword">int</span>&gt; vi;<br><span class="hljs-keyword">typedef</span> <span class="hljs-built_in">pair</span>&lt;<span class="hljs-keyword">int</span>,<span class="hljs-keyword">int</span>&gt; pii;<br><span class="hljs-keyword">const</span> <span class="hljs-keyword">int</span> maxl=<span class="hljs-number">8</span>;<br><span class="hljs-keyword">const</span> <span class="hljs-keyword">int</span> maxn=<span class="hljs-number">1e5</span>+<span class="hljs-number">5</span>;<br><span class="hljs-keyword">int</span> A[maxl];<span class="hljs-comment">//阶乘； </span><br><span class="hljs-keyword">int</span> ans_cantor[maxl];<span class="hljs-comment">//康托展开数组 </span><br><span class="hljs-keyword">int</span> next_cantor[maxl];<br><span class="hljs-keyword">bool</span> vis_cantor[maxl];<span class="hljs-comment">//康托标记数组 </span><br><span class="hljs-keyword">bool</span> vis[maxn];<br><span class="hljs-keyword">int</span> hhash[<span class="hljs-number">20</span>],b[<span class="hljs-number">20</span>];<br><span class="hljs-built_in">string</span> ans[maxn];<br><span class="hljs-built_in">string</span> raw1,raw2;<br><span class="hljs-built_in">queue</span> &lt;ll&gt; q;<br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">prechange</span><span class="hljs-params">()</span></span>&#123;<br>	<span class="hljs-keyword">int</span> len1=raw1.length();<br>	rep(i,<span class="hljs-number">0</span>,len1)&#123;<br>		hhash[raw1[i]-<span class="hljs-string">&#x27;0&#x27;</span>]=i+<span class="hljs-number">1</span>;<br>	&#125;<br>	rep(i,<span class="hljs-number">0</span>,len1)&#123;<br>		b[i]=hhash[raw2[i]-<span class="hljs-string">&#x27;0&#x27;</span>];	<br>	&#125;<br>&#125;<br><span class="hljs-comment">//contar展开，逆展开，数组标号都是从0开始 </span><br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">cantor</span><span class="hljs-params">(<span class="hljs-keyword">int</span> contar_s[], ll num, <span class="hljs-keyword">int</span> contar_k)</span></span>&#123;<span class="hljs-comment">//康托展开，把一个数字num展开成一个数组contar_s，contar_k是数组长度</span><br>    <span class="hljs-keyword">int</span> t;<br>    <span class="hljs-built_in">memset</span>(vis_cantor, <span class="hljs-number">0</span>, <span class="hljs-keyword">sizeof</span>(vis_cantor)); <br>    <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; contar_k; i ++)&#123;<br>        t = num / A[contar_k-i<span class="hljs-number">-1</span>];<br>        num%=A[contar_k-i<span class="hljs-number">-1</span>];<br>		<span class="hljs-keyword">int</span> cnt_cantor=<span class="hljs-number">0</span>;<br>		rep(j,<span class="hljs-number">0</span>,contar_k)&#123;	<span class="hljs-comment">//计算每位的逆序数 </span><br>			<span class="hljs-keyword">if</span>(vis_cantor[j]) <span class="hljs-keyword">continue</span>;<br>			<span class="hljs-keyword">if</span>(cnt_cantor==t)&#123;<br>				contar_s[i]=j+<span class="hljs-number">1</span>,vis_cantor[j]=<span class="hljs-number">1</span>;<span class="hljs-keyword">break</span>;	<br>			&#125; <br>			++cnt_cantor;<br>			<br>		&#125;<br>    &#125;<br><span class="hljs-comment">//    rep(i,0,contar_k) cout&lt;&lt;contar_s[i]&lt;&lt;&#x27; &#x27;; //输出康拖展开的结果 </span><br><span class="hljs-comment">//    cout&lt;&lt;endl;</span><br><span class="hljs-comment">//    gapline;</span><br>&#125;<br><span class="hljs-function">ll <span class="hljs-title">inv_cantor</span><span class="hljs-params">(<span class="hljs-keyword">int</span> contar_s[], <span class="hljs-keyword">int</span> contar_k)</span></span>&#123;<span class="hljs-comment">//康托逆展开，把一个数组contar_s换算成一个数字num </span><br>    <span class="hljs-keyword">int</span> cnt;ll num=<span class="hljs-number">0</span>;<br>    num = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; contar_k; i ++)&#123;<br>        cnt = <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> j = i + <span class="hljs-number">1</span>; j &lt; contar_k; j ++)&#123;<br>            <span class="hljs-keyword">if</span>(contar_s[i] &gt; contar_s[j]) cnt ++;<span class="hljs-comment">//判断几个数小于它,即求逆序数。 </span><br>        &#125;<br>        num += A[contar_k-i<span class="hljs-number">-1</span>] * cnt;<br>    &#125;<br>    <span class="hljs-keyword">return</span> num;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">change</span><span class="hljs-params">(<span class="hljs-keyword">int</span> i)</span></span>&#123;<br>	<span class="hljs-keyword">switch</span>(i)&#123;<br>		<span class="hljs-keyword">case</span> <span class="hljs-number">0</span>: <span class="hljs-comment">//操作A </span><br>			rep(j,<span class="hljs-number">0</span>,<span class="hljs-number">4</span>) swap(next_cantor[j],next_cantor[maxl<span class="hljs-number">-1</span>-j]);<br>			<span class="hljs-keyword">break</span>;<br>		<span class="hljs-keyword">case</span> <span class="hljs-number">1</span>: <span class="hljs-comment">//操作B</span><br>			per(j,<span class="hljs-number">1</span>,<span class="hljs-number">4</span>) swap(next_cantor[(j+<span class="hljs-number">1</span>)%<span class="hljs-number">4</span>],next_cantor[j]);<br>			swap(next_cantor[<span class="hljs-number">4</span>],next_cantor[<span class="hljs-number">7</span>]);<br>			swap(next_cantor[<span class="hljs-number">5</span>],next_cantor[<span class="hljs-number">4</span>]);<br>			swap(next_cantor[<span class="hljs-number">6</span>],next_cantor[<span class="hljs-number">5</span>]); <br>			<span class="hljs-keyword">break</span>;<br>		<span class="hljs-keyword">case</span> <span class="hljs-number">2</span>: <span class="hljs-comment">//操作C</span><br>			swap(next_cantor[<span class="hljs-number">1</span>],next_cantor[<span class="hljs-number">2</span>]);<br>			swap(next_cantor[<span class="hljs-number">1</span>],next_cantor[<span class="hljs-number">6</span>]);<br>			swap(next_cantor[<span class="hljs-number">6</span>],next_cantor[<span class="hljs-number">5</span>]);<br>			<span class="hljs-keyword">break</span>; <br>	&#125;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">bfs</span><span class="hljs-params">()</span></span>&#123;<br>	A[<span class="hljs-number">0</span>]=A[<span class="hljs-number">1</span>]=<span class="hljs-number">1</span>;<br>	A[<span class="hljs-number">2</span>]=<span class="hljs-number">2</span>;<br>	rep(i,<span class="hljs-number">3</span>,maxl+<span class="hljs-number">1</span>) A[i]=A[i<span class="hljs-number">-1</span>]*i;<br>	<span class="hljs-keyword">while</span>(!q.empty()) q.pop();<br>	q.push(<span class="hljs-number">0</span>);<br>	vis[<span class="hljs-number">0</span>]=<span class="hljs-number">1</span>;<br>	<span class="hljs-keyword">while</span>(!q.empty())&#123;<br>		ll temp1=q.front();q.pop();<br>		cantor(ans_cantor,temp1,maxl);<br>		rep(i,<span class="hljs-number">0</span>,<span class="hljs-number">3</span>)&#123;<br>			rep(j,<span class="hljs-number">0</span>,maxl) next_cantor[j]=ans_cantor[j];<br>			change(i);<br>			ll temp2=inv_cantor(next_cantor,maxl);<br>			<span class="hljs-keyword">if</span>(!vis[temp2])&#123;<br>				q.push(temp2);<br>				vis[temp2]=<span class="hljs-number">1</span>;<br>				ans[temp2]=ans[temp1]+(<span class="hljs-keyword">char</span>)(<span class="hljs-string">&#x27;A&#x27;</span>+i);<br>			&#125;<br>		&#125;<br>	&#125;<br>&#125;<br><br> <br><br><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;<br>	ios::sync_with_stdio(<span class="hljs-literal">false</span>);<br>	bfs();<br>	<span class="hljs-keyword">while</span>(<span class="hljs-built_in">cin</span>&gt;&gt;raw1&gt;&gt;raw2)&#123;<br>		prechange();<br>		<span class="hljs-comment">//b[]为最终目标态 </span><br>		ll cnt=inv_cantor(b,maxl);<br>		<span class="hljs-built_in">cout</span>&lt;&lt;ans[cnt]&lt;&lt;<span class="hljs-built_in">endl</span>;<br>	&#125; <br>&#125; <br></code></pre></td></tr></table></figure>
 <h1 id="收获与反思"><a href="#收获与反思" class="headerlink" title="收获与反思"></a>收获与反思</h1><ul>
 <li>本题综合应用了数论里的康托展开（用于找到状态数和排列之间的联系），hash到相同情况讨论，以及BFS，值得深入考虑</li>
 <li><p>关于康托展开<br>  <a target="_blank" rel="noopener" href="https://www.cnblogs.com/linyujun/p/5205760.html">https://www.cnblogs.com/linyujun/p/5205760.html</a><br>  大部分是通过这篇博客以及其他资料学习的，感谢原作者！</p>
@@ -512,7 +378,7 @@ rep(i,0,len1)&#123;
                 <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
               
               
-                <div class="post-prevnext row">
+                <div class="post-prevnext">
                   <article class="post-prev col-6">
                     
                     
@@ -605,23 +471,20 @@ rep(i,0,len1)&#123;
 
 <!-- SCRIPTS -->
 
-  <script  src="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://cdn.staticfile.org/nprogress/0.2.0/nprogress.min.css" />
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
 
   <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":200})
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
     NProgress.start()
-    document.addEventListener('DOMContentLoaded', function() {
-      window.NProgress && window.NProgress.inc();
-    })
     window.addEventListener('load', function() {
       NProgress.done();
     })
   </script>
 
 
-<script  src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js" ></script>
-<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.5.3/js/bootstrap.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
 <script  src="/js/debouncer.js" ></script>
 <script  src="/js/events.js" ></script>
 <script  src="/js/plugins.js" ></script>
@@ -639,25 +502,26 @@ rep(i,0,len1)&#123;
 
 
 
-  <script  src="https://cdn.staticfile.org/tocbot/4.12.0/tocbot.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
 
 
 
-  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
 
 
 
-  <script  src="https://cdn.staticfile.org/anchor-js/4.3.0/anchor.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
 
 
 
-  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
 
 
 
 
 
-  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
   <script>
     (function (window, document) {
       var typing = Fluid.plugins.typing;
@@ -721,7 +585,7 @@ rep(i,0,len1)&#123;
       };
     </script>
 
-    <script async src="https://cdn.staticfile.org/mathjax/3.1.2/es5/tex-svg.js" ></script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-svg.js" ></script>
 
   
 
