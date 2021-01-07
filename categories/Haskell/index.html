@@ -19,25 +19,9 @@
   <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
-  <title>Haskell学习——自定义数据类型 - Edward&#39;s blog</title>
+  <title>分类 - Haskell - Edward&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
-
-
-  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
-  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
-
-  
-    
-    
-      
-      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
-    
-  
-
-  
-    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
-  
 
 
 
@@ -66,7 +50,7 @@
 
 
 <body>
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 60vh;">
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
@@ -212,51 +196,9 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="Haskell学习——自定义数据类型">
+            <span class="h2" id="subtitle" title="分类 - Haskell">
               
             </span>
-
-            
-              <div class="mt-3">
-  
-    <span class="post-meta mr-2">
-      <i class="iconfont icon-author" aria-hidden="true"></i>
-      Edwardzcn
-    </span>
-  
-  
-    <span class="post-meta">
-      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2020-11-13 09:42" pubdate>
-        2020年11月13日 上午
-      </time>
-    </span>
-  
-</div>
-
-<div class="mt-1">
-  
-    
-    <span class="post-meta mr-2">
-      <i class="iconfont icon-chart"></i>
-      235 字
-    </span>
-  
-
-  
-    
-    <span class="post-meta mr-2">
-      <i class="iconfont icon-clock-fill"></i>
-      
-      
-      2
-       分钟
-    </span>
-  
-
-  
-  
-</div>
 
             
           </div>
@@ -269,101 +211,40 @@
 
   <main>
     
+      <div class="container nopadding-x-md">
+        <div class="py-5" id="board"
+          >
+          
+          <div class="container">
+            <div class="row">
+              <div class="col-12 col-md-10 m-auto">
+                
+
+<div class="list-group">
+  <p class="h4">共计 1 篇文章</p>
+  <hr>
+  
+  
+    
       
+      <p class="h5">2021</p>
+    
+    <a href="/post/2417ea3d.html" class="list-group-item list-group-item-action">
+      <span class="archive-post-title">Haskell——Monadic-Programming-in-Haskell</span>
+      <time style="float: right;">01-07</time>
+    </a>
+  
+</div>
 
-<div class="container-fluid nopadding-x">
-  <div class="row nomargin-x">
-    <div class="d-none d-lg-block col-lg-2"></div>
-    <div class="col-lg-8 nopadding-x-md">
-      <div class="container nopadding-x-md" id="board-ctn">
-        <div class="py-5" id="board">
-          <article class="post-content mx-auto">
-            <!-- SEO header -->
-            <h1 style="display: none">Haskell学习——自定义数据类型</h1>
-            
-            <div class="markdown-body">
-              <h1 id="自定义类型"><a href="#自定义类型" class="headerlink" title="自定义类型"></a>自定义类型</h1><p>读 Haskell 代码时发现有两种自定义类型的方式，速成学习做以下记录。</p>
-<h2 id="data-关键字-枚举"><a href="#data-关键字-枚举" class="headerlink" title="data 关键字+枚举"></a>data 关键字+枚举</h2><figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs Haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">TopDecl</span> =</span><br>    <span class="hljs-type">DeclareType</span>     !<span class="hljs-type">TypeDecl</span><br>  | <span class="hljs-type">DeclareConst</span>    !<span class="hljs-type">ConstDef</span><br>  | <span class="hljs-type">DeclareNode</span>     !<span class="hljs-type">NodeDecl</span><br>  | <span class="hljs-type">DeclareNodeInst</span> !<span class="hljs-type">NodeInstDecl</span><br>  | <span class="hljs-type">DeclareContract</span> !<span class="hljs-type">ContractDecl</span><br>    <span class="hljs-keyword">deriving</span> <span class="hljs-type">Show</span><br></code></pre></td></tr></table></figure>
-<p>用<code>|</code>分隔的 constructor，constructor 构造器本质上是返回某一类类型的函数。对于多个构造器放在一起柯里化后更好理解。</p>
-<p>如果不加 deriving Show，则不是 Show 类型类实例，不能被 show 函数调用。</p>
-<p>以及如果加上 deriving Eq，就可以直接使用==或/=来判断它们的值的相等性了。Haskell 会先检查两个值的构造器是否一致，再用==来检查其中的每一对字段的数据是否想等。</p>
-<h2 id="data-关键字-记录语法-record-syntax"><a href="#data-关键字-记录语法-record-syntax" class="headerlink" title="data 关键字+记录语法 record syntax"></a>data 关键字+记录语法 record syntax</h2><figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs Haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Package</span> = <span class="hljs-type">Package</span></span><br>  &#123; packageName     :: !<span class="hljs-type">Ident</span><br>  , packageUses     :: ![<span class="hljs-type">Ident</span>]<br>  , packageParams   :: ![<span class="hljs-type">StaticParam</span>]   <span class="hljs-comment">-- ^ Empty list for pacakges</span><br>  , packageProvides :: ![<span class="hljs-type">PackageProvides</span>]<br>  , packageBody     :: ![<span class="hljs-type">TopDecl</span>]<br>  , packageRange    :: !<span class="hljs-type">SourceRange</span><br>  &#125; <span class="hljs-keyword">deriving</span> <span class="hljs-type">Show</span><br></code></pre></td></tr></table></figure>
-<p>会自动创建多个函数，比如 packageName :: Package -&gt; !Ident</p>
-<p>允许按字段取值。</p>
-<a id="more"></a>
 
-            </div>
-            <hr>
-            <div>
-              <div class="post-metas mb-3">
-                
-                  <div class="post-meta mr-3">
-                    <i class="iconfont icon-category"></i>
-                    
-                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
-                    
-                      <a class="hover-with-bg" href="/categories/Computer-Science/Haskell/">Haskell</a>
-                    
-                  </div>
-                
-                
-                  <div class="post-meta">
-                    <i class="iconfont icon-tags"></i>
-                    
-                      <a class="hover-with-bg" href="/tag/Haskell/">Haskell</a>
-                    
-                  </div>
-                
+
+
+
               </div>
-              
-                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
-              
-              
-                <div class="post-prevnext">
-                  <article class="post-prev col-6">
-                    
-                    
-                      <a href="/post/f6b8025a.html">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">落叶莫扫，红叶知秋</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
-                  </article>
-                  <article class="post-next col-6">
-                    
-                    
-                      <a href="/post/54b155a8.html">
-                        <span class="hidden-mobile">《我与地坛》读书摘录</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
-                    
-                  </article>
-                </div>
-              
             </div>
-
-            
-          </article>
+          </div>
         </div>
       </div>
-    </div>
-    
-      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
-        <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
-  <div class="toc-body" id="toc-body"></div>
-</div>
-
-      </div>
-    
-  </div>
-</div>
-
-<!-- Custom -->
-
-
     
 
     
@@ -443,15 +324,9 @@
 
 
 
-  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
 
 
 
-  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
-
-
-
-  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
 
 
 
@@ -490,45 +365,6 @@
 
 
 
-
-  
-
-  
-    <!-- MathJax -->
-    <script>
-      MathJax = {
-        tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']]
-        },
-        options: {
-          renderActions: {
-            findScript: [10, doc => {
-              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
-                const display = !!node.type.match(/; *mode=display/);
-                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
-                const text = document.createTextNode('');
-                node.parentNode.replaceChild(text, node);
-                math.start = { node: text, delim: '', n: 0 };
-                math.end = { node: text, delim: '', n: 0 };
-                doc.math.push(math);
-              });
-            }, '', false],
-            insertedScript: [200, () => {
-              document.querySelectorAll('mjx-container').forEach(node => {
-                let target = node.parentNode;
-                if (target.nodeName.toLowerCase() === 'li') {
-                  target.parentNode.classList.add('has-jax');
-                }
-              });
-            }, '', false]
-          }
-        }
-      };
-    </script>
-
-    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-svg.js" ></script>
-
-  
 
 
 
