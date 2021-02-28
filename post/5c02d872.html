@@ -227,8 +227,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2020-12-18 11:24" pubdate>
-        2020年12月18日 上午
+      <time datetime="2021-02-24 11:24" pubdate>
+        2021年2月24日 上午
       </time>
     </span>
   
@@ -239,7 +239,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      767 字
+      1.4k 字
     </span>
   
 
@@ -249,7 +249,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      13
+      22
        分钟
     </span>
   
@@ -359,20 +359,35 @@
 <li>Services operate on a global scale.</li>
 <li>An unprecedented number of people are using internet services</li>
 </ul>
-<p>global application and low latency</p>
-<p>geo-replication an its sync is costly</p>
+<p>WE WANT global application and low latency</p>
+<p>BUT geo-replication an its sync is costly</p>
+<p>With consistency we can easily get into trouble when sync, for example Mariao is enrolled in tournament that was <strong>concurrently</strong> removed.</p>
 <h3 id="Example-Tounament-remove-question"><a href="#Example-Tounament-remove-question" class="headerlink" title="Example: Tounament remove question"></a>Example: Tounament remove question</h3><p>Typical solution: strong consistency</p>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/EuroSys15/EC_01.png" srcset="/img/loading.gif" alt="EC_01"></p>
+<p>由于人类是了解语义的，所以在观察时序图时我们会发现其中一部分 sync 是不必要的。</p>
 <p>Sync when needed and ahieve low latency in normal operations</p>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/EuroSys15/EC_02.png" srcset="/img/loading.gif" alt="EC_02"></p>
 <p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/EuroSys15/EC_03.png" srcset="/img/loading.gif" alt="EC_03"></p>
-<h3 id="Explicit-Consistency-1"><a href="#Explicit-Consistency-1" class="headerlink" title="Explicit Consistency"></a>Explicit Consistency</h3><p>the three-step methodlogy to force explicit consistency</p>
+<h3 id="Explicit-Consistency-1"><a href="#Explicit-Consistency-1" class="headerlink" title="Explicit Consistency"></a>Explicit Consistency</h3><p>思路</p>
 <ul>
-<li><strong>Identify I-offenders</strong>: static analysis that may break invariants</li>
-<li><strong>Choose reservations</strong>(reservation system)</li>
-<li><strong>Instrument application</strong></li>
+<li>Programmer specifies application invariant. 程序员指定程序的正确性（以不变量的形式）</li>
+<li>System ensures that every state transition preserves the invariant. 系统仅允许状态在保证不变量的前提下进行状态转换</li>
+<li>Opportunity to improve performance by not restricting execution ordering. 相较于其他一致性模型一个较为明显的区别，是不针对操作的执行序制定 rules，这样允许编程人员可以适时添加或删除 coordination.</li>
 </ul>
-<h4 id="Static-analysis"><a href="#Static-analysis" class="headerlink" title="Static analysis"></a>Static analysis</h4><p>From programmer specifies:</p>
+<p>实现</p>
+<p>the three-step methodlogy to force explicit consistency</p>
+<ul>
+<li><strong>Identify I-offenders</strong>:<ul>
+<li>Static analysis to go through the invariance of the application specifications to identify that may break invariants when executed concurrently.</li>
+</ul>
+</li>
+<li><strong>Choose reservations</strong>(reservation system?)<ul>
+<li>Efficient mechanism to execute I-offenders avoiding coordination.</li>
+</ul>
+</li>
+<li><strong>Instrument application</strong>(have the benifit of finding a coordination in runtime) more in paper</li>
+</ul>
+<h3 id="Static-analysis"><a href="#Static-analysis" class="headerlink" title="Static analysis"></a>Static analysis</h3><h4 id="Application-model"><a href="#Application-model" class="headerlink" title="Application model"></a>Application model</h4><p>From programmer specifies:</p>
 <p>invariant and</p>
 <ul>
 <li><p>invariant</p>
@@ -388,8 +403,8 @@
 </ul>
 </li>
 </ul>
-<p>Testing algorithm</p>
-<p>The sub image find a pair of operations that when executed concurrently will break the coherence of the application -&gt; one I-offender set</p>
+<h4 id="Testing-algorithm"><a href="#Testing-algorithm" class="headerlink" title="Testing algorithm"></a>Testing algorithm</h4><p>The sub image find a pair of operations that when executed concurrently will break the coherence of the application -&gt; one I-offender set</p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/EuroSys15/EC_04.png" srcset="/img/loading.gif" alt="EC_04"></p>
 <p>Programers to do:</p>
 <ul>
 <li>specify the invariants and the post conditions of the operations (so maybe a burden?)<ul>
@@ -400,21 +415,46 @@
 </li>
 </ul>
 <h4 id="Choose-reservations"><a href="#Choose-reservations" class="headerlink" title="Choose reservations"></a>Choose reservations</h4><p>Mechanisms to control I-offenders without breaking invariants</p>
-<p>select strategy?</p>
+<p>select strategy? 选择合适的策略。</p>
+<p>作者列出了一张表格表明不同的 invariant 类型对应的 reservation 方式（比如用 Escrow 机制保证 Numberic 变量）。</p>
 <p>take multi-level lock as an example</p>
-<h3 id="Indigo"><a href="#Indigo" class="headerlink" title="Indigo"></a>Indigo</h3><p>In short, can be extended with new reservations</p>
+<h4 id="Reservations-Multilevel-lock"><a href="#Reservations-Multilevel-lock" class="headerlink" title="Reservations: Multilevel lock"></a>Reservations: Multilevel lock</h4><p>还是举两个 geo replications 的例子，条件与之前相同，但是现在，通过数据库来储存“哪些操作可以执行”的信息。</p>
+<ul>
+<li>初始情况下，允许任何用户进行 enroll 操作</li>
+<li>试图 remove lock 的本地状态不允许，无法进行 removeTournament 操作</li>
+<li>请求挂起（Waiting），并且发起和另一数据中心的通信，要求停止 enroll 操作，</li>
+<li>系统进行同步，两地的数据中心都进行状态更新</li>
+<li>发起请求的数据中心，此时解锁 remove 操作可执行</li>
+<li>执行 removeTournament 操作</li>
+</ul>
+<h3 id="Indigo"><a href="#Indigo" class="headerlink" title="Indigo"></a>Indigo</h3><ul>
+<li>Middleware that provides Explicit consistency on top of KV-Stores. 一个可以运行在大多数 KVS 上的中间件</li>
+<li>Requires only properties that are known to be efficient. 仅需要添加已知高效的性质 （视频没有详细介绍这些性质，典型的要包括 transaction 和 causality）</li>
+<li>In short, can be extended with new reservations 可以添加新的 Reservations 方案</li>
+</ul>
 <h3 id="Evaluation"><a href="#Evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h3><p>Answer the question</p>
 <ul>
 <li>How well does the system scale?</li>
 <li>What is the latency of operations?</li>
+</ul>
+<h3 id="Deployment"><a href="#Deployment" class="headerlink" title="Deployment"></a>Deployment</h3><ul>
+<li>Data-centers deployed in AWS:<ul>
+<li>3 Regions (EU, US-EAST/WEST);</li>
+<li>N app-servers connect to local DBs;</li>
+<li>Clients submit operations to the app-server in close loop</li>
+</ul>
+</li>
 <li>Compare performance<ul>
-<li>Causal Consistency</li>
-<li>String Consistency</li>
-<li>Red-Blue Consistency</li>
+<li>Causal Consistency(baseline)</li>
+<li>String Consistency(provides invariants , writes to single server)</li>
+<li>Red-Blue Consistency(causal + writes to single server 是前面两者的综合，如果操作可以在不需要 coordination 时执行则转向 causal，否则就是用 strong)</li>
 <li>Explicit Consistency</li>
 </ul>
 </li>
 </ul>
+<p>关于 Tounament 案例 remove 的长延时，是做了 trade-off，减少了其他情形下的 coordination，但是在 remove 过程，会 revoke 其他操作，因而延迟更高。不过据作者所言，这些可以进一步通过工程上的优化来减少。</p>
+<h3 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h3><p>Explicit Consistency 的三步走，给出 annotations，静态分析检测出并发执行冲突 operations，利用 reservation 机制，执行这些操作，同时保证不变量。</p>
+<p>如此，达成</p>
 <h3 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h3><p>Q1: How simple the notations are? How many manual work do we need?</p>
 <p>A1: Global quantifier and exist quantifier like shown in the slides.</p>
 <p>No false-positive found. Interesting</p>
@@ -456,18 +496,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/post/731ee0bd.html">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">康托尔辩辞录：数学的自由与制约</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/post/c7d2df5.html">
-                        <span class="hidden-mobile">OSDI20——Testing-Database-Engines-via-Pivoted-Query-Synthesis</span>
+                      <a href="/post/2607e3a8.html">
+                        <span class="hidden-mobile">《街拍，我的信仰》读书笔记</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
