@@ -267,7 +267,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.1k 字
+      1.4k 字
     </span>
   
 
@@ -277,7 +277,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      14
+      18
        分钟
     </span>
   
@@ -333,7 +333,7 @@
 <li>single-master，在前一个 master 失效的情况下，必须要等后一个 master 被选举，否则功能就是失效的。换言之，必须经过 master election 这个过程</li>
 </ol>
 <p>Egalitarian Paxos (EPaxos) 没有指定的 leader 选举的过程，相对而言 client 可以任意的选择一个 replica 去传递信息，EPaxos 这种设计使得负载完全平摊到所有的机器中，也能更好地处理暂时、永久的缓慢节点，以及由于 geo-replication 引起的延迟 gap。</p>
-<p>另外更高的可用性体现在没有 leader（leader 选举过程）带来的服务中断。只要有多数的机器保持服务就行。</p>
+<p>另外 high availability 体现在没有 leader（leader 选举过程）带来的服务中断。只要有多数的机器保持服务就行。</p>
 <p>Section 2 和 Section 3 是进行传统 Paxos 及其变体的分析。EPaxos 的比较对象</p>
 <ul>
 <li>Multi-Paxos</li>
@@ -373,14 +373,35 @@
 3. 库存保留并标记：当前不处于自己的研究领域，但不久的日后相关论文会有用。
 -->
 <a id="more"></a>
-<h1 id="Step-2"><a href="#Step-2" class="headerlink" title="Step 2"></a>Step 2</h1><h2 id="细读笔记"><a href="#细读笔记" class="headerlink" title="细读笔记"></a>细读笔记</h2><h3 id="Paxos-Background"><a href="#Paxos-Background" class="headerlink" title="Paxos Background"></a>Paxos Background</h3><p>Make a set of possibly faulty distributed processors execute the same commands in the same order.</p>
+<h1 id="Step-2"><a href="#Step-2" class="headerlink" title="Step 2"></a>Step 2</h1><h2 id="细读笔记"><a href="#细读笔记" class="headerlink" title="细读笔记"></a>细读笔记</h2><h3 id="Paxos-Background"><a href="#Paxos-Background" class="headerlink" title="Paxos Background"></a>Paxos Background</h3><p>状态机复制（state machine replication）的任务：Make a set of possibly faulty distributed processors execute the same commands in the same order.</p>
 <p>$N$ is the total number of replicas, at least $\lfloor N/2 \rfloor+1$ must be non-faulty.</p>
-<p>All Paxos variants handle non-Byzantine failures.</p>
+<p>All Paxos variants handle non-Byzantine failures. Paxos 讨论的情形都是 fail-stop 型的故障，而非 Byzantine 型的故障。</p>
 <p>状态机的执行是一系列 pre-ordered instatnce 序列。相似的，Raft 的叫 log？</p>
 <p>在收到 client 的命令请求后，一个 replica 会通过向至少大多数 replica 发送<em>Prepare</em>消息，来尝试成为尚未使用的 instance 的领导者。关于<em>Prepare</em>消息的应答，可能是已经对该 instance 进行了选举（这种情形下不采用新提出的命令）。如果一个潜在的 leader 得到了二分之一多数的 Accept，那么它将根据这些接收消息，将提议发送这些二分之一多数结点。如果这些消息也被大多数 replica 接受了，那么 leader 回在本地却让人，并异步的通知其他 replica 和 client。</p>
 <p>2 round trips 问题：传统的方式，都需要经过一轮对 leader 的 accept+一轮对 instance/log 的 commit？</p>
 <p>Section 3 继续探讨其他 Paoxs 的变种对原有 Paxos 的改进</p>
 <h3 id="Egalitarian-Paxos-Overview"><a href="#Egalitarian-Paxos-Overview" class="headerlink" title="Egalitarian Paxos Overview"></a>Egalitarian Paxos Overview</h3><!-- 要仔细阅读论文，但是诸如证明等信息要忽略掉 -->
+<p><a href="#title">再度陈述</a>，EPaxos 主要的优化目标：</p>
+<ol>
+<li>optimal commit latency in the wide area (due to geo-replication)</li>
+<li>optimal load balancing across all replicas, to achieve high throughput(remove the single leader canonical mode), and</li>
+<li>graceful performance degradation when some replicas become slow or crash(keep fault tolerance)</li>
+</ol>
+<p><strong>A novel way to order commands</strong>:</p>
+<p>先前的两种思路</p>
+<ul>
+<li>order commands by having a single stable leader choose the order (as in Multi-Paxos and Generalized Paxos)</li>
+<li>order commands by assignning them to instances(command slots) in a pre-ordered instance space (as in canonical Paxos and Mencius)</li>
+</ul>
+<p>EPaxos 的方式： dynamic and decentralized</p>
+<blockquote>
+<p>In contrast,EPaxos orders the instances dynamically and in a decen-tralized fashion: in the process of choosing (i.e., voting) acommand in an instance, each participant attaches order-ing constraints to that command 在实例中选择（即投票）命令的过程中，每个参与者将排序约束附加到该命令</p>
+</blockquote>
+<p>这样看就是从一排全局 slot，像是变成了每个 replicate 一排自己的 slot + constraints</p>
+<p>order 的方式是</p>
+<p>In taking this ordering approach, EPaxos must maintain safety and provide a linearizable ordering of commands. EPaxos 必须保证安全性，以及这些指令的可线性。</p>
+<p>一些保证正确性与优化手段。</p>
+<p>当 commands interfere 时，会接受彼此的“依赖”，用于产出正确的执行序列。</p>
 <h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><h2 id="未读（且值得读）文献记录"><a href="#未读（且值得读）文献记录" class="headerlink" title="未读（且值得读）文献记录"></a>未读（且值得读）文献记录</h2><!-- 在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 -->
 <h1 id="Step-3"><a href="#Step-3" class="headerlink" title="Step 3"></a>Step 3</h1><!-- 试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。 -->
 <h2 id="思路复现"><a href="#思路复现" class="headerlink" title="思路复现"></a>思路复现</h2><!-- 推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ -->
