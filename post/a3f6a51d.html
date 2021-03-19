@@ -267,7 +267,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.8k 字
+      2k 字
     </span>
   
 
@@ -277,7 +277,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      24
+      27
        分钟
     </span>
   
@@ -413,6 +413,12 @@
 <li><p>_Generalized Paxos_： 允许在不 interface 的情况下，乱序提交 commits。仍要求有一个 stable leader 来处理更多的信息。EPaxos 和 Generalized Paxos 相比</p>
 </li>
 </ul>
+<h3 id="Detail"><a href="#Detail" class="headerlink" title="Detail"></a>Detail</h3><h4 id="Preliminaries"><a href="#Preliminaries" class="headerlink" title="Preliminaries"></a>Preliminaries</h4><p>在 clients 和 replicas 间传递消息是异步的。</p>
+<p>故障是 non-Byzantine 的，$N = 2 F+1$</p>
+<p>状态可看作 N 行的二维表格</p>
+<p>需要区分指令的 commit 和 execute。要修改状态，client 向选定的 replica 发送 $Request(command)$。replica 会通知 replica 指令的 commit 的情况，但是并没有是否执行的信息。仅在有客户机要读取先前提交的更新命令的时候，系统才有必要执行这些指令。要读取（部分）状态，client 发送$Read(objectIDs)$的消息并等待回复，是个 no-op 操作，相当于$RequestAndRead(no-op,objectIDs)$。</p>
+<p>需要定义 interference，<strong>command interference</strong>：存在一个指令序列$\Sigma$使得$\Sigma, \delta,\gamma$执行结果（状态机状态不同，或返回不同内容）与$\Sigma,\gamma,\delta$</p>
+<h4 id="Protocol-Guarantees"><a href="#Protocol-Guarantees" class="headerlink" title="Protocol Guarantees"></a>Protocol Guarantees</h4><p>需要区分一下 Execution Consistency 和 Execution linearizability</p>
 <h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><h2 id="未读（且值得读）文献记录"><a href="#未读（且值得读）文献记录" class="headerlink" title="未读（且值得读）文献记录"></a>未读（且值得读）文献记录</h2><!-- 在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 -->
 <h1 id="Step-3"><a href="#Step-3" class="headerlink" title="Step 3"></a>Step 3</h1><!-- 试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。 -->
 <h2 id="思路复现"><a href="#思路复现" class="headerlink" title="思路复现"></a>思路复现</h2><!-- 推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ -->
