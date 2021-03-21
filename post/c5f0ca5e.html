@@ -267,7 +267,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      543 字
+      1.2k 字
     </span>
   
 
@@ -277,7 +277,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      7
+      15
        分钟
     </span>
   
@@ -364,31 +364,53 @@
 <p>Section 5 介绍了 proof rule 的模块化性质，允许处理单个 replica？</p>
 <p>Section 6 介绍了一个工具出行，使用 SMT 来检查。</p>
 <h2 id="结论部分"><a href="#结论部分" class="headerlink" title="结论部分"></a>结论部分</h2><!-- 确定作者的成过以及点出的经验、问题、改进方 -->
+<p>我们提出了第一个证明规则，该规则确定在复制的数据库中给定的一致性选择足以保留给定的完整性不变性。模块化、易于使用，并使用 SMT checks 来约简验证条件。</p>
+<p>实验结果，为大规模推理验证 replicated database 提供了基础。</p>
+<p>Future work</p>
+<ul>
+<li>没有现有数据库实现文章提出的 generic consistency model，文章只是用通用形式匹配了现有的实现形式。这个通用模型，可能会成为探索其他可能存在的 hybrid consistency model 的基础。</li>
+<li>proof rule 的健全性建立在至少保证 causal consistency。未来可能探索不保证 causal 的更弱模型。拓展到更多 expressive correctness properties</li>
+<li>event-based proof -&gt; state-based one 相关？（不太理解）</li>
+</ul>
 <h2 id="回答基本问题"><a href="#回答基本问题" class="headerlink" title="回答基本问题"></a>回答基本问题</h2><ol>
 <li><p>类别</p>
+<p>对现有系统进行分析</p>
 <!-- 这篇论文是什么类型？测试类？对现有系统进行分析的？对原型系统进行描述的？-->
 </li>
 <li><p>内容</p>
+<p>并没有</p>
 <!-- 你读过的其他论文有没有与之相关的？相关性与区别最直接体现在哪里？文章中分析问题用的什么理论基础（通过瞥一眼数学概况与核心证明可以得到）。 -->
 </li>
 <li><p>正确性</p>
+<p>待定</p>
 <!-- 结论是否看起来真实有效？ -->
 </li>
 <li><p>创新点</p>
+<p>针对分布式系统一致性模型提出一个通用模型进行匹配，并给出针对性的推理规则。</p>
 <!-- 论文的主要创新点是什么？总结提到的经验、问题和改进方法是什么？ -->
 </li>
 <li><p>清晰度</p>
+<p>比较清晰。</p>
 <!-- 这篇论文是否写的条理清晰 -->
 </li>
 </ol>
-<h2 id="阅读选择"><a href="#阅读选择" class="headerlink" title="阅读选择"></a>阅读选择</h2><!--
+<h2 id="阅读选择"><a href="#阅读选择" class="headerlink" title="阅读选择"></a>阅读选择</h2><p>继续阅读，了解至形式化描述 general consensus model 和 proof rule。</p>
+<!--
 1. 继续阅读：论文有价值担保，研究领域非常切合，对当前进行工作有极大帮助，圈内爆火文章
 2. 不继续阅读：论文不吸引自己，论文价值/正确性存疑，论文作者给出了不适当的假设。
 3. 库存保留并标记：当前不处于自己的研究领域，但不久的日后相关论文会有用。
 -->
 <a id="more"></a>
-<h1 id="Step-2"><a href="#Step-2" class="headerlink" title="Step 2"></a>Step 2</h1><h2 id="细读笔记"><a href="#细读笔记" class="headerlink" title="细读笔记"></a>细读笔记</h2><!-- 要仔细阅读论文，但是诸如证明等信息要忽略掉 -->
-<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><h2 id="未读（且值得读）文献记录"><a href="#未读（且值得读）文献记录" class="headerlink" title="未读（且值得读）文献记录"></a>未读（且值得读）文献记录</h2><!-- 在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 -->
+<h1 id="Step-2"><a href="#Step-2" class="headerlink" title="Step 2"></a>Step 2</h1><h2 id="细读笔记"><a href="#细读笔记" class="headerlink" title="细读笔记"></a>细读笔记</h2><h3 id="Consistency-Model-Informally"><a href="#Consistency-Model-Informally" class="headerlink" title="Consistency Model, Informally"></a>Consistency Model, Informally</h3><h4 id="Causal-Consistency-and-Its-Implementation"><a href="#Causal-Consistency-and-Its-Implementation" class="headerlink" title="Causal Consistency and Its Implementation"></a>Causal Consistency and Its Implementation</h4><p>$\mathsf{State}$表示为数据库可能状态的集合。应用定义了一组操作$\mathsf{Op} = \{o,\cdots\}$。为了简化，操作总会种植并且返回但值，并约定无返回值$\bot \in \mathsf{Val}$。</p>
+<p>操作语义的描述，given by a function</p>
+<script type="math/tex; mode=display">\mathcal{F} \in \mathsf{Op} \rightarrow (\mathsf{State} \rightarrow ( \mathsf{Val} \times (\mathsf{State} \rightarrow \mathsf{State})))</script><p>好吧我开始晕了。。。注一下，这个右边是个整体。该函数接受一个具体操作，一个当前状态，获得一个返回值和一个，状态转移函数（<strong>这里很有趣，为什么不直接写成后状态而保留这个转移呢</strong>）。</p>
+<p>为了方便阅读$o \in \mathsf{Op}$，我们用$\mathcal{F}_o$ 写法代替 $\mathcal{F}(o)$，这样淡化了第一个参数，表明是$o$操作的“效果”。并发导致困难复杂——必须考虑并发执行的操作之间大量可能的交互。</p>
+<script type="math/tex; mode=display">\forall o, \sigma . \mathcal{F}_o(\sigma) = ( \mathcal{F}_o^{\mathsf{val}}(\sigma) , \mathcal{F}_o^{\mathsf{eff}}(\sigma)  )</script><p>对于一个给定状态，$\mathcal{F}_o^{\mathsf{val}}(\sigma) \in \mathsf{Val}$，表示的操作后的返回值，而$\mathcal{F}_o^{\mathsf{eff}}(\sigma) \in \mathsf{State} \times \mathsf{State}$表示其影响。</p>
+<p>函数效果对发出消息的 replica 是立即的，而对于其他 replica 是接受消息后产生影响。这一点很关键。</p>
+<p>这里用一个很关键的例子（两种interest的语义）来引出交换性。</p>
+<h3 id="Formal-Semantics"><a href="#Formal-Semantics" class="headerlink" title="Formal Semantics"></a>Formal Semantics</h3><!-- 要仔细阅读论文，但是诸如证明等信息要忽略掉 -->
+<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><p>2.1 节末尾，为什么 Causal Consistency 不允许图 1a 的情形，而允许图 1b 的情形。</p>
+<h2 id="未读（且值得读）文献记录"><a href="#未读（且值得读）文献记录" class="headerlink" title="未读（且值得读）文献记录"></a>未读（且值得读）文献记录</h2><!-- 在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 -->
 <h1 id="Step-3"><a href="#Step-3" class="headerlink" title="Step 3"></a>Step 3</h1><!-- 试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。 -->
 <h2 id="思路复现"><a href="#思路复现" class="headerlink" title="思路复现"></a>思路复现</h2><!-- 推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ -->
 <h2 id="证明与推理复现"><a href="#证明与推理复现" class="headerlink" title="证明与推理复现"></a>证明与推理复现</h2><!-- 分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源 -->
