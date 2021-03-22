@@ -267,7 +267,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.2k 字
+      1.6k 字
     </span>
   
 
@@ -277,7 +277,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      15
+      20
        分钟
     </span>
   
@@ -407,7 +407,16 @@
 <p>为了方便阅读$o \in \mathsf{Op}$，我们用$\mathcal{F}_o$ 写法代替 $\mathcal{F}(o)$，这样淡化了第一个参数，表明是$o$操作的“效果”。并发导致困难复杂——必须考虑并发执行的操作之间大量可能的交互。</p>
 <script type="math/tex; mode=display">\forall o, \sigma . \mathcal{F}_o(\sigma) = ( \mathcal{F}_o^{\mathsf{val}}(\sigma) , \mathcal{F}_o^{\mathsf{eff}}(\sigma)  )</script><p>对于一个给定状态，$\mathcal{F}_o^{\mathsf{val}}(\sigma) \in \mathsf{Val}$，表示的操作后的返回值，而$\mathcal{F}_o^{\mathsf{eff}}(\sigma) \in \mathsf{State} \times \mathsf{State}$表示其影响。</p>
 <p>函数效果对发出消息的 replica 是立即的，而对于其他 replica 是接受消息后产生影响。这一点很关键。</p>
-<p>这里用一个很关键的例子（两种interest的语义）来引出交换性。</p>
+<p>这里用一个很关键的例子（两种 interest 的语义）来引出交换性。</p>
+<h4 id="Strengthening-Consistency"><a href="#Strengthening-Consistency" class="headerlink" title="Strengthening Consistency"></a>Strengthening Consistency</h4><p>针对非负的 invariant 语义要求</p>
+<script type="math/tex; mode=display">I = \{ \sigma | \sigma \ge 0\}</script><p>试想 withdraw 操作加入检测</p>
+<script type="math/tex; mode=display">\mathcal{F}_{\mathsf{withdraw\mathnormal{(a)}}} (\sigma) = \mathrm{if} ~\sigma \ge a~ \mathrm{then}~ (\checkmark, (\lambda \sigma'.\sigma' - a)) ~\mathrm{else}~(\times,\mathsf{skip})</script><p>当所有操作都在同一台机器上进行时，这一限制足够，但是多 replica 的情形下却不行（该条件检测判断的是当前状态，并不能预知其他 replica 所携带的金额变动信息）。并发操作可能在彼此没有意识到情况下对数据库进行更新，从而破坏不变式。</p>
+<p>明确指定哪些操作不能以并发方式执行，模型中加入 token system，$\mathcal{T} = (\mathsf{Token}, \bowtie)$，包含一组 tokens 以及建立在上面的对称关系 conflict relation $\bowtie \subseteq \mathsf{Token} \times \mathsf{Token}$</p>
+<p>在加入 Token 后也需要相应的对操作的函数语义进行修改，最后获得为三元组（相应的，语义表达上笛卡尔积叉乘 Token 的幂集）如下：</p>
+<script type="math/tex; mode=display">\mathcal{F} \in \mathsf{Op} \rightarrow (\mathsf{State} \rightarrow ( \mathsf{Val} \times (\mathsf{State} \rightarrow \mathsf{State}) \times \mathcal{P}(\mathsf{Token})))</script><p>使得</p>
+<script type="math/tex; mode=display">\forall o, \sigma . \mathcal{F}_o(\sigma) = ( \mathcal{F}_o^{\mathsf{val}}(\sigma) , \mathcal{F}_o^{\mathsf{eff}}(\sigma) , \mathcal{F}_o^{\mathsf{tok}} )</script><p>在银行应用中，withdrawl，会接受一个 token $\tau$与自身相冲突，其他操作都不接受 token，所以操作的语义最后一项是个空集.</p>
+<p>这里的 token，很想共享内存并发中的互斥锁。后续 Section 4 会证明用 token 的方式保证不变式的高效性。</p>
+<p>？？这里不太明白，为什么可以弱化对 2.1 节交换性的要求。形式化表达中多了一个或？或 token 的。。这里先 Pass</p>
 <h3 id="Formal-Semantics"><a href="#Formal-Semantics" class="headerlink" title="Formal Semantics"></a>Formal Semantics</h3><!-- 要仔细阅读论文，但是诸如证明等信息要忽略掉 -->
 <h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><p>2.1 节末尾，为什么 Causal Consistency 不允许图 1a 的情形，而允许图 1b 的情形。</p>
 <h2 id="未读（且值得读）文献记录"><a href="#未读（且值得读）文献记录" class="headerlink" title="未读（且值得读）文献记录"></a>未读（且值得读）文献记录</h2><!-- 在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 -->
@@ -448,6 +457,12 @@
                 <div class="post-prevnext">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/post/9d6c5080.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">ATC18-Fine-grained-consistency-for-geo-replicated-systems</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
