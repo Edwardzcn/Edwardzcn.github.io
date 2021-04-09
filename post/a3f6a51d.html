@@ -419,7 +419,8 @@
 <p>需要区分指令的 commit 和 execute。要修改状态，client 向选定的 replica 发送 $Request(command)$。replica 会通知 replica 指令的 commit 的情况，但是并没有是否执行的信息。仅在有客户机要读取先前提交的更新命令的时候，系统才有必要执行这些指令。要读取（部分）状态，client 发送$Read(objectIDs)$的消息并等待回复，是个 no-op 操作，相当于$RequestAndRead(no-op,objectIDs)$。</p>
 <p>需要定义 interference，<strong>command interference</strong>：存在一个指令序列$\Sigma$使得$\Sigma, \delta,\gamma$执行结果（状态机状态不同，或返回不同内容）与$\Sigma,\gamma,\delta$</p>
 <h4 id="Protocol-Guarantees"><a href="#Protocol-Guarantees" class="headerlink" title="Protocol Guarantees"></a>Protocol Guarantees</h4><p>需要区分一下 Execution Consistency 和 Execution linearizability</p>
-<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><h2 id="未读（且值得读）文献记录"><a href="#未读（且值得读）文献记录" class="headerlink" title="未读（且值得读）文献记录"></a>未读（且值得读）文献记录</h2><!-- 在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 -->
+<p>一个是如果都被 commit，则保证在任一 replica 上执行序是确定的。另一是如果被 client 序列化，则在任一 replica 上执行序也是固定的</p>
+<h4 id="Basic-Commit-Protocol"><a href="#Basic-Commit-Protocol" class="headerlink" title="Basic Commit Protocol"></a>Basic Commit Protocol</h4><h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><h2 id="未读（且值得读）文献记录"><a href="#未读（且值得读）文献记录" class="headerlink" title="未读（且值得读）文献记录"></a>未读（且值得读）文献记录</h2><!-- 在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 -->
 <h1 id="Step-3"><a href="#Step-3" class="headerlink" title="Step 3"></a>Step 3</h1><!-- 试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。 -->
 <h2 id="思路复现"><a href="#思路复现" class="headerlink" title="思路复现"></a>思路复现</h2><!-- 推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ -->
 <h2 id="证明与推理复现"><a href="#证明与推理复现" class="headerlink" title="证明与推理复现"></a>证明与推理复现</h2><!-- 分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源 -->
@@ -449,6 +450,8 @@
 <p>图、强连通分量</p>
 <p>Q: sorting the dependencies seem quite expensive, so how do you keep this precedure small and how does this impact the request latency.</p>
 <p>A: not expensive. It’s just an algorithm of finding strong-connective component that’s linear in the number of edges. In practice the number of edges similar to the number of nodes (not too many). Depends on the interface rate, but says even the interface rate is small, these graphs never gets too large.</p>
+<h4 id="Notes"><a href="#Notes" class="headerlink" title="Notes"></a>Notes</h4><p>code: 关注到 UpdateAttributes</p>
+<p><a target="_blank" rel="noopener" href="http://eddyblog.oss-cn-shenzhen.aliyuncs.com/EPaxos/2517349.2517350.pdf">test</a></p>
 
             </div>
             <hr>
