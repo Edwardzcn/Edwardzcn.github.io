@@ -267,7 +267,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      209 字
+      730 字
     </span>
   
 
@@ -277,7 +277,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      2
+      8
        分钟
     </span>
   
@@ -333,6 +333,32 @@
 <li>How to use redis-cli to access the server （如何通过 redis 内置客户端操作 server）</li>
 <li>How to use from the application （应用调用接口）</li>
 </ul>
+<p>使用方法，我发现 redis 相关的 client 有很多（适配各种语言的）client</p>
+<p>Step1 的任务，是不是就是自己实现一个支持多副本操作的 client（底层可以使用这些已经实现的 client），因为它这个客户端是直接接入本地的 redis server，而我们需要一个</p>
+<p>Server 如何和 Replica 组合在一起。</p>
+<h2 id="LevelDB-Quick-Start"><a href="#LevelDB-Quick-Start" class="headerlink" title="LevelDB Quick Start"></a>LevelDB Quick Start</h2><p>特点</p>
+<ol>
+<li>key 和 val 都是任意长度的字节数组</li>
+<li>默认按 key 的字典顺序存储</li>
+<li>提供基本接口</li>
+<li><strong>一次只允许一个进程访问一个特定的数据库</strong></li>
+</ol>
+<p>由于特点 4，直接利用 EPaxos 的框架代码，server 启动时配置 myAddr 参数，在多机上进行测试。</p>
+<p>多机配置实验记录</p>
+<p>node1 节点启动 master 进程和一个 client 进程，node2 和 node3 和 node5 分别启动一个 server 进程</p>
+<p>Q1：第一次实验，三个 server 配置 <code>maddr</code> 参数为 10.0.0.1 时 master 报错。</p>
+<p>A1：找到问题原因，是没有配置 server 的 <code>addr</code>参数。</p>
+<p>Q2：测试打印日志，写比例 100%但，发现没有 PUT 操作，全为 GET 操作</p>
+<p>A2：需要设定 conflict &gt; 0。</p>
+<h2 id="Redis-Replication"><a href="#Redis-Replication" class="headerlink" title="Redis Replication"></a>Redis Replication</h2><p><a target="_blank" rel="noopener" href="https://redis.io/topics/replication">Replication in Redis</a></p>
+<p>Redis Replication 能够作为额外一层，为 Redis 集群及管理工具提供高可用特性的支持。</p>
+<p>这个系统的三个主要机制：</p>
+<ol>
+<li>当 master 和 replica 连接良好时，master 通过向 replica 发送命令流来保持副本的更新。</li>
+<li>当 master 和 replica 之间的链接断开时，由于网络问题或由于 master 或者 replica 检测到超时。副本服务器将重新连接并尝试进行部分重同步（partial resynchronization）：这意味着它将尝试仅获取该部件断开期间错过的命令流的大小。</li>
+<li>当 partial resynchronization 不可行时，replica 会请求一个 full resynchronization。更复杂的过程，master 需要创建其数据快照并发送给 replica。然后在数据集更改时继续发送命令流。</li>
+</ol>
+<h3 id="Asynchronous-and-synchronous-replication"><a href="#Asynchronous-and-synchronous-replication" class="headerlink" title="Asynchronous and synchronous replication"></a>Asynchronous and synchronous replication</h3><p>默认采用的是异步的方式，master 并不等待一条指令被 replicas 执行。</p>
 <a id="more"></a>
 
             </div>
@@ -365,6 +391,12 @@
                 <div class="post-prevnext">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/post/f3317c2f.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">USTCReadingGroup——AIFM-High-Performance-Application-Integrated-Far-Memory</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
