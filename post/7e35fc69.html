@@ -63,7 +63,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml">
 </head>
 
 
@@ -265,7 +265,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      730 字
+      8 字
     </span>
   
 
@@ -275,7 +275,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      8
+      1
        分钟
     </span>
   
@@ -308,57 +308,18 @@
             <h1 style="display: none">分布式一致性——Redis接入EPaxos实验记录</h1>
             
             <div class="markdown-body">
-              <h1 id="Redis-接入-EPaxos-实验记录"><a href="#Redis-接入-EPaxos-实验记录" class="headerlink" title="Redis 接入 EPaxos 实验记录"></a>Redis 接入 EPaxos 实验记录</h1><h2 id="实验规划"><a href="#实验规划" class="headerlink" title="实验规划"></a>实验规划</h2><h3 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h3><p>将 EPaxos demo 中的 KV 操作替换为 Redis 提供的 KV 操作接口，实现可用 EPaxos 协议实现多副本一致的 Redis 内存 KV 系统</p>
-<h3 id="计划"><a href="#计划" class="headerlink" title="计划"></a>计划</h3><ol>
-<li>Redis Quick Start:<ol>
-<li>在本地和服务器安装 Redis 进行简单的 code hack</li>
-<li>掌握可视化界面增删条目及 DataBase，编写简单的脚本</li>
-<li>学习 Redis API</li>
-</ol>
-</li>
-<li>EPaxos 接入 Redis<ol>
-<li>修改 EPaxos KV 操作部分，替换为实际操作 Redis API</li>
-<li>提供上层 KV 操作接口，使 EPaxos 成为保证多副本 KV 系统一致性中间件</li>
-</ol>
-</li>
-<li>Conflict 测试<ol>
-<li>编写测试用例，在各副本处检测是否一致。</li>
-</ol>
-</li>
-</ol>
-<h2 id="Redis-Quick-Start"><a href="#Redis-Quick-Start" class="headerlink" title="Redis Quick Start"></a>Redis Quick Start</h2><p>关注点：</p>
-<ul>
-<li>How to use redis-cli to access the server （如何通过 redis 内置客户端操作 server）</li>
-<li>How to use from the application （应用调用接口）</li>
-</ul>
-<p>使用方法，我发现 redis 相关的 client 有很多（适配各种语言的）client</p>
-<p>Step1 的任务，是不是就是自己实现一个支持多副本操作的 client（底层可以使用这些已经实现的 client），因为它这个客户端是直接接入本地的 redis server，而我们需要一个</p>
-<p>Server 如何和 Replica 组合在一起。</p>
-<h2 id="LevelDB-Quick-Start"><a href="#LevelDB-Quick-Start" class="headerlink" title="LevelDB Quick Start"></a>LevelDB Quick Start</h2><p>特点</p>
-<ol>
-<li>key 和 val 都是任意长度的字节数组</li>
-<li>默认按 key 的字典顺序存储</li>
-<li>提供基本接口</li>
-<li><strong>一次只允许一个进程访问一个特定的数据库</strong></li>
-</ol>
-<p>由于特点 4，直接利用 EPaxos 的框架代码，server 启动时配置 myAddr 参数，在多机上进行测试。</p>
-<p>多机配置实验记录</p>
-<p>node1 节点启动 master 进程和一个 client 进程，node2 和 node3 和 node5 分别启动一个 server 进程</p>
-<p>Q1：第一次实验，三个 server 配置 <code>maddr</code> 参数为 10.0.0.1 时 master 报错。</p>
-<p>A1：找到问题原因，是没有配置 server 的 <code>addr</code>参数。</p>
-<p>Q2：测试打印日志，写比例 100%但，发现没有 PUT 操作，全为 GET 操作</p>
-<p>A2：需要设定 conflict &gt; 0。</p>
-<h2 id="Redis-Replication"><a href="#Redis-Replication" class="headerlink" title="Redis Replication"></a>Redis Replication</h2><p><a target="_blank" rel="noopener" href="https://redis.io/topics/replication">Replication in Redis</a></p>
-<p>Redis Replication 能够作为额外一层，为 Redis 集群及管理工具提供高可用特性的支持。</p>
-<p>这个系统的三个主要机制：</p>
-<ol>
-<li>当 master 和 replica 连接良好时，master 通过向 replica 发送命令流来保持副本的更新。</li>
-<li>当 master 和 replica 之间的链接断开时，由于网络问题或由于 master 或者 replica 检测到超时。副本服务器将重新连接并尝试进行部分重同步（partial resynchronization）：这意味着它将尝试仅获取该部件断开期间错过的命令流的大小。</li>
-<li>当 partial resynchronization 不可行时，replica 会请求一个 full resynchronization。更复杂的过程，master 需要创建其数据快照并发送给 replica。然后在数据集更改时继续发送命令流。</li>
-</ol>
-<h3 id="Asynchronous-and-synchronous-replication"><a href="#Asynchronous-and-synchronous-replication" class="headerlink" title="Asynchronous and synchronous replication"></a>Asynchronous and synchronous replication</h3><p>默认采用的是异步的方式，master 并不等待一条指令被 replicas 执行。</p>
-<a id="more"></a>
-
+              <div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="抱歉, 这个密码看着不太对, 请再试试." data-whm="抱歉, 这个文章不能被校验, 不过您还是能看看解密后的内容.">
+  <script id="hbeData" type="hbeData" data-hmacdigest="3e1be650d2e36fe441df2a1acb5db33f4dd02772866e311cbdbc60434986df8c">69e444dd7a953d763a552be6e02e409de51505c0cf5a1b95f2c3b90ec2c65c55172ed5d76516b500df1dcb79c2f5e829e1bf2405cec4ef50d9c8a7d12201fcba29a6301a0bf423f95caf2cf8e6bdcbbbe4cb3d3157169e8ceb3322a1bcd70225b4a896fd9ceeefad8c6342dcb913496d8f587bf74f6a91cda1a52a16c98e5e0e80f824669d088155dad0c1b3f1a01d8560e524f8a4892b54953bf89c1fc0ccc4784acd82085fccb26cfa7c0fbb3dbffad16de141aac6fda92d402f533a1cd9ba1b0520b7bb977d1662f685282e16186c650cfe6fd8415a31b615c1badf72f5f4eb68b39659e5f88c43984ae57c603425f2f41ef56676d8b934ac96af1d386d8b9efacd83a62e3f13787f105fd282aeeca0d39950df13584540f1d90f241cab2032876427d8737791a9e4023dfff27c560be7072e2592db513775f9af2ae4101c60e6cb348cd5b6e988a1643ee32e0fcccfebfad125b5b57dcee36d3cae3457ba2486a8d5e04b7578efba2c2213c43e71a7b9ee91bc75251d24d731fd63614dacfb9b68a9ce5bdf81be036da70245c45ca3aa5bdee6636aa125a305bff600a0bc22d646c4901f36a02ee2fbe3db560140fa0c79ca90d5cbbfe1168a3c0003b9b7122f80e165ee19737233ea34bb7113a7edc0f25dc9a599b20cc597cc4a45b5bdbdb79c1030c260fc9fbbadbab0dccfbc284e7ca364277c802c7b57043d00d6421f674c6559e828aa84bccadb9d77524f6005001340dd2d3a7211d75a32ca2cd8af847a9409e749df2665822089dd2e7ea45afacd841fb777b67d42ce3d0ac427156dc7d5b9e7e5c18a47eca9009d992e541e3112d108ede6ef9ccd28bb6f7a5a2f8ef49a7ddc660cab4e5880e75231a1b3f3fdc6742cfe135fc0d261049ba0559cc76c86547b586a6ef571cbdf6e67d170d00b05d55ea6714048ff45ae46aac8921e4ec18a0447889cf84a658daeb451fefda17ff2c42f842f0ae0301ddaa659b546d548656cfe44ef7e2370953bfa22f58ce1325051af61d943f1b698d973648987104d9da54139b0217840e5f788d7409aea7cc53f9ccc640ef8f4b3a0205e2dc58c7f7d8de51a494e1a67691cc8d1fd11f4bb8241f156a2c5ae2bfbd1e51a0bc391df7e957c7b07eb402e1b69540c06bf371039bc39ea598c0d41d9850b5632732d8567d60739aeec64fba69eeef47978cd7007648c97d92592f2c0114d940fb44ed53e8e9349837c364b74c72b9d5ad7e66c71b780455febd78f433a199ab4ea8258a41c99fc4bfe480d91eb72709c17bdfea524387bfd943f7f039a11be3733cd1aae8eb77bf79358ff12979f19c73e1bb9ffd0790ea4b8d4ebdcb1d1e134e611bf58cc4964c21ebc6070017f2957633727c593f9562487c7c17d73fc40e57a3aed463b806085a56e75cc5857ecc0caebcf23d878b966661a5c3d693771305ca6779547113a8e7b764b4ab12e1de9a5a27c1c5bb3d50394dddb0bc409107e0bf74e81f0bba669b7b985f93e7d1c67f0dc4aaf49f36c04e18221180d50711e5df6d31b068c0d00c2fe09bf2b6828d41d77f84eedef4a1930a2b729a705da2f73acbc9e0dcb9a9e97ff43c39116debbb30e6a22907bdf23f1a8ac24d620984f42d1a92a6ba39d65bd3411eef583878e67bb5f4c076b1a414ef7dc81c5a6493fd142d8ecdabf6cc398aa388f20da33c0a3c4e965d6b0ad2f83426140221f3cbc35b611c39cdb122074e3af912231bec8a9c5ad6818526c17163e6cd67e8111f80f9765a04c2a4db848a18489afac5c514d1055bec72aa2938cac7b4a3c1cfd3cb9d7044f07ad34ca606ba00dfb74f43dd3260245dedd108d8e3f6d5919bcf353a272de8e72cd8b3742674d7827ec19040fe265cc281153f95f8d0477607dc5e3066bad203b9398ea79c099887634673d27d2288e874b3dcb081572fe30a2d79a7bb41dcd2323d6c5b22259871711859f923f9ea474569da6adf8d4aa665902643a9b1c546bca4e961e34b617224ef21d018407ae3ff1ec48ce7548d3d8039122767c76a582c6a1eb8c305102c5ecd2eaa815a89af4d9d7e2517ceef1800244bdd654a40cca5e80a90b0990c00f1c0cb3f11c1d427dc11fbafb19df9c08133c1fc7823f9bf55bda91b460c2424fccf62e874d4e6ff4e040f1e48159a3fc0ae3013a385b207d4e7df3926b08de5e2bb21d9ff6e2bf34858275d4d720d760d88f85de15a2c7b610b8d415d6c87fd25f1479f283e64b6b14525e75dce202b01f5d7a46e1a23c573293abf954183282d7140bb5818a877b281283130c794f4fd094386cd952bb380d1092547d548c152fca7ab1a26259f888c42ce1c991b5b3a9d15d23358f4f759ba68cf2bed38d2b5e05a50e823263f4edd02fce5f0966d6b8f53bfc43c14abb3f5da43325c17b29085020df77ca90da93ff2e9579198e965afa1531211f3cfca701393190febaea4346ebe78f5d95059ddfe1f66d203fe61a2ded88dbebbf110b5eeb048cf73e5afce24ab4f245db50a1576106ef11b9b2c0f0c81ba65e2d410f9cdfb401a2f28c051ce0e12704407ae6a11a893f9bb14a2f90d5e28999c3d0cae4c186a319a3ef71eb27d6caa9094e45f9c316ae04f0e839bb5743dbc5217d42329606353dc60ac9084c527a851f93612660f9bb2ab154b66e8b503395c2e321e97d00d7b516fbcb2d9c706895fb709ea87b21aea221dbf04b00b8a34d138a77685c751d0a95eec1437d0b1ccb097d8e638b34ad4fcb146f27dba6efb0fc832b9564b97420dbf3bdd880b8c270d755d945306433ee3abd6eb58ec203403d1ead5503934bb420f8efb6bbfd65cd0afda02f6ebd04ae4cc1d9810b8ee8a146176608210799a75d85119cf1dbb4f4144bf2772bbf53646d881f9b378c5672ebad78dc9376692cdd2697eed463304f3c66e3ae2a3f6c8340c3428e74b57caaa53418ea2d3ac3d69444647f98d36ee43d669ea9eb2cf1e83408497f84b0d05adfdbb711d507fb7cb243eb8264976e26bd1dbb5bf90bebce144a2540447d41e04ce45f3e5f910ecef9928a6b08debad0d14ed3bf758c02c30821e3018399742141ac66e350c468aed95c4e37ad068b733d7fd57e52adeb0fff7e3f61d67411bc9ea4ed1abb31ce63aeaaa05dc89a854e55f4fc493e34699b2d9f97bf8a9b5438a324d23863a0d935574610b1fe290f17d927487f97f406dc8d8e634af81f09402f2dfe1b7bfe45bb36e02c71aca3f7ef287ad0f428ca8e9af78557ca298b28294fbcd3e7c2dbbc2c46c17aca1df4efce64810e35f64815b5121420d180f788ec559ddebc03f19ee76a7c82117f8a87c2ff4a8af408f04b7e6100aed1c2c6d2e66234bf6df24777af8a066e919892ba00cf525a04e7e0a6900e4f755b1bd492ae3140e0b2dfbf7301153011b644745cba4f5c8fcc6a0c5348fbed034c152aeb437b5b98b895f97d5843c88461cc84f7657d23fd159f15cd376e404ae459af6e44f1471f8ee6eec304082aed19955c0fb697ab7d490320558217bd163563d8e037d18720998d83f9699ab671e2ad696406ba8fee560f0406200a9566a1898c263c416f5f686adfa4cfff3da922aa0ac4926c0ff840373d62f600a8d05f9d51e39ef7b2906b6f7234afc7fa154aa95bfaca75556f60ede409d233f77439fc8b4f616684940ef9e773dd8a3f01087a3c1a971e6f685375ceeaa5eeb66fd6ccc7bae67dd4d214da78ba26ec4815574137a7d9fe179e5269a9b5f8d131ef64055f9366acb0b98a244c928cb5e77f5fc7091f982ff370a2c68c38b7b091948a5ca8c7fef81d595c9e3c3851f567cd65821e0bc9692226dd360570bce8dc2c74a7d478a22cf8144084f4e5d4e8a8d3b21f12502a031f4af31192d8be9409e9e594f006a1ad78ffe51a9fd6a4813d4eb8a2e6a0cec6815c1e4ff12bd3b2b66db43731a6f3b523935230e8e331c9f2406f43a7d807c75d00fe325dabd04374fe9f4116d9e8885486594ab084eddaed0d716077ee6767189b1fa9bafebf0073c6f31ea1efb4f7655fe3f28e99cba236bafcd59fd1252ac35377d854be1cd23b7527b86b6cf31c2dfa628ee7a74b1c7f8475c7052ee490e93f6331377e618f86d2be35431d41b06297e45e0f1892e402927dd4ca41751aec9d861f7bb0deab8a3bffc06137999ef799e4a97472c98a4a110487ec5d2095e5fb3aaa36aced05ba27f4d57f82085fa5cd5dbabb553cf5aefed5e57e142d652e917155f983d3d9a1886f79949928b4f4c8fdd04e79ce95fea52293b99c8494309829067e70476a239b1cdee445eaed03f17c9c17896cf0347377e36bc7740f734b6380eb1d157aecbd200cb5e190e5684a68c3dd765d08568f0edba23a6d59467b0e14f04c6f0f706e92293669fdc30ea848f1b9e93177c52c40e3897cbfd38f166a9c19812fdd92278940d76f05e291d76b4d23ec7176721c2eaf76d3ab0b343c4ce691eb1f2afb319cc7375e28ac33be1ef5af66793ba52e639a4a5275e64e04aebb991894d680fd1344e35e120752a4ccaad7244b05ea2317af13b253e659c1218389540b72586b03948b0e67033af70fa6a3950c0367f9d173f2472e571b598d21a03a899f7d722f847baaf6c2494b7fe9cf857b80b7f258285b768e4f3b2e51e0c8c405ad25c99529c4a8fc91a403c2b76d7ae1a4370400ee2cf2f1d2ad35abe6b6ad21f4204fd6293bb79e33a50f7a4dbbaeb7dede125b14f3d1a9078919d9cad11178b0d2b11f8f7a3c40954dc0b3d22a004d65e947afff1ec680fe985d2db7e384e187a5020fa82df85c208dd6ef8bb04d8c1af2564e3d9f2a674083d32cba84b5ffcd4e4a2fc4eb1cf5e050c2e46ced036ba6b24587f9b84ad2e313d7513c0358367c1f5fddf37b26567d7e6ced7b2ffca70e2746f15fb641c82883ecae85bb12e8f22ef113b7c45f5a32c6aa7d81f7d37cefb691fa69e750febfdf629661d9d96ad31cabe857c023de98fcdb5f850504b618c848af31039a030df762ba6277748883712d55fd97abe10ccf58f0249def8dd348456954d1e2810233507c400f11ae9e59380afef07698adbfa235e3b6e79e306c7f02bf2c19786da0bd5a515b8cfb7ba3ba050569a398d7c6ca1b7166c10e2992e51f219b0afb72fc5bb5aaa321a3020978b637b4c5fd4d1b97b4fc62e240e7f393b511c3d58e95991c268cacab59775d1821cade8fa0838bcfc173cb98c02136095ddabf283d7d654df9954f05231a6138aea4a02720fb406c320df69dd9171717fae04744d3569eba32a8eb30b35f1369afcedf954b44ee7609ac350d7e193c3dc767342a9c41011fd7c58b09d8f46be8dbb08cf0c87cbf43b4584a6844a13d346af9558128aac017ce80bc454d9e54878092587124835518dcbef2859404d090ff4eb5337e74f272300e37a50180ff36bbd1d61cbfacc79274a82dfd378df98698762c3fdd3c1adabb2b78df50b0516184ae68c3c2e4391570a00118cfac04e3ef3cec61c2fe12ba5fab9ed2ef43ae8f9c5f2135c24fb865b06ce86b91406c85bf438946b092690ce3b97a55d65dc50ab4c7bf4d7e5af5a7ec5b7cb589ea3157a478b2f51647f73f43a920ce28c386694eaf0d3b308feeb25a8fb092a18763031d406f8314b18c32ed63b9f5b0ca90130088c56012b39a760fb39b23c9ddb38deb1ef4d76e140cfdb1382d97a2975e424b7473c6eef94e5d7792f80b59e5ff318b8a050871aeec92596c572316f1394e3bcd174b1bcfdb9b789d3cf5ef041358d26f06441a2ce99b77af91965bd4d5cbb81091216392fa7890b81278cd95178d2df83dc33314ee8e0a26cc48fa0ebccd604c93992c6e6dc0dea0dc61642fd4e8d8cb7f5afdba19a54e847d6fec464f7af1134fcee6792cca955546118b5f6af7c9e431b1f96e2f1854ce407575da349120b29de95cb891a4f3a297031a480f38a5cf19df29aa6881219c8479980cb62e1e6bfdd750fae7f79558d2dfe29f1fb0f734d4a0f7a71730451abc927b7d9c334a</script>
+  <div class="hbe hbe-content">
+    <div class="hbe hbe-input hbe-input-default">
+      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
+      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
+        <span class="hbe hbe-input-label-content hbe-input-label-content-default">您好, 请输入密码.</span>
+      </label>
+    </div>
+  </div>
+</div>
+<script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">
             </div>
             <hr>
             <div>
