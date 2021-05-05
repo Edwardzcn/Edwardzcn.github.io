@@ -8,15 +8,29 @@
 <head>
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
   <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
-  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="description" content="软件测试课程作业二实验内容
+编写判断是否为闰年的程序
+画出程序的流程图
+将流程图转换为控制流图
+基于控制流图，设计该程序的不同标准测试用例集合
+语句覆盖
+判定覆盖
+条件覆盖
+路径覆盖
+MC/DC 覆盖
+
+
+
+实验过程">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
+  
   <title>软件测试学习——白盒测试实验报告 - Edward&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
@@ -29,7 +43,7 @@
     
     
       
-      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.6.0/styles/github-gist.min.css" />
     
   
 
@@ -59,7 +73,7 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false,"loading_img":"/img/loading.gif","offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
@@ -113,9 +127,10 @@
           
           
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -198,7 +213,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -217,13 +232,13 @@
         
         
           <li class="nav-item" id="search-btn">
-            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
                 class="iconfont icon-search"></i>&nbsp;</a>
           </li>
         
         
           <li class="nav-item" id="color-toggle-btn">
-            <a class="nav-link" href="javascript:">&nbsp;<i
+            <a class="nav-link" target="_self">&nbsp;<i
                 class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
           </li>
         
@@ -327,9 +342,9 @@
 <h3 id="绘制流程图"><a href="#绘制流程图" class="headerlink" title="绘制流程图"></a>绘制流程图</h3><p>这里只绘制检测闰年的核心逻辑<code>checkLeapYear</code>函数的流程图，框架代码实际上做了更加严密的数据输入格式保证。从 Unit Test 的角度看，我们先进性核心逻辑部分的单元测试。</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">/*</span><br><span class="hljs-comment">** 函数名：checkLeapYear</span><br><span class="hljs-comment">** 函数功能：根据输入年份判断其是否为闰年</span><br><span class="hljs-comment">** 参数名称与类型：</span><br><span class="hljs-comment">**  int year</span><br><span class="hljs-comment">** 返回值类型：</span><br><span class="hljs-comment">**  bool</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-keyword">bool</span> <span class="hljs-title">checkLeapYear</span><span class="hljs-params">(<span class="hljs-keyword">int</span> year)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-comment">// 判断闰年的核心逻辑</span><br>    <span class="hljs-keyword">if</span> (year % <span class="hljs-number">400</span> == <span class="hljs-number">0</span> || year % <span class="hljs-number">4</span> == <span class="hljs-number">0</span> &amp;&amp; year % <span class="hljs-number">100</span> != <span class="hljs-number">0</span>)<br>    &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>流程图绘制如下</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/SoftwareTesting/Lab2_1.png" srcset="/img/loading.gif" alt="Lab2_1"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/SoftwareTesting/Lab2_1.png" srcset="/img/loading.gif" lazyload alt="Lab2_1"></p>
 <h3 id="绘制控制流图"><a href="#绘制控制流图" class="headerlink" title="绘制控制流图"></a>绘制控制流图</h3><p>将流程图转化为控制流图如下</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/SoftwareTesting/Lab2_2.png" srcset="/img/loading.gif" alt="Lab2_2"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/SoftwareTesting/Lab2_2.png" srcset="/img/loading.gif" lazyload alt="Lab2_2"></p>
 <h3 id="基于控制流图和覆盖准则下的测试用例设计"><a href="#基于控制流图和覆盖准则下的测试用例设计" class="headerlink" title="基于控制流图和覆盖准则下的测试用例设计"></a>基于控制流图和覆盖准则下的测试用例设计</h3><p>在核心逻辑代码中，判断语句仅有一个。为方便后续描述，下列定义：</p>
 <ul>
 <li>符号$A$表示布尔表达式 <code>year % 400 == 0</code></li>
@@ -383,7 +398,7 @@
 </li>
 </ul>
 <h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><p>以路径覆盖中分析的四种可能真值构造的样例为输入检验程序正确性，运行结果如下图：</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/SoftwareTesting/Lab2_3.png" srcset="/img/loading.gif" alt="Lab2_3"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/SoftwareTesting/Lab2_3.png" srcset="/img/loading.gif" lazyload alt="Lab2_3"></p>
 <h2 id="实验总结"><a href="#实验总结" class="headerlink" title="实验总结"></a>实验总结</h2><p>本次实验亲手编程体验了白盒测试的过程，尤其是覆盖原则下的测例、测试集的构造。而且由于闰年条件的相关性（蕴含关系），在手动构建过程中还颇费了一番计算的功夫。通过本次实验，不仅重温了关系运算方面的知识，更加深了对白盒测试的相关概念的理解，增强构造测试集的能力。</p>
 
             </div>
@@ -410,7 +425,11 @@
                 
               </div>
               
-                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
               
               
                 <div class="post-prevnext">
@@ -438,6 +457,30 @@
               
             </div>
 
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+    <div class="cusdis" style="width:100%">
+      <div id="cusdis_thread"
+        data-host="https://cusdis.com"
+        data-app-id="3d66d51c-fa21-442d-9efa-c1b9acfeb762"
+        data-page-id="ce925fe0afde54bb7c7b89c57a7a64bf"
+        data-page-url="post/bdb73106.html"
+        data-page-title="软件测试学习——白盒测试实验报告"
+      >
+    </div>
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#cusdis_thread', function() {
+        Fluid.utils.createScript("https://cusdis.com/js/cusdis.es.js");
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+  
+              </article>
             
           </article>
         </div>
@@ -504,8 +547,9 @@
   
 </footer>
 
-<!-- SCRIPTS -->
 
+  <!-- SCRIPTS -->
+  
   <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
 
@@ -518,9 +562,8 @@
   </script>
 
 
-<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
 <script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
-<script  src="/js/debouncer.js" ></script>
 <script  src="/js/events.js" ></script>
 <script  src="/js/plugins.js" ></script>
 
@@ -528,7 +571,7 @@
 
 
   
-    <script  src="/js/lazyload.js" ></script>
+    <script  src="/js/img-lazyload.js" ></script>
   
 
 
@@ -537,7 +580,7 @@
 
 
 
-  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.2/dist/tocbot.min.js" ></script>
 
 
 
@@ -549,7 +592,7 @@
 
 
 
-  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
 
 
 
@@ -573,11 +616,12 @@
   <script>
     (function () {
       var path = "/local-search.xml";
-      var inputArea = document.querySelector("#local-search-input");
-      inputArea.onclick = function () {
+      $('#local-search-input').on('click', function() {
         searchFunc(path, 'local-search-input', 'local-search-result');
-        this.onclick = null
-      }
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
     })()
   </script>
 
@@ -636,7 +680,6 @@
 
 <!-- 主题的启动项 保持在最底部 -->
 <script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-
 
 
 </body>

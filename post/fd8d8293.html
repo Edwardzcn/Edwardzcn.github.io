@@ -8,15 +8,21 @@
 <head>
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
   <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
-  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="description" content="本章对分布式应用中各种范型进行分类，介绍基于这些范型的典型工具和协议。
+范型和抽象抽象抽象-&amp;gt;理论-&amp;gt;设计，计算机科学研究的三种形态，对应学科问题求解中三个典型过程。
+抽象：源于实验学科，抽象的结果是概念、符号、模型。
+理论：源于数理，主要为定义、定理、公理、证明与结果解释，研究内容跟的基本特征是构造性数学特征。
+设计：源于工程学，用来开发求解给定问题的系统和设备主要是需求说明。
+范型">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
+  
   <title>分布式系统学习——分布式计算范型 - Edward&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
@@ -29,7 +35,7 @@
     
     
       
-      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.6.0/styles/github-gist.min.css" />
     
   
 
@@ -59,7 +65,7 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false,"loading_img":"/img/loading.gif","offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
@@ -113,9 +119,10 @@
           
           
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -198,7 +205,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -217,13 +224,13 @@
         
         
           <li class="nav-item" id="search-btn">
-            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
                 class="iconfont icon-search"></i>&nbsp;</a>
           </li>
         
         
           <li class="nav-item" id="color-toggle-btn">
-            <a class="nav-link" href="javascript:">&nbsp;<i
+            <a class="nav-link" target="_self">&nbsp;<i
                 class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
           </li>
         
@@ -367,7 +374,7 @@
 </li>
 </ul>
 <p>小结</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/DistributeSystemLearning/DistributeParadigms/distribute_paradigms_1.png" srcset="/img/loading.gif" alt="Distribute_Paradigms_1"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/DistributeSystemLearning/DistributeParadigms/distribute_paradigms_1.png" srcset="/img/loading.gif" lazyload alt="Distribute_Paradigms_1"></p>
 <h4 id="体系结构元素——中间件内容补充"><a href="#体系结构元素——中间件内容补充" class="headerlink" title="体系结构元素——中间件内容补充"></a>体系结构元素——中间件内容补充</h4><p>操作系统及以下，归为平台（Platform），最上层是应用服务，中间有一个中间件（MiddleWare）。</p>
 <p><strong>中间件提供一个编程抽象来屏蔽异构问题</strong>，主要解决包括：</p>
 <ul>
@@ -647,7 +654,11 @@
                 
               </div>
               
-                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
               
               
                 <div class="post-prevnext">
@@ -675,6 +686,30 @@
               
             </div>
 
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+    <div class="cusdis" style="width:100%">
+      <div id="cusdis_thread"
+        data-host="https://cusdis.com"
+        data-app-id="3d66d51c-fa21-442d-9efa-c1b9acfeb762"
+        data-page-id="c57d950a93938b0aa70ad23d6729083b"
+        data-page-url="post/fd8d8293.html"
+        data-page-title="分布式系统学习——分布式计算范型"
+      >
+    </div>
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#cusdis_thread', function() {
+        Fluid.utils.createScript("https://cusdis.com/js/cusdis.es.js");
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+  
+              </article>
             
           </article>
         </div>
@@ -741,8 +776,9 @@
   
 </footer>
 
-<!-- SCRIPTS -->
 
+  <!-- SCRIPTS -->
+  
   <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
 
@@ -755,9 +791,8 @@
   </script>
 
 
-<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
 <script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
-<script  src="/js/debouncer.js" ></script>
 <script  src="/js/events.js" ></script>
 <script  src="/js/plugins.js" ></script>
 
@@ -765,7 +800,7 @@
 
 
   
-    <script  src="/js/lazyload.js" ></script>
+    <script  src="/js/img-lazyload.js" ></script>
   
 
 
@@ -774,7 +809,7 @@
 
 
 
-  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.2/dist/tocbot.min.js" ></script>
 
 
 
@@ -786,7 +821,7 @@
 
 
 
-  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
 
 
 
@@ -810,11 +845,12 @@
   <script>
     (function () {
       var path = "/local-search.xml";
-      var inputArea = document.querySelector("#local-search-input");
-      inputArea.onclick = function () {
+      $('#local-search-input').on('click', function() {
         searchFunc(path, 'local-search-input', 'local-search-result');
-        this.onclick = null
-      }
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
     })()
   </script>
 
@@ -873,7 +909,6 @@
 
 <!-- 主题的启动项 保持在最底部 -->
 <script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-
 
 
 </body>

@@ -8,15 +8,19 @@
 <head>
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
   <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
-  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="description" content="（可以关注一下 Future Generation Computer Systems）
+集群技术初识——以 Linux 负载均衡集群学习为例
+写在前面本文主要参考：章文嵩博士所写的Linux 服务器集群系统介绍，集群技术（原理篇），高俊峰所著《高性能 Linux 服务器构建实战》，魔软运维社所著《大规模 Linux 集群架构最佳实践》。
+由于查阅资料的时候不懂得地方太多，所以多数只能从概念上简单理">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
+  
   <title>操作系统学习——集群技术初识 - Edward&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
@@ -29,7 +33,7 @@
     
     
       
-      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.6.0/styles/github-gist.min.css" />
     
   
 
@@ -59,7 +63,7 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false,"loading_img":"/img/loading.gif","offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
@@ -113,9 +117,10 @@
           
           
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -198,7 +203,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -217,13 +222,13 @@
         
         
           <li class="nav-item" id="search-btn">
-            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
                 class="iconfont icon-search"></i>&nbsp;</a>
           </li>
         
         
           <li class="nav-item" id="color-toggle-btn">
-            <a class="nav-link" href="javascript:">&nbsp;<i
+            <a class="nav-link" target="_self">&nbsp;<i
                 class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
           </li>
         
@@ -331,7 +336,7 @@
 <li>三是 SMP 服务器是单一故障点（Single Point of Failure），一旦该服务器或应用软件失效，会导致整个服务的中断。</li>
 </ul>
 <h2 id="集群的起源"><a href="#集群的起源" class="headerlink" title="集群的起源"></a>集群的起源</h2><p>集群并不是一个全新的概念，其实早在七十年代计算机厂商和研究机构就开始了对集群系统的研究和开发。由于主要用于科学工程计算，所以这些系统并不为大家所熟知。直到 Linux 集群的出现，集群的概念才得以广为传播。对集群的研究起源于集群系统的良好的性能可扩展性(scalability)。提高 CPU 主频和总线带宽是最初提供计算机性能的主要手段。但是这一手段对系统性能的提供是有限的。接着人们通过增加 CPU 个数和内存容量来提高性能，于是出现了向量机，对称多处理机(SMP)等。但是当 CPU 的个数超过某一阈值，象 SMP 这些多处理机系统的可扩展性就变的极差。主要瓶颈在于 CPU 访问内存的带宽并不能随着 CPU 个数的增加而有效增长。与 SMP 相反，集群系统的性能随着 CPU 个数的增加几乎是线性变化的</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/20190321os1.jpg" srcset="/img/loading.gif" alt="1"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/20190321os1.jpg" srcset="/img/loading.gif" lazyload alt="1"></p>
 <p>集群恰恰是通过高性能网络或局域网互联的服务器集群正成为实现高可伸缩的、高可用网络服务的有效结构（而非基于单机 CPU 数量的增长）。这种松耦合结构的服务器集群系统有下列优点：</p>
 <ul>
 <li><p><strong>性能</strong></p>
@@ -383,7 +388,7 @@
 <h1 id="第二部分-LVS-集群系统"><a href="#第二部分-LVS-集群系统" class="headerlink" title="第二部分 LVS 集群系统"></a>第二部分 LVS 集群系统</h1><h2 id="项目诞生"><a href="#项目诞生" class="headerlink" title="项目诞生"></a>项目诞生</h2><blockquote>
 <p>针对高可伸缩、高可用网络服务的需求，我们给出了基于 IP 层和基于内容请求分发的负载平衡调度解决方法，并在 Linux 内核中实现了这些方法，将一组服务器构成一个实现可伸缩的、高可用网络服务的虚拟服务器。</p>
 <p>虚拟服务器的体系结构如图 2 所示，一组服务器通过高速的局域网或者地理分布的广域网相互连接，在它们的前端有一个负载调度器（Load Balancer）。负载调度器能无缝地将网络请求调度到真实服务器上，从而使得服务器集群的结构对客户是透明的，客户访问集群系统提供的网络服务就像访 问一台高性能、高可用的服务器一样。客户程序不受服务器集群的影响不需作任何修改。系统的伸缩性通过在服务机群中透明地加入和删除一个节点来达到，通过检 测节点或服务进程故障和正确地重置系统达到高可用性。由于我们的负载调度技术是在 Linux 内核中实现的，我们称之为 Linux 虚拟服务器（Linux Virtual Server）。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/20190321os2.jpg" srcset="/img/loading.gif" alt="2"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/20190321os2.jpg" srcset="/img/loading.gif" lazyload alt="2"></p>
 </blockquote>
 <h2 id="LVS-集群的组成与特点"><a href="#LVS-集群的组成与特点" class="headerlink" title="LVS 集群的组成与特点"></a>LVS 集群的组成与特点</h2><p>Linux 虚拟服务器（Linux Virtual Server，LVS）是一个由章文嵩开发的一款自由软件，利用 LVS 可以实现高可用的、可伸缩的 Web、Mail、Cache 和 Media 等网络服务。并在此基础上开发支持庞大用户数的、可伸缩的、高可用的电子商务应用。LVS 自 1998 年发展到现在，已经变得比较成熟，目前广泛应用在各种网络服务和电子商务应用中。</p>
 <p>LVS 具有很好的可伸缩性、可靠性和可管理性，通过 LVS 要实现的最终目标是：利用 Linux 操作系统和 LVS 集群软件实现一个高可用、高性能、低成本的服务器应用集群。</p>
@@ -488,7 +493,11 @@
                 
               </div>
               
-                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
               
               
                 <div class="post-prevnext">
@@ -516,6 +525,30 @@
               
             </div>
 
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+    <div class="cusdis" style="width:100%">
+      <div id="cusdis_thread"
+        data-host="https://cusdis.com"
+        data-app-id="3d66d51c-fa21-442d-9efa-c1b9acfeb762"
+        data-page-id="c52e95d4727bee4105aa9e6eec20ae0d"
+        data-page-url="post/2024a703.html"
+        data-page-title="操作系统学习——集群技术初识"
+      >
+    </div>
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#cusdis_thread', function() {
+        Fluid.utils.createScript("https://cusdis.com/js/cusdis.es.js");
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+  
+              </article>
             
           </article>
         </div>
@@ -582,8 +615,9 @@
   
 </footer>
 
-<!-- SCRIPTS -->
 
+  <!-- SCRIPTS -->
+  
   <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
 
@@ -596,9 +630,8 @@
   </script>
 
 
-<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
 <script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
-<script  src="/js/debouncer.js" ></script>
 <script  src="/js/events.js" ></script>
 <script  src="/js/plugins.js" ></script>
 
@@ -606,7 +639,7 @@
 
 
   
-    <script  src="/js/lazyload.js" ></script>
+    <script  src="/js/img-lazyload.js" ></script>
   
 
 
@@ -615,7 +648,7 @@
 
 
 
-  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.2/dist/tocbot.min.js" ></script>
 
 
 
@@ -627,7 +660,7 @@
 
 
 
-  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
 
 
 
@@ -651,11 +684,12 @@
   <script>
     (function () {
       var path = "/local-search.xml";
-      var inputArea = document.querySelector("#local-search-input");
-      inputArea.onclick = function () {
+      $('#local-search-input').on('click', function() {
         searchFunc(path, 'local-search-input', 'local-search-result');
-        this.onclick = null
-      }
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
     })()
   </script>
 
@@ -714,7 +748,6 @@
 
 <!-- 主题的启动项 保持在最底部 -->
 <script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-
 
 
 </body>

@@ -8,15 +8,17 @@
 <head>
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
   <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
-  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="description" content="面向非易失性存储介质的文件系统设计、实现与形式化验证主讲人：陈海波老师（上海交通大学教授， IPAD 小组导师，华为鸿蒙系统研发）
+Background：How to Climb Up the Memory HierarchyJim Gray 对于存储层次（Memory Hierarchy）演进的经典论断：Tape is Dead, Disk is Tape, Flash is Disk, RAM">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
+  
   <title>CCFADL105——面向非易失性存储介质的文件系统设计、实现与形式化验证 - Edward&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
@@ -29,7 +31,7 @@
     
     
       
-      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.6.0/styles/github-gist.min.css" />
     
   
 
@@ -59,7 +61,7 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false,"loading_img":"/img/loading.gif","offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
@@ -113,9 +115,10 @@
           
           
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -198,7 +201,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -217,13 +220,13 @@
         
         
           <li class="nav-item" id="search-btn">
-            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
                 class="iconfont icon-search"></i>&nbsp;</a>
           </li>
         
         
           <li class="nav-item" id="color-toggle-btn">
-            <a class="nav-link" href="javascript:">&nbsp;<i
+            <a class="nav-link" target="_self">&nbsp;<i
                 class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
           </li>
         
@@ -315,22 +318,22 @@
 <p>先前为了实现 Persistence（持久化），NVDIM 技术是附加电容，在断电时通过电容，将 RAM 的数据刷到硬盘中，从而达到持久化的效果。</p>
 <p>抉择：Performance vs. Persistence，以传统结构来说，选择 Performance，我们减少写回磁盘的次数，而主要在 RAM 上操作，但是这就面临掉电丢失数据的风险，难以持久化，而若选择 Persistence，频繁写入磁盘，则在 IO 上就要耗费更多的时间，效率降低。</p>
 <p>Intel Optane DC Persistent Memory 性能表现</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0006.jpg" srcset="/img/loading.gif" alt="NVM1"></p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0007.jpg" srcset="/img/loading.gif" alt="NVM2"></p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0008.jpg" srcset="/img/loading.gif" alt="NVM3"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0006.jpg" srcset="/img/loading.gif" lazyload alt="NVM1"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0007.jpg" srcset="/img/loading.gif" lazyload alt="NVM2"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0008.jpg" srcset="/img/loading.gif" lazyload alt="NVM3"></p>
 <p>在 NVM 产品化元年，真正的 Persistent Memory 到来时，如果针对其特性构建系统？</p>
 <a id="more"></a>
 <h2 id="改变-Memory-Hierarchy"><a href="#改变-Memory-Hierarchy" class="headerlink" title="改变 Memory Hierarchy"></a>改变 Memory Hierarchy</h2><p>改变了其中的易失/持久的边界</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0009.jpg" srcset="/img/loading.gif" alt="NVM4"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0009.jpg" srcset="/img/loading.gif" lazyload alt="NVM4"></p>
 <h2 id="不成比例扩展效应-Incommensurate-scaling"><a href="#不成比例扩展效应-Incommensurate-scaling" class="headerlink" title="不成比例扩展效应 Incommensurate scaling"></a>不成比例扩展效应 Incommensurate scaling</h2><p>如果计算机体系结构某个部分突然快 10 倍，便会使人们重新审视整个系统，调度、Storage 管理</p>
 <blockquote>
 <p>As a system increases in size or speed, not all parts of it (&amp;human factors) follow the same scaling rules. — Saltzer &amp; Kaashoek</p>
 </blockquote>
 <p>考虑 NVM 带来的影响，如下图，非易失性设备访问速度提升了 1000-10000 倍，不仅系统本身，评测系统的 Benchmark，思考问题的角度，都需要重新调整。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0010.jpg" srcset="/img/loading.gif" alt="NVM5"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0010.jpg" srcset="/img/loading.gif" lazyload alt="NVM5"></p>
 <h2 id="启发"><a href="#启发" class="headerlink" title="启发"></a>启发</h2><p>Tape is Dead, Disk is Tape, Flash is Disk, \sout{RAM Locality is King.}\par RAM is Flash, <strong>Cache Locality/Parallelism is King?</strong></p>
 <p>从硬件革新，重新审视系统的软件栈。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0012.jpg" srcset="/img/loading.gif" alt="Opportunities"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0012.jpg" srcset="/img/loading.gif" lazyload alt="Opportunities"></p>
 <h1 id="SoupFS"><a href="#SoupFS" class="headerlink" title="SoupFS"></a>SoupFS</h1><p>An NVM file system in Kernel(USENIX ATC’17)</p>
 <h2 id="为什么在乎文件系统"><a href="#为什么在乎文件系统" class="headerlink" title="为什么在乎文件系统"></a>为什么在乎文件系统</h2><ul>
 <li>文件系统储存我们所有的数据</li>
@@ -346,7 +349,7 @@
 <p>有的，前人也做过研究：1999 年 Marshall 和 Gregory R. Ganger 在 USENIX 上发表论文介绍的方法：<strong>Soft Updates</strong></p>
 <h2 id="Soft-Updates"><a href="#Soft-Updates" class="headerlink" title="Soft Updates"></a>Soft Updates</h2><h3 id="What-Is-Soft-Updates"><a href="#What-Is-Soft-Updates" class="headerlink" title="What Is Soft Updates"></a>What Is Soft Updates</h3><p>主要思想：在磁盘中维护一个元数据，不和 DRAM 实时同步，但保证与 DRAM 的元数据的依赖关系相同（两地元数据都需要增加依赖关系的标识，这是新的要求）。</p>
 <p>带来的好处：异步操作、依赖关系保证一致性、无需磁盘检查。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0017.jpg" srcset="/img/loading.gif" alt="Soft Updates"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0017.jpg" srcset="/img/loading.gif" lazyload alt="Soft Updates"></p>
 <h3 id="Soft-Updates-is-Complicated"><a href="#Soft-Updates-is-Complicated" class="headerlink" title="Soft Updates is Complicated"></a>Soft Updates is Complicated</h3><p>这一理念在学术界有所影响，但工业界影响微乎其微：依赖关系复杂，实现太过困难。</p>
 <blockquote>
 <p>Soft updates are, simply put, too hard to understand, implement,and maintain to be part of the mainstream of file system development — Valerie Aurora, Linux Kernel Developer</p>
@@ -378,10 +381,10 @@
 <li>Consistent view in disks</li>
 </ul>
 <p>为了避免两个视图两份拷贝的额外开销，进一步提高效率，通过 Pointer 指向，来复用元数据的数据结构来避免不必要的重复和刷新。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0023.jpg" srcset="/img/loading.gif" alt="Pointer-based"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0023.jpg" srcset="/img/loading.gif" lazyload alt="Pointer-based"></p>
 <p>具体的数据结构设计不再赘述，可以参考 SoupFS 论文</p>
 <p>一个例子，从图示看很像 Data structure 中每个结点实现了一个双指针分别指向下一个 Consistent 节点（NVM View 中）和 Latest 节点（RAM View 中）。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0033.jpg" srcset="/img/loading.gif" alt="Pointer-based Example"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0033.jpg" srcset="/img/loading.gif" lazyload alt="Pointer-based Example"></p>
 <h3 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h3><p>Q1. 使用 NVM 为什么还要使用 File System，数据库方式可以跳过直接操作底层的 metadata？<br>A1. 当然对于 NVM 下还要不要做 File System 业界是有争论的，我的看法是系统发展要有演化路径，File System 是一个通用的“范型”，可以利用 File System 实现更多基于 File System 的上层技术。</p>
 <p>Q2. NVMFS 有没有对垃圾回收机制带来新的要求和挑战？<br>A2. 之前学术界有相关研究比如 NV Allocate，主要研究在 NVM 上如何分配和管理空间，这样必然会涉及垃圾回收这一问题。我们这边也有涉及 Garbage Collector 的相关工作，主要关心掉电后数据流有/没有被分配</p>
 <p>Q3. 为什么考虑文件目录使用 HashTable 而非红黑树、B+树，这样的话范围查询效率不会很低吗？<br>A3. 首先考虑到实现简单，而且对于 NVM 来说，相较于之前的 Disk 访问速度已经很快了，范围查询拆成单点查询可能都要比原有设备的范围查询快，就是拖到内存里扫一遍的过程。</p>
@@ -410,8 +413,8 @@
 <li>再提及：<strong>抽象的重要性</strong></li>
 </ul>
 <h2 id="新的抽象：-Coffer"><a href="#新的抽象：-Coffer" class="headerlink" title="新的抽象： Coffer"></a>新的抽象： Coffer</h2><p>具体没有搞明白。。后续读论文吧。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0051.jpg" srcset="/img/loading.gif" alt="Coffer1"></p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0052.jpg" srcset="/img/loading.gif" alt="Coffer2"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0051.jpg" srcset="/img/loading.gif" lazyload alt="Coffer1"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0052.jpg" srcset="/img/loading.gif" lazyload alt="Coffer2"></p>
 <h2 id="Protection-and-Isolation"><a href="#Protection-and-Isolation" class="headerlink" title="Protection and Isolation"></a>Protection and Isolation</h2><p>App code 运行可能会导致某个 Coffer 出错，如何防止错误的蔓延，实现错误隔离？方式，内核将 VM pages 划分为 16 regions，非特权寄存器控制器每次最多接入一个 region，添加一些规则（guidelines）。</p>
 <ul>
 <li>G1. 一个 coffer 是可访问的当且仅当 uFS 正在访问这个 coffer。</li>
@@ -427,12 +430,12 @@
 <li>应用程序代码推理（code reasoning）的基础</li>
 </ul>
 <p>而最关键的是：<strong>形式化验证</strong>——证明系统没有错误的唯一方法。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0075.jpg" srcset="/img/loading.gif" alt="Formal verification"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0075.jpg" srcset="/img/loading.gif" lazyload alt="Formal verification"></p>
 <p>到这真的是听不懂了。。。。记一些重点名词然后贴 pdf 日后慢慢研究吧</p>
 <p>抽象化-&gt;形式化验证</p>
 <p>Atomicity, Linearizability</p>
 <p>Helper Mechanism（辅助机制）: Ghost state, Linearize-before relation, CRL-H</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0076.jpg" srcset="/img/loading.gif" alt="AtomFS1"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0077.jpg" srcset="/img/loading.gif" alt="AtomFS2"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0078.jpg" srcset="/img/loading.gif" alt="AtomFS3"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0079.jpg" srcset="/img/loading.gif" alt="AtomFS4"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0080.jpg" srcset="/img/loading.gif" alt="AtomFS5"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0081.jpg" srcset="/img/loading.gif" alt="AtomFS6"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0082.jpg" srcset="/img/loading.gif" alt="AtomFS7"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0083.jpg" srcset="/img/loading.gif" alt="AtomFS8"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0084.jpg" srcset="/img/loading.gif" alt="AtomFS9"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0085.jpg" srcset="/img/loading.gif" alt="AtomFS10"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0086.jpg" srcset="/img/loading.gif" alt="AtomFS11"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0087.jpg" srcset="/img/loading.gif" alt="AtomFS12"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0088.jpg" srcset="/img/loading.gif" alt="AtomFS13"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0089.jpg" srcset="/img/loading.gif" alt="AtomFS14"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0090.jpg" srcset="/img/loading.gif" alt="AtomFS15"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0091.jpg" srcset="/img/loading.gif" alt="AtomFS16"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0092.jpg" srcset="/img/loading.gif" alt="AtomFS17"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0076.jpg" srcset="/img/loading.gif" lazyload alt="AtomFS1"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0077.jpg" srcset="/img/loading.gif" lazyload alt="AtomFS2"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0078.jpg" srcset="/img/loading.gif" lazyload alt="AtomFS3"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0079.jpg" srcset="/img/loading.gif" lazyload alt="AtomFS4"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0080.jpg" srcset="/img/loading.gif" lazyload alt="AtomFS5"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0081.jpg" srcset="/img/loading.gif" lazyload alt="AtomFS6"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0082.jpg" srcset="/img/loading.gif" lazyload alt="AtomFS7"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0083.jpg" srcset="/img/loading.gif" lazyload alt="AtomFS8"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0084.jpg" srcset="/img/loading.gif" lazyload alt="AtomFS9"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0085.jpg" srcset="/img/loading.gif" lazyload alt="AtomFS10"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0086.jpg" srcset="/img/loading.gif" lazyload alt="AtomFS11"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0087.jpg" srcset="/img/loading.gif" lazyload alt="AtomFS12"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0088.jpg" srcset="/img/loading.gif" lazyload alt="AtomFS13"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0089.jpg" srcset="/img/loading.gif" lazyload alt="AtomFS14"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0090.jpg" srcset="/img/loading.gif" lazyload alt="AtomFS15"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0091.jpg" srcset="/img/loading.gif" lazyload alt="AtomFS16"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/HaiboChen/HaiboChen_page-0092.jpg" srcset="/img/loading.gif" lazyload alt="AtomFS17"></p>
 <p>耗费了相当大的精力，1.5 年的努力，包括学习理论，建立框架和形式化证明。</p>
 <p>AtomFS：2k 行代码表达，60k 行证明。</p>
 <h1 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h1><p>还是如之前所说，体系结构中某个部件的突发进步，会导致整个体系设计思路的改变。</p>
@@ -471,7 +474,11 @@
                 
               </div>
               
-                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
               
               
                 <div class="post-prevnext">
@@ -499,6 +506,30 @@
               
             </div>
 
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+    <div class="cusdis" style="width:100%">
+      <div id="cusdis_thread"
+        data-host="https://cusdis.com"
+        data-app-id="3d66d51c-fa21-442d-9efa-c1b9acfeb762"
+        data-page-id="ed136533efa95cf5a71995daf48ada3b"
+        data-page-url="post/f82955ec.html"
+        data-page-title="CCFADL105——面向非易失性存储介质的文件系统设计、实现与形式化验证"
+      >
+    </div>
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#cusdis_thread', function() {
+        Fluid.utils.createScript("https://cusdis.com/js/cusdis.es.js");
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+  
+              </article>
             
           </article>
         </div>
@@ -565,8 +596,9 @@
   
 </footer>
 
-<!-- SCRIPTS -->
 
+  <!-- SCRIPTS -->
+  
   <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
 
@@ -579,9 +611,8 @@
   </script>
 
 
-<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
 <script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
-<script  src="/js/debouncer.js" ></script>
 <script  src="/js/events.js" ></script>
 <script  src="/js/plugins.js" ></script>
 
@@ -589,7 +620,7 @@
 
 
   
-    <script  src="/js/lazyload.js" ></script>
+    <script  src="/js/img-lazyload.js" ></script>
   
 
 
@@ -598,7 +629,7 @@
 
 
 
-  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.2/dist/tocbot.min.js" ></script>
 
 
 
@@ -610,7 +641,7 @@
 
 
 
-  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
 
 
 
@@ -634,11 +665,12 @@
   <script>
     (function () {
       var path = "/local-search.xml";
-      var inputArea = document.querySelector("#local-search-input");
-      inputArea.onclick = function () {
+      $('#local-search-input').on('click', function() {
         searchFunc(path, 'local-search-input', 'local-search-result');
-        this.onclick = null
-      }
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
     })()
   </script>
 
@@ -697,7 +729,6 @@
 
 <!-- 主题的启动项 保持在最底部 -->
 <script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-
 
 
 </body>

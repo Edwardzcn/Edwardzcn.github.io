@@ -8,15 +8,18 @@
 <head>
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
   <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
-  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="description" content="大数据系统的演化：理论、实践和展望主讲人：周礼栋老师（微软亚洲研究院副院长，MSRA 被称为系统方向的黄埔军校，肇国老师评价其为非常 Perspective 的一位老师）
+前言作为第一个 Talker，先做一个比较宏观的演讲，整个分为两部分。除了必要的知识点以外，我们更需要以系统的视角，关注方法学（重新思考）。
+回顾大数据系统的发展历程：Big Data Systems强调了抽象的重要性，一个好的">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
+  
   <title>CCFADL105——大数据系统的演化：理论、实践和愿望 - Edward&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
@@ -29,7 +32,7 @@
     
     
       
-      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.6.0/styles/github-gist.min.css" />
     
   
 
@@ -59,7 +62,7 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false,"loading_img":"/img/loading.gif","offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
@@ -113,9 +116,10 @@
           
           
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -198,7 +202,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -217,13 +221,13 @@
         
         
           <li class="nav-item" id="search-btn">
-            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
                 class="iconfont icon-search"></i>&nbsp;</a>
           </li>
         
         
           <li class="nav-item" id="color-toggle-btn">
-            <a class="nav-link" href="javascript:">&nbsp;<i
+            <a class="nav-link" target="_self">&nbsp;<i
                 class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
           </li>
         
@@ -311,14 +315,14 @@
               <h1 id="大数据系统的演化：理论、实践和展望"><a href="#大数据系统的演化：理论、实践和展望" class="headerlink" title="大数据系统的演化：理论、实践和展望"></a>大数据系统的演化：理论、实践和展望</h1><p>主讲人：周礼栋老师（微软亚洲研究院副院长，MSRA 被称为系统方向的黄埔军校，肇国老师评价其为非常 Perspective 的一位老师）</p>
 <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>作为第一个 Talker，先做一个比较宏观的演讲，整个分为两部分。<br>除了必要的知识点以外，我们更需要以系统的视角，关注方法学（重新思考）。</p>
 <h1 id="回顾大数据系统的发展历程：Big-Data-Systems"><a href="#回顾大数据系统的发展历程：Big-Data-Systems" class="headerlink" title="回顾大数据系统的发展历程：Big Data Systems"></a>回顾大数据系统的发展历程：Big Data Systems</h1><p>强调了抽象的重要性，一个好的抽象，可以将要进行的任务很好的表达出来，同时还要具备高效性，可以被高效的实现。</p>
-<h2 id="2010-年以前的工作：Foudation"><a href="#2010-年以前的工作：Foudation" class="headerlink" title="2010 年以前的工作：Foudation"></a>2010 年以前的工作：Foudation</h2><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0003.jpg" srcset="/img/loading.gif" alt="初期 Fundation"></p>
+<h2 id="2010-年以前的工作：Foudation"><a href="#2010-年以前的工作：Foudation" class="headerlink" title="2010 年以前的工作：Foudation"></a>2010 年以前的工作：Foudation</h2><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0003.jpg" srcset="/img/loading.gif" lazyload alt="初期 Fundation"></p>
 <p>对于 MapReduce 的横空出现，学界对于 MapReduce 存在一些争论，一些数据库的巨擘认为 MapReduce 是对数据库已经建立起来的一些规则也好，基石工作也好的破坏，技术上是一种倒退，而微软则在 Google MapReduce 的基础上尝试填补上述争论，微软认为数据库和 MapReduce 是存在结合点的，可以向上提供原有的 SQL relation algebra</p>
 <ul>
 <li>谷歌： MapReduce -&gt; 并行/分布式/优化 -&gt; 高效执行</li>
 <li>微软：数据流 -&gt; 原有数据库接口 -&gt; MapReduce -&gt; 并行/分布式/优化 -&gt; 高效执行</li>
 </ul>
 <a id="more"></a>
-<h2 id="2011-2012-的工作：Holisitic-Code-Optimization"><a href="#2011-2012-的工作：Holisitic-Code-Optimization" class="headerlink" title="2011-2012 的工作：Holisitic Code Optimization"></a>2011-2012 的工作：Holisitic Code Optimization</h2><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0005.jpg" srcset="/img/loading.gif" alt="Holisitic Code Optimization"></p>
+<h2 id="2011-2012-的工作：Holisitic-Code-Optimization"><a href="#2011-2012-的工作：Holisitic-Code-Optimization" class="headerlink" title="2011-2012 的工作：Holisitic Code Optimization"></a>2011-2012 的工作：Holisitic Code Optimization</h2><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0005.jpg" srcset="/img/loading.gif" lazyload alt="Holisitic Code Optimization"></p>
 <p>数据库里面的优化和编译器的优化可以结合起来，思路：最优执行，优化执行。（当然整体还是建立在数据库的思维上）</p>
 <p><strong>PeriSCOPE 项目</strong>，出发点希望将 SQL-like code 进行编译优化。</p>
 <ul>
@@ -340,10 +344,10 @@
 <li>必须是收敛且低开销的（泛用性强，经得起工作集的改变）</li>
 <li>后期维护的代价要小、复杂性低（方便迭代）</li>
 </ul>
-<h2 id="2013-2014-的工作：Scheduling-and-Resource"><a href="#2013-2014-的工作：Scheduling-and-Resource" class="headerlink" title="2013-2014 的工作：Scheduling and Resource"></a>2013-2014 的工作：Scheduling and Resource</h2><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0013.jpg" srcset="/img/loading.gif" alt="Scheduling and Resource"></p>
+<h2 id="2013-2014-的工作：Scheduling-and-Resource"><a href="#2013-2014-的工作：Scheduling-and-Resource" class="headerlink" title="2013-2014 的工作：Scheduling and Resource"></a>2013-2014 的工作：Scheduling and Resource</h2><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0013.jpg" srcset="/img/loading.gif" lazyload alt="Scheduling and Resource"></p>
 <p>从单一 Job 的优化到多 Jobs 的优化，引入调度优化的角度。</p>
 <p>大规模集群的多任务调度优化已经不仅仅是一个算法上的问题，因为集群中机器状态未知是常态，而且各自完成任务的预期也是 Unpredictable 的。</p>
-<h2 id="2015-2016-的工作：Beyond-Batch-Processing"><a href="#2015-2016-的工作：Beyond-Batch-Processing" class="headerlink" title="2015-2016 的工作：Beyond Batch Processing"></a>2015-2016 的工作：Beyond Batch Processing</h2><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0017.jpg" srcset="/img/loading.gif" alt="Beyond Batch Processing"></p>
+<h2 id="2015-2016-的工作：Beyond-Batch-Processing"><a href="#2015-2016-的工作：Beyond-Batch-Processing" class="headerlink" title="2015-2016 的工作：Beyond Batch Processing"></a>2015-2016 的工作：Beyond Batch Processing</h2><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0017.jpg" srcset="/img/loading.gif" lazyload alt="Beyond Batch Processing"></p>
 <p>重新审视思考方式：图计算、机器学习、流等概念的推广。从先前的 Scope 发展衍生出 StreamScope：分布式大数据可靠流系统。</p>
 <ul>
 <li><p>微软内部商用大规模流系统</p>
@@ -361,16 +365,16 @@
 </ul>
 </li>
 </ul>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0019.jpg" srcset="/img/loading.gif" alt="Stream Scope"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0019.jpg" srcset="/img/loading.gif" lazyload alt="Stream Scope"></p>
 <p>在流处理的过程中，由于是阶段-&gt;阶段的，考虑出错的常态化，如果某个节点出错，且采取 Rebuild State（重建状态）的策略，最坏情况可能需要 Ref 的节点也处于出错状态，这样数据就在 Data Shuffling 的过程中丢失了。为了消除数据前后的<strong>空间依赖性</strong>，有必要构建新的抽象。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0022.jpg" srcset="/img/loading.gif" alt="rStream1"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0022.jpg" srcset="/img/loading.gif" lazyload alt="rStream1"></p>
 <h3 id="抽象-1-可靠流管道抽象"><a href="#抽象-1-可靠流管道抽象" class="headerlink" title="抽象 1 可靠流管道抽象"></a>抽象 1 可靠流管道抽象</h3><p>可靠流管道（rStream）</p>
 <ul>
 <li>每个序列号码都有一个唯一值</li>
 <li>对于相同序列号，必须成功写后才可以读</li>
 <li>一个写操作$(seq,e)$完成后，后续对该位置读都会返回$(seq,e)$</li>
 </ul>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0023.jpg" srcset="/img/loading.gif" alt="rStream2"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0024.jpg" srcset="/img/loading.gif" alt="rStream3"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0023.jpg" srcset="/img/loading.gif" lazyload alt="rStream2"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0024.jpg" srcset="/img/loading.gif" lazyload alt="rStream3"></p>
 <h3 id="抽象-2-可恢复节点抽象"><a href="#抽象-2-可恢复节点抽象" class="headerlink" title="抽象 2 可恢复节点抽象"></a>抽象 2 可恢复节点抽象</h3><p>可恢复节点（rVertex）</p>
 <p>以快照形式作为状态记录，包含三个属性值：</p>
 <ul>
@@ -378,8 +382,8 @@
 <li>输出流序列号</li>
 <li>当前计算状态</li>
 </ul>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0025.jpg" srcset="/img/loading.gif" alt="rVertex1"></p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0026.jpg" srcset="/img/loading.gif" alt="rVertex2"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0025.jpg" srcset="/img/loading.gif" lazyload alt="rVertex1"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0026.jpg" srcset="/img/loading.gif" lazyload alt="rVertex2"></p>
 <p>出错恢复：根据快照记录回到过去状态，对于输入流进行重询问，由于 rStream 抽象，先前成功得读再后续读会返回相同的值，从而使用此性质可以完成成功得重询问，实现出错恢复。</p>
 <h3 id="抽象，抽象，抽象"><a href="#抽象，抽象，抽象" class="headerlink" title="抽象，抽象，抽象"></a>抽象，抽象，抽象</h3><p>抽象的要求：自身要简单、易于理解。</p>
 <p>合理的抽象使复杂的数据流可靠性和容错问题变得简单</p>
@@ -414,7 +418,7 @@
 <li>Deep Learning Training Job Scheduing 深度学习训练任务调度</li>
 </ul>
 <p>帮助上层应用更好的利用底层硬件技术革新的项目——卧龙计划（Project Wolong）。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0043.jpg" srcset="/img/loading.gif" alt="Project Wolong"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0043.jpg" srcset="/img/loading.gif" lazyload alt="Project Wolong"></p>
 <h2 id="Project-Wolong-Distributed-Optimizer"><a href="#Project-Wolong-Distributed-Optimizer" class="headerlink" title="Project Wolong: Distributed Optimizer"></a>Project Wolong: Distributed Optimizer</h2><p>基于 RDMA（Remote Direct Memory Access）的快速分布式训练</p>
 <p>基于设备和服务器的自动化计算部署。</p>
 <p>利用 RDMA 实现 Zero-copy 设备沟通以提高效率，应用在：RPC、GPU 加速</p>
@@ -443,13 +447,13 @@
 </tbody>
 </table>
 </div>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0052.jpg" srcset="/img/loading.gif" alt="CPUvsGPU"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0052.jpg" srcset="/img/loading.gif" lazyload alt="CPUvsGPU"></p>
 <p>优化方向：<strong>Operator Batching and Kernel Fusion</strong></p>
 <p>运算符的抽象粒度较低，导致一个真实的训练模型的数据流图往往会包括数千个节点，这些节点在 GPU 上的执行就会变成数千次 GPU 上的内核执行。这些粒度较小的内核函数在提供了灵活性的同时，其频繁的调用也成为当前影响许多深度学习框架性能的一个重要因素，其带来的性能开销主要体现在：数据流图的调度开销，GPU 内核函数的启动开销，以及内核函数之间的数据传输开销。</p>
 <p>解决这一问题的一个直接方法就是合并相同运算符操作和内核融合，以更好的利用 GPU 的并行特性。</p>
 <p>关于内核融合的详细介绍：<a target="_blank" rel="noopener" href="https://www.msra.cn/zh-cn/news/features/kernel-fusion-20170925">内核融合：GPU 深度学习的“加速神器”,薛继龙</a></p>
 <p>但是 操作符 Batch 的自动化，以及核的融合并非想象中简单，存在一些技术上的难题：</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0056.jpg" srcset="/img/loading.gif" alt="Automatic Operator Batching"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0057.jpg" srcset="/img/loading.gif" alt="Kernel Fusion"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0056.jpg" srcset="/img/loading.gif" lazyload alt="Automatic Operator Batching"><br><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0057.jpg" srcset="/img/loading.gif" lazyload alt="Kernel Fusion"></p>
 <p>最后整体的工作流：</p>
 <ul>
 <li>图优化：硬件无关优化策略</li>
@@ -460,7 +464,7 @@
 </ul>
 <p>实现产品<strong>NNFusion</strong>：一个多功能深度学习编译器。</p>
 <h2 id="Deep-Learning-Training-vs-Big-Data-Processing"><a href="#Deep-Learning-Training-vs-Big-Data-Processing" class="headerlink" title="Deep Learning Training vs. Big Data Processing"></a>Deep Learning Training vs. Big Data Processing</h2><p>不考虑现在处理的问题和原来的问题有哪些不同，而照搬过去的方法是系统改良过程中一种不负责任的行为。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0062.jpg" srcset="/img/loading.gif" alt="Difference"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/LidongZhou/LidongZhou_page-0062.jpg" srcset="/img/loading.gif" lazyload alt="Difference"></p>
 <p>对比目标，过程，表现三方面的不同，我们获得的启示：</p>
 <ul>
 <li>更多的并行工作会更好（The More Parallel Jobs the Better）</li>
@@ -500,7 +504,11 @@
                 
               </div>
               
-                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
               
               
                 <div class="post-prevnext">
@@ -528,6 +536,30 @@
               
             </div>
 
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+    <div class="cusdis" style="width:100%">
+      <div id="cusdis_thread"
+        data-host="https://cusdis.com"
+        data-app-id="3d66d51c-fa21-442d-9efa-c1b9acfeb762"
+        data-page-id="e3c819330f7224502609b0e672604398"
+        data-page-url="post/3f0572b0.html"
+        data-page-title="CCFADL105——大数据系统的演化：理论、实践和愿望"
+      >
+    </div>
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#cusdis_thread', function() {
+        Fluid.utils.createScript("https://cusdis.com/js/cusdis.es.js");
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+  
+              </article>
             
           </article>
         </div>
@@ -594,8 +626,9 @@
   
 </footer>
 
-<!-- SCRIPTS -->
 
+  <!-- SCRIPTS -->
+  
   <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
 
@@ -608,9 +641,8 @@
   </script>
 
 
-<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
 <script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
-<script  src="/js/debouncer.js" ></script>
 <script  src="/js/events.js" ></script>
 <script  src="/js/plugins.js" ></script>
 
@@ -618,7 +650,7 @@
 
 
   
-    <script  src="/js/lazyload.js" ></script>
+    <script  src="/js/img-lazyload.js" ></script>
   
 
 
@@ -627,7 +659,7 @@
 
 
 
-  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.2/dist/tocbot.min.js" ></script>
 
 
 
@@ -639,7 +671,7 @@
 
 
 
-  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
 
 
 
@@ -663,11 +695,12 @@
   <script>
     (function () {
       var path = "/local-search.xml";
-      var inputArea = document.querySelector("#local-search-input");
-      inputArea.onclick = function () {
+      $('#local-search-input').on('click', function() {
         searchFunc(path, 'local-search-input', 'local-search-result');
-        this.onclick = null
-      }
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
     })()
   </script>
 
@@ -726,7 +759,6 @@
 
 <!-- 主题的启动项 保持在最底部 -->
 <script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-
 
 
 </body>

@@ -8,15 +8,21 @@
 <head>
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
   <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
-  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="description" content="频率域滤波基础傅里叶变换复习傅里叶级数、傅里叶变换（说实话这么久只知道个大概没有推过数学公式很丢人。。）
+待补充
+参考资料主要使用 OpenCV、Numpy 以及提供的对应方法。
+图片来源为冈萨雷斯数字图像处理提供的图像。
+OpenCV 关于 Fourier Transform 应用的示例
+12345import numpy as npimport cv2import imageioimport ">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
+  
   <title>数字图像处理——频率域滤波初步 - Edward&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
@@ -29,7 +35,7 @@
     
     
       
-      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.6.0/styles/github-gist.min.css" />
     
   
 
@@ -59,7 +65,7 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false,"loading_img":"/img/loading.gif","offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
@@ -113,9 +119,10 @@
           
           
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -198,7 +205,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -217,13 +224,13 @@
         
         
           <li class="nav-item" id="search-btn">
-            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
                 class="iconfont icon-search"></i>&nbsp;</a>
           </li>
         
         
           <li class="nav-item" id="color-toggle-btn">
-            <a class="nav-link" href="javascript:">&nbsp;<i
+            <a class="nav-link" target="_self">&nbsp;<i
                 class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
           </li>
         
@@ -315,7 +322,7 @@
 <p><a target="_blank" rel="noopener" href="https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_imgproc/py_transforms/py_fourier_transform/py_fourier_transform.html#fourier-transform">OpenCV 关于 Fourier Transform 应用的示例</a></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">import</span> cv2<br><span class="hljs-keyword">import</span> imageio<br><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt<br><br></code></pre></td></tr></table></figure>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 选取部分测试照片并显示</span><br>img1 = cv2.imread(<span class="hljs-string">&#x27;./DIP3E_CH07_Original_Images/Fig0723(a).tif&#x27;</span>,<span class="hljs-number">0</span>)<br>img2 = cv2.imread(<span class="hljs-string">&#x27;./DIP3E_Original_Images_CH04/Fig0429(a)(blown_ic).tif&#x27;</span>,<span class="hljs-number">0</span>)<br>img3 = cv2.imread(<span class="hljs-string">&#x27;./DIP3E_Original_Images_CH04/Fig0431(d)(blown_ic_crop).tif&#x27;</span>,<span class="hljs-number">0</span>)<br>img4 = cv2.imread(<span class="hljs-string">&#x27;./DIP3E_Original_Images_CH04/Fig0438(a)(bld_600by600).tif&#x27;</span>,<span class="hljs-number">0</span>)<br>plt.figure(figsize=(<span class="hljs-number">8</span>,<span class="hljs-number">8</span>))<br>ax1 = plt.subplot(<span class="hljs-number">221</span>)<br>ax1.set_title(<span class="hljs-string">&quot;Image1 Original Image&quot;</span>)<br>ax1.imshow(img1,cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>ax2 = plt.subplot(<span class="hljs-number">222</span>)<br>ax2.set_title(<span class="hljs-string">&quot;Image2 Original Image&quot;</span>)<br>ax2.imshow(img2,cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>ax3 = plt.subplot(<span class="hljs-number">223</span>)<br>ax3.set_title(<span class="hljs-string">&quot;Image3 Original Image&quot;</span>)<br>ax3.imshow(img3,cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>ax4 = plt.subplot(<span class="hljs-number">224</span>)<br>ax4.set_title(<span class="hljs-string">&quot;Image4 Original Image&quot;</span>)<br>ax4.imshow(img4,cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br><br>plt.show()<br></code></pre></td></tr></table></figure>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/FFTFilter/FFT_1.png" srcset="/img/loading.gif" alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/FFTFilter/FFT_1.png" srcset="/img/loading.gif" lazyload alt="png"></p>
 <a id="more"></a>
 <h2 id="原理概述"><a href="#原理概述" class="headerlink" title="原理概述"></a>原理概述</h2><blockquote>
 <p>For a sinusoidal signal, $x(t) = A \sin(2 \pi ft)$, we can say $f$ is the frequency of signal, and if its frequency domain is taken, we can see a spike at $f$. If signal is sampled to form a discrete signal, we get the same frequency domain, but is periodic in the range $[- \pi, \pi]$ or $[0,2\pi]$ (or $[0,N]$ for N-point DFT). You can consider an image as a signal which is sampled in two directions. So taking fourier transform in both X and Y directions gives you the frequency representation of image</p>
@@ -343,7 +350,7 @@
 <h2 id="使用-OpenCV-实现-DFT"><a href="#使用-OpenCV-实现-DFT" class="headerlink" title="使用 OpenCV 实现 DFT"></a>使用 OpenCV 实现 DFT</h2><p>OpenCV 也提供的工具用于实现傅里叶变换，分别是<code>cv2.dft()</code>和<code>cv2.idft()</code>函数。返回有两个通道，第一个通道是结果的实部，第二个通道是结果的虚部。所以在计算其幅度的时候需要先手动转化一次。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">## Magnitude spectrum</span><br><br><br><span class="hljs-comment">## 使用Numpy实现DFT</span><br><span class="hljs-comment">## 进行二维DFT变换</span><br>f_img1 = np.fft.fft2(img1)<br><span class="hljs-comment">## 对换象限</span><br>fshift_img1 = np.fft.fftshift(f_img1)<br><span class="hljs-comment">## 幅度谱 对数化？</span><br>manitude_img1 = <span class="hljs-number">20</span>*np.log(np.<span class="hljs-built_in">abs</span>(fshift_img1))<br><span class="hljs-comment">## img2图像也做相同的处理</span><br>f_img2 = np.fft.fft2(img2)<br>fshift_img2 = np.fft.fftshift(f_img2)<br>manitude_img2 = <span class="hljs-number">20</span>*np.log(np.<span class="hljs-built_in">abs</span>(fshift_img2))<br><br><span class="hljs-comment">## 使用OpenCV实现DFT</span><br>f_img3 = cv2.dft(np.float32(img3), flags = cv2.DFT_COMPLEX_OUTPUT)<br>fshift_img3 = np.fft.fftshift(f_img3)<br><span class="hljs-comment"># manitude_img3 = 20*np.log(np.abs(fshift_img3))</span><br><span class="hljs-comment"># 手动转化计算magnitude</span><br>manitude_img3 = <span class="hljs-number">20</span>*np.log(cv2.magnitude(fshift_img3[:,:,<span class="hljs-number">0</span>],fshift_img3[:,:,<span class="hljs-number">1</span>])+<span class="hljs-number">1e-15</span>)<br><br><br><span class="hljs-comment">## 使用OpenCV实现DFT</span><br>f_img4 = cv2.dft(np.float32(img4), flags = cv2.DFT_COMPLEX_OUTPUT)<br>fshift_img4 = np.fft.fftshift(f_img4)<br>manitude_img4 = <span class="hljs-number">20</span>*np.log(cv2.magnitude(fshift_img4[:,:,<span class="hljs-number">0</span>],fshift_img4[:,:,<span class="hljs-number">1</span>]))<br><br><br>print(<span class="hljs-string">&quot;显示各图像对应的频谱&quot;</span>)<br>print(<span class="hljs-string">&quot;其中图三的频谱有些奇怪&quot;</span>)<br><br>plt.figure(figsize=(<span class="hljs-number">16</span>,<span class="hljs-number">16</span>))<br>ax1 = plt.subplot(<span class="hljs-number">421</span>)<br>ax1.set_title(<span class="hljs-string">&quot;Image1 Original Image&quot;</span>)<br>ax1.imshow(img1, cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>ax2 = plt.subplot(<span class="hljs-number">422</span>)<br>ax2.set_title(<span class="hljs-string">&quot;Image1 Magnitude Spectrum&quot;</span>)<br>ax2.imshow(manitude_img1, cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>ax3 = plt.subplot(<span class="hljs-number">423</span>)<br>ax3.set_title(<span class="hljs-string">&quot;Image2 Original Image&quot;</span>)<br>ax3.imshow(img2, cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>ax4 = plt.subplot(<span class="hljs-number">424</span>)<br>ax4.set_title(<span class="hljs-string">&quot;Image2 Magnitude Spectrum&quot;</span>)<br>ax4.imshow(manitude_img2, cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>ax5 = plt.subplot(<span class="hljs-number">425</span>)<br>ax5.set_title(<span class="hljs-string">&quot;Image3 Original Image&quot;</span>)<br>ax5.imshow(img3, cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>ax6 = plt.subplot(<span class="hljs-number">426</span>)<br>ax6.set_title(<span class="hljs-string">&quot;Image3 Magnitude Spectrum&quot;</span>)<br>ax6.imshow(manitude_img3, cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>ax7 = plt.subplot(<span class="hljs-number">427</span>)<br>ax7.set_title(<span class="hljs-string">&quot;Image4 Original Image&quot;</span>)<br>ax7.imshow(img4, cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>ax8 = plt.subplot(<span class="hljs-number">428</span>)<br>ax8.set_title(<span class="hljs-string">&quot;Image4 Magnitude Spectrum&quot;</span>)<br>ax8.imshow(manitude_img4, cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>plt.show()<br></code></pre></td></tr></table></figure>
 <p>显示各图像对应的频谱</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/FFTFilter/FFT_2.png" srcset="/img/loading.gif" alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/FFTFilter/FFT_2.png" srcset="/img/loading.gif" lazyload alt="png"></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">print(np.shape(fshift_img3))<br></code></pre></td></tr></table></figure>
 <figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs txt">(1026, 1026, 2)<br></code></pre></td></tr></table></figure>
 <p>根据运行结果不难验证 OpenCV 提供的 cv.dft()确实返回结果为表示实部和虚部的双通道，np 就没有这些顾虑，毕竟科学计算专门的库，复数支持很自然。</p>
@@ -371,7 +378,7 @@
 <h3 id="低通滤波-LPF-1"><a href="#低通滤波-LPF-1" class="headerlink" title="低通滤波 LPF"></a>低通滤波 LPF</h3><p>同理，给定图片保留频率中心部分（低频部分）赋值为 1，剩下的通过掩膜过滤掉，从而实现 LPF。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getFilterPassImg</span>(<span class="hljs-params">input_img : np.array, filter_type : <span class="hljs-built_in">str</span> , filter_size = <span class="hljs-number">20</span></span>):</span><br>    <span class="hljs-keyword">assert</span> filter_type <span class="hljs-keyword">in</span> (<span class="hljs-string">&quot;lpf&quot;</span>,<span class="hljs-string">&quot;hpf&quot;</span>)<br>    f_img = np.fft.fft2(input_img)<br>    shift_img = np.fft.fftshift(f_img)<br><br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getMask</span>(<span class="hljs-params">input_shift_img : np.array , mask_type , mask_size</span>):</span><br>        rows,cols = input_shift_img.shape<br>        crow,ccol = rows//<span class="hljs-number">2</span>,cols//<span class="hljs-number">2</span><br>        <span class="hljs-keyword">if</span>(mask_type == <span class="hljs-string">&quot;hpf&quot;</span>):<br>            mask = np.ones(input_shift_img.shape)<br>            mask[crow - mask_size:crow+mask_size, ccol-mask_size:ccol+mask_size] = <span class="hljs-number">0.0</span><br>        <span class="hljs-keyword">else</span> :<br>            mask = np.zeros(input_shift_img.shape)<br>            mask[crow - mask_size:crow+mask_size, ccol-mask_size:ccol+mask_size] = <span class="hljs-number">1.0</span><br>        <span class="hljs-keyword">return</span> mask<br><br>    mask_shift_img = getMask(shift_img, filter_type ,filter_size)<br>    new_shift_img = mask_shift_img*shift_img<br>    new_manitude_img = <span class="hljs-number">20</span>*np.log(np.<span class="hljs-built_in">abs</span>(new_shift_img)+eps)<br><br>    new_f_img = np.fft.ifftshift(new_shift_img)<br>    new_img = np.fft.ifft2(new_f_img)<br>    new_img = np.<span class="hljs-built_in">abs</span>(new_img)<br>    <span class="hljs-keyword">return</span> new_img,new_manitude_img<br></code></pre></td></tr></table></figure>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs python">hpf_img2,hpf_manitude_img2 = getFilterPassImg(img2,<span class="hljs-string">&quot;hpf&quot;</span>,<span class="hljs-number">30</span>)<br>lpf_img2,lpf_manitude_img2 = getFilterPassImg(img2,<span class="hljs-string">&quot;lpf&quot;</span>,<span class="hljs-number">30</span>)<br>plt.figure(figsize=(<span class="hljs-number">8</span>,<span class="hljs-number">12</span>))<br><br><br>ax1 = plt.subplot(<span class="hljs-number">321</span>)<br>ax1.set_title(<span class="hljs-string">&quot;Original Image&quot;</span>)<br>ax1.imshow(img2, cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>ax2 = plt.subplot(<span class="hljs-number">322</span>)<br>ax2.set_title(<span class="hljs-string">&quot;Magnitude Spectrum&quot;</span>)<br>ax2.imshow(manitude_img2, cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>ax3 = plt.subplot(<span class="hljs-number">323</span>)<br>ax3.set_title(<span class="hljs-string">&quot;With HPF(Size=30x30)&quot;</span>)<br>ax3.imshow(hpf_img2,cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>ax4 = plt.subplot(<span class="hljs-number">324</span>)<br>ax4.set_title(<span class="hljs-string">&quot;With HPF(Size=30x30) Magnitude Spectrum&quot;</span>)<br>ax4.imshow(hpf_manitude_img2,cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>ax5 = plt.subplot(<span class="hljs-number">325</span>)<br>ax5.set_title(<span class="hljs-string">&quot;With LPF(Size=30x30)&quot;</span>)<br>ax5.imshow(lpf_img2,cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>ax6 = plt.subplot(<span class="hljs-number">326</span>)<br>ax6.set_title(<span class="hljs-string">&quot;With LPF(Size=30x30) Magnitude Spectrum&quot;</span>)<br>ax6.imshow(lpf_manitude_img2,cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>plt.show()<br></code></pre></td></tr></table></figure>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/FFTFilter/FFT_3.png" srcset="/img/loading.gif" alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/FFTFilter/FFT_3.png" srcset="/img/loading.gif" lazyload alt="png"></p>
 
             </div>
             <hr>
@@ -397,7 +404,11 @@
                 
               </div>
               
-                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
               
               
                 <div class="post-prevnext">
@@ -425,6 +436,30 @@
               
             </div>
 
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+    <div class="cusdis" style="width:100%">
+      <div id="cusdis_thread"
+        data-host="https://cusdis.com"
+        data-app-id="3d66d51c-fa21-442d-9efa-c1b9acfeb762"
+        data-page-id="60108e5dead8439347e3dfd9b87b4ff6"
+        data-page-url="post/d5cc0f91.html"
+        data-page-title="数字图像处理——频率域滤波初步"
+      >
+    </div>
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#cusdis_thread', function() {
+        Fluid.utils.createScript("https://cusdis.com/js/cusdis.es.js");
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+  
+              </article>
             
           </article>
         </div>
@@ -491,8 +526,9 @@
   
 </footer>
 
-<!-- SCRIPTS -->
 
+  <!-- SCRIPTS -->
+  
   <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
 
@@ -505,9 +541,8 @@
   </script>
 
 
-<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
 <script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
-<script  src="/js/debouncer.js" ></script>
 <script  src="/js/events.js" ></script>
 <script  src="/js/plugins.js" ></script>
 
@@ -515,7 +550,7 @@
 
 
   
-    <script  src="/js/lazyload.js" ></script>
+    <script  src="/js/img-lazyload.js" ></script>
   
 
 
@@ -524,7 +559,7 @@
 
 
 
-  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.2/dist/tocbot.min.js" ></script>
 
 
 
@@ -536,7 +571,7 @@
 
 
 
-  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
 
 
 
@@ -560,11 +595,12 @@
   <script>
     (function () {
       var path = "/local-search.xml";
-      var inputArea = document.querySelector("#local-search-input");
-      inputArea.onclick = function () {
+      $('#local-search-input').on('click', function() {
         searchFunc(path, 'local-search-input', 'local-search-result');
-        this.onclick = null
-      }
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
     })()
   </script>
 
@@ -623,7 +659,6 @@
 
 <!-- 主题的启动项 保持在最底部 -->
 <script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-
 
 
 </body>

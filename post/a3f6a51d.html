@@ -8,15 +8,21 @@
 <head>
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
   <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
-  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="description" content="
+Step 1题目摘要引言TitleThere Is More Consensus in Egalitarian Parliaments
+平等议会产生更多共识，题目设计的很有意思。
+相较于 Paxos 其他变体的特征
+
+availability without interruption as long as a simple majority of replicas are reachable—-">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
+  
   <title>SOSP13——There-Is-More-Consensus-in-Egalitarian-Parliamens - Edward&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
@@ -29,7 +35,7 @@
     
     
       
-      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.6.0/styles/github-gist.min.css" />
     
   
 
@@ -59,7 +65,7 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false,"loading_img":"/img/loading.gif","offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
@@ -113,9 +119,10 @@
           
           
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -198,7 +205,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -217,13 +224,13 @@
         
         
           <li class="nav-item" id="search-btn">
-            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
                 class="iconfont icon-search"></i>&nbsp;</a>
           </li>
         
         
           <li class="nav-item" id="color-toggle-btn">
-            <a class="nav-link" href="javascript:">&nbsp;<i
+            <a class="nav-link" target="_self">&nbsp;<i
                 class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
           </li>
         
@@ -265,7 +272,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      2k 字
+      2.7k 字
     </span>
   
 
@@ -275,7 +282,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      27
+      35
        分钟
     </span>
   
@@ -388,19 +395,23 @@
 <p><strong>A novel way to order commands</strong>:</p>
 <p>先前的两种思路</p>
 <ul>
-<li>order commands by having a single stable leader choose the order (as in Multi-Paxos and Generalized Paxos)</li>
-<li>order commands by assignning them to instances(command slots) in a pre-ordered instance space (as in canonical Paxos and Mencius)</li>
+<li>order commands by having a single stable leader choose the order (as in Multi-Paxos and Generalized Paxos) 通过单一稳定的领导者来决定顺序</li>
+<li>order commands by assignning them to instances(command slots) in a pre-ordered instance space (as in canonical Paxos and Mencius) 将命令分配到预先定好顺序的 slot 中</li>
 </ul>
-<p>EPaxos 的方式： dynamic and decentralized</p>
+<p>EPaxos 的方式： <strong>dynamic</strong> and <strong>decentralized</strong></p>
 <blockquote>
 <p>In contrast,EPaxos orders the instances dynamically and in a decentralized fashion: in the process of choosing (i.e., voting) acommand in an instance, each participant attaches order-ing constraints to that command 在实例中选择（即投票）命令的过程中，每个参与者将排序约束附加到该命令</p>
 </blockquote>
-<p>这样看就是从一排全局 slot，像是变成了每个 replicate 一排自己的 slot + constraints</p>
-<p>order 的方式是</p>
+<p>这样看就是从一排全局 slot，像是变成了每个 replicate 一排自己的 slot + constraints，<strong>如何加入 constraints 很重要，这个需要关注一下代码实现</strong>。</p>
+<p>order 的方式（很重要，据文章所讲这是 EPaxos 优势的源头）：</p>
+<ol>
+<li>首先，commit command 取决于任何可能的多副本的输入，（不需要像 Multi-Paxos 一样要求 stable leader 必须包含在内，也不需要像 Mencius 需求来自全部 replica 的消息）。如此改善了大范围跨度的提交延迟、可用性以及性能的鲁棒性，因为这样把高最快的 replica 与最慢的 replica 分离开。</li>
+<li>其次，propose command，可以从任何一个副本发出，而不是一个特别的 proposer 或者 leader，这有益于负载均衡，并提升吞吐量。</li>
+</ol>
 <p>In taking this ordering approach, EPaxos must maintain safety and provide a linearizable ordering of commands. EPaxos 必须保证安全性，以及这些指令的可线性。</p>
 <p>一些保证正确性与优化手段。</p>
 <p>当 commands interfere 时，会接受彼此的“依赖”，用于产出正确的执行序列。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/EPaxos/EPaxos_1.png" srcset="/img/loading.gif" alt="EPaxos_1.png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/EPaxos/EPaxos_1.png" srcset="/img/loading.gif" lazyload alt="EPaxos_1.png"></p>
 <p>q Figure 1 展示了不同 Replica 之间，是否 interface 的不同情况。注意在 $R3$ 和 $R2/R4$ 相比较，只有 $R3$ 先接受了 $C4$，后接受了 $C3$ 所以返回了依赖（$C3 \rightarrow C4$要求）。</p>
 <h3 id="Comparison-with-Related-Work"><a href="#Comparison-with-Related-Work" class="headerlink" title="Comparison with Related Work"></a>Comparison with Related Work</h3><ul>
 <li><p>_Multi-Paxos_：由于建立了单一的 stable leader，每一项 command 的消息交互量，leader 是 non-leader 的 N 倍，从而容易变为影响系统可用性的 bottleneck，一些 Paxos 的应用实例（比如 Chubby）也证明类似设计当 leader 故障时，系统会暂时处于不可用状态。</p>
@@ -408,21 +419,43 @@
 <p>This problem is not easily solved:aggressive leader re-election can cause stalls if multiplereplicas believe they are the leader. Chubby [4] and Box-wood [22] use Multi-Paxos, while ZooKeeper [12] relieson a stable leader protocol similar to Multi-Paxos.</p>
 </blockquote>
 </li>
-<li><p>_Generalized Paxos_： 允许在不 interface 的情况下，乱序提交 commits。仍要求有一个 stable leader 来处理更多的信息。EPaxos 和 Generalized Paxos 相比</p>
+<li><p>_Generalized Paxos_： 允许在不 interface 的情况下，乱序提交 commits。仍要求有一个 stable leader 来处理更多的信息。EPaxos 和 Generalized Paxos 相比优势，fast-path 需要沟通的 replica -1，slow path 只需要额外一轮（而不是两轮）</p>
 </li>
 </ul>
-<h3 id="Detail"><a href="#Detail" class="headerlink" title="Detail"></a>Detail</h3><h4 id="Preliminaries"><a href="#Preliminaries" class="headerlink" title="Preliminaries"></a>Preliminaries</h4><p>在 clients 和 replicas 间传递消息是异步的。</p>
-<p>故障是 non-Byzantine 的，$N = 2 F+1$</p>
-<p>状态可看作 N 行的二维表格</p>
-<p>需要区分指令的 commit 和 execute。要修改状态，client 向选定的 replica 发送 $Request(command)$。replica 会通知 replica 指令的 commit 的情况，但是并没有是否执行的信息。仅在有客户机要读取先前提交的更新命令的时候，系统才有必要执行这些指令。要读取（部分）状态，client 发送$Read(objectIDs)$的消息并等待回复，是个 no-op 操作，相当于$RequestAndRead(no-op,objectIDs)$。</p>
+<h3 id="Detail"><a href="#Detail" class="headerlink" title="Detail"></a>Detail</h3><h4 id="Preliminaries"><a href="#Preliminaries" class="headerlink" title="Preliminaries"></a>Preliminaries</h4><p>预先的定义：</p>
+<ol>
+<li>在 clients 和 replicas 间传递消息是异步的。</li>
+<li>故障是 non-Byzantine 的，$N = 2 F+1$， $F$ 表示最大容错数量</li>
+</ol>
+<p>系统的整体状态包含每个 replica 拥有的 序列 instances，可看作 N 行（对应 N 个 replica）的二维表格。与 Multi-Paxos 不同，instance 的序并不是预先定义的（pre-determined）是根据协议动态确定的。</p>
+<p>需要区分指令的 commit 和 execute。要修改状态，client 向选定的 replica 发送 $Request(command)$。$RequestReply$ 会通知 replica 指令的 commit 的情况，但是并没有是否执行的信息。仅在有客户机要读取先前提交的更新命令的时候，系统才有必要执行这些指令。要读取（部分）状态，client 发送$Read(objectIDs)$的消息并等待回复，是个 no-op 操作，相当于$RequestAndRead(no-op,objectIDs)$。</p>
 <p>需要定义 interference，<strong>command interference</strong>：存在一个指令序列$\Sigma$使得$\Sigma, \delta,\gamma$执行结果（状态机状态不同，或返回不同内容）与$\Sigma,\gamma,\delta$</p>
-<h4 id="Protocol-Guarantees"><a href="#Protocol-Guarantees" class="headerlink" title="Protocol Guarantees"></a>Protocol Guarantees</h4><p>需要区分一下 Execution Consistency 和 Execution linearizability</p>
+<h4 id="Protocol-Guarantees"><a href="#Protocol-Guarantees" class="headerlink" title="Protocol Guarantees"></a>Protocol Guarantees</h4><p>形式化保证，与其他 Paxos 变体类似</p>
+<ol>
+<li>Nontriviality（非平凡）： replica commit 的命令必然由 client 提交</li>
+<li>Stability（稳定性）：已提交的命令在任何时候都是之后时间提交命令的子集。更进一步，如果在时间点$t_1$，一个 replica $R$ 具有命令$\gamma$提交在实例$Q$。则$R$ 在任意 $t_2 &gt; t_1$都有命令$\gamma$提交在实例$Q$。</li>
+<li>Consistency： 两个 replica 永远不会在相同 instance 有不同的提交命令。</li>
+<li>Execution consistency: 如果两个 interfer 指令 $\gamma$ 和 $\delta$ 都被成功提交（被任意 replicas）（注意我们刚刚区分了 commit 不同于 execute），则可以保证在每一 replica 中， 两个指令都以相同序被执行。</li>
+<li>Execution linearizability：如果两个 interfer 指令 $\gamma$ 和 $\delta$ 被 replica 串行化/序列化过，那么保证在每个 replica，一个命令都会在另一个命令之前执行。</li>
+<li>Liveness (w/ high probability)：指令最终会被每个正常的 replica 提交，只要过半数地 replicas 是正常的，并且信息在 time out 都传递到</li>
+</ol>
+<p>需要区分一下 Execution Consistency 和 Execution linearizability</p>
 <p>一个是如果都被 commit，则保证在任一 replica 上执行序是确定的。另一是如果被 client 序列化，则在任一 replica 上执行序也是固定的</p>
-<h4 id="Basic-Commit-Protocol"><a href="#Basic-Commit-Protocol" class="headerlink" title="Basic Commit Protocol"></a>Basic Commit Protocol</h4><h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><h2 id="未读（且值得读）文献记录"><a href="#未读（且值得读）文献记录" class="headerlink" title="未读（且值得读）文献记录"></a>未读（且值得读）文献记录</h2><!-- 在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 -->
+<h4 id="Basic-Commit-Protocol"><a href="#Basic-Commit-Protocol" class="headerlink" title="Basic Commit Protocol"></a>Basic Commit Protocol</h4><p>先介绍基础的，下一小节再介绍其升级版。</p>
+<p>基础版本：</p>
+<blockquote>
+<p>quorum: We usequorumto denote both a set of replicas with a particularcardinality, and the cardinality of that set.<br>使用 quorum 来表示一组具有特定基数的副本，以及该组的基数</p>
+</blockquote>
+<ul>
+<li>basic EPaxos: fast quorum $2F$ （out of $2F+1$)</li>
+<li>optimized EPaxos: fast quorum only $F+ \lfloor \frac{F+1}{2} \rfloor$</li>
+</ul>
+<p>slow-path quorum size is always $F+1$.</p>
+<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><h2 id="未读（且值得读）文献记录"><a href="#未读（且值得读）文献记录" class="headerlink" title="未读（且值得读）文献记录"></a>未读（且值得读）文献记录</h2><!-- 在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 -->
 <h1 id="Step-3"><a href="#Step-3" class="headerlink" title="Step 3"></a>Step 3</h1><!-- 试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。 -->
 <h2 id="思路复现"><a href="#思路复现" class="headerlink" title="思路复现"></a>思路复现</h2><!-- 推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ -->
 <h2 id="证明与推理复现"><a href="#证明与推理复现" class="headerlink" title="证明与推理复现"></a>证明与推理复现</h2><!-- 分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源 -->
-<h2 id="实验验证复现"><a href="#实验验证复现" class="headerlink" title="实验验证复现"></a>实验验证复现</h2><!-- Rework -->
+<h3 id="Design"><a href="#Design" class="headerlink" title="Design"></a>Design</h3><h2 id="实验验证复现"><a href="#实验验证复现" class="headerlink" title="实验验证复现"></a>实验验证复现</h2><!-- Rework -->
 <h1 id="Original-Presentation"><a href="#Original-Presentation" class="headerlink" title="Original Presentation"></a>Original Presentation</h1><h2 id="State-Machine-Replication"><a href="#State-Machine-Replication" class="headerlink" title="State Machine Replication"></a>State Machine Replication</h2><p>Why Paxos popular?</p>
 <ul>
 <li>fast protocol</li>
@@ -430,19 +463,19 @@
 <li>Fast fail-over (high availability)</li>
 </ul>
 <h2 id="Overview-of-Paxos"><a href="#Overview-of-Paxos" class="headerlink" title="Overview of Paxos"></a>Overview of Paxos</h2><p>Cononical:</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/EPaxos/EPaxos_2.png" srcset="/img/loading.gif" alt="EPaxos_2.png"></p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/EPaxos/EPaxos_3.png" srcset="/img/loading.gif" alt="EPaxos_3.png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/EPaxos/EPaxos_2.png" srcset="/img/loading.gif" lazyload alt="EPaxos_2.png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/EPaxos/EPaxos_3.png" srcset="/img/loading.gif" lazyload alt="EPaxos_3.png"></p>
 <p>2 RTTs per slot</p>
 <ul>
 <li>Take ownership of a slot (who leader’s the command)</li>
 <li>Propose command</li>
 </ul>
 <p>Multi-Paxos</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/EPaxos/EPaxos_4.png" srcset="/img/loading.gif" alt="EPaxos_4.png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/EPaxos/EPaxos_4.png" srcset="/img/loading.gif" lazyload alt="EPaxos_4.png"></p>
 <p>1 RTT(omit the leader election)</p>
 <h2 id="EPaxos-intuition"><a href="#EPaxos-intuition" class="headerlink" title="EPaxos intuition"></a>EPaxos intuition</h2><p>linear command slot space -&gt; subspace with ownership to different replicas</p>
 <p>attach ordering constraints</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/EPaxos/EPaxos_5.png" srcset="/img/loading.gif" alt="EPaxos_5.png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/EPaxos/EPaxos_5.png" srcset="/img/loading.gif" lazyload alt="EPaxos_5.png"></p>
 <p>线性化的保证</p>
 <p>两个性质</p>
 <p>图、强连通分量</p>
@@ -477,7 +510,11 @@
                 
               </div>
               
-                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
               
               
                 <div class="post-prevnext">
@@ -505,6 +542,30 @@
               
             </div>
 
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+    <div class="cusdis" style="width:100%">
+      <div id="cusdis_thread"
+        data-host="https://cusdis.com"
+        data-app-id="3d66d51c-fa21-442d-9efa-c1b9acfeb762"
+        data-page-id="5a9f4e9d8803231ccfdd6b622746e1c3"
+        data-page-url="post/a3f6a51d.html"
+        data-page-title="SOSP13——There-Is-More-Consensus-in-Egalitarian-Parliamens"
+      >
+    </div>
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#cusdis_thread', function() {
+        Fluid.utils.createScript("https://cusdis.com/js/cusdis.es.js");
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+  
+              </article>
             
           </article>
         </div>
@@ -571,8 +632,9 @@
   
 </footer>
 
-<!-- SCRIPTS -->
 
+  <!-- SCRIPTS -->
+  
   <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
 
@@ -585,9 +647,8 @@
   </script>
 
 
-<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
 <script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
-<script  src="/js/debouncer.js" ></script>
 <script  src="/js/events.js" ></script>
 <script  src="/js/plugins.js" ></script>
 
@@ -595,7 +656,7 @@
 
 
   
-    <script  src="/js/lazyload.js" ></script>
+    <script  src="/js/img-lazyload.js" ></script>
   
 
 
@@ -604,7 +665,7 @@
 
 
 
-  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.2/dist/tocbot.min.js" ></script>
 
 
 
@@ -616,7 +677,7 @@
 
 
 
-  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
 
 
 
@@ -640,11 +701,12 @@
   <script>
     (function () {
       var path = "/local-search.xml";
-      var inputArea = document.querySelector("#local-search-input");
-      inputArea.onclick = function () {
+      $('#local-search-input').on('click', function() {
         searchFunc(path, 'local-search-input', 'local-search-result');
-        this.onclick = null
-      }
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
     })()
   </script>
 
@@ -703,7 +765,6 @@
 
 <!-- 主题的启动项 保持在最底部 -->
 <script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-
 
 
 </body>

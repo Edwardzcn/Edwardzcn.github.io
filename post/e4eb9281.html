@@ -8,15 +8,26 @@
 <head>
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
   <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
-  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="description" content="面向下一代计算的开源芯片与敏捷开发方法主讲人：包云岗老师（中科院计算所， 先进计算机系统研究中心）
+Memory Wall提出背景：System Architecture1995 年提出，成为体系结构研究的最重要问题之一
+
+多核处理器的流行
+延迟与带宽显得更为重要
+
+应对思路
+工具模型：HMTT、C-MAT
+预取技术：Memory Hierarchy
+新型存储：3D Stack、HBM、NVM
+新">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
+  
   <title>CCFADL105——面向下一代计算的开源芯片与敏捷开发方法 - Edward&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
@@ -29,7 +40,7 @@
     
     
       
-      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.6.0/styles/github-gist.min.css" />
     
   
 
@@ -59,7 +70,7 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false,"loading_img":"/img/loading.gif","offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
@@ -113,9 +124,10 @@
           
           
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -198,7 +210,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -217,13 +229,13 @@
         
         
           <li class="nav-item" id="search-btn">
-            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
                 class="iconfont icon-search"></i>&nbsp;</a>
           </li>
         
         
           <li class="nav-item" id="color-toggle-btn">
-            <a class="nav-link" href="javascript:">&nbsp;<i
+            <a class="nav-link" target="_self">&nbsp;<i
                 class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
           </li>
         
@@ -335,7 +347,7 @@
 </li>
 </ul>
 <p>工作示意图如下</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0007.jpg" srcset="/img/loading.gif" alt="HMTT1"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0007.jpg" srcset="/img/loading.gif" lazyload alt="HMTT1"></p>
 <a id="more"></a>
 <h3 id="软件挑战"><a href="#软件挑战" class="headerlink" title="软件挑战"></a>软件挑战</h3><p>虚拟地址到物理地址的重映射技术我们上课都学到过，可是如何从物理地址反过来获取虚拟地址呢？</p>
 <p><strong>如何物理地址翻译为进程的虚拟地址</strong>（物理地址-&gt;软件语义信息）</p>
@@ -360,13 +372,13 @@
 </ul>
 <p>理解：将高层事件多一个<strong>分支</strong>结果，访问这一小块内存空间（相对集中），就如同一段标记数组，用来记录访存情况（次数）。</p>
 <p>图示:</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0009.jpg" srcset="/img/loading.gif" alt="HMTT2"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0009.jpg" srcset="/img/loading.gif" lazyload alt="HMTT2"></p>
 <p>以页表更新事件为例（举一反三，其他高层事件也可以比如 CPU/DMA 访问，加锁操作）：</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0010.jpg" srcset="/img/loading.gif" alt="HMTT3"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0010.jpg" srcset="/img/loading.gif" lazyload alt="HMTT3"></p>
 <h2 id="模型分析"><a href="#模型分析" class="headerlink" title="模型分析"></a>模型分析</h2><p>系统结构的并发度没有被充分利用或优化利用</p>
 <p>更多资料来源，刘宇航副研究员，中科院计算所</p>
 <p>基于并发的存储层间性能匹配（LPM），漏斗状，如下图</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0015.jpg" srcset="/img/loading.gif" alt="LPM"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0015.jpg" srcset="/img/loading.gif" lazyload alt="LPM"></p>
 <h2 id="数据预取"><a href="#数据预取" class="headerlink" title="数据预取"></a>数据预取</h2><p>何为数据预取？将未来所需要访问的数据提前取到更靠近处理器的 Cache 中，可以有效隐藏访存延迟</p>
 <p>需求：</p>
 <ul>
@@ -381,7 +393,7 @@
 </ul>
 <h2 id="领域专用体系结构-DSA"><a href="#领域专用体系结构-DSA" class="headerlink" title="领域专用体系结构 DSA"></a>领域专用体系结构 DSA</h2><p>Domain Specific Architecture（DSA，即针对应用领域做优化的处理器架构，区别于通用架构）。</p>
 <p>从普通码农用 python，到算法工程师从数据结构算法上优化，如果懂得并行化算法的人，还可以在并行度上优化，在往上还可以做内存优化和指令级优化，<strong>整体性能提升是惊人的</strong>。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0017.jpg" srcset="/img/loading.gif" alt="DSA"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0017.jpg" srcset="/img/loading.gif" lazyload alt="DSA"></p>
 <p>若将“人”的经验固化到芯片中去，是一件听起来很美妙的事情。</p>
 <p>性能差异来源分析</p>
 <ul>
@@ -406,11 +418,11 @@
 </li>
 </ul>
 <h1 id="标签化体系结构"><a href="#标签化体系结构" class="headerlink" title="标签化体系结构"></a>标签化体系结构</h1><p>研究历程，拆解核尝试（失败），MicroBlaze（非开源，受挫），开源指令集 RISC-V 基础上实现（成功）</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0023.jpg" srcset="/img/loading.gif" alt="DSA"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0023.jpg" srcset="/img/loading.gif" lazyload alt="DSA"></p>
 <h2 id="背景介绍"><a href="#背景介绍" class="headerlink" title="背景介绍"></a>背景介绍</h2><p>如之前 HMTT 的思想，希望实现新的接口，使得高层软件的信息可以传递到底层硬件中去，底层对上层有意识而采取更具针对性的解决，提高效率（而非像现在一样，底层对上层完全 unawareness）。</p>
 <p>单任务稳定环境下性能波动与共享环境下的性能波动的两个实验：</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0028.jpg" srcset="/img/loading.gif" alt="DSA"></p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0030.jpg" srcset="/img/loading.gif" alt="DSA"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0028.jpg" srcset="/img/loading.gif" lazyload alt="DSA"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0030.jpg" srcset="/img/loading.gif" lazyload alt="DSA"></p>
 <h2 id="需求场景"><a href="#需求场景" class="headerlink" title="需求场景"></a>需求场景</h2><p>航空航天等实时场景</p>
 <ul>
 <li>机载计算机<strong>关闭多核</strong>以保证实时性</li>
@@ -435,7 +447,7 @@
 <p>但是弱化控制随着 CPU 核数，并行度要求的提高导致的问题越来越突出：性能不稳定。</p>
 <p>共享环境下，多应用共享硬件，弱化控制会导致硬件<strong>出现无序竞争</strong>，进而引起严重的性能波动，Data Shuffling 犹如一条无序竞争的马路。</p>
 <p>冯诺依曼瓶颈</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0038.jpg" srcset="/img/loading.gif" alt="Bottleneck1"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0038.jpg" srcset="/img/loading.gif" lazyload alt="Bottleneck1"></p>
 <h2 id="尝试方法"><a href="#尝试方法" class="headerlink" title="尝试方法"></a>尝试方法</h2><ul>
 <li>存储层次+多核<ul>
 <li>多核结构存储层次分化：核内+核外</li>
@@ -452,7 +464,7 @@
 </li>
 </ul>
 <p>图示：单独可以，一同使用就出问题</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0041.jpg" srcset="/img/loading.gif" alt="Bottleneck2"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0041.jpg" srcset="/img/loading.gif" lazyload alt="Bottleneck2"></p>
 <ul>
 <li>硬件上存在大量无序竞争<ul>
 <li>CPU、内存、网络、磁盘都会因为无序共享，造成用户体验差。</li>
@@ -460,7 +472,7 @@
 </li>
 </ul>
 <p>图示</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0042.jpg" srcset="/img/loading.gif" alt="Bottleneck3"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0042.jpg" srcset="/img/loading.gif" lazyload alt="Bottleneck3"></p>
 <h2 id="接口设计"><a href="#接口设计" class="headerlink" title="接口设计"></a>接口设计</h2><p>1973 年，Feustel 教授提出 Tagged Architecture</p>
 <ul>
 <li>核心思想是<strong>将高层语言信息传递到底层硬件</strong></li>
@@ -563,9 +575,9 @@
 <li><p>演示</p>
 </li>
 </ul>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0066.jpg" srcset="/img/loading.gif" alt="Show"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0066.jpg" srcset="/img/loading.gif" lazyload alt="Show"></p>
 <h2 id="硬件资源动态调整的共性问题"><a href="#硬件资源动态调整的共性问题" class="headerlink" title="硬件资源动态调整的共性问题"></a>硬件资源动态调整的共性问题</h2><p>本质问题：<strong>如何在混合环境下预测出应用单独运行时需要的资源？</strong></p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0067.jpg" srcset="/img/loading.gif" alt="Source"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/CCFADL105/YungangBao/%E5%8C%85%E4%BA%91%E5%B2%97-%E9%9D%A2%E5%90%91%E4%B8%8B%E4%B8%80%E4%BB%A3%E8%AE%A1%E7%AE%97%E7%9A%84%E5%BC%80%E6%BA%90%E8%8A%AF%E7%89%87%E4%B8%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E8%AE%BE%E8%AE%A1_page-0067.jpg" srcset="/img/loading.gif" lazyload alt="Source"></p>
 <ul>
 <li>解决方法 1：离线分析建模，预测动态资源需求</li>
 <li>解决方法 2：在线实时预测动态资源需求</li>
@@ -652,7 +664,11 @@
                 
               </div>
               
-                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
               
               
                 <div class="post-prevnext">
@@ -680,6 +696,30 @@
               
             </div>
 
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+    <div class="cusdis" style="width:100%">
+      <div id="cusdis_thread"
+        data-host="https://cusdis.com"
+        data-app-id="3d66d51c-fa21-442d-9efa-c1b9acfeb762"
+        data-page-id="1a3291cea50c328415fbe6a23057799f"
+        data-page-url="post/e4eb9281.html"
+        data-page-title="CCFADL105——面向下一代计算的开源芯片与敏捷开发方法"
+      >
+    </div>
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#cusdis_thread', function() {
+        Fluid.utils.createScript("https://cusdis.com/js/cusdis.es.js");
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+  
+              </article>
             
           </article>
         </div>
@@ -746,8 +786,9 @@
   
 </footer>
 
-<!-- SCRIPTS -->
 
+  <!-- SCRIPTS -->
+  
   <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
 
@@ -760,9 +801,8 @@
   </script>
 
 
-<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
 <script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
-<script  src="/js/debouncer.js" ></script>
 <script  src="/js/events.js" ></script>
 <script  src="/js/plugins.js" ></script>
 
@@ -770,7 +810,7 @@
 
 
   
-    <script  src="/js/lazyload.js" ></script>
+    <script  src="/js/img-lazyload.js" ></script>
   
 
 
@@ -779,7 +819,7 @@
 
 
 
-  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.2/dist/tocbot.min.js" ></script>
 
 
 
@@ -791,7 +831,7 @@
 
 
 
-  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
 
 
 
@@ -815,11 +855,12 @@
   <script>
     (function () {
       var path = "/local-search.xml";
-      var inputArea = document.querySelector("#local-search-input");
-      inputArea.onclick = function () {
+      $('#local-search-input').on('click', function() {
         searchFunc(path, 'local-search-input', 'local-search-result');
-        this.onclick = null
-      }
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
     })()
   </script>
 
@@ -878,7 +919,6 @@
 
 <!-- 主题的启动项 保持在最底部 -->
 <script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-
 
 
 </body>

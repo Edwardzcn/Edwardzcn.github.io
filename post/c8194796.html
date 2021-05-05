@@ -8,15 +8,19 @@
 <head>
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
   <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
-  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="description" content="合盖休眠更改由于笔者经常中午带着🎧趴在电脑上睡觉，Windows上面电源设置可以更改合盖休眠的默认设定，所以想在Ubuntu上也作相同设置（不然一合上盖子就休眠了），方法如下：
+
+root账户编辑/etc/systemd/logind.conf，修改HandleLidSwitch=suspend为HandleLidSwitch=ignore
+保存修改后systemctl restart syst">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
+  
   <title>UbuntuToGo——Ubuntu系统便捷设置 - Edward&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
@@ -29,7 +33,7 @@
     
     
       
-      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.6.0/styles/github-gist.min.css" />
     
   
 
@@ -59,7 +63,7 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false,"loading_img":"/img/loading.gif","offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
@@ -113,9 +117,10 @@
           
           
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -198,7 +203,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -217,13 +222,13 @@
         
         
           <li class="nav-item" id="search-btn">
-            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
                 class="iconfont icon-search"></i>&nbsp;</a>
           </li>
         
         
           <li class="nav-item" id="color-toggle-btn">
-            <a class="nav-link" href="javascript:">&nbsp;<i
+            <a class="nav-link" target="_self">&nbsp;<i
                 class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
           </li>
         
@@ -314,11 +319,11 @@
 <li>保存修改后<code>systemctl restart systemd-logind</code>，重启服务生效。（我的机子卡住了，要不就重启好了。。）</li>
 </ul>
 <p>输入 sudo vim /etc/systemd/logind.conf , 摁 i 编辑 去掉如下的行前面的 “#”，最后一个”HandleLidSwitch” 的值改为Lock ，如下图：</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/UbuntuToGo/Convinience_1.png" srcset="/img/loading.gif" alt="png"></p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/UbuntuToGo/Convinience_2.png" srcset="/img/loading.gif" alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/UbuntuToGo/Convinience_1.png" srcset="/img/loading.gif" lazyload alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/UbuntuToGo/Convinience_2.png" srcset="/img/loading.gif" lazyload alt="png"></p>
 <p>这样关上盖子就不会休眠了。（享受音乐，午休～）</p>
 <h1 id="截屏快捷键"><a href="#截屏快捷键" class="headerlink" title="截屏快捷键"></a>截屏快捷键</h1><p><code>Screenshot</code>是个很好的工具，截图用来插图片或者分享给朋友都很好用。不过<strong>每次</strong>都要通过功能键找应用未免太麻烦了。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/UbuntuToGo/Convinience_3.png" srcset="/img/loading.gif" alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/UbuntuToGo/Convinience_3.png" srcset="/img/loading.gif" lazyload alt="png"></p>
 <p>虽然也可以命令行<code>gnome-screenshot -a</code>，不过好像更麻烦了？搜索了一下发现可以自定义<code>快捷键+命令</code>，如此便可一键截图，还可以自定义方式，方法如下：</p>
 <ul>
 <li><code>Settings</code>-&gt;<code>Keyboard</code>找到<code>Keyboard Shortcuts</code>，点击最下方”+”，增加快捷键设置。</li>
@@ -326,10 +331,10 @@
 <li>保存测试即可</li>
 </ul>
 <a id="more"></a>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/UbuntuToGo/Convinience_4.png" srcset="/img/loading.gif" alt="png"></p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/UbuntuToGo/Convinience_6.png" srcset="/img/loading.gif" alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/UbuntuToGo/Convinience_4.png" srcset="/img/loading.gif" lazyload alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/UbuntuToGo/Convinience_6.png" srcset="/img/loading.gif" lazyload alt="png"></p>
 <p><code>Screenshot</code>命令行详情参见<code>gnome-screenshot -h</code>，如下：</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/UbuntuToGo/Convinience_5.png" srcset="/img/loading.gif" alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/UbuntuToGo/Convinience_5.png" srcset="/img/loading.gif" lazyload alt="png"></p>
 <p>所以我自己根据需要设置了两个：</p>
 <ul>
 <li><p>交互式截屏：<code>Ctrl</code>+<code>Alt</code>+<code>I</code></p>
@@ -343,7 +348,7 @@
 </ul>
 <h1 id="阿里云OSS-Linux版客户端"><a href="#阿里云OSS-Linux版客户端" class="headerlink" title="阿里云OSS Linux版客户端"></a>阿里云OSS Linux版客户端</h1><p>下载安装阿里云OSS Linux版客户端（ossbrowser），方便管理资源。</p>
 <p><a target="_blank" rel="noopener" href="https://help.aliyun.com/document_detail/61872.html?spm=5176.8465980.0.0.4e701450Mb8UMB">下载网址</a></p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/UbuntuToGo/Convinience_7.png" srcset="/img/loading.gif" alt="png"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/UbuntuToGo/Convinience_7.png" srcset="/img/loading.gif" lazyload alt="png"></p>
 
             </div>
             <hr>
@@ -373,7 +378,11 @@
                 
               </div>
               
-                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
               
               
                 <div class="post-prevnext">
@@ -401,6 +410,30 @@
               
             </div>
 
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+    <div class="cusdis" style="width:100%">
+      <div id="cusdis_thread"
+        data-host="https://cusdis.com"
+        data-app-id="3d66d51c-fa21-442d-9efa-c1b9acfeb762"
+        data-page-id="8ef985e679f818badf6ddcaa328584cd"
+        data-page-url="post/c8194796.html"
+        data-page-title="UbuntuToGo——Ubuntu系统便捷设置"
+      >
+    </div>
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#cusdis_thread', function() {
+        Fluid.utils.createScript("https://cusdis.com/js/cusdis.es.js");
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+  
+              </article>
             
           </article>
         </div>
@@ -467,8 +500,9 @@
   
 </footer>
 
-<!-- SCRIPTS -->
 
+  <!-- SCRIPTS -->
+  
   <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
 
@@ -481,9 +515,8 @@
   </script>
 
 
-<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
 <script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
-<script  src="/js/debouncer.js" ></script>
 <script  src="/js/events.js" ></script>
 <script  src="/js/plugins.js" ></script>
 
@@ -491,7 +524,7 @@
 
 
   
-    <script  src="/js/lazyload.js" ></script>
+    <script  src="/js/img-lazyload.js" ></script>
   
 
 
@@ -500,7 +533,7 @@
 
 
 
-  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.2/dist/tocbot.min.js" ></script>
 
 
 
@@ -512,7 +545,7 @@
 
 
 
-  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
 
 
 
@@ -536,11 +569,12 @@
   <script>
     (function () {
       var path = "/local-search.xml";
-      var inputArea = document.querySelector("#local-search-input");
-      inputArea.onclick = function () {
+      $('#local-search-input').on('click', function() {
         searchFunc(path, 'local-search-input', 'local-search-result');
-        this.onclick = null
-      }
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
     })()
   </script>
 
@@ -599,7 +633,6 @@
 
 <!-- 主题的启动项 保持在最底部 -->
 <script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-
 
 
 </body>

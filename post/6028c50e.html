@@ -8,15 +8,17 @@
 <head>
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
   <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
-  <link rel="icon" type="image/png" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="description" content="本文主要内容主要来自Chaum van Antwerpen在89年发表的《Undeniable Signatures》一文以及Gennaro、Krawczyk和Rabin在97年发表的《RSA-Based Undeniable Signatures》一文，用来了解不可否认签名方案的相关知识。
+介绍背景介绍数字签名的复制属性不同于我们现实生活中的签名文件，在不考虑时间戳的前提下，我们基本上可以认为复">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
+  
   <title>密码技术学习——基于RSA的不可否认签名方案 - Edward&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
@@ -29,7 +31,7 @@
     
     
       
-      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.6.0/styles/github-gist.min.css" />
     
   
 
@@ -59,7 +61,7 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false,"loading_img":"/img/loading.gif","offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
@@ -113,9 +115,10 @@
           
           
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -198,7 +201,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -217,13 +220,13 @@
         
         
           <li class="nav-item" id="search-btn">
-            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
                 class="iconfont icon-search"></i>&nbsp;</a>
           </li>
         
         
           <li class="nav-item" id="color-toggle-btn">
-            <a class="nav-link" href="javascript:">&nbsp;<i
+            <a class="nav-link" target="_self">&nbsp;<i
                 class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
           </li>
         
@@ -324,14 +327,14 @@
 <p>我们的方案具有一些吸引人的特性：首先是可证明的安全性，伪造不可否认的签名与伪造常规RSA签名一样困难。其次，确认和拒绝协议都是零知识（特别是，确认协议仅涉及两轮通信和少量取幂）。此外，我们的方案的基于RSA的结构提供了<strong>简单而优雅</strong>的解决方案，以提供最初引入不可否认签名的文献中发现的不可否认签名的几个<strong>更高级的属性</strong>，包括不可否认签名的可转换性（转换为可公开验证的签名），委托确认能力的可能性，拒绝签名给第三方而不放弃签署的权力，以及签名和确认操作的分布式（阈值）版本的存在。</p>
 <p>由于上述属性以及我们的不可否认的签名与标准RSA签名相同的事实，我们提出的方案对于实际实现来说，它变得非常有吸引力。</p>
 <a id="more"></a>
-<h1 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h1><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E5%AF%86%E7%A0%81%E5%AD%A6/rsa_udc1.png" srcset="/img/loading.gif" alt="1"></p>
+<h1 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h1><p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E5%AF%86%E7%A0%81%E5%AD%A6/rsa_udc1.png" srcset="/img/loading.gif" lazyload alt="1"></p>
 <p>引理 1：</p>
 <p>令 $n=pq$，且$p&lt;q$，$p=2p’+1$，$q=2q’+1$，$p$，$q$，$p’$，$q’$均为质数，则：</p>
 <ol>
 <li>$Z_n^{*}$中的任意元素的阶均在集合$\{1,2,p’,q’,2p’,2q’,p’q’,2p’q’\}$中。</li>
 <li>对于给定的$w$满足$w \in Z_n^{*} \setminus \{ -1 , 1 \}$，且$ord(w)&lt;p’q’$，则$gcd(w-1,n)$或$gcd(w+1,n)$是n的一个素因子。</li>
 </ol>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E5%AF%86%E7%A0%81%E5%AD%A6/rsa_udc2.png" srcset="/img/loading.gif" alt="2"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E5%AF%86%E7%A0%81%E5%AD%A6/rsa_udc2.png" srcset="/img/loading.gif" lazyload alt="2"></p>
 <p>引理 2：</p>
 <p>令$n$同引理1中规定，对于给定的$w$满足$ord(w) \in \{ p’q’, 2p’q’ \}$，则对于任意$m \in Z_n^{*}$ , $m^4 \in \langle w \rangle$</p>
 <h1 id="新的不可否认签名方案"><a href="#新的不可否认签名方案" class="headerlink" title="新的不可否认签名方案"></a>新的不可否认签名方案</h1><p>在这一节，我们给出我们方案的细节，首先我们定义如下集合。</p>
@@ -339,7 +342,7 @@
 <p>我们用$PK$表示所有按照上述方法生成的$(n,w,S_w)$元组。关于公钥形式的选择以及如何验证其正确性，请参见4.3节。特别地，这里体现出，$w$可以被设置为一个固定的值。比如总是设置为$w = 2$，这种简化提高了公钥系统计算以$w$为基数的幂的效率。</p>
 <h2 id="生成一个签名"><a href="#生成一个签名" class="headerlink" title="生成一个签名"></a>生成一个签名</h2><p>为了在消息上生成签名，签名者执行常规RSA签名操作，即，他计算$S_m = m^{d} \mod {n}$，得到输出$(m, S_m)$，更准确地说，在应用求幂之前首先通过合适的编码（比如通过单向哈希函数）处理消息，使得生成的签名方案面对选择明文攻击依旧可以假定是不可伪造的（需要说明，普通RSA没有这个属性）。给定一个消息$m$，我们认为$\overset{\rm -}{m}$为编码输出后的消息，因此，$S_{\overset{\rm -}{m} } \overset{\rm def}{=} {\overset{\rm -}{m}}^{d}$，我们稍稍泛用了$S_w$来表示$w^{d} \mod {n}$，且用$w$而非$\overset{\rm -}{w}$。</p>
 <h2 id="确认协议"><a href="#确认协议" class="headerlink" title="确认协议"></a>确认协议</h2><p>我们提出了一个确认签名的协议。 它由两个玩家，证明者和验证者执行。 协议的公共输入是公钥参数，即$(n,w,S_w) \in PK$，以及$(m,S_m)$。如果$S_m$是有效签名，则$P$将可以说服$V$这个事实，反之如果不是有效的，则除了一个微不足道的概率，没有任何证明者（即使是一个计算上无界的证明者）能够让$V$相信这个签名是有效的。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E5%AF%86%E7%A0%81%E5%AD%A6/rsa_udc3.png" srcset="/img/loading.gif" alt="3"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E5%AF%86%E7%A0%81%E5%AD%A6/rsa_udc3.png" srcset="/img/loading.gif" lazyload alt="3"></p>
 <p>协议的想法是产生一个相关的元素，该元素对签名者来说是随机的，并且验证者签名（假设消息$m$上的签名是正确的）。 这个“盲”元素是通过消息$m$取$i$次幂来创建的，以及他的（正确的签名是公知的）。 直观地说，作弊证明者需要找到作为骗子的价值。 然而，有许多指数给出了相同的结果，并且我们证明了证明者（即使计算上无界）也无法区分它们。</p>
 <p>该协议的一个有趣的方面是证明者可以成功说服验证者接受签名，多一个参数的签名多个签名，在设计拒绝协议时，我们确保签名者不能拒绝此扩展形式的签名，$SIG(m) \overset{\rm def}{=} \alpha \overset{\rm -}{m}^{d}, ord(\alpha) ≤ 2$.</p>
 <p>为了便于说明，确认协议出现了零知识协议版本，有一些众所周知的技术[GMW]，[BCC]，[Go]使用概念函数的概念将零知识属性添加到上述协议：</p>
@@ -357,7 +360,7 @@
 <p>零知识：见前述协议详情。</p>
 <h2 id="拒绝协议"><a href="#拒绝协议" class="headerlink" title="拒绝协议"></a>拒绝协议</h2><p>图2展示了拒绝协议。 协议的公共输入是公钥参数，即$(n,w,S_w) \in PK$，以及$(m,S_m)$。如果$S_m$不是有效签名，那么$P$能够说服$V$这个事实，若签名效，$P$能够说服$V$该签名无效的概率可以忽略不计。</p>
 <p>我们的解决方案是基于 由Chaum [Ch1]引入的协议，旨在用零知识的一个素数域上两个元素的离散对数的不等式。 上述论文中提到的协议和证明对于对$n$为合数的简化剩余系不具备有效性，特别地，是因为它们依赖一个简化剩余系地生成器（而我们已经证明符合我们要求地简化剩余系的最大阶并不等于群的阶）。 不过，一个针对上述协议的细致改良版本以及一个相关的证明方法会被用来证明解决在$n$为合数的简化剩余系问题。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E5%AF%86%E7%A0%81%E5%AD%A6/rsa_udc4.png" srcset="/img/loading.gif" alt="4"></p>
+<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E5%AF%86%E7%A0%81%E5%AD%A6/rsa_udc4.png" srcset="/img/loading.gif" lazyload alt="4"></p>
 <p>该协议以下面的方式工作，验证者在第一步中给出两个证明者可以使用验证指数$e$验证的两个值（通过商值${( \frac{ \overset{\rm -}{m} }{S_m^e}  })^{i}$来验证 ）。仅当正民者可以找到选定$i$值时，验证者才接受协议的运行。如果$S_m$不是消息$m$的有效签名，则$P$，需要彻底搜索$i$应取值的范围，然而，如果$S_m$时有效签名，无论$i$的取值为多少，上述商式的结果恒等于$1$，那么证明者不能获取到关于$i$的任何信息从而只能猜测$i$的值（来达到欺骗的目的）。</p>
 <p>为了实现对$i$的穷尽搜索，一个人需要选择一个尽可能小的范围，如果上界设置为某个值$k$，则证明着需要对$\frac{ \overset{\rm -}{m} }{S_m^e}$进行$k$次乘法操作来找到$i$。因而该协议具有$\frac{1}{k}$的出错概率。因为注意到选择$k$的时间复杂度为$O( \log n )$，那么穷举搜索的成本大概相当于单个的长幂运算。另一方面，这种情况下欺骗的概率为$\frac{1}{k}$。我们以$k = 1024$为例，我们可以重复该协议十次，则可以实现$\frac{1}{2^{100}}$的安全性。正如在引言中所述，相对于运行欺骗概率为$\frac{1}{2}$的子协议，效率要高十倍。</p>
 <p>下图展示了协议流程（忽略了零知识的步骤），这与确认协议的情况类似。然而，在这个协议中，需要在第2步中特殊对待。如果一个（诚实）的证明者并没有找到一个满足等式的$i$值，那么就意味着$V$是在欺骗，$P$中止协议的执行。虽然终止协议中没有泄露很多信息，但它确实揭示了一部分，在零知识版主中我们甚至连这些信息都不想泄露。因而，$P$应当继续协议的执行并在“假承诺”中提交0值。这样会掩盖$i$值被发现与否的信息。需要指明在$i$值没有被找到的情况下，验证者会被曝光为欺骗者从而0的承诺将不会被揭示。</p>
@@ -415,7 +418,11 @@
                 
               </div>
               
-                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
               
               
                 <div class="post-prevnext">
@@ -443,6 +450,30 @@
               
             </div>
 
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+    <div class="cusdis" style="width:100%">
+      <div id="cusdis_thread"
+        data-host="https://cusdis.com"
+        data-app-id="3d66d51c-fa21-442d-9efa-c1b9acfeb762"
+        data-page-id="d3723607136838531b7aeaff87518908"
+        data-page-url="post/6028c50e.html"
+        data-page-title="密码技术学习——基于RSA的不可否认签名方案"
+      >
+    </div>
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#cusdis_thread', function() {
+        Fluid.utils.createScript("https://cusdis.com/js/cusdis.es.js");
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+  
+              </article>
             
           </article>
         </div>
@@ -509,8 +540,9 @@
   
 </footer>
 
-<!-- SCRIPTS -->
 
+  <!-- SCRIPTS -->
+  
   <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
 
@@ -523,9 +555,8 @@
   </script>
 
 
-<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
 <script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
-<script  src="/js/debouncer.js" ></script>
 <script  src="/js/events.js" ></script>
 <script  src="/js/plugins.js" ></script>
 
@@ -533,7 +564,7 @@
 
 
   
-    <script  src="/js/lazyload.js" ></script>
+    <script  src="/js/img-lazyload.js" ></script>
   
 
 
@@ -542,7 +573,7 @@
 
 
 
-  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.2/dist/tocbot.min.js" ></script>
 
 
 
@@ -554,7 +585,7 @@
 
 
 
-  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
 
 
 
@@ -578,11 +609,12 @@
   <script>
     (function () {
       var path = "/local-search.xml";
-      var inputArea = document.querySelector("#local-search-input");
-      inputArea.onclick = function () {
+      $('#local-search-input').on('click', function() {
         searchFunc(path, 'local-search-input', 'local-search-result');
-        this.onclick = null
-      }
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
     })()
   </script>
 
@@ -641,7 +673,6 @@
 
 <!-- 主题的启动项 保持在最底部 -->
 <script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-
 
 
 </body>
