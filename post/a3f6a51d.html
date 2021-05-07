@@ -69,8 +69,7 @@ availability without interruption as long as a simple majority of replicas are r
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-</head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -272,7 +271,7 @@ availability without interruption as long as a simple majority of replicas are r
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      2.7k 字
+      2.8k 字
     </span>
   
 
@@ -282,7 +281,7 @@ availability without interruption as long as a simple majority of replicas are r
       <i class="iconfont icon-clock-fill"></i>
       
       
-      35
+      36
        分钟
     </span>
   
@@ -451,6 +450,16 @@ availability without interruption as long as a simple majority of replicas are r
 <li>optimized EPaxos: fast quorum only $F+ \lfloor \frac{F+1}{2} \rfloor$</li>
 </ul>
 <p>slow-path quorum size is always $F+1$.</p>
+<h4 id="The-Commit-Protocol"><a href="#The-Commit-Protocol" class="headerlink" title="The Commit Protocol"></a>The Commit Protocol</h4><p>正如前述，EPaxos 中命令的提交和执行是分离的。</p>
+<p>EPaxos 包含两部分</p>
+<ol>
+<li>用于确定（选择） commit commands 以及附加的 order constraint(attributes) 协议</li>
+<li>基于这些 order 要求，确定实际 execute order 的算法</li>
+</ol>
+<p>针对 1，commit protocol 被分割成了许多 phases，但并不是所有指令都会执行全部 phases</p>
+<blockquote>
+<p>fast-path: 如果一个在经过 phase 1 就已经提交，则称为 fast-path<br>slow-path: 涉及附加得 phase 2 过程（Paxos accept phase）</p>
+</blockquote>
 <h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><h2 id="未读（且值得读）文献记录"><a href="#未读（且值得读）文献记录" class="headerlink" title="未读（且值得读）文献记录"></a>未读（且值得读）文献记录</h2><!-- 在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 -->
 <h1 id="Step-3"><a href="#Step-3" class="headerlink" title="Step 3"></a>Step 3</h1><!-- 试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。 -->
 <h2 id="思路复现"><a href="#思路复现" class="headerlink" title="思路复现"></a>思路复现</h2><!-- 推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ -->
@@ -549,22 +558,24 @@ availability without interruption as long as a simple majority of replicas are r
                   
                 
                 
-    <div class="cusdis" style="width:100%">
-      <div id="cusdis_thread"
-        data-host="https://cusdis.com"
-        data-app-id="3d66d51c-fa21-442d-9efa-c1b9acfeb762"
-        data-page-id="5a9f4e9d8803231ccfdd6b622746e1c3"
-        data-page-url="post/a3f6a51d.html"
-        data-page-title="SOSP13——There-Is-More-Consensus-in-Egalitarian-Parliamens"
-      >
-    </div>
-    <script type="text/javascript">
-      Fluid.utils.loadComments('#cusdis_thread', function() {
-        Fluid.utils.createScript("https://cusdis.com/js/cusdis.es.js");
-      });
+<div class="cusdis"></div>
+<div id="cusdis_thread" data-host="https://cusdis.com" data-app-id="3d66d51c-fa21-442d-9efa-c1b9acfeb762"
+  data-page-id="5a9f4e9d8803231ccfdd6b622746e1c3" data-page-url="post/a3f6a51d.html" data-page-title="SOSP13——There-Is-More-Consensus-in-Egalitarian-Parliamens"
+  data-theme="auto">
+  <script type="text/javascript">
+      var src = 'https://cusdis.com/js/widget/lang/' + 'tr' + '.js'
+      Fluid.utils.createScript(src)
     </script>
-    <noscript>Please enable JavaScript to view the comments</noscript>
-  
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#cusdis_thread', function () {
+      Fluid.utils.createScript("https://cusdis.com/js/cusdis.es.js");
+    });
+  </script>
+</div>
+
+<noscript>Please enable JavaScript to view the comments</noscript>
+
+
               </article>
             
           </article>
