@@ -17,8 +17,8 @@
   <meta name="description" content="参考
 Help to write shell script
 Reset MariaDB Root
-MariaDB Startup Shell通过apt成功安装MariaDB后，需要重新配置帐号密码并设置端口。同样适用于忘记密码但拥有root权限的管理员进行数据库的重新配置。
-Step 1 停止正在运行的MariaDB Server服务如果我们需要重置密码以及其他配置，需要先停止正在运行的Maria">
+MariaDB Startup Shell通过apt成功安装 MariaDB 后，需要重新配置帐号密码并设置端口。同样适用于忘记密码但拥有 root 权限的管理员进行数据库的重新配置。
+Step 1 停止正在运行的 MariaDB Server 服务如果我们需要重置密码以及其他配置，需要先停止正在运行">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
   
@@ -258,7 +258,7 @@ Step 1 停止正在运行的MariaDB Server服务如果我们需要重置密码�
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      341 字
+      345 字
     </span>
   
 
@@ -304,21 +304,22 @@ Step 1 停止正在运行的MariaDB Server服务如果我们需要重置密码�
               <p>参考</p>
 <p><a target="_blank" rel="noopener" href="https://qastack.cn/programming/1298066/check-if-an-apt-get-package-is-installed-and-then-install-it-if-its-not-on-linu">Help to write shell script</a></p>
 <p><a target="_blank" rel="noopener" href="https://websiteforstudents.com/reset-mariadb-root-password-ubuntu-17-04-17-10/">Reset MariaDB Root</a></p>
-<h1 id="MariaDB-Startup-Shell"><a href="#MariaDB-Startup-Shell" class="headerlink" title="MariaDB Startup Shell"></a>MariaDB Startup Shell</h1><p>通过<code>apt</code>成功安装MariaDB后，需要重新配置帐号密码并设置端口。同样适用于忘记密码但拥有root权限的管理员进行数据库的重新配置。</p>
-<h2 id="Step-1-停止正在运行的MariaDB-Server服务"><a href="#Step-1-停止正在运行的MariaDB-Server服务" class="headerlink" title="Step 1 停止正在运行的MariaDB Server服务"></a>Step 1 停止正在运行的MariaDB Server服务</h2><p>如果我们需要重置密码以及其他配置，需要先停止正在运行的MariaDB Server。</p>
+<h1 id="MariaDB-Startup-Shell"><a href="#MariaDB-Startup-Shell" class="headerlink" title="MariaDB Startup Shell"></a>MariaDB Startup Shell</h1><p>通过<code>apt</code>成功安装 MariaDB 后，需要重新配置帐号密码并设置端口。同样适用于忘记密码但拥有 root 权限的管理员进行数据库的重新配置。</p>
+<h2 id="Step-1-停止正在运行的-MariaDB-Server-服务"><a href="#Step-1-停止正在运行的-MariaDB-Server-服务" class="headerlink" title="Step 1 停止正在运行的 MariaDB Server 服务"></a>Step 1 停止正在运行的 MariaDB Server 服务</h2><p>如果我们需要重置密码以及其他配置，需要先停止正在运行的 MariaDB Server。</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Shell">sudo systemctl stop mariadb.service<br></code></pre></td></tr></table></figure>
-<h2 id="Step-2-安全模式下启动MariaDB-Server"><a href="#Step-2-安全模式下启动MariaDB-Server" class="headerlink" title="Step 2 安全模式下启动MariaDB Server"></a>Step 2 安全模式下启动MariaDB Server</h2><p>接下来我们需要跳过网络及permission table来连接数据库。</p>
+<h2 id="Step-2-安全模式下启动-MariaDB-Server"><a href="#Step-2-安全模式下启动-MariaDB-Server" class="headerlink" title="Step 2 安全模式下启动 MariaDB Server"></a>Step 2 安全模式下启动 MariaDB Server</h2><p>接下来我们需要跳过网络及 permission table 来连接数据库。</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Shell">sudo mysqld_safe --skip-grant-tables --skip-networking &amp;<br></code></pre></td></tr></table></figure>
-<h2 id="Step-3-重新设置MariaDB-root-Password"><a href="#Step-3-重新设置MariaDB-root-Password" class="headerlink" title="Step 3 重新设置MariaDB root Password"></a>Step 3 重新设置MariaDB root Password</h2><p>现在我们成功在安全模式下启动了MariaDB Server，我们可以尝试使用root账户登录</p>
+<h2 id="Step-3-重新设置-MariaDB-root-Password"><a href="#Step-3-重新设置-MariaDB-root-Password" class="headerlink" title="Step 3 重新设置 MariaDB root Password"></a>Step 3 重新设置 MariaDB root Password</h2><p>现在我们成功在安全模式下启动了 MariaDB Server，我们可以尝试使用 root 账户登录</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Shell">sudo mysql -u root<br></code></pre></td></tr></table></figure>
 <p>会发现可以直接登录。</p>
-<p>我们可以通过在mysql的交互式命令行工具中指定使用的数据库再修改root账户的密码，也可以返回bash中直接执行下面的命令</p>
+<p>我们可以通过在 mysql 的交互式命令行工具中指定使用的数据库再修改 root 账户的密码，也可以返回 bash 中直接执行下面的命令</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs Shell">sudo mysql -u root -D mysql -e &quot;UPDATE user SET password=PASSWORD(&#x27;your_new_password_plaintext&#x27;) WHERE user=&#x27;root&#x27;;&quot;<br>sudo mysql -u root -D mysql -e &quot;FLUSH PRIVILEGES&quot;<br></code></pre></td></tr></table></figure>
 <h2 id="Step-4-关闭安全模式重启-MariaDB-Server"><a href="#Step-4-关闭安全模式重启-MariaDB-Server" class="headerlink" title="Step 4 关闭安全模式重启 MariaDB Server"></a>Step 4 关闭安全模式重启 MariaDB Server</h2><p>我们需要在额外的终端执行如下命令来关闭安全模式启动的 DB。</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Shell">sudo mysqladmin -u root -p=your_new_password_plaintext shutdown<br></code></pre></td></tr></table></figure>
-<p>再重启我们的MariaDB Server</p>
+<p>再重启我们的 MariaDB Server</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Shell">sudo systemctl restart mariadb.service<br></code></pre></td></tr></table></figure>
 <a id="more"></a>
+
             </div>
             <hr>
             <div>
@@ -328,9 +329,9 @@ Step 1 停止正在运行的MariaDB Server服务如果我们需要重置密码�
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tag/%E6%96%B9%E6%B3%95/">方法</a>
-                    
                       <a class="hover-with-bg" href="/tag/Research/">Research</a>
+                    
+                      <a class="hover-with-bg" href="/tag/%E6%96%B9%E6%B3%95/">方法</a>
                     
                   </div>
                 
