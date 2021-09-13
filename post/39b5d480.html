@@ -15,7 +15,8 @@
   
   <meta name="theme-color" content="#2f4154">
   <meta name="description" content="The Rust Programming Language系列文章学习 Part 3
-Programming a Guessing Game12345678910111213use std::io;fn main() &amp;#123;    println!(&amp;quot;Guess the number!&amp;quot;);    println!(&amp;quot;Please input your gues">
+Programming a Guessing Game通过具体例子来学习let, match, methods, associated functions等概念。
+12345678910111213use std::io;fn main() &amp;#123;    println!(&amp;quot;Guess the n">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
   
@@ -255,7 +256,7 @@ Programming a Guessing Game12345678910111213use std::io;fn main() &amp;#123;    
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      61 字
+      484 字
     </span>
   
 
@@ -265,7 +266,7 @@ Programming a Guessing Game12345678910111213use std::io;fn main() &amp;#123;    
       <i class="iconfont icon-clock-fill"></i>
       
       
-      1
+      7
        分钟
     </span>
   
@@ -299,8 +300,30 @@ Programming a Guessing Game12345678910111213use std::io;fn main() &amp;#123;    
             
             <div class="markdown-body">
               <h1 id="The-Rust-Programming-Language"><a href="#The-Rust-Programming-Language" class="headerlink" title="The Rust Programming Language"></a>The Rust Programming Language</h1><p>系列文章学习 Part 3</p>
-<h2 id="Programming-a-Guessing-Game"><a href="#Programming-a-Guessing-Game" class="headerlink" title="Programming a Guessing Game"></a>Programming a Guessing Game</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-keyword">use</span> std::io;<br><br><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;Guess the number!&quot;</span>);<br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;Please input your guess.&quot;</span>);<br>    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> guess = <span class="hljs-built_in">String</span>::new();<br>    io::stdin()<br>    .read_line(&amp;<span class="hljs-keyword">mut</span> guess)<br>    .expect(<span class="hljs-string">&quot;Failed to read line&quot;</span>);<br>    <br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;You guessed: &#123;&#125;&quot;</span>,guess);<br>    <br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="Programming-a-Guessing-Game"><a href="#Programming-a-Guessing-Game" class="headerlink" title="Programming a Guessing Game"></a>Programming a Guessing Game</h2><p>通过具体例子来学习<code>let</code>, <code>match</code>, <code>methods</code>, <code>associated functions</code>等概念。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-keyword">use</span> std::io;<br><br><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;Guess the number!&quot;</span>);<br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;Please input your guess.&quot;</span>);<br>    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> guess = <span class="hljs-built_in">String</span>::new();<br>    io::stdin()<br>    .read_line(&amp;<span class="hljs-keyword">mut</span> guess)<br>    .expect(<span class="hljs-string">&quot;Failed to read line&quot;</span>);<br>    <br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;You guessed: &#123;&#125;&quot;</span>,guess);<br>    <br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="Procesing-a-Guess"><a href="#Procesing-a-Guess" class="headerlink" title="Procesing a Guess"></a>Procesing a Guess</h2><p>一些细节讲解，</p>
+<p>引入标准的io库</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-keyword">use</span> std::io<br></code></pre></td></tr></table></figure>
+<p>通过变量储存值</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> guess = <span class="hljs-built_in">String</span>::new();<br></code></pre></td></tr></table></figure>
+<p><code>let</code>声明用于创建<em>变量</em>比如</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-keyword">let</span> apples = <span class="hljs-number">5</span>;<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>mutable and immutable</p>
+<p>In Rust, variables are immutable by default. We’ll be discussing this concept in detail in the <a target="_blank" rel="noopener" href="https://doc.rust-lang.org/book/ch03-01-variables-and-mutability.html#variables-and-mutability">(“Variables and Mutability”)</a> section in Chapter 3. The following example shows how to use <code>mut</code> before the variable name to make a variable mutable:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-keyword">let</span> apples = <span class="hljs-number">5</span>; <span class="hljs-comment">// immutable</span><br><span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> bananas = <span class="hljs-number">5</span>; <span class="hljs-comment">// mutable</span><br></code></pre></td></tr></table></figure>
+</blockquote>
+<p>有关 <code>::</code> ，注意关联方法（associated function）都是实现在类型上的。<code>io::stdin()</code> 也会放映一个对应类型<code>std::io::Stdin</code>。</p>
+<p>The <code>::</code> syntax in the <code>::new</code> line indicates that <code>new</code> is an <em>associated function</em> of the String type. An associated function is implemented on a type, in this case <code>String</code>.</p>
+<p>有关<code>&amp;</code>，引用，和变量一样，也是默认immutable。</p>
 <a id="more"></a>
+<h3 id="Handling-Potential-Failure-with-the-Result-Type"><a href="#Handling-Potential-Failure-with-the-Result-Type" class="headerlink" title="Handling Potential Failure with the Result Type"></a>Handling Potential Failure with the Result Type</h3><p>例子的最后一个方法（除了打印）是<code>expect</code>，这简单体现了Rust里面的故障处理功能。前面的<code>read_line</code>不仅接受类型为<code>String</code>的参数，同时还会返回一个值，<code>io::Result</code>。Rust的标准库中具有很多名为<code>Result</code>的类型，一个通用抽象的<code>Result</code>以及各子模块提供的确切的版本，比如<code>io::Result</code></p>
+<p><code>Result</code></p>
+<p>一个<code>io::Result</code>有名为<code>expect</code>的方法，检测返回值。如果不使用<code>expect</code>会出现如下的warning</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs Bash"> eddy@Edwardzcn  ~/rust_projects/guessing_game   master  cargo run<br>   Compiling guessing_game v0.1.0 (/home/eddy/rust_projects/guessing_game)<br>warning: unused `Result` that must be used<br> --&gt; src/main.rs:7:5<br>  |<br>7 | /     io::stdin()<br>8 | |     .read_line(&amp;mut guess);<br>  | |___________________________^<br>  |<br>  = note: `<span class="hljs-comment">#[warn(unused_must_use)]` on by default</span><br>  = note: this `Result` may be an `Err` variant, <span class="hljs-built_in">which</span> should be handled<br><br>warning: 1 warning emitted<br></code></pre></td></tr></table></figure>
+<h2 id="Generating-a-Secret-number"><a href="#Generating-a-Secret-number" class="headerlink" title="Generating a Secret number"></a>Generating a Secret number</h2><p>Rust 当前标准库中不具备随机数功能。不过我们可以通过使用外部的 crate。</p>
+<h3 id="Using-a-Crate-to-Get-More-Functionality"><a href="#Using-a-Crate-to-Get-More-Functionality" class="headerlink" title="Using a Crate to Get More Functionality"></a>Using a Crate to Get More Functionality</h3>
             </div>
             <hr>
             <div>
