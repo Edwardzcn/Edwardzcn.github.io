@@ -1,0 +1,699 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="Data Storage回顾 DBMS，纵列-Storage，旁路-Transaction、ACID。
+DBMS 的设计十分考虑底层存储设备的特性（思考：SSD-&amp;gt;NVM）。
+Disk StructureStorage(Memory) Hierarchy
+分割线
+主/外存
+
+按字节寻址与否：CPU 直接访问按字节寻址设备，按位存取，无法直接访问块设备
+易失性：掉电数据是否丢失
+
+过去 DRA">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  
+  <title>高级数据库系统——Data-Storage - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+  
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bookmark"></i>
+                精选
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Computer-Science/">
+                    <i class="iconfont icon-codeforces"></i>
+                    Computer Science
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%98%85%E8%AF%BB/">
+                    <i class="iconfont icon-bookmark-fill"></i>
+                    Life Reading
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%9A%8F%E7%AC%94/">
+                    <i class="iconfont icon-note"></i>
+                    Life Essay
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Research/Report/">
+                    <i class="iconfont icon-clipcheck"></i>
+                    Weekly Report
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/photos">
+                <i class="iconfont icon-image"></i>
+                摄影集
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="高级数据库系统——Data-Storage">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      Edwardzcn
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-09-18 09:00" pubdate>
+        2021年9月18日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      701 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      8
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">高级数据库系统——Data-Storage</h1>
+            
+            <div class="markdown-body">
+              <h1 id="Data-Storage"><a href="#Data-Storage" class="headerlink" title="Data Storage"></a>Data Storage</h1><p>回顾 DBMS，纵列-Storage，旁路-Transaction、ACID。</p>
+<p>DBMS 的设计十分考虑底层存储设备的特性（思考：SSD-&gt;NVM）。</p>
+<h2 id="Disk-Structure"><a href="#Disk-Structure" class="headerlink" title="Disk Structure"></a>Disk Structure</h2><p>Storage(Memory) Hierarchy</p>
+<p>分割线</p>
+<p>主/外存</p>
+<ul>
+<li>按字节寻址与否：CPU 直接访问按字节寻址设备，按位存取，无法直接访问块设备</li>
+<li>易失性：掉电数据是否丢失</li>
+</ul>
+<p>过去 DRAM-Disk 字节寻址和易失性区分是一致的，NVM 设备开发出来后出现了可按字节寻址且非易失的设备。</p>
+<p>Q：NVM 设备是否可被 CPU 直接存取（SPDK？）</p>
+<h2 id="Block-Access-Time"><a href="#Block-Access-Time" class="headerlink" title="Block Access Time"></a>Block Access Time</h2><ul>
+<li><p>块（Block）</p>
+<ul>
+<li>OS/DBMS IO 的最小逻辑单元，由若干连续扇区构成（Linux-4KB MSWindows-4KB）</li>
+<li>块是 DBMS 中数据存取的最小单元</li>
+<li>扇区是磁盘中数据存取的最小单元</li>
+</ul>
+<p>Q：4KB 块大小，4.1KB 数据如何存储？<br>A：不同 DBMS 策略不同，比如 SQL Server 不允许跨块存储，单条数据最高 4KB，或者可以将数据划分到两块，但这样会增加每次查询的时间。不同的 DBMS 对于块大小的设计也不相同，中小型 4KB 足够，更大的可以设计成 8KB/16KB 来针对大数据的存储，同时还可能支持可变大小。</p>
+</li>
+<li><p>磁盘块读取时间</p>
+<ul>
+<li>数据库研究里面，复杂度主要由 IO 次数度量</li>
+<li>读下一块<ul>
+<li>Case 1： 同柱面（Sequential I/O）寻道的次数大幅减少</li>
+<li>Case 2： 不同柱面（Random I/O）</li>
+</ul>
+</li>
+<li>块地址<ul>
+<li>物理设备号(/dev/nvme1)</li>
+<li>柱面号</li>
+<li>盘面号（或磁头号）</li>
+<li>扇区号</li>
+<li>物理地址和逻辑地址（文件系统做映射）</li>
+</ul>
+</li>
+<li>DBMS 可优化的方向：<ul>
+<li>IO 次数</li>
+<li>寻道次数（IO 操作内）</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="Optimization"><a href="#Optimization" class="headerlink" title="Optimization"></a>Optimization</h2><ul>
+<li>按柱面组织数据（减少平均寻道时间，从 Data 的放置位置入手）</li>
+<li>磁盘调度算法（电梯算法、SCAN、CSCAN、LRU）</li>
+<li>磁盘阵列（Disk Arrays，不竞争资源，物理上读取并行）</li>
+<li>磁盘镜像</li>
+<li><strong>Random IO to Sequential IO</strong></li>
+<li><p><strong>预取（Pre-fetch）</strong>和<strong>缓冲（Buffer）</strong></p>
+</li>
+<li><p><strong>Random IO to Sequential IO</strong></p>
+<ul>
+<li>缓存页码相近的先不直接 IO，Cluster 以后再进行存储</li>
+</ul>
+</li>
+<li><p><strong>预取（Pre-fetch）</strong>和<strong>缓冲（Buffer）</strong></p>
+<ul>
+<li>单缓存（Single Buffering）<ul>
+<li>处理时间: n(P+R) , n 块数，P 缓冲区处理时间，R 将一块读入缓冲区的时间</li>
+</ul>
+</li>
+<li>双缓存（Double Buffering）<ul>
+<li>DBMS的特点，可以预先知道一些信息<ul>
+<li>SQL语句-&gt; 查询编译会生成查询计划/查询序列</li>
+<li>可以通过计划知道下一步要进行什么</li>
+</ul>
+</li>
+<li>处理时间：nP+R （处理过程可以同时预取，缓冲下一个要处理的内容进入缓冲区）</li>
+<li>编程的复杂度，状态增加，控制管理难度增加。</li>
+</ul>
+</li>
+<li>缓冲的缺点<ul>
+<li>主存的占用</li>
+<li>缓冲区管理</li>
+<li>一致性问题</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="New-type-Data-storage-NVM…"><a href="#New-type-Data-storage-NVM…" class="headerlink" title="New-type Data storage(NVM…)"></a>New-type Data storage(NVM…)</h2><p>新型存储</p>
+<a id="more"></a>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/%E9%AB%98%E7%BA%A7%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F/">高级数据库系统</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/post/d0d671b5.html">
+                        <span class="hidden-mobile">Rust学习——TRPL-Part5</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="remark42"></div>
+  <script type="text/javascript">
+    var schema = document.documentElement.getAttribute('data-user-color-scheme');
+    if (schema !== 'light' && schema !== 'dark') {
+      schema = 'light';
+    }
+    var remark_config = Object.assign(
+      {"host":"https://remark42.edwardzcn98yx.com","site_id":"www.edwardzcn98yx.com","max_shown_comments":20,"locale":"zh","components":["embed"]},
+      {
+        url: '/post/f8c1309b.html',
+        page_title: '高级数据库系统——Data-Storage',
+        theme: schema,
+      }
+    );
+
+    Fluid.utils.loadComments('#remark42', function() {
+      (function (c) {
+        for (var i = 0; i < c.length; i++) {
+          var d = document, s = d.createElement('script');
+          s.src = remark_config.host + '/web/' + c[i] + '.js';
+          s.defer = true;
+          (d.head || d.body).appendChild(s);
+        }
+      })(remark_config.components || ['embed']);
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        冀ICP证18024730号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+            
+            <span>湘公网安备43010402000641号</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.1.4/es5/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+</body>
+</html>

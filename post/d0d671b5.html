@@ -256,7 +256,7 @@ What Is Ownersh">
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      349 字
+      1.2k 字
     </span>
   
 
@@ -266,7 +266,7 @@ What Is Ownersh">
       <i class="iconfont icon-clock-fill"></i>
       
       
-      6
+      21
        分钟
     </span>
   
@@ -319,8 +319,37 @@ What Is Ownersh">
 <p>With the <code>String</code> type, in order to support a mutable, growable piece of text, we need to allocate an amount of memory on the heap, unknown at compile time, to hold the contents. This means:</p>
 <ul>
 <li>The memory must be requested from the memory allocator at runtime.(Construct function)</li>
-<li>We need a way of returning this memory to the allocator when we’re done with our <code>String</code>.(Out of scope, drop function)</li>
+<li>We need a way of returning this memory to the allocator when we’re done with our <code>String</code>.(Out of scope, special function <code>drop</code>)</li>
 </ul>
+<h4 id="Ways-Variables-and-Data-Interact-Move"><a href="#Ways-Variables-and-Data-Interact-Move" class="headerlink" title="Ways Variables and Data Interact: Move"></a>Ways Variables and Data Interact: Move</h4><p>shallow copy? deep copy? Rust prefers <strong>move</strong>.</p>
+<p>理解<strong>Move</strong> 叫法，ownership从先前的变量转移到了另一变量。先前的变量<code>s1</code>不再可用，因此Rust也无需在<code>s1</code> out of scope的时候free（从而避免了double free的问题）。</p>
+<p>shallow copy + invalidate</p>
+<h4 id="Ways-Variables-and-Data-Interact-Clone"><a href="#Ways-Variables-and-Data-Interact-Clone" class="headerlink" title="Ways Variables and Data Interact: Clone"></a>Ways Variables and Data Interact: Clone</h4><p>If we do want to deeply copy the heap data of the <code>String</code>, not just the stack data, we can use a common method called <code>clone</code>.</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-keyword">let</span> s1 = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;hello&quot;</span>);<br>    <span class="hljs-keyword">let</span> s2 = s1.clone();<br><br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;s1 = &#123;&#125;, s2 = &#123;&#125;&quot;</span>, s1, s2);<br>&#125;<br></code></pre></td></tr></table></figure>
+<h4 id="Stack-Only-Data-Copy"><a href="#Stack-Only-Data-Copy" class="headerlink" title="Stack-Only Data: Copy"></a>Stack-Only Data: Copy</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-keyword">let</span> x = <span class="hljs-number">5</span>;<br>    <span class="hljs-keyword">let</span> y = x;<br><br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;x = &#123;&#125;, y = &#123;&#125;&quot;</span>, x, y);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>But this code seems to contradict what we just learned: we don’t have a call to <code>clone</code>, but <code>x</code> is still valid and wasn’t moved into <code>y</code>.</p>
+<p>Types that have known size at compile time are stored entirely on the stack.</p>
+<h3 id="Ownership-and-Functions"><a href="#Ownership-and-Functions" class="headerlink" title="Ownership and Functions"></a>Ownership and Functions</h3><p>Taking ownership and then returning ownership with every function is a bit tedious. What if we want to let a function use a value but not take ownership? </p>
+<p>可以选择元组（带有额外信息），但仍涉及频繁的ownership转换。但对于一个应该是通用的概念来说，这意味着太多的仪式和大量的工作，好在Rust 还提供了<em>references</em>。</p>
+<h2 id="References-and-Borrowing"><a href="#References-and-Borrowing" class="headerlink" title="References and Borrowing"></a>References and Borrowing</h2><p>一个使用reference 避免移交ownership的简单例子：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-keyword">let</span> s1 = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;hello&quot;</span>);<br><br>    <span class="hljs-keyword">let</span> len = calculate_length(&amp;s1);<br><br>    <span class="hljs-comment">// let len2 = calculate_length2(s1); // then s1 would be invalid</span><br><br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;The length of &#x27;&#123;&#125;&#x27; is &#123;&#125;.&quot;</span>, s1, len);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">calculate_length</span></span>(s: &amp;<span class="hljs-built_in">String</span>) -&gt; <span class="hljs-built_in">usize</span> &#123;<br>    s.len()<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">calculate_length2</span></span>(s: <span class="hljs-built_in">String</span>) -&gt; <span class="hljs-built_in">usize</span> &#123;<br>    s.len()<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>Refer but not own</p>
+<p>The <code>&amp;s1</code> syntax lets us create a reference that <em>refers</em> to the value of <code>s1</code> but does not own it. Because it does not own it, the value it points to will not be dropped when the reference goes out of scope.</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-keyword">let</span> s1 = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;hello&quot;</span>);<br><br>    <span class="hljs-keyword">let</span> len = calculate_length(&amp;s1);<br><br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;The length of &#x27;&#123;&#125;&#x27; is &#123;&#125;.&quot;</span>, s1, len);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">calculate_length</span></span>(s: &amp;<span class="hljs-built_in">String</span>) -&gt; <span class="hljs-built_in">usize</span> &#123; <span class="hljs-comment">// s is a reference to a String</span><br>    s.len()<br>&#125; <span class="hljs-comment">// Here, s goes out of scope. But because it does not have ownership of what</span><br>  <span class="hljs-comment">// it refers to, nothing happens.</span><br></code></pre></td></tr></table></figure>
+<p>When functions have references as parameters instead of the actual values, we won’t need to return the values in order to give back ownership, because we never had ownership. 这样就避免了每次都需要通过元组来取回 ownership。称为<strong>Borrowing</strong>。</p>
+<p>references  同variables，默认也是immutable的。</p>
+<h3 id="Mutable-References"><a href="#Mutable-References" class="headerlink" title="Mutable References"></a>Mutable References</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;hello&quot;</span>);<br><br>    change(&amp;<span class="hljs-keyword">mut</span> s);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">change</span></span>(some_string: &amp;<span class="hljs-keyword">mut</span> <span class="hljs-built_in">String</span>) &#123;<br>    some_string.push_str(<span class="hljs-string">&quot;, world&quot;</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>First, we had to change <code>s</code> to be <code>mut</code>（否则编译报错 E0596”:cannot borrow <code>s</code> as mutable）. Then we had to create a mutable reference with <code>&amp;mut s</code>（reference 默认也是immutable） and accept a mutable reference with <code>some_string: &amp;mut String</code>.</p>
+<p>One big restriction: <strong>you can have only one mutable reference to a particular piece of data in a particular scope</strong>. </p>
+<p>编译层面解决了race问题，不允许两个引用变量。回忆Go 中的机制race 检测工具<code>go run -race</code>，检测不同 routines 先读后写又无锁的情况，而go的检查并非静态检查而是动态测试。</p>
+<p>类似的情况，不允许同时使用mutable和immutable的引用。</p>
+<h3 id="Dangling-References"><a href="#Dangling-References" class="headerlink" title="Dangling References"></a>Dangling References</h3><p>C/C++ 悬挂指针问题</p>
+<p>In Rust, by contrast, the compiler guarantees that references will never be dangling references: if you have a reference to some data, the compiler will ensure that the data will not go out of scope before the reference to the data does.</p>
+<p>传递回一个 Dangling Reference 会指向一个invalid String（因为已经 out of scope），Rust不会允许这样操作。解决方法，ownership move!</p>
+<p>Danger case:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-keyword">let</span> reference_to_nothing = dangle();<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">dangle</span></span>() -&gt; &amp;<span class="hljs-built_in">String</span> &#123; <span class="hljs-comment">// dangle returns a reference to a String</span><br><br>    <span class="hljs-keyword">let</span> s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;hello&quot;</span>); <span class="hljs-comment">// s is a new String</span><br><br>    &amp;s <span class="hljs-comment">// we return a reference to the String, s</span><br>&#125; <span class="hljs-comment">// Here, s goes out of scope, and is dropped. Its memory goes away.</span><br>  <span class="hljs-comment">// Danger!</span><br></code></pre></td></tr></table></figure>
+<p>Ownership move:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-keyword">let</span> string = no_dangle();<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">no_dangle</span></span>() -&gt; <span class="hljs-built_in">String</span> &#123;<br>    <span class="hljs-keyword">let</span> s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;hello&quot;</span>);<br><br>    s<br>&#125;<br></code></pre></td></tr></table></figure>
 <a id="more"></a>
             </div>
             <hr>
@@ -356,6 +385,12 @@ What Is Ownersh">
                 <div class="post-prevnext">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/post/f8c1309b.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">高级数据库系统——Data-Storage</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
