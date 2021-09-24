@@ -256,7 +256,7 @@ What Is Ownersh">
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.2k 字
+      1.6k 字
     </span>
   
 
@@ -266,7 +266,7 @@ What Is Ownersh">
       <i class="iconfont icon-clock-fill"></i>
       
       
-      21
+      26
        分钟
     </span>
   
@@ -351,6 +351,25 @@ What Is Ownersh">
 <p>Ownership move:</p>
 <figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-keyword">let</span> string = no_dangle();<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">no_dangle</span></span>() -&gt; <span class="hljs-built_in">String</span> &#123;<br>    <span class="hljs-keyword">let</span> s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;hello&quot;</span>);<br><br>    s<br>&#125;<br></code></pre></td></tr></table></figure>
 <a id="more"></a>
+<h3 id="The-Rules-of-References"><a href="#The-Rules-of-References" class="headerlink" title="The Rules of References"></a>The Rules of References</h3><p>Let’s recap what we’ve discussed about references:</p>
+<ul>
+<li>At any given time, you can have <em>either</em> one mutable reference <em>or</em> any number of immutable references.</li>
+<li>References must always be valid.</li>
+</ul>
+<p>Next, we’ll look at a different kind of reference: slices.</p>
+<h2 id="The-Slice-Type"><a href="#The-Slice-Type" class="headerlink" title="The Slice Type"></a>The Slice Type</h2><p>Getting starting/ending index from <code>String</code> (not tied to String state)</p>
+<h3 id="String-slices"><a href="#String-slices" class="headerlink" title="String slices"></a>String slices</h3><p>常见用法</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-keyword">let</span> origin_s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;Hello, world!&quot;</span>);<br>    <span class="hljs-keyword">let</span> origin_len = origin_s.len();<br>    <span class="hljs-keyword">let</span> slice_array = [<br>        &amp;origin_s[..],<br>        &amp;origin_s[<span class="hljs-number">0</span>..origin_len],<br>        &amp;origin_s[<span class="hljs-number">1</span>..<span class="hljs-number">5</span>],<br>        &amp;origin_s[<span class="hljs-number">2</span>..<span class="hljs-number">8</span>],<br>    ];<br>    <span class="hljs-keyword">for</span> (i, &amp;item) <span class="hljs-keyword">in</span> slice_array.iter().enumerate() &#123;<br>        <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;Slice &#123;&#125;&#x27;s length &#123;&#125; -- &#123;&#125;&quot;</span>, i,item.len(), item);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>With all this information in mind, let’s rewrite <code>first_word</code> to return a slice. The type that signifies “string slice” is written as <code>&amp;str</code>:</p>
+<p>越界的问题，如果我们试图修改原始String，编译Error。slice作为特殊引用也是immutable，ownership的，修改原始String意味着要创建一个mutable引用，联系上文，我们不能同时对同一变量创建mutable和immutable的引用。</p>
+<h3 id="String-Literals-Are-Slices"><a href="#String-Literals-Are-Slices" class="headerlink" title="String Literals Are Slices"></a>String Literals Are Slices</h3><p>Recall that we talked about string literals being stored inside the binary. Now that we know about slices, we can properly understand string literals:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-keyword">let</span> s = <span class="hljs-string">&quot;Hello, world!&quot;</span>;<br></code></pre></td></tr></table></figure>
+<p><code>s</code>的类型是<code>&amp;str</code>，这也可以解释为什么string literals都是immutable的，<code>&amp;str</code>是immutable引用。</p>
+<h3 id="String-Slices-as-parameters"><a href="#String-Slices-as-parameters" class="headerlink" title="String Slices as parameters"></a>String Slices as parameters</h3><p>More experienced Rustaceans prefer:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">first_word</span></span>(s: &amp;<span class="hljs-built_in">str</span>) -&gt; &amp;<span class="hljs-built_in">str</span> &#123; <span class="hljs-comment">// instead of s: &amp;String</span><br></code></pre></td></tr></table></figure>
+<p>这样我们可以同时支持<code>&amp;String</code>类型的值和<code>&amp;str</code>的值。</p>
+<p><strong>Deref coericion</strong>强制类型转换。</p>
+
             </div>
             <hr>
             <div>
