@@ -14,18 +14,7 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="Target
-实验部分：
-smallbank 和 healthplus Crdt 的实现
-crdt 的实验
-
-
-论文部分：
-related work 开始梳理，逐渐过渡 comment -&amp;gt; 李诚
-
-
-
-The First Step题目摘要引言TitleLanguage Support for Designing Geo-replicated Services with Fast Perfo">
+  <meta name="description" content="本篇文章有密码">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
   
@@ -265,7 +254,7 @@ The First Step题目摘要引言TitleLanguage Support for Designing Geo-replicat
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      626 字
+      8 字
     </span>
   
 
@@ -275,7 +264,7 @@ The First Step题目摘要引言TitleLanguage Support for Designing Geo-replicat
       <i class="iconfont icon-clock-fill"></i>
       
       
-      7
+      1
        分钟
     </span>
   
@@ -308,45 +297,18 @@ The First Step题目摘要引言TitleLanguage Support for Designing Geo-replicat
             <h1 style="display: none">Geo-Replication阅读笔记</h1>
             
             <div class="markdown-body">
-              <h1 id="Target"><a href="#Target" class="headerlink" title="Target"></a>Target</h1><ul>
-<li>实验部分：<ul>
-<li>smallbank 和 healthplus Crdt 的实现</li>
-<li>crdt 的实验</li>
-</ul>
-</li>
-<li>论文部分：<ul>
-<li>related work 开始梳理，逐渐过渡 comment -&gt; 李诚</li>
-</ul>
-</li>
-</ul>
-<h1 id="The-First-Step"><a href="#The-First-Step" class="headerlink" title="The First Step"></a>The First Step</h1><h2 id="题目摘要引言"><a href="#题目摘要引言" class="headerlink" title="题目摘要引言"></a>题目摘要引言</h2><h3 id="Title"><a href="#Title" class="headerlink" title="Title"></a>Title</h3><p>Language Support for Designing Geo-replicated Services with Fast Performance and Preserved Semantics</p>
-<p>针对高性能保留语义的跨地理服务设计的语言支持</p>
-<p>关键词：跨地理、语义保护</p>
-<h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h3><p>互联网服务提供商使用跨地理的服务（<strong>应用场景</strong>）在不同大陆上部署副本来提升应用的响应时间。</p>
-<p>问题、挑战：长距离同步通信成本太大。混合一致性模型和细粒度的一致性协议提供了机遇和挑战。本文给出了一种细粒度的一致性模型、编程接口及形式化的操作语义</p>
-<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><p>回顾大规模、跨地域服务的广泛应用。</p>
-<p>传统的 distributed storage systems 仅使用线性一致性模型 <a target="_blank" rel="noopener" href="https://www.cs.purdue.edu/homes/csjgwang/cloudb/AzureStorageSOSP11.pdf">Windows Azure Storage</a> 和 <a target="_blank" rel="noopener" href="https://www.usenix.org/system/files/conference/osdi12/osdi12-final-16.pdf">Google Spanner</a>。</p>
-<p>随着大规模互联网服务使用者进一步增多，提供商开始提供 geo-replicated 系统来提升响应时间，但是这种场景下，长距离通信开销变得很大，成为瓶颈问题。（见参考文献 1，<a target="_blank" rel="noopener" href="https://www.cs.umd.edu/~abadi/papers/abadi-pacelc.pdf">Consistency tradeoffs in modern distributed databasesystem design: Cap is only part of the story</a>）</p>
-<blockquote>
-<p>(!TODO)文章这里逻辑有些混乱，应该先说明需求，说明跨地域服务的兴起以及早期的使用线性一致性模型的工作。</p>
-</blockquote>
-<p>为了解决跨地域副本的同步开销，一些研究尝试提供更弱的一致性模型（文献 4、5、11、15-17，43，48，50），（阐述弱一致性模型的作用）</p>
-<p>尽管弱一致性可以解决部分问题，强一致性在很多场合是必须的（加引用，分析）从而引出 mix-consistency。</p>
-<p>在实际应用 mix-consistency 于实际系统中出现的困难：不同弱一致性模型</p>
-<h3 id="Contribution"><a href="#Contribution" class="headerlink" title="Contribution"></a>Contribution</h3><ol>
-<li>本文提供了与编程接口相关并具备正式操作语义的细粒度一致性模型</li>
-<li>本文给出了一些执行序列的性质保证（形式化保证）使用本语言编程的</li>
-</ol>
-<h1 id="The-Second-Round"><a href="#The-Second-Round" class="headerlink" title="The Second Round"></a>The Second Round</h1><h2 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h2><h2 id="System-Model"><a href="#System-Model" class="headerlink" title="System Model"></a>System Model</h2><p>应该属于 Design 部分了（考虑要不要在后面讲实现）</p>
-<p>考虑目前企业界流行的（大规模）系统体系结构为三层结构，我们的设计也划分为 client, logic servers 和 replicated databases.逐一介绍</p>
-<ul>
-<li>Client</li>
-<li>Logic server</li>
-<li>Replicated database</li>
-</ul>
-<h2 id="Motivation-Example"><a href="#Motivation-Example" class="headerlink" title="Motivation Example"></a>Motivation Example</h2><p>先介绍需要引入的原语，以及先前的工作。</p>
-<h2 id="Introduction-1"><a href="#Introduction-1" class="headerlink" title="Introduction"></a>Introduction</h2><a id="more"></a>
-
+              <div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="抱歉, 这个密码看着不太对, 请再试试." data-whm="抱歉, 这个文章不能被校验, 不过您还是能看看解密后的内容.">
+  <script id="hbeData" type="hbeData" data-hmacdigest="7f7e2b46a3a95b961f77e75d55829f3d1c619aaf1ba4b7bde2ba56c3a13874f4">9e684f146ed2308dd0b148f2dba9d6c91e29b2032b8b03b0760c2a0680cc9fda15c36dbd5493af6b7e86f18e368daa5358fc240b60c2b3639368adad4fca2c2e2a3605c857dd4054d7a7afffeadb3d171513381857a036a2bdb41c8256960d2f721ba32876764c8268fee6e65b389b2b1009686c8bb2024494cb8aee9c74696bee84883f2a137223687b12d11fb75321b088eb2078c1e7b6bab28e454c2d718e270267c0a81a2070daa0ed46b496c0e73a105fda95bcb4a6819bf0864496b3b2e923ed02c21cc23c8ca1f07d6b42caa1d2bcd26a2fa08ec1c919210c6122160f2ee601ab6c58362fb8902458c83e533f7731f430d2eb13e69d24cfc2d51689fdc42f6a904b8c1e12c8f860c1eda4a525a74edaf5afc83f1bf2639126b67562a2faf4bd456b45a956128824303526804c334aeddc872b9e22719afa94cdb52f81b730a33859b9ca67ed3f31818920333052467a3e2ac448619b20418853f7e441f620d2316629017d9ffa91658b66fdc40b19598f7f76ebe7969404bf26a5e427cbf71151d22c91af956411c1dd272772177175c2ee8f1696111e5057eb073ccd47be68ee10ae7d33a3ae6e305e57241729c43b9e5088f8677552f7c658d4fd457da6e87dfd185b511ed4fb2268ebfb5fe6f009f26682c4e790ef19c7ecb7bb56b61862f52de6c29c1b138df090d183576355600fd5efdafd5c8c4c086218b41dbaf7fa98fa2a693ed24567d449d6aa7e221ac00e248a9410fbb89fb444529b527a9079d8943774b8add2f004c9c32e9ac4da2613fbbd423b45087ed35599982fb1054e33a42e1a7a5fee5ce9b9c9ef7229db3449b45bf42dcba8ca59cf1c35d764fd096b5f4e59abb6d435afc31f0dd6073dd43c99ea5c590d39b584e54047d0cd730873982ae25e0e883ad4fc41c88ab42954b1c78f8573024ef17d5cafabf3f5fc7addfb6eb36666f1fb6aa9765f2cee83ce609f3094ac7bf5d2a59f8b30b587943374d76275c5d6df8cbdbf46542823ca91755f709522d3065691bb44d10e4627b0a688c74166092793951a6206a5e966c0d930b61b88f1c8a4e3d08af19bf0883176b000aeb1c937008b60f1d777aa632fc0feb842c928316b8d0840e1529cd7485d30cb93993e2c3f32da35857905f1a60423ed3d7dab3ab8b692c53ff5813266dd92aac8e788c6ca7a2e7ea5ee7ef794a8db9460075a9cf9919c3df061406b20ea5d43fe505847e90342f0b2210a6dc5f99acf0792c29e86706be2e002844fd826c70e2b403fe314935b06072c476cc0b927b6dec6383170ee235e882ae12ebc2605fe75c71231cd5e6a667d23bb34f37c7e48d6f22c70cc00e978a05d192ec0878f9c86f438c84b2139c227a83e0110a3c4cb344738d0b754f8f1650cc546b25e2a2df6ac5360078d14414fec7bbba5ee89df0ef11992117ba81cb565e7d887b3269e275d43a6e91385637ba2dc10f5db46c21460fd5cbbf90344273d880dca79950a48c26ae0ce4dbd0baca4f1f6ea0c7835f17596a2ac5e1f452d80de27c7e90d77579ea2880c89d2cb0cae3669291a6f17de69b86a77b210081bc049bc9e0e8e19fa0090ada7d82b4c7ca8bdd4efb1d03a871cccd52d16b0eebcf1e66188617f687cc0581e1b622a473845b45e59517830790345102a4002bda00edc1ab767d2f34659e1f820e398bbe234100719bf18eebb31209e74dd73335e4acf507630be406b38b9ba62e1cadcd54e8d4f11f9854cd6a087599655a9532061f320c3de9ac4010ebc20f5e70706f077bc46f80df5124604427af78984ead50605a5fcdb7acd9839ef53db7b44e3132d93c2e90940741a0571e2de30357ffb29b469db8810762a3d2e1ba1e56cbc7e9b47eda50f04318d3b6e9685eca9213f8d4dd81f6827bc5c9736c258d854379547348f12ed1d85e04745caea732c48f9819827df234c03892f09cd7378bab1b00e8aca2a406897e2f79e1eb9b89421e1d4ece047d19db05aeaa970650fd10b33600a8bedff75341f13dcf3199fbfa9f019777a55181509478bebd6056fe7da83f8521750c7e22286a0df151f54fcae630bff84ea45209d2b724f389da0cf0c83c0b703fd875d1041776214ecdae4553204bffb9af9673bfd873f318da4107e91ff4bf1c04a1eeb49eb584b88f619fff52f85702d8ce1cff653159eb5dfbb39cc38fb1dad660075f34f12c6dcf888048182299887e6104445bb67f0beae3ca721c6620044ea3163d87fc85fd4b78de62850e5d7c7f81acd6ae22dc1ac183fd9d16ecb85686e4be100c1fcc3ca33e7b9b16a643f5f3d6e490950e90cdd19e2d237d3705381649ac482b9428d12ee218834be5c9edb543dfad6bd6a28f48c59b167e2422a7078d80af57e8011cf909aff76512fa8daeb218400ee6ae995f7f8f7bef0d3bc8eccfab89e78fc9cacdc4cbb36da9c512b175c57be59908c6c74bd7b928c650666b5064557c30d66ad78b8a81ff850abc52cbcce9af4db0554c8a2ae6c41956979b62d31864e1cdd997345ab4f61e6783e34ef4627785360503d28abf427843df35a8f9555c441e03f2f98f7c6d1b02fa80c9564479ad99f1b3a036639e078377d77a9769b8b2c7ceae53385991e4fbfaefca48db98609752fff30cf391ac13e5d8445e3d9b9635b24a3a9b278e1b8e865efc1e93a7cfb270e5b32b795ac209f496be648589f38de7a40192e5c48b049cce22b730349ece8dc799382b80580819d0714f5b48cc3c692335134ab0800be0bfecc90c6f2410d4155f5de531a7e68539445c71d0e58037a677b2bc20c3f8e70fa8e9f78f30cb3ed873cb1e03dc4e50d51e4948e293cec235ca007ac40e29def04397e1b71c58b7a0d9fde8354fee2bb05039b9e72529173598d4b3cbddd4dbf74b38c7cb26f26223979e78f64a02bc9219f8b639c69d6ef43ed59cf9dc8e9af001a7b3d7267758817cb65559d7f33e3348984cea459324ab1a8643edc812a028e0f83546fbb22f6dcf9614ecbfd4583ea5636ced6e3963eee4f7b720598fdbc0f12d8e1af8a7853dd3f04f804836a17181c367738ad0ea8c5e29811350f718986099ad826d4420e9eb73cf895111dae9567b935d73b03a3f02e1cb4d26ba20db4008363644d4902a4f021ece96d70a239b8f4447e8b074776c14eb26473743339484e5f2e91fe7026181ed2b3ea78ea0fac322f2f845911d3e9109e936ab6387e25c910459c309e6d5ccab1c30787c3da78f30c338dd6db8166a27aed9d27dd228650bb7c81c54398536eacf2292db39a7097c240ba9f71f8865e70aa144cb73f73daae4db69f0caff9a40b238c2e784f449c25dc19fc93b6a7c79d33c29ebc29c7ed4213e06cdcdb77d0e4a342ddd97d421c3033230a398cc73bb75239af24000c4fce881268091607e07c94c4b6cebebfb4c590d67b9e2021222ab31a3c6d417bee91481fcfc6e6bcf78d43f738370d2dfd2d6b29393110f1afe432d91f3b79a74089c4381e6989307bbccd607a15a22652c83b7f72aac7468269abefe2651f8f987a4d75e84e9af94a364a5b7ddbab7573e9c7a0b010aef509cd5ab7d381c69bb3c22b36f9c6542e2850b67d1d845f8a1a2f1b8b766a74c332f5edb814da90cbca20e93f8cbca54a8db0bc2346003ef1dfed93f976b95416f24aedfeab3baa5b4e594e5d22da0d1321762c9fcdaa89643ddaad1ecf4fdb88212f539ef2b7d3d282c1cecb664e4b2cfd4edeca9a7eaebc94100fb4ca953908c03800bf49662586f8702d15d15d42e0eec30ce91fcc8abdcb149e2d0fe51ca0537c1cf9a34c5fcbfb97273648a143c38a902359b041ee0a09ef820e814f32dee1461429eb7d2bb6eff8bb3041a6a6255bec4aaac74381492c07e24b3eef1547f6a162f02b00a2fbbb31e3b3791e83ebdd40df7e3090f07267d3e2e72361c8cfe651d066276523b9606945b3add89a6919692429575d43f8d9d0aae1347d7b0195760af0c1409f922ce0351754c5369b847731ea654b8541d6636179119baf1984f745764b29948b96430a7335f3731d85b09cbae9cb4c1759679ee4b03ded089f149eb9fadf54bba5e1523c78dab897955989895bf9b76d299f918bcc64141ded20308042bdc919c873ea2bc3e6a9659d7f54ede100e1650c84a86fbc028dc51ff493ffee20a601d2fd1ed759404561bc3eee424b9c0d53ee1c7b905ca68241e8fc0cb04d483def8cbfcc8fe69172b892add13102c0fe1a37ca35c69ab9ef8696830a8845b06d0b0bef6e3f2c5d9a4e7d14ac270d85f058f8f98a536da0d83373baca1e4b99478ccf1765aa7bffa8b48621f5835661ebacf19be465c2a737ffa3d7101d7180526110f7f00700d199e1902f2d1f6fbb19a13437e0aeb4b4a3ef4e10bcc848dd79a2dcf70c7a659ab8221b0fd53794c78258c7ea0c9d60295c7f6e32d93e7244ddfa78c76d8a61949400b75f8e641a912181431fa55ad71f5b60baab02400998ff290518771f70300a3d65dfd74c7a49c53ccff6e342d6a0a9318541f748638b1bac59245733ddffd858e4d2f6c5f548f64ae0ae4ea767a20d3e61e73d5f541650d21548c370825217e9e7fde7005c2a81df189a3bb56f0a82cb72a03d9db83e6488cc75c20dcdc9dc40a2d4d19f407db872e83ce6afcfff5486babaf325c2b4678f701a298bdfcd980da910309b7b2808dc085317b1e4192cdaa14842414180c6f28cab77fe44a4f424d1c68549dea4cc81eab83a3625664fb7547c55e217d9c12612082f96d67d1a7aa5cfb2d290693cc78a0e5270cfa628d35ecea30d17fb5fd127efd0bd815ab882d30a9c2e7eed005179476bba8a3e96a22d81880efed4236c97780adf23d05ca707743cd6d3142471af46de0cbb1ab9e9f732a5cf4f8e5caf9578896f8378b0caa13538dd224a8412d26bf702a55cd7a69c2a3954fbdeeb672ee6e1e32a10acaef442ea167a4f61970c196d686f29af86642f494d93a7a3449ba5450029cb4f1f15be9d0c82cc80be1bbb2c04af11f25a1001a2aa13d82220dc10125573a45db44f0412a0e75f3b2b550d4fa3dfdd0219fc5b1094d91ea71ad461b7242be19cc6d9ad99adfe55e68521c6d059017b8ae39b0ed9a5c68d72016275c8f28638eae5d3223a3b56bd86ecfcbbcda65160721deaf5fe6a0577db8991602de448aab8b506ccec9284d0dbeace4e1a91b823de9dba17cd504adf1cd5f87f7cc64c1f4ddc15b287663d39d0185e5b21f330455f579d4877cce2cc7d7c15de7b31b1e948dbfd452c6366eb1189cd505e0f9cd64093e81f631abbcd5fa734371cfd89aeb59a655d4ecb6da9ccb30119681888fed5d54b2dac23740333205dbdff0d0e5f61219572bb83da8b641cdb830bef3230ef7103a45aa1b9a129185f40419f94b678c57167a32d66af8986b8732b636e706305855838aaf5fbb256de22fffdbeec58e02bc640ded04a17c8e61ec706b7baca0d5ea1ac87e992b3b26b71e72b38e60a90ba48bc11249617295e68bc2f70963766f964c9fb46b44f41e7a53800a107587e9a8b3d29ce8ab858dea6cffde08b577ef590626adddd2dbb47988a35a7927d2a522bfd0c4fe60b44266c819fbf0881fdae2b725cbb138f5a84f716c89f9d48959fde80837463ecf172f35c3f7cacf1149b9c2a284837d0079c75048c701ea8beb7088030e8a4f20ef722466518126aeba4d13b4393b3d202715ef746540e615d97b3196b7272a4067fb9796275dd187b0c0315222123c817f8a1881896f3c1f8b85cffe0bca26a0828ff765c7258ea4406d7fe15646923c23335c329d63233fc117fa2d39c8e1e8b021c9a198f9bba0c8d558826b52b9b300b13a4f460e1b36bf68ae1</script>
+  <div class="hbe hbe-content">
+    <div class="hbe hbe-input hbe-input-default">
+      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
+      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
+        <span class="hbe hbe-input-label-content hbe-input-label-content-default">本篇文章有密码</span>
+      </label>
+    </div>
+  </div>
+</div>
+<script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">
             </div>
             <hr>
             <div>
@@ -361,6 +323,15 @@ The First Step题目摘要引言TitleLanguage Support for Designing Geo-replicat
                     
                   </div>
                 
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/Research/">Research</a>
+                    
+                      <a class="hover-with-bg" href="/tag/Paper/">Paper</a>
+                    
+                  </div>
                 
               </div>
               
