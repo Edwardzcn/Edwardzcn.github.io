@@ -256,7 +256,7 @@ What Is Ownersh">
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.6k 字
+      1.9k 字
     </span>
   
 
@@ -266,7 +266,7 @@ What Is Ownersh">
       <i class="iconfont icon-clock-fill"></i>
       
       
-      26
+      30
        分钟
     </span>
   
@@ -329,6 +329,15 @@ What Is Ownersh">
 <h4 id="Stack-Only-Data-Copy"><a href="#Stack-Only-Data-Copy" class="headerlink" title="Stack-Only Data: Copy"></a>Stack-Only Data: Copy</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-keyword">let</span> x = <span class="hljs-number">5</span>;<br>    <span class="hljs-keyword">let</span> y = x;<br><br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;x = &#123;&#125;, y = &#123;&#125;&quot;</span>, x, y);<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>But this code seems to contradict what we just learned: we don’t have a call to <code>clone</code>, but <code>x</code> is still valid and wasn’t moved into <code>y</code>.</p>
 <p>Types that have known size at compile time are stored entirely on the stack.</p>
+<p>Rust 有一个叫做 <code>Copy</code> trait 的特殊注解，可以用在类似整型这样的存储在栈上的类型上（第十章详细讲解 trait）。如果一个类型实现了 <code>Copy</code> trait，那么一个旧的变量在将其赋值给其他变量后仍然可用。Rust 不允许自身或其任何部分实现了 <code>Drop</code> trait 的类型使用 <code>Copy</code> trait。如果我们对其值离开作用域时需要特殊处理的类型使用 <code>Copy</code> 注解，将会出现一个编译时错误。要学习如何为你的类型添加 <code>Copy</code> 注解以实现该 trait，请阅读附录 C 中的 “可派生的 trait”。</p>
+<p>那么哪些类型实现了 <code>Copy</code> trait 呢？你可以查看给定类型的文档来确认，不过作为一个通用的规则，任何一组简单标量值的组合都可以实现 <code>Copy</code>，任何不需要分配内存或某种形式资源的类型都可以实现 <code>Copy</code> 。如下是一些 <code>Copy</code> 的类型：</p>
+<ul>
+<li>所有整数类型，比如 <code>u32</code>。</li>
+<li>布尔类型，<code>bool</code>，它的值是 <code>true</code> 和 <code>false。</code></li>
+<li>所有浮点数类型，比如 <code>f64</code>。</li>
+<li>字符类型，<code>char</code>。</li>
+<li>元组，当且仅当其包含的类型也都实现 <code>Copy</code> 的时候。比如，<code>(i32, i32)</code> 实现了 <code>Copy</code>，但 <code>(i32, String)</code> 就没有。</li>
+</ul>
 <h3 id="Ownership-and-Functions"><a href="#Ownership-and-Functions" class="headerlink" title="Ownership and Functions"></a>Ownership and Functions</h3><p>Taking ownership and then returning ownership with every function is a bit tedious. What if we want to let a function use a value but not take ownership? </p>
 <p>可以选择元组（带有额外信息），但仍涉及频繁的ownership转换。但对于一个应该是通用的概念来说，这意味着太多的仪式和大量的工作，好在Rust 还提供了<em>references</em>。</p>
 <h2 id="References-and-Borrowing"><a href="#References-and-Borrowing" class="headerlink" title="References and Borrowing"></a>References and Borrowing</h2><p>一个使用reference 避免移交ownership的简单例子：</p>
