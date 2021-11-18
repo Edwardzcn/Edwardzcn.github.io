@@ -254,7 +254,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.3k 字
+      1.6k 字
     </span>
   
 
@@ -264,7 +264,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      14
+      18
        分钟
     </span>
   
@@ -333,7 +333,19 @@
 <figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-meta">#![allow(unused)]</span><br><span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>()&#123;<br>    <span class="hljs-keyword">mod</span> back_of_house &#123;<br>        <span class="hljs-keyword">pub</span> <span class="hljs-class"><span class="hljs-keyword">enum</span> <span class="hljs-title">Appetizer</span></span> &#123;<br>            Soup,<br>            Salad,<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">eat_at_restaurant</span></span>()&#123;<br>        <span class="hljs-keyword">let</span> order1 = back_of_house::Appetizer::Soup;<br>        <span class="hljs-keyword">let</span> order2 = back_of_house::Appetizer::Salad;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>习惯决定的。 还有一种<code>pub</code>的场景我们还没有涉及到，那就是我们最后要讲的模块功能：<code>use</code>关键字。</p>
 <h2 id="Bringing-Paths-into-Scope-with-the-use-Keyword"><a href="#Bringing-Paths-into-Scope-with-the-use-Keyword" class="headerlink" title="Bringing Paths into Scope with the use Keyword"></a>Bringing Paths into Scope with the use Keyword</h2><p>使用<code>use</code>关键字将路径一次性引入作用域</p>
-
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-keyword">mod</span> front_of_house &#123;<br>    <span class="hljs-keyword">pub</span> <span class="hljs-keyword">mod</span> hosting &#123;<br>        <span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">add_to_waitlist</span></span>() &#123;&#125;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">use</span> front_of_house::hosting;<br><br><span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">eat_at_restaurant</span></span>() &#123;<br>    hosting::add_to_waitlist();<br>    hosting::add_to_waitlist();<br>    hosting::add_to_waitlist();<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="创建惯用的use路径"><a href="#创建惯用的use路径" class="headerlink" title="创建惯用的use路径"></a>创建惯用的use路径</h3><ul>
+<li>通过<code>use</code>关键字将函数的父模块引入作用域（习惯用法）</li>
+<li>通过<code>use</code>关键字将函数直接引入作用域</li>
+</ul>
+<p>前者可以清除地表达函数的定义，并不是在本地定义的而是在制定的模块路径，同时最小化路径的重复，但是后者就会模糊<code>add_to_waitlist</code>是在哪里被定义的。</p>
+<blockquote>
+<p>注意：Rust不允许使用<code>use</code>语句将两个具有相同名称的项带入作用域，解决方法是引入父模块（此时路径需要带有父模块名），或者使用<code>as</code>关键字为引入的同名模块提供新的名称。</p>
+</blockquote>
+<h3 id="使用-pub-use-重导出名称"><a href="#使用-pub-use-重导出名称" class="headerlink" title="使用 pub use 重导出名称"></a>使用 <code>pub use</code> 重导出名称</h3><p>仅使用<code>use</code>关键字导入作用域时，新作用域名称私有的，换言之，调用本模块的无法使用这些新引入作用域。<code>pub use</code>，技术称为重导出，re-exporting，因为这样做将项引入作用域并同时使其可供其他代码引入。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-keyword">pub</span> <span class="hljs-keyword">use</span> crate::front_of_house::hosting;<br></code></pre></td></tr></table></figure>
+<p>外部可以引入后也可使用新路径<code>hosting::add_to_waitlist</code></p>
+<h3 id="使用外部包"><a href="#使用外部包" class="headerlink" title="使用外部包"></a>使用外部包</h3>
             </div>
             <hr>
             <div>
