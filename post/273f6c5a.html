@@ -262,7 +262,7 @@ AbstractBoki 是一个 runtime，向 severless functions 导出 shared log。允
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      428 字
+      1.2k 字
     </span>
   
 
@@ -272,7 +272,7 @@ AbstractBoki 是一个 runtime，向 severless functions 导出 shared log。允
       <i class="iconfont icon-clock-fill"></i>
       
       
-      5
+      14
        分钟
     </span>
   
@@ -318,26 +318,44 @@ AbstractBoki 是一个 runtime，向 severless functions 导出 shared log。允
 <p>应用级别是有状态的，但是 serverless 函数本身是无状态的。</p>
 <p>使用 cloud bases 来管理有状态的数据，很难在保证一致性和容错性前提下实现不错的性能和可拓展性。</p>
 <p>shared log（这里看不是 Boki 提出的，ref 了文献 23，30，55），目前是一种流行的方法，用构建兼顾可拓展性、强一致性和容错能力的存储系统。</p>
-<p>A shared log offers a simple abstraction: a totally ordered<br>log that can be accessed and appended concurrently.</p>
+<p>A shared log offers a simple abstraction: <strong>a totally ordered log that can be accessed and appended concurrently</strong>.</p>
 <p>使用 shared log 还可以免除分布式应用的容错共识的细节，因为共识协议被隐藏在 API 中（见参考文献 22）。</p>
 <p>文章构建的 Boki 就是一个 FaaS runtime 用以向无状态的函数暴露（exports） shared log API 来存储 shared state。 LogBook 抽象。</p>
-<p>为了实现高性能，读一致性和 fault tolerance，处理与 Cloudburst 中提到的相似的问题，read locality 和 cache 的问题，提出了 metalog 机制。</p>
-<h2 id="基本理论概况"><a href="#基本理论概况" class="headerlink" title="基本理论概况"></a>基本理论概况</h2><h2 id="结论部分"><a href="#结论部分" class="headerlink" title="结论部分"></a>结论部分</h2><!-- 确定作者的成过以及点出的经验、问题、改进方 -->
+<p>为了实现高性能，读一致性和 fault tolerance，处理与 Cloudburst 中提到的相似的问题，read locality 和 cache 的问题，提出了 metalog 机制。 Metalog 定义了 Boki 的内部状态的总顺序，应用程序可以用于在需要强制一致性。比如，monotonic reads 可以通过跟踪 metalog 位置来强制获得。因为 Boki 使用 metalog 的紧凑形式，持久性与一致性可以达成，但是不能获得大吞吐量。因此，Boki 使用简单的住区哦对那个设计存储和更新 Metalogs。</p>
+<p>遵循先前的 shared log systems 设计，使用重新配置处理机器故障。因为 metalog 控制了 Boki 的内部状态迁移，密封 metalog（使之不能再写）会暂停状态转移。因此，Boki 就可以通过封存 metalog，修改系统配置，启动新的 metalog 来实现重新配置。</p>
+<p>主要贡献：</p>
+<ul>
+<li>Boki 是一个 FaaSruntime 提供 LogBook API 帮助有状态的 serverless 应用来管理他们的状态的 durability，consistency 和 fault tolerance.</li>
+<li>Boki 提出了 metalog 的新机制，来确定 log ordering，读一致性和容错。metalog 分离了 LogBooks 的读写路径，使之实现高吞吐量和低延迟。</li>
+<li>构建 Boki support libraries，支持库。使用 LogBook API 来说明有状态 serverless 应用 shared logs 的值。库实现了容错 workflows（BokiFlow），持久对象存储（BokiStore）和 serverless message queues（BokiQueue）</li>
+<li>评估</li>
+</ul>
+<h2 id="基本理论概况"><a href="#基本理论概况" class="headerlink" title="基本理论概况"></a>基本理论概况</h2><p>Boki 构建的使用 shared logs 机制的 runtime，对外提供 LogBooks API，并使用 metalog 来实现读一致性和容错，由于 metalog 分离了 LogBooks 的读写路径，使之实现高吞吐量和低延迟。</p>
+<h2 id="结论部分"><a href="#结论部分" class="headerlink" title="结论部分"></a>结论部分</h2><!-- 确定作者的成过以及点出的经验、问题、改进方 -->
+<p>继续阅读</p>
+<p>主要目标：Serverless Computing 中的状态管理问题。</p>
+<p>突出贡献：Boki 是第一个使用 shared logs 来允许 serverless functions 管理状态的系统。</p>
+<p>文章的是实现和评估体现出他们在 Boki 中实现的 shared logs</p>
 <h2 id="回答基本问题"><a href="#回答基本问题" class="headerlink" title="回答基本问题"></a>回答基本问题</h2><ol>
 <li><p>类别</p>
 <!-- 这篇论文是什么类型？测试类？对现有系统进行分析的？对原型系统进行描述的？-->
+<p>原型系统描述</p>
 </li>
 <li><p>内容</p>
 <!-- 你读过的其他论文有没有与之相关的？相关性与区别最直接体现在哪里？文章中分析问题用的什么理论基础（通过瞥一眼数学概况与核心证明可以得到）。 -->
+<p>对比之前阅读的 CloudBurst，Boki 的设计实现了 shared logs，这个是之前没听过的。</p>
 </li>
 <li><p>正确性</p>
 <!-- 结论是否看起来真实有效？ -->
+<p>正确</p>
 </li>
 <li><p>创新点</p>
 <!-- 论文的主要创新点是什么？总结提到的经验、问题和改进方法是什么？ -->
+<p>在 Boki 成功实现了 shared logs 的 abstraction——LogBooks，并且也实现了 Serverless 所必需的 elasticity（Serverless 天然）和 data locality（为了低延时），这些都是在新的 metalog 设计上实现的。</p>
 </li>
 <li><p>清晰度</p>
 <!-- 这篇论文是否写的条理清晰 -->
+<p>较为清晰</p>
 </li>
 </ol>
 <h2 id="阅读选择"><a href="#阅读选择" class="headerlink" title="阅读选择"></a>阅读选择</h2><!--
@@ -347,7 +365,27 @@ AbstractBoki 是一个 runtime，向 severless functions 导出 shared log。允
 -->
 <a id="more"></a>
 <h1 id="Step-2"><a href="#Step-2" class="headerlink" title="Step 2"></a>Step 2</h1><h2 id="细读笔记"><a href="#细读笔记" class="headerlink" title="细读笔记"></a>细读笔记</h2><!-- 要仔细阅读论文，但是诸如证明等信息要忽略掉 -->
-<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><h2 id="未读（且值得读）文献记录"><a href="#未读（且值得读）文献记录" class="headerlink" title="未读（且值得读）文献记录"></a>未读（且值得读）文献记录</h2><!-- 在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 -->
+<h3 id="Serverless-Nature"><a href="#Serverless-Nature" class="headerlink" title="Serverless Nature"></a>Serverless Nature</h3><p>Serverless 的天然环境，Serverless functions 是无状态的，所以状态管理问题，要么交给中间调度层，比如 Cache 和 Cache 一致性模块（类似 CloudBurst），或者完全交由存储层（cloud storage service）。后者难以提供低延迟、低开销、高吞吐。</p>
+<h3 id="Shared-Log-Approach-for-Stateful-Serverless"><a href="#Shared-Log-Approach-for-Stateful-Serverless" class="headerlink" title="Shared Log Approach for Stateful Serverless"></a>Shared Log Approach for Stateful Serverless</h3><p>云环境下的函数执行出现错误，一致性管理问题</p>
+<ul>
+<li>Write-ahead redo log: Olive, Beldi（拓展至 Transaction）</li>
+<li>State machine replication: 实现容错的通用方式，状态在多个机器是备份的使用共识算法计算的。</li>
+</ul>
+<p>最近的研究表明：一个共享的 log，shared-log 可以提供更高效的抽象来支持 SMR-based 数据结构。</p>
+<blockquote>
+<p>But recent studies demonstrate a shared log can provide efficient abstraction to support SMR-based data structures.</p>
+</blockquote>
+<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><h2 id="未读（且值得读）文献记录"><a href="#未读（且值得读）文献记录" class="headerlink" title="未读（且值得读）文献记录"></a>未读（且值得读）文献记录</h2><p>Shared logs 相关</p>
+<ul>
+<li>传统的 replicated command log 到 shared log：<ul>
+<li><a target="_blank" rel="noopener" href="http://www.cs.cornell.edu/~taozou/sosp13/tangososp.pdf">Tango: Distributed Data Structures over a Shared Log</a> （支持 SMR-based 数据结构）</li>
+<li><a target="_blank" rel="noopener" href="https://research.vmware.com/files/attachments/0/0/0/0/0/1/6/vcorfu-nsdi2017.pdf">vCorfu: A Cloud-Scale Object Store on a Shared Log</a>（支持 SMR-based 数据结构）</li>
+<li><a target="_blank" rel="noopener" href="https://www.usenix.org/conference/osdi20/presentation/balakrishnan">Virtual Consensus in Delos</a> （支持 SMR-based 协议）</li>
+<li><a target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.1145/3477132.3483544">Log-structured Protocols in Delos</a>（支持 SMR-based 协议）</li>
+</ul>
+</li>
+</ul>
+<!-- 在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 -->
 <h1 id="Step-3"><a href="#Step-3" class="headerlink" title="Step 3"></a>Step 3</h1><!-- 试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。 -->
 <h2 id="思路复现"><a href="#思路复现" class="headerlink" title="思路复现"></a>思路复现</h2><!-- 推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ -->
 <h2 id="证明与推理复现"><a href="#证明与推理复现" class="headerlink" title="证明与推理复现"></a>证明与推理复现</h2><!-- 分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源 -->
