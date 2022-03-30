@@ -262,7 +262,7 @@ AbstractBoki 是一个 runtime，向 severless functions 导出 shared log。允
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.2k 字
+      1.9k 字
     </span>
   
 
@@ -272,7 +272,7 @@ AbstractBoki 是一个 runtime，向 severless functions 导出 shared log。允
       <i class="iconfont icon-clock-fill"></i>
       
       
-      14
+      23
        分钟
     </span>
   
@@ -390,6 +390,34 @@ AbstractBoki 是一个 runtime，向 severless functions 导出 shared log。允
 <h2 id="思路复现"><a href="#思路复现" class="headerlink" title="思路复现"></a>思路复现</h2><!-- 推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ -->
 <h2 id="证明与推理复现"><a href="#证明与推理复现" class="headerlink" title="证明与推理复现"></a>证明与推理复现</h2><!-- 分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源 -->
 <h2 id="实验验证复现"><a href="#实验验证复现" class="headerlink" title="实验验证复现"></a>实验验证复现</h2><!-- Rework -->
+<h1 id="Video-笔记"><a href="#Video-笔记" class="headerlink" title="Video 笔记"></a>Video 笔记</h1><p>FaaS 平台，当有状态需求时会变得复杂。</p>
+<p>云服务商提供了多种存储服务，比如 Amazon S3, Amazon DynamoDB, Amazon Simple Queue Service，来帮助 serverless 函数储存他们的状态（直接在存储层解决状态问题）。</p>
+<p>In reality, service applications often compose multiple functions. For example: Service workflows.</p>
+<p>现实中 serverless application 通常组合多个函数。比如 serverless workflows。同时每个函数也可能会在执行过程中 fail，从而引发 DB 中不一致的问题。</p>
+<p>State consistency with fault tolerance is difficult with current infrastructure!</p>
+<p>因而状态的一致性，并提供容错性对于这种架构来说是困难的。</p>
+<p>以用户注册（函数 X）并参加会议（函数 Y）为例进行说明，故障可能发生在 X 执行过程中，没有向 DB 中写入新的 uid，也可能故障发生在 X 调用 Y 时，导致 Y 没有被调用。</p>
+<h2 id="Shared-Logs-The-Missing-Piece-in-Serverless"><a href="#Shared-Logs-The-Missing-Piece-in-Serverless" class="headerlink" title="Shared Logs: The Missing Piece in Serverless"></a>Shared Logs: The Missing Piece in Serverless</h2><p>一个常见做法。Shared logs，</p>
+<ul>
+<li>The shared log as write-ahead redo log for fault tolerance.记录了对 DB 的操控和函数的调用，当故障发生时，workflow 可以通过审查 log 了解哪些过程是完成的哪些是未完成的。</li>
+</ul>
+<p>（除了 WAL，shared log 还可以用在另一个重要的服务上）那么怎样在并发的函数中维护一个 shared state 呢？The shared log for state machine replication(SMR)。在这一例子下，并发的函数会在 shared log 中并发地 append 命令，log 用来 order 这些命令，之后这些并发的函数会从 shared log 中读取命令来重新构建 state machine.</p>
+<p>Total order provided by the shared log is 他和 source of consistency.</p>
+<h2 id="Boki-FaaS-Shared-Logs-Support-Libraries"><a href="#Boki-FaaS-Shared-Logs-Support-Libraries" class="headerlink" title="Boki: FaaS + Shared Logs + Support Libraries"></a>Boki: FaaS + Shared Logs + Support Libraries</h2><p>Boki 的架构。使用先前的工作 FaaS Runtime(Nightcore ASPLOS’21)，加上 Boki Shared Logs。Boki 对外暴露 Boki’s LogBook API，Serverless functions 通过调用 API 来使用 BOki Shared Logs. 作者还在最上层构建了 Boki Support Libraries（进一步简化了使用，构建了 BokiFlow，BokiStore 和 BokiQueue 中间件）.</p>
+<h2 id="LogBook-API"><a href="#LogBook-API" class="headerlink" title="LogBook API"></a>LogBook API</h2><p>A LogBook，本质上是一个 append-only log</p>
+<p>由 seqnum（顺序号）和 data slot，还由可选的 set of tags。Tags 是用来实现选择性读，LogBook Read API 允许提供一个 tag，从而只读取包含指定 tag 的 record 记录。因此，<strong>携带有相同的 log tag 构成了全日志的逻辑子串</strong>，该特性在特定场合时会很有用。</p>
+<p>Boki 中，每个 Serverless Function 的唤醒都会关联一个 LogBook，对于由多个函数构成的 Serverless Application，这些函数会关联<strong>相同</strong>的 logbook。这样 LogBook 就可以用来管理一致性和容错。</p>
+<p>以上就是用户层面（user level）Log API 的使用。</p>
+<h2 id="Dig-into-Boki-Shared-Logs-Design"><a href="#Dig-into-Boki-Shared-Logs-Design" class="headerlink" title="Dig into Boki Shared Logs Design"></a>Dig into Boki Shared Logs Design</h2><p>已有 Shared Logs 针对 Serverless 环境面对的困难。</p>
+<p>Serverless environment requires Boki to efficiently support diverse use patterns of shared logs.</p>
+<ul>
+<li>High Throughput</li>
+<li>Low Latency</li>
+<li>High Density<ul>
+<li>high density of small LogBooks</li>
+</ul>
+</li>
+</ul>
 
             </div>
             <hr>
