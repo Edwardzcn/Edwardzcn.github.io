@@ -262,7 +262,7 @@ AbstractBoki 是一个 runtime，向 severless functions 导出 shared log。允
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.9k 字
+      2.6k 字
     </span>
   
 
@@ -272,7 +272,7 @@ AbstractBoki 是一个 runtime，向 severless functions 导出 shared log。允
       <i class="iconfont icon-clock-fill"></i>
       
       
-      23
+      32
        分钟
     </span>
   
@@ -365,17 +365,55 @@ AbstractBoki 是一个 runtime，向 severless functions 导出 shared log。允
 -->
 <a id="more"></a>
 <h1 id="Step-2"><a href="#Step-2" class="headerlink" title="Step 2"></a>Step 2</h1><h2 id="细读笔记"><a href="#细读笔记" class="headerlink" title="细读笔记"></a>细读笔记</h2><!-- 要仔细阅读论文，但是诸如证明等信息要忽略掉 -->
-<h3 id="Serverless-Nature"><a href="#Serverless-Nature" class="headerlink" title="Serverless Nature"></a>Serverless Nature</h3><p>Serverless 的天然环境，Serverless functions 是无状态的，所以状态管理问题，要么交给中间调度层，比如 Cache 和 Cache 一致性模块（类似 CloudBurst），或者完全交由存储层（cloud storage service）。后者难以提供低延迟、低开销、高吞吐。</p>
+<h3 id="Serverless-Nature"><a href="#Serverless-Nature" class="headerlink" title="Serverless Nature"></a>Serverless Nature</h3><p>Serverless 的天然环境，Serverless functions 是无状态的，所以状态管理问题，要么交给中间调度层，比如 Cache 和 Cache 一致性模块（类似 CloudBurst），或者完全交由存储层（cloud storage service）。<strong>后者难以提供低延迟、低开销、高吞吐</strong>。</p>
 <h3 id="Shared-Log-Approach-for-Stateful-Serverless"><a href="#Shared-Log-Approach-for-Stateful-Serverless" class="headerlink" title="Shared Log Approach for Stateful Serverless"></a>Shared Log Approach for Stateful Serverless</h3><p>云环境下的函数执行出现错误，一致性管理问题</p>
 <ul>
 <li>Write-ahead redo log: Olive, Beldi（拓展至 Transaction）</li>
-<li>State machine replication: 实现容错的通用方式，状态在多个机器是备份的使用共识算法计算的。</li>
+<li>State machine replication: 实现容错的通用方式，状态在多个机器是备份的使用共识算法计算的。通常在后台使用共识算法来进行。最近的研究表明：一个共享的 log，shared-log 可以提供更高效的抽象来支持 SMR-based 数据结构和协议。</li>
 </ul>
-<p>最近的研究表明：一个共享的 log，shared-log 可以提供更高效的抽象来支持 SMR-based 数据结构。</p>
 <blockquote>
-<p>But recent studies demonstrate a shared log can provide efficient abstraction to support SMR-based data structures.</p>
+<p>But recent studies demonstrate a shared log can provide efficient abstraction to support SMR-based data structures and protocols.</p>
 </blockquote>
-<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><h2 id="未读（且值得读）文献记录"><a href="#未读（且值得读）文献记录" class="headerlink" title="未读（且值得读）文献记录"></a>未读（且值得读）文献记录</h2><p>Shared logs 相关</p>
+<p>衡量 Serverless Computing 需求，文章确定了三种 shared logs 提供解决方案的重要场合，Boki 针对这些场合提供了支持库。</p>
+<ul>
+<li>Fault-tolerant workflows: 建立提供事务状态更新，以及容错性的有状态函数工作流。 Beldi 在 DynamoDB 上构建了一个 atomic logging layer 来实现这些，Boki 采纳了 Beldi 的技术并以 LogBook API 的形式提供，无需建立额外的的 logging layer.</li>
+<li>Durable objectstorage: 受 Tango 和 vCorfu 等工作启发，使用 shared logs 来支持高级数据结构（比如对象）的一致性、持久化和可扩展性。</li>
+<li>Serverless message queues: 现有 FaaS 范式，函数无法直接彼此间沟通。Shared logs 可以很自然用来构建 message queues 来提供函数间的交流和 coordination.</li>
+</ul>
+<h3 id="Technical-Challenges"><a href="#Technical-Challenges" class="headerlink" title="Technical Challenges"></a>Technical Challenges</h3><ul>
+<li>Elasticity and locality: Serverless 受益于分离，可以提供弹性/可扩展性，但是物理上的分层带来了延迟问题。<ul>
+<li>Boki 的解决方法：解耦读取和写入路径，将函数的读取部分放置在一起。</li>
+</ul>
+</li>
+<li>Resource efficiency: 逻辑日志 LogBook 的高效利用<ul>
+<li>Boki 的解决方法：复用可以解决 LogBook 分布不均匀？但是带来了 LogBook 的读，如何确定 LogBook 的记录位置，引入 log index。</li>
+</ul>
+</li>
+<li>ephemeral nature：FaaS 函数的 in-memory state 不被保证在调用之间保留？TODO: 这部分不太明白<ul>
+<li>Boki 的解决方法：使用 auxiliary data? 实现类似 Tango 的本地视图。</li>
+</ul>
+</li>
+</ul>
+<h3 id="Booki-API-解读"><a href="#Booki-API-解读" class="headerlink" title="Booki API 解读"></a>Booki API 解读</h3><p>每个 function 在唤醒时关联一个 LogBook（由<code>book_id</code>确定），多个函数可以通过相同<code>book_id</code>共享相同的 LogBook。</p>
+<p>遵循先前 log systems 的设计，API 提供<code>append</code>,<code>read</code>,<code>trim</code>操作。对应写，读，删除。</p>
+<ul>
+<li>Read consistency</li>
+<li>seqnum</li>
+<li>log tags</li>
+<li>auxiliary data: TODO:后面一段有提到，auxiliary data 只设计作为 cache 使用，boki 不保证它的持久性，也不 maintain 它的一致性。Boki 相信应用会为相同的 log 记录提供一致的 auxiliary data。这些弱化容许 Boki 获得一个足够简单且高效的后端来储存这些 auxiliary 数据。</li>
+</ul>
+<h3 id="Boki-Design"><a href="#Boki-Design" class="headerlink" title="Boki Design"></a>Boki Design</h3><p>粗略了解了 Boki 的设计思路以及提供的 API，第二遍阅读粗略浏览 Boki 的设计。</p>
+<h4 id="Metalog"><a href="#Metalog" class="headerlink" title="Metalog"></a>Metalog</h4><p>实现 shared logs 系统的三个主要问题：</p>
+<ul>
+<li>how to determine the global total order</li>
+<li>how to ensure read consistency</li>
+<li>how to tolerate machine failures</li>
+</ul>
+<p>（TODO: 个人感觉，使用 SMR 实现强一致性的系统都面临这些问题）</p>
+<p>关注表格，Boki 对比 Scalog 和 vCorfu，其中 Scalog 在 orderring log records 和 Failure Handling 中都使用了 Paxos 协议，这是比较熟悉的，而 Boki 则都用 metalog 相关操作解决了这个问题。</p>
+<p>所以文章中才说 metalog 提供了单一解决方案。每个 physical log 有一个单一关联的 metalog，记录内部状态转换。</p>
+<p>每个 metalog 都被 3 个序列器储存，决定一个主序列器，控制 metalog 的 append。</p>
+<h4 id="Architecture"><a href="#Architecture" class="headerlink" title="Architecture"></a>Architecture</h4><h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><h2 id="未读（且值得读）文献记录"><a href="#未读（且值得读）文献记录" class="headerlink" title="未读（且值得读）文献记录"></a>未读（且值得读）文献记录</h2><p>Shared logs 相关</p>
 <ul>
 <li>传统的 replicated command log 到 shared log：<ul>
 <li><a target="_blank" rel="noopener" href="http://www.cs.cornell.edu/~taozou/sosp13/tangososp.pdf">Tango: Distributed Data Structures over a Shared Log</a> （支持 SMR-based 数据结构）</li>
