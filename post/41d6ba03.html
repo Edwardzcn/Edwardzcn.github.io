@@ -257,7 +257,7 @@ Tango: Distributed Data Structures over ">
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      163 字
+      593 字
     </span>
   
 
@@ -267,7 +267,7 @@ Tango: Distributed Data Structures over ">
       <i class="iconfont icon-clock-fill"></i>
       
       
-      2
+      10
        分钟
     </span>
   
@@ -309,8 +309,31 @@ Tango: Distributed Data Structures over ">
 <li><a target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.1145/3477132.3483544">Log-structured Protocols in Delos</a>（支持 SMR-based 协议）</li>
 </ul>
 <h2 id="Slowdown-Cascades"><a href="#Slowdown-Cascades" class="headerlink" title="Slowdown Cascades"></a>Slowdown Cascades</h2><p>见<a target="_blank" rel="noopener" href="https://www.usenix.org/system/files/conference/nsdi17/nsdi17-mehdi.pdf">I Can’t Believe It’s Not Causal! Scalable Causal Consistency with No Slowdown Cascades</a></p>
+<blockquote>
 <p>When systems scale to sufficient size, failures become an inevitable and regular part of their operation. Performance anomalies are typical and can be viewed as a kind of partial failure. In a partitioned system, a failure within a partition will inevitably affect the performance of that partition. A _slowdown cascade_ occurs when the failure spills over to affect other paritions.</p>
+</blockquote>
+<p>简单的表述</p>
+<blockquote>
+<p>The slowdown of a single node can prevent the whole system from making progress.</p>
+</blockquote>
+<p>后面阐述工业界联系 slowdown cascade 不愿意启用强一致性系统的原因。</p>
+<blockquote>
+<p>Industry has long identified the spectre of slowdown cascades as one of the leading reasons behind its reluctance to build strongly consistent systems, pointing out how the slowdown of a single shard, compounded by query amplification (e.g., a single user request in Facebook can generate thousands of, possibly dependent, internal queries to many services), can quickly cascade to affect the entire system.</p>
+</blockquote>
+<h2 id="Observable-Consistency"><a href="#Observable-Consistency" class="headerlink" title="Observable Consistency"></a>Observable Consistency</h2><p>交由 client 在本地维护 metadata 来编码已经观察到的更新，然后根据此 metadata，收到读请求时需要比对版本来决定读操作是否是安全的。</p>
+<p>见<a target="_blank" rel="noopener" href="https://www.usenix.org/system/files/conference/nsdi17/nsdi17-mehdi.pdf">I Can’t Believe It’s Not Causal! Scalable Causal Consistency with No Slowdown Cascades</a></p>
+<blockquote>
+<p>The general outline of a system that moves the enforcement of causal consistency to read operations is straightforward. Each client c needs to maintain some metadata to encode the most recent state of the data store that it has observed. On reading an object o, c needs to determine whether the version of o that the data store currently holds is safe to read (i.e., if it reflects all the updates encoded in c’s metadata): to this end, the data store could keep, together with o, metadata of its own to encode the most recent state known to the client that created that version of o. If the version is deemed safe to read, then c needs to update its metadata to reflect any new dependency; if it is not, then c needs to decide how to proceed (among its options: try again; contact a master replica guaranteed to have the latest version of o; or trade safety for availability by accepting a stale version of o</p>
+</blockquote>
 <a id="more"></a>
+<h2 id="Scale-Problems-in-distributed-log-based-dissemination"><a href="#Scale-Problems-in-distributed-log-based-dissemination" class="headerlink" title="Scale Problems in distributed log-based dissemination"></a>Scale Problems in distributed log-based dissemination</h2><p>Paxos - 10K Ops/s scale (introduced by Corfu 2016)</p>
+<p>Corfu - 600K Op/s scales</p>
+<p>vCorfu</p>
+<p>(Stream materialization, Composable SMR, Lightweight Transaction Resolution)</p>
+<h2 id="组会-20222-04-18"><a href="#组会-20222-04-18" class="headerlink" title="组会 20222/04/18"></a>组会 20222/04/18</h2><p>Corfu why 600 Op/s（到底是Flash devices的帮助还是）</p>
+<p>在每一个工作讲述的时候最好就要讲出，他们的 target，实现的方法，机制的改进。</p>
+<p>！需要仔细看 FuzzyLog。</p>
+<p>！以及</p>
 
             </div>
             <hr>
