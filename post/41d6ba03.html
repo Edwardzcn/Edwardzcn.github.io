@@ -257,7 +257,7 @@ Tango: Distributed Data Structures over ">
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      593 字
+      882 字
     </span>
   
 
@@ -267,7 +267,7 @@ Tango: Distributed Data Structures over ">
       <i class="iconfont icon-clock-fill"></i>
       
       
-      10
+      14
        分钟
     </span>
   
@@ -330,10 +330,39 @@ Tango: Distributed Data Structures over ">
 <p>Corfu - 600K Op/s scales</p>
 <p>vCorfu</p>
 <p>(Stream materialization, Composable SMR, Lightweight Transaction Resolution)</p>
-<h2 id="组会-20222-04-18"><a href="#组会-20222-04-18" class="headerlink" title="组会 20222/04/18"></a>组会 20222/04/18</h2><p>Corfu why 600 Op/s（到底是Flash devices的帮助还是）</p>
+<h2 id="组会-20222-04-18"><a href="#组会-20222-04-18" class="headerlink" title="组会 20222/04/18"></a>组会 20222/04/18</h2><p>Corfu why 600 Op/s（到底是 Flash devices 的帮助还是）</p>
 <p>在每一个工作讲述的时候最好就要讲出，他们的 target，实现的方法，机制的改进。</p>
-<p>！需要仔细看 FuzzyLog。</p>
-<p>！以及</p>
+<h2 id="组会-2022-05-09"><a href="#组会-2022-05-09" class="headerlink" title="组会 2022/05/09"></a>组会 2022/05/09</h2><p>This week</p>
+<ul>
+<li>Paper reading<ul>
+<li>The FuzzyLog: A Partially Ordered Shared Log [OSDI ‘18]<ul>
+<li>Applications build on FuzzyLog abstraction (LogMap, CRDTMap, CAPMap)</li>
+<li>Evaluation part</li>
+<li>Still confused about detail implementation</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Play with FuzzyLog demo examples<ul>
+<li><code>hello_c</code>: running the FuzzyLog client from C</li>
+<li><code>simple_map</code>: LogMap example in Rust</li>
+<li>LogMap implementation detail</li>
+</ul>
+</li>
+</ul>
+<p>Problems:</p>
+<p>作者认为主要有下面几个维度的问题，限制基于 sequencer 构建 total order 的 shared log 的使用：</p>
+<ul>
+<li>network diameter：序列器位于网络中的固定点，最远端的客户端的通信代价必然高昂。</li>
+<li>network bandwidth：序列器不是 IO-bound 或易于并行的，不能跟上 I/O bandwidth 的数量级增速。</li>
+<li>payload granularity：log payload 的粒度维度，shared log 应用的 payload 不会很大（大的目标通常限制为 64-bit 指针指向 external blob store）。作者提到如果 payload 增加，对 sequencer 的效率要去会更严格（要求达到接近 1 billion ops/s）</li>
+<li>system size: 系统大小维度，如果扩增到支持四十台服务器，我们需要接近 2 billion ops/s 的序列器。</li>
+</ul>
+<p>Evaluations：</p>
+<p>评估部分针对这些问题做了回应。</p>
+<p>Latency micro-benchmarks for Dapple on a lightly loaded deployment</p>
+<p><img src="图片1.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p>In comparison with other shared log systems, the paper only show CAPMap(one of their applications based on FuzzyLog) latency of gets and puts when network partition tolerance</p>
 
             </div>
             <hr>

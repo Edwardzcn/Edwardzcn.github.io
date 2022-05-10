@@ -257,7 +257,7 @@ Abstract开篇点明 FuzzyLog 是针对 partial order 设计的 shared log 抽�
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.4k 字
+      2k 字
     </span>
   
 
@@ -267,7 +267,7 @@ Abstract开篇点明 FuzzyLog 是针对 partial order 设计的 shared log 抽�
       <i class="iconfont icon-clock-fill"></i>
       
       
-      17
+      23
        分钟
     </span>
   
@@ -370,7 +370,7 @@ Abstract开篇点明 FuzzyLog 是针对 partial order 设计的 shared log 抽�
 </ul>
 </li>
 <li>Impossible：<ul>
-<li>在存在网络分区的时候期望的total order无法实现，见<a target="_blank" rel="noopener" href="https://dl.acm.org/doi/abs/10.1145/343477.343502">参考文献 Towards robust distributed systems PODC 2000</a></li>
+<li>在存在网络分区的时候期望的 total order 无法实现，见<a target="_blank" rel="noopener" href="https://dl.acm.org/doi/abs/10.1145/343477.343502">参考文献 Towards robust distributed systems PODC 2000</a></li>
 </ul>
 </li>
 </ul>
@@ -393,10 +393,24 @@ Abstract开篇点明 FuzzyLog 是针对 partial order 设计的 shared log 抽�
 </ul>
 </li>
 </ul>
-<p>总结动机，shared log是一种简化的提供强语义支持的模式，但强制total order代价过于昂贵且有时不可满足（网络分区情况）。如何打破僵局？partially ordered shared log abstraction</p>
+<p>总结动机，shared log 是一种简化的提供强语义支持的模式，但强制 total order 代价过于昂贵且有时不可满足（网络分区情况）。如何打破僵局？partially ordered shared log abstraction</p>
 <!-- 要仔细阅读论文，但是诸如证明等信息要忽略掉 -->
-<h3 id="The-FuzzyLog-Abstraction"><a href="#The-FuzzyLog-Abstraction" class="headerlink" title="The FuzzyLog Abstraction"></a>The FuzzyLog Abstraction</h3><p>FuzzyLog 是一种 DAG，可以由多个 clients 并发地构建和穿越。</p>
-<p>每种颜色是一个全序排列的链的集合，每个区域分配一个颜色。每个区域都有其他颜色全部但暂时陈旧的拷贝副本。对于自己区域的链保持最新。Clients 仅与自己区域的 DAG 本地拷贝沟通，他们可以在 local chain 上 append 记录来改写拷贝。</p>
+<h3 id="The-FuzzyLog-Abstraction"><a href="#The-FuzzyLog-Abstraction" class="headerlink" title="The FuzzyLog Abstraction"></a>The FuzzyLog Abstraction</h3><p>partially ordered shared log abstraction （实现形式为 FuzzyLog Abstraction）提供 partial ordering API（实现形式为 FuzzyLog API）</p>
+<p>FuzzyLog 是一种 DAG，可以由多个 clients 并发地构建和穿越。</p>
+<p>每种颜色是一个全序排列的链的集合，每个链代表一个区域（region），跨链的箭头表示 causality 因果关系。每个区域分配一个颜色。每个区域都有其他颜色全部但暂时陈旧的拷贝副本（虚线表示远程 node），DAG 的一条割表示当前区域看到的试图。对于自己区域的链保持最新。Clients 仅与自己区域的 DAG 本地拷贝沟通，他们可以在 local chain 上 append 记录来改写拷贝。</p>
+<p>FuzzyLog API</p>
+<ul>
+<li><code>new_instance call</code>: client 创建一个 FuzzyLog shard（逻辑 shard），需要指定颜色，另外也可以提供描述像的snapshot ID快速构建fuzzy log（避免从头构建日志）</li>
+<li><code>sync</code>：用于同步状态，sync 操作会先取下当前快照，执行自上次 sync 调用后所有 new nodes（日志操作），一旦所有 new nodes 都通过 passed-in callback 的形式传递给 sync 发出端，<code>sync</code>最后返回一个不透明？的 ID 来描述当前的快照。这些 nodes 会以 DAG 的逆拓扑排序序被本地看到。无跨链箭头的不同链上的 nodes（操作）可以以链间任意序被看见（序无关）。<ul>
+<li>返回的 Snapshot 的 ID 可用来与其他 clients 维护的 instance 来比对 snapshot 是否匹配。</li>
+</ul>
+</li>
+<li><code>append</code>：用于本地更新操作，加入新的node作为本地链的链尾，边指向原链尾，另外还有指向最近看见的远程链链为的交叉边（是每一个好像是的，因为是因果关系，描述的是“看见”）。</li>
+<li><code>trim</code>：garbage collection相关，提供一个描述snapshot的snapshot ID来表明该像不再需要。</li>
+</ul>
+<p><code>sync</code>和<code>trim</code>操作仅对单一颜色使用，<code>append</code>可以对多颜色集进行操作，这表明将实际操作的node加入多个颜色的本地链尾。</p>
+<p>语义：单颜色跨区域的操作是因果一致的。即二者序确定仅当其中一个操作在另一个操作被提出时已被“看到”，在这种情况下，DAG的图示上会有一个边表示。DAG的内部结构保证收敛性，即便并发更新以不同顺序执行：由于本地client只更新本地链，对于general的DAG的不相交集，所以并发更新不会产生冲突。</p>
+<p>在单一region内的操作是serializable的。</p>
 <h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><h2 id="未读（且值得读）文献记录"><a href="#未读（且值得读）文献记录" class="headerlink" title="未读（且值得读）文献记录"></a>未读（且值得读）文献记录</h2><!-- 在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 -->
 <h1 id="Step-3"><a href="#Step-3" class="headerlink" title="Step 3"></a>Step 3</h1><!-- 试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。 -->
 <h2 id="思路复现"><a href="#思路复现" class="headerlink" title="思路复现"></a>思路复现</h2><!-- 推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ -->
@@ -439,6 +453,12 @@ Abstract开篇点明 FuzzyLog 是针对 partial order 设计的 shared log 抽�
                 <div class="post-prevnext">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/post/1a06b38.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">《法治的细节》读书摘录</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
