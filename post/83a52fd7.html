@@ -257,7 +257,7 @@ Abstract开篇点明 FuzzyLog 是针对 partial order 设计的 shared log 抽�
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      3.3k 字
+      3.8k 字
     </span>
   
 
@@ -267,7 +267,7 @@ Abstract开篇点明 FuzzyLog 是针对 partial order 设计的 shared log 抽�
       <i class="iconfont icon-clock-fill"></i>
       
       
-      40
+      46
        分钟
     </span>
   
@@ -458,17 +458,28 @@ Abstract开篇点明 FuzzyLog 是针对 partial order 设计的 shared log 抽�
 <h2 id="思路复现"><a href="#思路复现" class="headerlink" title="思路复现"></a>思路复现</h2><!-- 推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ -->
 <h3 id="Dapple-Design-Implementation"><a href="#Dapple-Design-Implementation" class="headerlink" title="Dapple Design/Implementation"></a>Dapple Design/Implementation</h3><p>设计的一些要点</p>
 <ul>
-<li>scalability： reads和appends必须是可线性拓展的（随着colors增加）  对应我思考中的隔离维度的实现</li>
-<li>space efficiency： FuzzyLog partial order（带有这些node和edge标记）必须被紧凑的存储。</li>
-<li>performance： append和sync操作必须以low latency和I/O overhead</li>
+<li>scalability： reads 和 appends 必须是可线性拓展的（随着 colors 增加） 对应我思考中的隔离维度的实现</li>
+<li>space efficiency： FuzzyLog partial order（带有这些 node 和 edge 标记）必须被紧凑的存储。</li>
+<li>performance： append 和 sync 操作必须以 low latency 和 I/O overhead</li>
 </ul>
-<p>Dapple 在名为chainservers的物理存储节点上实现FuzzyLog抽象，对FuzzyLog的状态作了划分：</p>
+<p>Dapple 在名为 chainservers 的物理存储 servers 上实现 FuzzyLog 抽象，每一个储存多个 in-memory log-structured address spaces。Dapple 对 FuzzyLog 的状态作了划分：</p>
 <ul>
-<li>每个颜色进存储在一个分割中</li>
-<li>每个分割通过chain replication进行复制</li>
+<li>每个颜色进存储在一个分割（partition）中</li>
+<li>每个分割（partition）通过 chain replication 进行复制</li>
 </ul>
-<p>然后对但颜色和多颜色操作的实现</p>
-<h4 id=""><a href="#" class="headerlink" title=" "></a> </h4><h2 id="证明与推理复现"><a href="#证明与推理复现" class="headerlink" title="证明与推理复现"></a>证明与推理复现</h2><!-- 分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源 -->
+<p>然后对单颜色和多颜色操作的实现</p>
+<h4 id="Single-color-operation"><a href="#Single-color-operation" class="headerlink" title="Single-color operation"></a>Single-color operation</h4><p>Dapple 将每个链储存在一个单独的 log 中。对于一个在$R$个区域（region）的部署，那么每个区域都会实际存储$R$个日志，对应$R$条链，其中对应本地 region 的 log（local log）会由 client 写，剩下的是其余区域链的异步福本。</p>
+<p>Server （指的这些存储节点）暴露三个 low-level 的 API 接口：</p>
+<ul>
+<li><code>log-append</code>：append 一条 log</li>
+<li><code>log-snapshot</code>：接受 a set of logs 并返回当前尾部位置</li>
+<li><code>log-read</code></li>
+</ul>
+<p>Client 实现某一颜色上的<code>sync</code>，即<code>log-reads</code>得到日志序列后执行<code>log-snapshot</code>，<code>log-snapshot</code>的返回值可以作为该颜色的一个向量时钟，表示当前 local region 看到的链的情况，这实际上就是<code>sync</code>返回的 snapshot ID。上部 API<code>append</code>会使 client 调用<code>log-append</code>写入 local log。新的写入会包含向量时钟记录已经看到了那些，因此每个写入按照 FuzzyLog 的抽象，都包含对已观察到的指向。<code>sync</code>递归 fetch 依赖来保证传送这些 nodes 保持 DAG 序。</p>
+<p>每个 chainserver（链服务器）阶段性地与其他远程地区的同伴进行通信，更新它们的 shadow logs 和新的写入。为了获取信心，它们自身相当于远程 chainserver 的 client 并使用<code>sync</code>，这样保证了依赖关系（TODO：为什么？）</p>
+<p>Dapple对每个分割使用chain replication，每个<code>log-append</code>操作，会传递这条链并在末尾被接受。一旦client获得一个snapshot，随后的<code>log-append</code>可以由任意replica来执行。复制协议与系统设计是正交的：<strong>我们也可以使用Multi-Paxos</strong>。</p>
+<h4 id="Multi-color-operations"><a href="#Multi-color-operations" class="headerlink" title="Multi-color operations"></a>Multi-color operations</h4><p>涉及多颜色的操作，由于FuzzyLog的API支持添加一个node到多颜色。在Dapple实际实现中，这要求可以自动地在多个日志中添加：每个颜色一个对应的本地日志链。</p>
+<h2 id="证明与推理复现"><a href="#证明与推理复现" class="headerlink" title="证明与推理复现"></a>证明与推理复现</h2><!-- 分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源 -->
 <h2 id="实验验证复现"><a href="#实验验证复现" class="headerlink" title="实验验证复现"></a>实验验证复现</h2><!-- Rework -->
 
             </div>
