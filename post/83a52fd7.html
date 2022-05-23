@@ -257,7 +257,7 @@ Abstract开篇点明 FuzzyLog 是针对 partial order 设计的 shared log 抽�
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      3.8k 字
+      4.3k 字
     </span>
   
 
@@ -267,7 +267,7 @@ Abstract开篇点明 FuzzyLog 是针对 partial order 设计的 shared log 抽�
       <i class="iconfont icon-clock-fill"></i>
       
       
-      46
+      52
        分钟
     </span>
   
@@ -477,9 +477,30 @@ Abstract开篇点明 FuzzyLog 是针对 partial order 设计的 shared log 抽�
 </ul>
 <p>Client 实现某一颜色上的<code>sync</code>，即<code>log-reads</code>得到日志序列后执行<code>log-snapshot</code>，<code>log-snapshot</code>的返回值可以作为该颜色的一个向量时钟，表示当前 local region 看到的链的情况，这实际上就是<code>sync</code>返回的 snapshot ID。上部 API<code>append</code>会使 client 调用<code>log-append</code>写入 local log。新的写入会包含向量时钟记录已经看到了那些，因此每个写入按照 FuzzyLog 的抽象，都包含对已观察到的指向。<code>sync</code>递归 fetch 依赖来保证传送这些 nodes 保持 DAG 序。</p>
 <p>每个 chainserver（链服务器）阶段性地与其他远程地区的同伴进行通信，更新它们的 shadow logs 和新的写入。为了获取信心，它们自身相当于远程 chainserver 的 client 并使用<code>sync</code>，这样保证了依赖关系（TODO：为什么？）</p>
-<p>Dapple对每个分割使用chain replication，每个<code>log-append</code>操作，会传递这条链并在末尾被接受。一旦client获得一个snapshot，随后的<code>log-append</code>可以由任意replica来执行。复制协议与系统设计是正交的：<strong>我们也可以使用Multi-Paxos</strong>。</p>
-<h4 id="Multi-color-operations"><a href="#Multi-color-operations" class="headerlink" title="Multi-color operations"></a>Multi-color operations</h4><p>涉及多颜色的操作，由于FuzzyLog的API支持添加一个node到多颜色。在Dapple实际实现中，这要求可以自动地在多个日志中添加：每个颜色一个对应的本地日志链。</p>
+<p>Dapple 对每个分割使用 chain replication，每个<code>log-append</code>操作，会传递这条链并在末尾被接受。一旦 client 获得一个 snapshot，随后的<code>log-append</code>可以由任意 replica 来执行。复制协议与系统设计是正交的：<strong>我们也可以使用 Multi-Paxos</strong>。</p>
+<h4 id="Multi-color-operations"><a href="#Multi-color-operations" class="headerlink" title="Multi-color operations"></a>Multi-color operations</h4><p>涉及多颜色的操作，由于 FuzzyLog 的 API 支持添加一个 node 到多颜色。在 Dapple 实际实现中，这要求可以自动地在多个日志中添加：每个颜色一个对应的本地日志链。使用了 Skeen 算法。</p>
+<p>Skeen 的原始算法会为跨多 server 的多个 client（而非添加到一个 server）的操作产生一个序列化的值。但原始版本并不处理容错，在我们的设置中，每个‘server’是 chainserver 复制的 partition，可被认为是不会 fail 的。这里提出的 Skeen 针对较低频率的 client 故障，增加了三种容错机制-leases，fencing 和 WAL。</p>
+<h4 id="Skeen-variant-detail"><a href="#Skeen-variant-detail" class="headerlink" title="Skeen variant detail"></a>Skeen variant detail</h4><p>Leases： 所有 client 的操作都依赖一个粗粒度的租期，从每个 server 获得或者从每个分区的复制链头获取。如果租期过期，或者复制链头变更，操作会被拒绝。</p>
+<p>Failure-free operations</p>
+<ol>
+<li>Phase 1，origin client 发送请求，每个 server 会将该 multi-append 操作加入 <strong>pending queue</strong>并返回<strong>return timestamp</strong>$X.Y$，其中$X$表示 logical clock 而$Y$是 server-specific 标识。另外，origin client 提供一个 WAL 入口由每个 chainservers 存储。一旦 client 收到所有 chain-servers 的返回 Timestamp，会计算$Max$值并发送给 chainservers 并启动 Phase 2。</li>
+<li>Phase 2：这个$Max$标识 multi-append。当一个 chainserver 收到这个消息，会将 multi-append 操作从 <strong>pending queue</strong> 移入 <strong>delivery queue</strong>。<ul>
+<li>multi-append 的执行规则，等待 <strong>pending queue</strong> 中没有 <strong>return timestamp</strong>更小的操作，并且<strong>delivery queue</strong> 中没有比其 <strong>max timestamp</strong>更小的操作。条件满足则移出<strong>delivery queue</strong>并执行。</li>
+<li>观察图中例子</li>
+</ul>
+</li>
+</ol>
+<p>上述的协议通过两阶段完成，不属于关键路径，还有一个过程涉及 client 发送 clean-up 消息来删除 per-append state（the WAL，以及表示上次执行阶段的状态图）。lazily executed。</p>
+<p>Recovering a stuck multi-append</p>
+<p>典型如 Client 故障重启，三个 phases：隔离原始客户端或者其他恢复客户端的活动，确定系统状态，完成 multi-append。</p>
+<ul>
+<li>Phase 1（fncing phase）：访问原始客户端（存储在 WAL 中）的 lease set，并使其在 servers 无效并重写新的 recovery</li>
+</ul>
+<p>有关协议的正确性！</p>
+<p><strong>We wrote conventional proofs as well as a machine-checked proof in Coq</strong>. <strong>We wrote conventional proofs as well as a machine-checked proof in Coq</strong></p>
 <h2 id="证明与推理复现"><a href="#证明与推理复现" class="headerlink" title="证明与推理复现"></a>证明与推理复现</h2><!-- 分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源 -->
+<p><strong>We wrote conventional proofs as well as a machine-checked proof in Coq</strong>.</p>
+<h3 id="Related-Work"><a href="#Related-Work" class="headerlink" title="Related Work"></a>Related Work</h3><p>相关工作回顾。</p>
 <h2 id="实验验证复现"><a href="#实验验证复现" class="headerlink" title="实验验证复现"></a>实验验证复现</h2><!-- Rework -->
 
             </div>
