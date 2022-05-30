@@ -1,0 +1,858 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="
+Step 1
+题目摘要引言
+Title
+The FuzzyLog: A Partially Ordered Shared Log
+设计 partial order 的 shared log 抽象
+Abstract
+开篇点明 FuzzyLog 是针对 partial order 设计的 shared log 抽象。使用 partial order，就是可以支持并发 append（非线">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  
+  <title>OSDI18——The-FuzzyLog - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://lib.baomitu.com/highlight.js/10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+  
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bookmark"></i>
+                select
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Computer-Science/">
+                    <i class="iconfont icon-codeforces"></i>
+                    Computer Science
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%98%85%E8%AF%BB/">
+                    <i class="iconfont icon-bookmark-fill"></i>
+                    Life Reading
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%9A%8F%E7%AC%94/">
+                    <i class="iconfont icon-note"></i>
+                    Life Essay
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Research/Report/">
+                    <i class="iconfont icon-clipcheck"></i>
+                    Weekly Report
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/photos">
+                <i class="iconfont icon-image"></i>
+                gallery
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="OSDI18——The-FuzzyLog">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      Edwardzcn
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-05-09 07:57" pubdate>
+        2022年5月9日 早上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.3k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      53
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">OSDI18——The-FuzzyLog</h1>
+            
+            <div class="markdown-body">
+              <!--文章由 3step 模板生成三步法阅读文献笔记记录-->
+<h1 id="step-1">Step 1</h1>
+<h2 id="题目摘要引言">题目摘要引言</h2>
+<h3 id="title">Title</h3>
+<p>The FuzzyLog: A Partially Ordered Shared Log</p>
+<p>设计 partial order 的 shared log 抽象</p>
+<h3 id="abstract">Abstract</h3>
+<p>开篇点明 FuzzyLog 是针对 partial order 设计的 shared log 抽象。使用 partial order，就是可以支持并发 append（非线序）。利用基础的共享日志（baseline）可以便捷得获得 strong consistency、durability 和 failure atomicity。应用 partial order 信贷来：linear scaling（吞吐量和容量），weaker consistency guarantees 以及 tolerance to network partitions（可以容忍网络分区）。</p>
+<p>编写 Dapple 实现 FuzzyLog 抽象，以及一些利用 Dapple 实现得数据结构和应用（特别提到一个 ZooKeeper 的实现。</p>
+<p>简易性（应用实现仅百余行），linear scalability 的日志，灵活的一致性保证（比如 CC+）和 network partition tolerance。</p>
+<h3 id="introduction">Introduction</h3>
+<p>背景多次提及，分布式系统中的 control plane services（举例 filesystem namenodes， SDN controllers），由于持久性、高可用性以及可扩展性需求从单机维护逐步转移为分布式维护。传统的 Paxos 和 2PC 复杂，不够高效。</p>
+<p>最近研究的 shared log abstraction，汇集程全局共享日志来服务诸多应用。构建在 shared log 抽象上的服务简单，利用高层次的 API（最终对应日志的 append 和 read），使用 shared log 提供的 strong consistency，durability，failure atomicity 和 transaction isolation。</p>
+<p>（话锋一转）然而简单的 shared log 需求强制全局全序，作者认为它是<strong>昂贵</strong>、<strong>难以实现</strong>而且最重要的<strong>非必要</strong>的。先前的工作表明中间尺度（小集群、数十台）使用旁路的序列器模式是可行的，然而，更大规模情况下，强制 total order，吞吐量和网络带宽/延时是昂贵的，作者对于一些操作，并不需要被 order，所以提出了本文关键问题：</p>
+<p>Can we provide the simplicity of a shared log without imposing a total order?</p>
+<p>给出 FuzzyLog 抽象的要求：durable、iterable 并且 extendable。用 partial order 代替传统 shared log 的 total order。内部使用<strong>染色机制</strong>，一个颜色表示一个独立的、全序的链。相同颜色的链通过交叉连接起来表示因果关系的更新。完整的 DAG——由多种颜色（每个 shard 占据一个）以及每种颜色的多条链（每个 region 表示一条）——在每个 region 中都完全备份，并 lazy synchronize。</p>
+<p>一个 shard 使用一种颜色，并运行在单一区域的 FuzzyLog 等价于一个传统的 shared log。</p>
+<p>Dapple 以及提及的使用 FuzzyLog 的重新实现：</p>
+<ul>
+<li>CRDTMap（284 LOC）：提供了 causal+ consistency，在 FuzzyLog 上构建 CRDT</li>
+<li>CAPMap（424 LOC）：提供强一致性，但缺少网络分区</li>
+<li>ZooKeeper clone（1881 LOC）： 基于 FuzzyLog。</li>
+<li>提供 Red-Blue consistency 的 Map，以及支持事务的 CRDT</li>
+</ul>
+<h2 id="基本理论概况">基本理论概况</h2>
+<h2 id="结论部分">结论部分</h2>
+<!-- 确定作者的成过以及点出的经验、问题、改进方 -->
+<p>主要贡献：</p>
+<ul>
+<li>提出了通用形式的偏序 shared log 抽象（退化版本为全序 shared log）</li>
+<li>表明该抽象的易用性，基于其 API 简化构建某些实现</li>
+<li>表明该抽象的实际可行性，构建 Dapple</li>
+</ul>
+<h2 id="回答基本问题">回答基本问题</h2>
+<ol type="1">
+<li><p>类别</p>
+<!-- 这篇论文是什么类型？测试类？对现有系统进行分析的？对原型系统进行描述的？-->
+<p>原型系统描述</p></li>
+<li><p>内容</p>
+<!-- 你读过的其他论文有没有与之相关的？相关性与区别最直接体现在哪里？文章中分析问题用的什么理论基础（通过瞥一眼数学概况与核心证明可以得到）。 -->
+<p>shared log 系列：Corfu，Tango，vCorfu，Scalog，Boki</p></li>
+<li><p>正确性</p>
+<!-- 结论是否看起来真实有效？ -->
+<p>存疑</p></li>
+<li><p>创新点</p>
+<!-- 论文的主要创新点是什么？总结提到的经验、问题和改进方法是什么？ -->
+<p>提出的第一个偏序的 shared log 抽象，并基于此 API 构建了众多实现。</p></li>
+<li><p>清晰度</p>
+<!-- 这篇论文是否写的条理清晰 -->
+<p>存疑</p></li>
+</ol>
+<h2 id="阅读选择">阅读选择</h2>
+<!--
+1. 继续阅读：论文有价值担保，研究领域非常切合，对当前进行工作有极大帮助，圈内爆火文章
+2. 不继续阅读：论文不吸引自己，论文价值/正确性存疑，论文作者给出了不适当的假设。
+3. 库存保留并标记：当前不处于自己的研究领域，但不久的日后相关论文会有用。
+-->
+<a id="more"></a>
+<h1 id="step-2">Step 2</h1>
+<h2 id="细读笔记">细读笔记</h2>
+<h3 id="motivation">Motivation</h3>
+<p>分析传统 shared log 机制的 pros and cons</p>
+<ul>
+<li>Simplicity
+<ul>
+<li>提供简易的 share log API 免于复杂的协议来实现关键共嗯那个</li>
+<li>shared log 是一致性的关键，共写，读回</li>
+<li>同时提供了 log 的历史审查功能</li>
+</ul></li>
+<li>Drawbacks
+<ul>
+<li>Expensive：始终围绕释放潜能，提供更大的吞吐量
+<ul>
+<li>传统的 leader 选举/no shard，限制为单一设备 I/O bandwidth</li>
+<li>Corfu：由 sequencer 指定 order，再放置数据，限制为 sequencer 更新计数并分发的速度（约 600K ops/sec）</li>
+<li>Tango, vCorfu： 分别使用了 streams 和 materialized streams，支持 selective playback</li>
+</ul></li>
+<li>Impossible：
+<ul>
+<li>在存在网络分区的时候期望的 total order 无法实现，见<a target="_blank" rel="noopener" href="https://dl.acm.org/doi/abs/10.1145/343477.343502">参考文献 Towards robust distributed systems PODC 2000</a></li>
+</ul></li>
+</ul></li>
+</ul>
+<p>作者认为主要有下面几个维度限制了旁路构建 sequencer 模式的进一步扩展：</p>
+<ul>
+<li>network diameter：序列器位于网络中的固定点，最远端的客户端的通信代价必然高昂。</li>
+<li>network bindwith：序列器不是 IO-bound 或易于并行的（意思后半句话解释了），不能跟上 I/O bandwidth 的数量级增速。</li>
+<li>payload granularity：log payload 的粒度维度，shared log 应用的 payload 不会很大（大的目标通常限制为 64-bit 指针指向 external blob store）。作者提到如果 payload 增加，对 sequencer 的效率要去会更严格（要求达到接近 1 billion ops/s）</li>
+<li>system size: 系统大小维度，如果扩增到支持四十台服务器，我们需要接近 2 billion ops/s 的序列器。</li>
+</ul>
+<p>已发表的构建在功能齐全的系统中的序列器及其能力：</p>
+<ul>
+<li>CORFU: 200K ops/s</li>
+<li>NOPaxos: 250K ops/s</li>
+<li>Tango: 600K ops/s</li>
+<li>Stand-alone sequencers（比如无需 per-stream state 的计数器）
+<ul>
+<li>RDMA-based counters 122M op/s 见<a target="_blank" rel="noopener" href="https://www.usenix.org/conference/atc16/technical-sessions/presentation/kalia">Design Guidelines for High Performance RDMA Systems</a></li>
+</ul></li>
+</ul>
+<p>总结动机，shared log 是一种简化的提供强语义支持的模式，但强制 total order 代价过于昂贵且有时不可满足（网络分区情况）。如何打破僵局？partially ordered shared log abstraction</p>
+<!-- 要仔细阅读论文，但是诸如证明等信息要忽略掉 -->
+<h3 id="the-fuzzylog-abstraction">The FuzzyLog Abstraction</h3>
+<p>partially ordered shared log abstraction （实现形式为 FuzzyLog Abstraction）提供 partial ordering API（实现形式为 FuzzyLog API）</p>
+<p>FuzzyLog 是一种 DAG，提供了 partial order 操作的两个重要模式支持。</p>
+<ol type="1">
+<li>划分了多个 logical data shards：可以由多个 clients 并发地更新。Chuannan：个人理解，传统的 total order 虽然没有提 logical data shard，也支持多个 clients 并发更新，只是需要 ordering layer 或者 sequencer 来序列化。</li>
+<li>在跨地理区域部署时，应用较弱的一致性来避免跨区域的在请求的 critical path 上的开销</li>
+</ol>
+<p>为了清晰，术语作如下解释：</p>
+<ol type="1">
+<li><code>node</code>表示 FuzzyLog DAG 上的一个节点。
+<ol type="1">
+<li>每个 node 可以被标记上一种或多种颜色</li>
+<li>颜色将应用的状态划分为多个 logical shards</li>
+<li>某种颜色的 node 表示对该对应颜色 logical shard 的更新</li>
+</ol></li>
+</ol>
+<p>每种颜色是一个全序排列的链的集合，每个区域（region）一个链，跨链的箭头表示 causality 因果关系。每个区域分配一个颜色。每个区域都有每种颜色全部但暂时陈旧的拷贝副本（虚线表示远程 node），DAG 的一条割表示当前区域看到的视图。对于自己区域的链保持最新。Clients 仅与自己区域的 DAG 本地拷贝沟通，他们可以在 local chain 上 append 记录来改写拷贝。</p>
+<p>FuzzyLog API</p>
+<ul>
+<li><code>new_instance call</code>: client 创建一个 FuzzyLog shard（逻辑 shard），需要指定颜色，另外也可以提供描述像的 snapshot ID 快速构建 fuzzy log（避免从头构建日志）</li>
+<li><code>sync</code>：用于同步状态，sync 操作会先取下当前快照，执行自上次 sync 调用后所有 new nodes（日志操作），一旦所有 new nodes 都通过 passed-in callback 的形式传递给 sync 发出端，<code>sync</code>最后返回一个不透明？的 ID 来描述当前的快照。这些 nodes 会以 DAG 的逆拓扑排序序被本地看到。无跨链箭头的不同链上的 nodes（操作）可以以链间任意序被看见（序无关）。
+<ul>
+<li>返回的 Snapshot 的 ID 可用来与其他 clients 维护的 instance 来比对 snapshot 是否匹配。</li>
+</ul></li>
+<li><code>append</code>：用于本地更新操作，加入新的 node 作为本地链的链尾，边指向原链尾，另外还有指向最近看见的远程链链为的交叉边（是每一个好像是的，因为是因果关系，描述的是“看见”）。</li>
+<li><code>trim</code>：garbage collection 相关，提供一个描述 snapshot 的 snapshot ID 来表明该像不再需要。</li>
+</ul>
+<p><code>sync</code>和<code>trim</code>操作仅对单一颜色使用，<code>append</code>可以对多颜色集进行操作，这表明将实际操作的 node 加入多个颜色的本地链尾。</p>
+<p>语义：单颜色跨区域的操作是因果一致的。即二者序确定仅当其中一个操作在另一个操作被提出时已被“看到”，在这种情况下，DAG 的图示上会有一个边表示。DAG 的内部结构保证收敛性，即便并发更新以不同顺序执行：由于本地 client 只更新本地链，对于 general 的 DAG 的不相交集，所以并发更新不会产生冲突。在单一 region 内的操作是 serializable 的。最后一句话不太明白，it does not necessarily respect real-time ordering when append operations span multiple colors。似乎是<code>append</code>操作 span 多个颜色的时候不需要遵守现实时钟。</p>
+<p>Discussion：对 FuzzyLog API 设计一些 trade-off 的考量，先前的设计有考虑过向程序员暴露所有链（exposed chains），并允许在其任何子集上 append/sync，并选择某一一致性保证。这个版本的 API 使可扩展的实现变得更加困难。比如对任意子集的拓扑排序可能要求我们去遍历每条边。另外，一致性选择则要求 programmers 去推理各种组合的性能和可用性（举了 strong consistent multi-appends 为例）。（后面解释了如何促成了现在的版本）<strong>We were able to drastically simplify the API once we realized the equivalence between colors and shards.</strong></p>
+<h3 id="fuzzylog-applications">FuzzyLog Applications</h3>
+<p>本节讨论应用如何使用 FuzzyLog API（with a case study）。</p>
+<p>从最基本的 LogMap 来说明，提供<code>put/get/delete</code>的 KV 操作，对于 FuzzyLog 来说，一个 LogMap server 相当于一个 client。</p>
+<ul>
+<li><code>get</code>的实现，先调用 FuzzyLog 的<code>sync</code>，保证本地视图最新，要求任何更新（对 FuzzyLog 的 append）必须被本地看到。</li>
+<li><code>put/delete</code>的实现，会在 FuzzyLog 上<code>append</code>一个新的 node，然后等待<code>sync</code>将该更新作用在本地视图。</li>
+</ul>
+<p>当然这最基本的 LogMap，仅用 193 行就完成了，实现了可持续性，高可用性，强一致性。并发控制和故障原子性。它等同于基于传统 shared log 的先前实现。当然这种强制的 total order 限制了一些能力。本节后续部分介绍基于 LogMap 构建的其他应用，如何进一步释放 FuzzyLog 的真正潜力。</p>
+<h4 id="scaling-with-atomicity-within-a-region">Scaling with atomicity within a region</h4>
+<p>潜力一：scalability：scale linearly。</p>
+<p>ShardedMap（开始介绍颜色了！）每个 server 储存一个 shard，这个 shard 对应一种 FuzzyLog 的颜色。对特定 shard 的更新就意味着对某一颜色的 FuzzyLog 更新。</p>
+<p><strong>隔离的重要性</strong>！通过 color，避免了增加 server 时不必要的通信，完全的隔离就意味着，scale linearly。</p>
+<p>AtomicMap 支持 atomicity：对多个 shard 的原子更新。</p>
+<ul>
+<li><code>multi-put</code>的实现，将更新作用于一个颜色集合，即在各颜色的 FuzzyLog 都<code>append</code>一个 node（标记 put 操作）。这里不理解点的是这句。因为<code>multi-color appends</code> 是 serializable，所以 AtomicMap 也是 serializable 的，不是 linearizable 或者 strictly serializable。这三者的区别：</li>
+</ul>
+<blockquote>
+<p>Much work on databases and distributed systems uses serializability as the basic correctness condition for concurrent computations. In this model, a transaction is a thread of control that applies a finite sequence of primitive operations to a set of objects shared with other transactions. A history is serializable if it is equivalent to one in which transactions appear to execute sequentially, i.e., without interleaving. A (partial) precedence order can be defined on non-overlapping pairs of transactions in the obvious way. A history is strictly serializable if the transactions’ order in the sequential history is compatible with their precedence order...</p>
+<p>...Linearizability can be viewed as a special case of strict serializability where transactions are restricted to consist of a single operation applied to a single object. Nevertheless, this single-operation restriction has far-reaching practical and formal consequences, giving linearizable computations a different flavor from their serializable counterparts. An immediate practical consequence is that concurrency control mechanisms appropriate for serializability are typically inappropriate for linearizability because they introduce unnecessary overhead and place unnecessary restrictions on concurrency.</p>
+</blockquote>
+<p>TXMap，进一步支持带有更强隔离等级的 read/write transactions，使用 Tango 中相同的协议。</p>
+<ul>
+<li><code>commit</code>的实现，TXMap 的 server 回在 read-write 操作对应的颜色集中<code>append</code> a speculative intention node，这一段先 pass。有意思的是在 FuzzyLog 本身仅 serializable 情况下提供了 strict serializability。</li>
+</ul>
+<h4 id="weaker-consistency-across-regions">Weaker consistency across regions</h4>
+<p>一些应用可以容忍更弱的一致性保证，一个常见例子是因果一致性。</p>
+<p>CRDTMap：提供空间维度，更弱的一致性支持，引入多个 region，单颜色（不涉及隔离维度）。</p>
+<ul>
+<li><code>put</code>的实现，仅对本地的 chain，即 FuzzyLog 记录<code>append</code>一条记录，与其他区域的 chain 是异步更新的。</li>
+</ul>
+<p>为了确保当 server 看到因果独立（而非依赖）的更新以不同序出现时，状态是收敛的，使用了 Observed-Remove set CRDT。（查询一下这个结构）</p>
+<h4 id="tole-rating-network-partitions">Tole rating network partitions</h4>
+<h2 id="问题记录">问题记录</h2>
+<h2 id="未读且值得读文献记录">未读（且值得读）文献记录</h2>
+<!-- 在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 -->
+<h1 id="step-3">Step 3</h1>
+<!-- 试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。 -->
+<p>主要是实现细节</p>
+<h2 id="思路复现">思路复现</h2>
+<!-- 推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ -->
+<h3 id="dapple-designimplementation">Dapple Design/Implementation</h3>
+<p>设计的一些要点</p>
+<ul>
+<li>scalability： reads 和 appends 必须是可线性拓展的（随着 colors 增加） 对应我思考中的隔离维度的实现</li>
+<li>space efficiency： FuzzyLog partial order（带有这些 node 和 edge 标记）必须被紧凑的存储。</li>
+<li>performance： append 和 sync 操作必须以 low latency 和 I/O overhead</li>
+</ul>
+<p>Dapple 在名为 chainservers 的物理存储 servers 上实现 FuzzyLog 抽象，每一个储存多个 in-memory log-structured address spaces。Dapple 对 FuzzyLog 的状态作了划分：</p>
+<ul>
+<li>每个颜色进存储在一个分割（partition）中</li>
+<li>每个分割（partition）通过 chain replication 进行复制</li>
+</ul>
+<p>然后对单颜色和多颜色操作的实现</p>
+<h4 id="single-color-operation">Single-color operation</h4>
+<p>Dapple 将每个链储存在一个单独的 log 中。对于一个在<span class="math inline">\(R\)</span>个区域（region）的部署，那么每个区域都会实际存储<span class="math inline">\(R\)</span>个日志，对应<span class="math inline">\(R\)</span>条链，其中对应本地 region 的 log（local log）会由 client 写，剩下的是其余区域链的异步福本。</p>
+<p>Server （指的这些存储节点）暴露三个 low-level 的 API 接口：</p>
+<ul>
+<li><code>log-append</code>：append 一条 log</li>
+<li><code>log-snapshot</code>：接受 a set of logs 并返回当前尾部位置</li>
+<li><code>log-read</code></li>
+</ul>
+<p>Client 实现某一颜色上的<code>sync</code>，即<code>log-reads</code>得到日志序列后执行<code>log-snapshot</code>，<code>log-snapshot</code>的返回值可以作为该颜色的一个向量时钟，表示当前 local region 看到的链的情况，这实际上就是<code>sync</code>返回的 snapshot ID。上部 API<code>append</code>会使 client 调用<code>log-append</code>写入 local log。新的写入会包含向量时钟记录已经看到了那些，因此每个写入按照 FuzzyLog 的抽象，都包含对已观察到的指向。<code>sync</code>递归 fetch 依赖来保证传送这些 nodes 保持 DAG 序。</p>
+<p>每个 chainserver（链服务器）阶段性地与其他远程地区的同伴进行通信，更新它们的 shadow logs 和新的写入。为了获取信心，它们自身相当于远程 chainserver 的 client 并使用<code>sync</code>，这样保证了依赖关系（TODO：为什么？）</p>
+<p>Dapple 对每个分割使用 chain replication，每个<code>log-append</code>操作，会传递这条链并在末尾被接受。一旦 client 获得一个 snapshot，随后的<code>log-append</code>可以由任意 replica 来执行。复制协议与系统设计是正交的：<strong>我们也可以使用 Multi-Paxos</strong>。</p>
+<h4 id="multi-color-operations">Multi-color operations</h4>
+<p>涉及多颜色的操作，由于 FuzzyLog 的 API 支持添加一个 node 到多颜色。在 Dapple 实际实现中，这要求可以自动地在多个日志中添加：每个颜色一个对应的本地日志链。使用了 Skeen 算法。</p>
+<p>Skeen 的原始算法会为跨多 server 的多个 client（而非添加到一个 server）的操作产生一个序列化的值。但原始版本并不处理容错，在我们的设置中，每个‘server’是 chainserver 复制的 partition，可被认为是不会 fail 的。这里提出的 Skeen 针对较低频率的 client 故障，增加了三种容错机制-leases，fencing 和 WAL。</p>
+<h4 id="skeen-variant-detail">Skeen variant detail</h4>
+<p>Leases： 所有 client 的操作都依赖一个粗粒度的租期，从每个 server 获得或者从每个分区的复制链头获取。如果租期过期，或者复制链头变更，操作会被拒绝。</p>
+<p>Failure-free operations</p>
+<ol type="1">
+<li>Phase 1，origin client 发送请求，每个 server 会将该 multi-append 操作加入 <strong>pending queue</strong>并返回<strong>return timestamp</strong><span class="math inline">\(X.Y\)</span>，其中<span class="math inline">\(X\)</span>表示 logical clock 而<span class="math inline">\(Y\)</span>是 server-specific 标识。另外，origin client 提供一个 WAL 入口由每个 chainservers 存储。一旦 client 收到所有 chain-servers 的返回 Timestamp，会计算<span class="math inline">\(Max\)</span>值并发送给 chainservers 并启动 Phase 2。</li>
+<li>Phase 2：这个<span class="math inline">\(Max\)</span>标识 multi-append。当一个 chainserver 收到这个消息，会将 multi-append 操作从 <strong>pending queue</strong> 移入 <strong>delivery queue</strong>。
+<ul>
+<li>multi-append 的执行规则，等待 <strong>pending queue</strong> 中没有 <strong>return timestamp</strong>更小的操作，并且<strong>delivery queue</strong> 中没有比其 <strong>max timestamp</strong>更小的操作。条件满足则移出<strong>delivery queue</strong>并执行。</li>
+<li>观察图中例子</li>
+</ul></li>
+</ol>
+<p>上述的协议通过两阶段完成，不属于关键路径，还有一个过程涉及 client 发送 clean-up 消息来删除 per-append state（the WAL，以及表示上次执行阶段的状态图）。lazily executed。</p>
+<p>Recovering a stuck multi-append</p>
+<p>典型如 Client 故障重启，三个 phases：隔离原始客户端或者其他恢复客户端的活动，确定系统状态，完成 multi-append。</p>
+<ul>
+<li>Phase 1（fncing phase）：访问原始客户端（存储在 WAL 中）的 lease set，并使其在 servers 无效并重写新的 recovery</li>
+</ul>
+<p>有关协议的正确性！</p>
+<p><strong>We wrote conventional proofs as well as a machine-checked proof in Coq</strong>. <strong>We wrote conventional proofs as well as a machine-checked proof in Coq</strong></p>
+<h2 id="证明与推理复现">证明与推理复现</h2>
+<!-- 分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源 -->
+<p><strong>We wrote conventional proofs as well as a machine-checked proof in Coq</strong>.</p>
+<h3 id="related-work">Related Work</h3>
+<p>相关工作回顾。</p>
+<h2 id="实验验证复现">实验验证复现</h2>
+<!-- Rework -->
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Research/">Research</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Research/Paper/">Paper</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/%E4%B8%89%E6%AD%A5%E6%B3%95/">三步法</a>
+                    
+                      <a class="hover-with-bg" href="/tag/Paper/">Paper</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/post/1a06b38.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">《法治的细节》读书摘录</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/post/af72de76.html">
+                        <span class="hidden-mobile">SSH反向代理配合Nginx实现内网网址域名访问</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="remark42"></div>
+  <script type="text/javascript">
+    var schema = document.documentElement.getAttribute('data-user-color-scheme');
+    if (schema !== 'light' && schema !== 'dark') {
+      schema = 'light';
+    }
+    var remark_config = Object.assign(
+      {"host":"https://remark42.edwardzcn98yx.com","site_id":"www.edwardzcn98yx.com","max_shown_comments":20,"locale":"zh","components":["embed"]},
+      {
+        url: '/post/83a52fd7.html',
+        page_title: 'OSDI18——The-FuzzyLog',
+        theme: schema,
+      }
+    );
+
+    Fluid.utils.loadComments('#remark42', function() {
+      (function (c) {
+        for (var i = 0; i < c.length; i++) {
+          var d = document, s = d.createElement('script');
+          s.src = remark_config.host + '/web/' + c[i] + '.js';
+          s.defer = true;
+          (d.head || d.body).appendChild(s);
+        }
+      })(remark_config.components || ['embed']);
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        冀ICP证18024730号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+            
+            <span>湘公网安备43010402000641号</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://lib.baomitu.com/mathjax/3.2.0/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+</body>
+</html>

@@ -1,0 +1,674 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="Chap1 导览旅行
+配好了 Emacs 的环境，敲一下样例。
+函数类型和类型推断
+初次见面，函数和类型推断。
+12345let square x = x*x;;square 2;;square ( square 2);;
+输出结果
+123456# let square x = x*x;;val square : int -&amp;gt; int = &amp;lt;fun&amp;gt;# square ">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  
+  <title>OCaml学习——《Real-World-Ocaml》Chap1 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://lib.baomitu.com/highlight.js/10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+  
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bookmark"></i>
+                select
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Computer-Science/">
+                    <i class="iconfont icon-codeforces"></i>
+                    Computer Science
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%98%85%E8%AF%BB/">
+                    <i class="iconfont icon-bookmark-fill"></i>
+                    Life Reading
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%9A%8F%E7%AC%94/">
+                    <i class="iconfont icon-note"></i>
+                    Life Essay
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Research/Report/">
+                    <i class="iconfont icon-clipcheck"></i>
+                    Weekly Report
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/photos">
+                <i class="iconfont icon-image"></i>
+                gallery
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="OCaml学习——《Real-World-Ocaml》Chap1">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      Edwardzcn
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-09-26 16:53" pubdate>
+        2020年9月26日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.6k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      24
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">OCaml学习——《Real-World-Ocaml》Chap1</h1>
+            
+            <div class="markdown-body">
+              <h1 id="chap1-导览旅行">Chap1 导览旅行</h1>
+<p>配好了 Emacs 的环境，敲一下样例。</p>
+<h2 id="函数类型和类型推断">函数类型和类型推断</h2>
+<p>初次见面，函数和类型推断。</p>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> square x = x*x;;<br><br>square <span class="hljs-number">2</span>;;<br><br>square ( square <span class="hljs-number">2</span>);;<br></code></pre></td></tr></table></figure>
+<p>输出结果</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs Bash"><span class="hljs-comment"># let square x = x*x;;</span><br>val square : int -&gt; int = &lt;fun&gt;<br><span class="hljs-comment"># square 2;;</span><br>- : int = 4<br><span class="hljs-comment"># square ( square 2);;</span><br>- : int = 16<br></code></pre></td></tr></table></figure>
+<p>第一使用模块，<code>Float.of_int</code>指示<code>of_int</code>函数包含在<code>Float</code>模块中。模块名总是以一个大写字母开头。</p>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs Ocaml"><span class="hljs-keyword">let</span> ratio x y =<br>  <span class="hljs-type">Float</span>.of_int x /. <span class="hljs-type">Float</span>.of_int y;;<br></code></pre></td></tr></table></figure>
+<p>初涉推断类型与推断泛型类型，理解一下类型推断的过程，比如 OCaml 要求 if 语句分支必须具有相同类型，前者从 0 推断 first 类型，后者没有直接的线索，引入了类型变量（type ariable）。</p>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs Ocaml"><span class="hljs-comment">(* 类型推断  *)</span><br><span class="hljs-keyword">let</span> sum_if_true test first second =<br>  (<span class="hljs-keyword">if</span> test first <span class="hljs-keyword">then</span> first <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>)+(<span class="hljs-keyword">if</span> test second <span class="hljs-keyword">then</span> second <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>);;<br><br><br><span class="hljs-comment">(* 推断泛型类型  *)</span><br><span class="hljs-keyword">let</span> first_if_true test x y =<br>  <span class="hljs-keyword">if</span> test x <span class="hljs-keyword">then</span> x <span class="hljs-keyword">else</span> y;;<br></code></pre></td></tr></table></figure>
+<a id="more"></a>
+<h2 id="元组列表选项和模式匹配">元组、列表、选项和模式匹配</h2>
+<p>元组，顶层环境显示为<code>int*string</code>，类型对集合对应两集合的笛卡尔乘积。模式匹配可抽取元组中的分量。</p>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> a_tuple = (<span class="hljs-number">3</span>,<span class="hljs-string">&quot;tree&quot;</span>);;<br><span class="hljs-keyword">let</span> b_tuple = (<span class="hljs-number">3</span>,<span class="hljs-string">&quot;four&quot;</span>,<span class="hljs-number">5.</span>);;<br><span class="hljs-keyword">let</span> x,y,z = b_tuple;;<br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs Bash"><span class="hljs-comment"># let a_tuple = (3,&quot;tree&quot;);;</span><br>val a_tuple : int * string = (3, <span class="hljs-string">&quot;tree&quot;</span>)<br><span class="hljs-comment"># let b_tuple = (3,&quot;four&quot;,5.);;</span><br>val b_tuple : int * string * <span class="hljs-built_in">float</span> = (3, <span class="hljs-string">&quot;four&quot;</span>, 5.)<br><span class="hljs-comment"># let x,y,z = b_tuple;;</span><br>val x : int = 3<br>val y : string = <span class="hljs-string">&quot;four&quot;</span><br>val z : <span class="hljs-built_in">float</span> = 5.<br></code></pre></td></tr></table></figure>
+<p>列表可以保存任意数目相同类型的元素。注意使用分号，不然会当作是一个元组作元素的单元素列表，如下：</p>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs Ocaml"><span class="hljs-keyword">let</span> languages = [<span class="hljs-string">&quot;OCaml&quot;</span>,<span class="hljs-string">&quot;Perl&quot;</span>,<span class="hljs-string">&quot;C&quot;</span>];;<br><span class="hljs-keyword">let</span> languages = [<span class="hljs-string">&quot;OCaml&quot;</span>;<span class="hljs-string">&quot;Perl&quot;</span>;<span class="hljs-string">&quot;C&quot;</span>];;<br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs Bash"><span class="hljs-comment"># let languages = [&quot;OCaml&quot;,&quot;Perl&quot;,&quot;C&quot;];;</span><br>val languages : (string * string * string) list = [(<span class="hljs-string">&quot;OCaml&quot;</span>, <span class="hljs-string">&quot;Perl&quot;</span>, <span class="hljs-string">&quot;C&quot;</span>)]<br><span class="hljs-comment"># let languages = [&quot;OCaml&quot;;&quot;Perl&quot;;&quot;C&quot;];;</span><br>val languages : string list = [<span class="hljs-string">&quot;OCaml&quot;</span>; <span class="hljs-string">&quot;Perl&quot;</span>; <span class="hljs-string">&quot;C&quot;</span>]<br></code></pre></td></tr></table></figure>
+<p>除了使用括号构造列表，还可以使用操作符“::”在列表前面增加元素，括号记法实际上“::”的语法糖（syntactic sugar）。“::”左结合，“[]”表示空列表。“::”操作符只能在最前面增加一个元素，“@”操作符可以用来连接两个列表。</p>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs OCaml"><span class="hljs-string">&quot;test&quot;</span>::languages;;<br><span class="hljs-string">&quot;test&quot;</span>::<span class="hljs-literal">[]</span>;;<br><span class="hljs-comment">(* 下面的声明是等价的  *)</span><br>[<span class="hljs-number">1</span>;<span class="hljs-number">2</span>;<span class="hljs-number">3</span>];;<br><span class="hljs-number">1</span>::(<span class="hljs-number">2</span>::(<span class="hljs-number">3</span>::<span class="hljs-literal">[]</span>));;<br><span class="hljs-number">1</span>::<span class="hljs-number">2</span>::<span class="hljs-number">3</span>::<span class="hljs-literal">[]</span>;;<br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs Bash"><span class="hljs-comment"># &quot;test&quot;::languages;;</span><br>- : string list = [<span class="hljs-string">&quot;test&quot;</span>; <span class="hljs-string">&quot;OCaml&quot;</span>; <span class="hljs-string">&quot;Perl&quot;</span>; <span class="hljs-string">&quot;C&quot;</span>]<br><span class="hljs-comment"># &quot;test&quot;::[];;</span><br>- : string list = [<span class="hljs-string">&quot;test&quot;</span>]<br><span class="hljs-comment"># [1;2;3];;</span><br>- : int list = [1; 2; 3]<br><span class="hljs-comment"># 1::(2::(3::[]));;</span><br>- : int list = [1; 2; 3]<br><span class="hljs-comment"># 1::2::3::[];;</span><br>- : int list = [1; 2; 3]<br></code></pre></td></tr></table></figure>
+<p>列表的模式匹配，注意模式不完备问题，使用 match 语句。</p>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs OCaml"><span class="hljs-comment">(* 列表的模式匹配  *)</span><br><span class="hljs-keyword">let</span> my_favorite_language (my_favorite :: the_rest) =<br>  my_favorite;;<br><span class="hljs-keyword">let</span> my_favorite_language my_favorite  =<br>  <span class="hljs-keyword">match</span> my_favorite <span class="hljs-keyword">with</span><br>  | first :: the_rest -&gt; first<br>  | <span class="hljs-literal">[]</span> -&gt; <span class="hljs-string">&quot;None&quot;</span>;;<br>my_favorite_language <span class="hljs-literal">[]</span>;;<br>my_favorite_language [<span class="hljs-string">&quot;English&quot;</span>;<span class="hljs-string">&quot;Math&quot;</span>];;<br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs Bash"><span class="hljs-comment"># let my_favorite_language (my_favorite :: the_rest) =</span><br>  my_favorite;;<br>  Characters 25-66:<br>  .........................(my_favorite :: the_rest) =<br>    my_favorite..<br>Warning 8: this pattern-matching is not exhaustive.<br>Here is an example of a <span class="hljs-keyword">case</span> that is not matched:<br>[]<br>val my_favorite_language : <span class="hljs-string">&#x27;a list -&gt; &#x27;</span>a = &lt;fun&gt;<br><span class="hljs-comment"># let my_favorite_language my_favorite  =</span><br>  match my_favorite with<br>  | first :: the_rest -&gt; first<br>  | [] -&gt; <span class="hljs-string">&quot;None&quot;</span>;;<br>      val my_favorite_language : string list -&gt; string = &lt;fun&gt;<br><span class="hljs-comment"># my_favorite_language [];;</span><br>- : string = <span class="hljs-string">&quot;None&quot;</span><br><span class="hljs-comment"># my_favorite_language [&quot;English&quot;;&quot;Math&quot;];;</span><br>- : string = <span class="hljs-string">&quot;English&quot;</span><br></code></pre></td></tr></table></figure>
+<p>递归列表函数</p>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs OCaml"><span class="hljs-comment">(* 递归列表函数  *)</span><br><span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> sum l =<br>  <span class="hljs-keyword">match</span> l <span class="hljs-keyword">with</span><br>  | <span class="hljs-literal">[]</span> -&gt; <span class="hljs-number">0</span>                     <span class="hljs-comment">(* 基本情况 *)</span><br>  | hd::tl -&gt; hd + sum tl;;     <span class="hljs-comment">(* 归纳情况  *)</span><br><br><span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> sum_length l =<br>  <span class="hljs-keyword">match</span> l <span class="hljs-keyword">with</span><br>  | <span class="hljs-literal">[]</span> -&gt; <span class="hljs-number">0</span>                     <span class="hljs-comment">(* 基本情况  *)</span><br>  | hd :: tl -&gt; <span class="hljs-type">String</span>.length hd + sum_length tl;; <span class="hljs-comment">(* 归纳情况  *)</span><br><br>sum [<span class="hljs-number">5</span>;<span class="hljs-number">4</span>;<span class="hljs-number">3</span>;<span class="hljs-number">2</span>];;<br>sum <span class="hljs-literal">[]</span>;;<br>sum_length [<span class="hljs-string">&quot;What&quot;</span>;<span class="hljs-string">&quot;tes&quot;</span>;<span class="hljs-string">&quot;ab&quot;</span>;<span class="hljs-string">&quot;1&quot;</span>];;<br>sum_length <span class="hljs-literal">[]</span>;;<br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs Bash"><span class="hljs-comment"># let rec sum l =</span><br>  match l with<br>  | [] -&gt; 0                     (* 基本情况 *)<br>  | hd::tl -&gt; hd + sum tl;;<br>      val sum : int list -&gt; int = &lt;fun&gt;<br><span class="hljs-comment"># let rec sum_length l =</span><br>  match l with<br>  | [] -&gt; 0                     (* 基本情况  *)<br>  | hd :: tl -&gt; String.length hd + sum_length tl;;<br>      val sum_length : Core.Std.String.t list -&gt; int = &lt;fun&gt;<br><span class="hljs-comment"># sum [5;4;3;2];;</span><br>- : int = 14<br><span class="hljs-comment"># sum [];;</span><br>- : int = 0<br><span class="hljs-comment"># sum_length [&quot;What&quot;;&quot;tes&quot;;&quot;ab&quot;;&quot;1&quot;];;</span><br>- : int = 10<br><span class="hljs-comment"># sum_length [];;</span><br>- : int = 0<br><span class="hljs-comment"># sum_length [];;</span><br>- : int = 0<br></code></pre></td></tr></table></figure>
+<p>选项（option）结构，表示一个值可能有也可能没有。选项在 OCaml 中很重要，在 OCaml 中没有类似<code>NullPointerException</code>的概念。这一点与大多数其他语言都有所不同。</p>
+<h2 id="记录和变体">记录和变体</h2>
+<p>记录和变体，和其他语言的自定义类型有些相似。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs Bash"><span class="hljs-comment"># type point2d = &#123; x: float ; y: float &#125;;;</span><br><span class="hljs-built_in">type</span> point2d = &#123; x : <span class="hljs-built_in">float</span>; y : <span class="hljs-built_in">float</span>; &#125;<br>(* 非字符双关  *)<br><span class="hljs-built_in">let</span> magnitude &#123; x=x_pos;y=y_pos&#125; =<br>  sqrt (x_pos **2. +. y_pos **2.);;<br>(* 字符双关写法  *)<br><span class="hljs-built_in">let</span> magnitude &#123;x;y&#125; =<br>  sqrt (x**2. +. y**2.);;<br><br><span class="hljs-built_in">let</span> distance v1 v2 =<br>  magnitude &#123;x = v1.x -. v2.x ; y = v1.y -. v2.y&#125;;;<br><br><span class="hljs-built_in">let</span> p_1 = &#123;x=3.;y=4.&#125;<br>    <span class="hljs-keyword">in</span><br>    <span class="hljs-built_in">let</span> p_2 =  &#123;x=5.2;y=4.4&#125;<br>    <span class="hljs-keyword">in</span><br>    distance p_1 p_2 ;;<br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs Bash"><span class="hljs-comment"># let magnitude &#123; x=x_pos;y=y_pos&#125; =</span><br>  sqrt (x_pos **2. +. y_pos **2.);;<br>  val magnitude : point2d -&gt; <span class="hljs-built_in">float</span> = &lt;fun&gt;<br><span class="hljs-comment"># let magnitude &#123;x;y&#125; =</span><br>  sqrt (x**2. +. y**2.);;<br>  val magnitude : point2d -&gt; <span class="hljs-built_in">float</span> = &lt;fun&gt;<br><span class="hljs-comment"># let distance v1 v2 =</span><br>  magnitude &#123;x = v1.x -. v2.x ; y = v1.y -. v2.y&#125;;;<br>  val distance : point2d -&gt; point2d -&gt; <span class="hljs-built_in">float</span> = &lt;fun&gt;<br><span class="hljs-comment"># let p_1 = &#123;x=3.;y=4.&#125;</span><br>    <span class="hljs-keyword">in</span><br>    <span class="hljs-built_in">let</span> p_2 =  &#123;x=5.2;y=4.4&#125;<br>    <span class="hljs-keyword">in</span><br>    distance p_1 p_2;;<br>        - : <span class="hljs-built_in">float</span> = 2.23606797749979<br></code></pre></td></tr></table></figure>
+<p>可以将新定义的类型作为分量包含在更大的类型中。以及构成包含多个对象的场景的描述，变体（ariant）类型。</p>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs OCaml"><span class="hljs-keyword">type</span> circle_desc = &#123;center: point2d; radius: <span class="hljs-built_in">float</span>&#125;;;<br><span class="hljs-keyword">type</span> rect_desc = &#123;lower_left: point2d; width: <span class="hljs-built_in">float</span>; height: <span class="hljs-built_in">float</span>&#125;;;<br><span class="hljs-keyword">type</span> segment_desc = &#123;endpoint1: point2d; endpoint2: point2d&#125;;;<br><span class="hljs-keyword">type</span> scene_element =<br>  | <span class="hljs-type">Circle</span> <span class="hljs-keyword">of</span> circle_desc<br>  | <span class="hljs-type">Rect</span> <span class="hljs-keyword">of</span> rect_desc<br>  | <span class="hljs-type">Segment</span> <span class="hljs-keyword">of</span> segment_desc<br>;;<br><br><span class="hljs-comment">(* match 恰与不同场景匹配  *)</span><br><span class="hljs-keyword">let</span> is_inside_scene_element point scene_element =<br>  <span class="hljs-keyword">match</span> scene_element <span class="hljs-keyword">with</span><br>  | <span class="hljs-type">Circle</span> &#123;center;radius&#125; -&gt; distance center point &lt; radius <span class="hljs-comment">(* 注意这是个比较，最后返回的是bool  *)</span><br>  | <span class="hljs-type">Rect</span> &#123;lower_left; width; height&#125; -&gt;<br>     point.x &gt; lower_left.x &amp;&amp; point.y &gt; lower_left.y &amp;&amp;<br>       point.x &lt; lower_left.x +. width  &amp;&amp; point.y &lt; lower_left.y +. height<br>  | <span class="hljs-type">Segment</span> &#123;endpoint1;endpoint2&#125; -&gt; <span class="hljs-literal">false</span><br>;;<br></code></pre></td></tr></table></figure>
+<h2 id="命令式编程">命令式编程</h2>
+<p>到目前为止所写都是纯代码或函数式代码。几乎所有数据结构都是不可变的，这与命令式编程完全不同，命令式编程中，需要建立指令序列通过修改程序的状态来完成计算。</p>
+<p>数组与可变记录字段</p>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> numbers = [|<span class="hljs-number">1</span>;<span class="hljs-number">2</span>;<span class="hljs-number">3</span>|];;<br>numbers.(<span class="hljs-number">2</span>) &lt;-<span class="hljs-number">4</span>;;            <span class="hljs-comment">(* .(1)语法用于指示数组的一个元素，&lt;-语法表示修改。从0计数  *)</span><br>numbers;;<br><br><span class="hljs-comment">(* 把一些字段显式声明为可变字段，下面例子用于存储对一个数字集合的统计汇总  *)</span><br><br><span class="hljs-keyword">type</span> running_sum =<br>  &#123;<br>    <span class="hljs-keyword">mutable</span> sum: <span class="hljs-built_in">float</span>;<br>    <span class="hljs-keyword">mutable</span> sum_sq: <span class="hljs-built_in">float</span>;<br>    <span class="hljs-keyword">mutable</span> samples: <span class="hljs-built_in">int</span>;<br>  &#125;<br>;;<br><br><span class="hljs-keyword">let</span> mean rsum = rsum.sum /. <span class="hljs-built_in">float</span> rsum.samples;;<br><span class="hljs-keyword">let</span> stdev rsum  =<br>  sqrt (rsum.sum_sq /. <span class="hljs-built_in">float</span> rsum.samples -. (rsum.sum /. <span class="hljs-built_in">float</span>  rsum.samples)**<span class="hljs-number">2.</span>)<br>    ;;<br></code></pre></td></tr></table></figure>
+<p>还有<code>ref</code>,以及循环<code>for</code>,<code>while</code>的用法。</p>
+<h2 id="一个完整程序">一个完整程序</h2>
+<p>完整程序编译运行，</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs Bash">corebuild chap1-sum.native<br>./sum.native<br></code></pre></td></tr></table></figure>
+<p>输入数求和，<code>C-d</code>结束输入。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/OCaml/">OCaml</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/OCaml/">OCaml</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/post/668bdf4c.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">OCaml学习——《Real-World-Ocaml》Chap2</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/post/f0bce46a.html">
+                        <span class="hidden-mobile">Emacs——基本操作入门</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="remark42"></div>
+  <script type="text/javascript">
+    var schema = document.documentElement.getAttribute('data-user-color-scheme');
+    if (schema !== 'light' && schema !== 'dark') {
+      schema = 'light';
+    }
+    var remark_config = Object.assign(
+      {"host":"https://remark42.edwardzcn98yx.com","site_id":"www.edwardzcn98yx.com","max_shown_comments":20,"locale":"zh","components":["embed"]},
+      {
+        url: '/post/ff828ef6.html',
+        page_title: 'OCaml学习——《Real-World-Ocaml》Chap1',
+        theme: schema,
+      }
+    );
+
+    Fluid.utils.loadComments('#remark42', function() {
+      (function (c) {
+        for (var i = 0; i < c.length; i++) {
+          var d = document, s = d.createElement('script');
+          s.src = remark_config.host + '/web/' + c[i] + '.js';
+          s.defer = true;
+          (d.head || d.body).appendChild(s);
+        }
+      })(remark_config.components || ['embed']);
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        冀ICP证18024730号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+            
+            <span>湘公网安备43010402000641号</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://lib.baomitu.com/mathjax/3.2.0/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+</body>
+</html>

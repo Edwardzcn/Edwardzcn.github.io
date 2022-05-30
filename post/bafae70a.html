@@ -1,0 +1,966 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="软件测试课程作业四
+实验内容
+
+依据 TDD 编程流程，编制函数，实现两数相加求和。
+
+实验过程">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  
+  <title>软件测试学习——TDD流程实验报告 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://lib.baomitu.com/highlight.js/10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+  
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bookmark"></i>
+                select
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Computer-Science/">
+                    <i class="iconfont icon-codeforces"></i>
+                    Computer Science
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%98%85%E8%AF%BB/">
+                    <i class="iconfont icon-bookmark-fill"></i>
+                    Life Reading
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%9A%8F%E7%AC%94/">
+                    <i class="iconfont icon-note"></i>
+                    Life Essay
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Research/Report/">
+                    <i class="iconfont icon-clipcheck"></i>
+                    Weekly Report
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/photos">
+                <i class="iconfont icon-image"></i>
+                gallery
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="软件测试学习——TDD流程实验报告">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      Edwardzcn
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-06-09 14:48" pubdate>
+        2020年6月9日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.3k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      34
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">软件测试学习——TDD流程实验报告</h1>
+            
+            <div class="markdown-body">
+              <h1 id="软件测试课程作业四">软件测试课程作业四</h1>
+<h2 id="实验内容">实验内容</h2>
+<ul>
+<li>依据 TDD 编程流程，编制函数，实现两数相加求和。</li>
+</ul>
+<h2 id="实验过程">实验过程</h2>
+<a id="more"></a>
+<h3 id="tdd-需求阶段">TDD 需求阶段</h3>
+<p>考虑到浮点数可表达的范围太大不好体现 TDD 设计流程的思想，本实验目标为实现用户控制两<strong>整数</strong>相加并返回结果。</p>
+<ul>
+<li><p>输入阶段：</p>
+<p>用户可手动输入数值或选择退出程序。</p></li>
+<li><p>检测阶段：对用户输入的内容进行检测</p>
+<p>合法输入应为<code>int</code>类型范围内整数，对于不合法的输入提示错误并重新输入，输入为合法范围内但输出数值溢出的情况，会由计算阶段程序在内部进行适当格式转化，对用户透明。</p></li>
+<li><p>计算阶段：计算两数之和</p>
+<p>对合法的输入内容，执行 ADD 求和，并返回结果。</p></li>
+<li><p>输出阶段：</p>
+<p>将得到的结果反馈给用户。</p></li>
+</ul>
+<h3 id="tdd-设计阶段">TDD 设计阶段</h3>
+<p>基于需求分析的思路，设计方案求精，构建测试用例，用文字描述程序过程。（单元测试 Unit Test 客观上被节省掉）。</p>
+<ul>
+<li><p>构建测试用例</p>
+<p>由于开发过程是，需求-测例-代码，看不到程序结构，这里主要采用黑盒测试的测例构造思路。</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">测例编号</th>
+<th style="text-align: left;">输入</th>
+<th style="text-align: left;">预计输出</th>
+<th style="text-align: left;">实际输出</th>
+<th style="text-align: left;">备注</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">a=2147483646 b=1</td>
+<td style="text-align: left;">2147483647</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">4Bytes int 类型边界测试值。</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">a=2147483647 b=1</td>
+<td style="text-align: left;">2147483647</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">输出值不再能用 4Bytes 表示，转化测试</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">a=2147483647 b=2147483647</td>
+<td style="text-align: left;">4294967294</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">双边界值测试</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">a=-2147483647 b=-1</td>
+<td style="text-align: left;">-2147483648</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">负值 4Bytes int 类型边界测试界</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">a=-2147483648 b=-1</td>
+<td style="text-align: left;">-2147483649</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">负值转化测试</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">a=-2147483648 b=-2147483648</td>
+<td style="text-align: left;">-4294967296</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">负值双边界值测试</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">7</td>
+<td style="text-align: left;">a=0.005 b = asdfab</td>
+<td style="text-align: left;">2 Error</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">不合法的非整数输入测试</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">8</td>
+<td style="text-align: left;">a=2147483648 b=-2147483649</td>
+<td style="text-align: left;">2 Error</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">正负双越界测试</td>
+</tr>
+</tbody>
+</table></li>
+</ul>
+<h3 id="tdd-构造阶段">TDD 构造阶段</h3>
+<p>在我的构造阶段，我写了一个带格式转化的程序（验证程序）和一个不带格式转化的程序（对照程序）。</p>
+<ul>
+<li>带格式转化程序（验证程序）</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">/*</span><br><span class="hljs-comment">** 程序名：testAdd</span><br><span class="hljs-comment">** 程序功能：从input输入文件中逐行输入两个整数值</span><br><span class="hljs-comment">**         在输入合法的情况下（范围4字节有符号int类型）打印运算成功并输出和值。</span><br><span class="hljs-comment">**         否则打印错误信息</span><br><span class="hljs-comment">** 作者：Edwardzcn</span><br><span class="hljs-comment">*/</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;bits/stdc++.h&gt;</span></span><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">long</span> <span class="hljs-keyword">long</span> ll;<br><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> <span class="hljs-keyword">long</span> ull;<br><span class="hljs-keyword">typedef</span> pair&lt;<span class="hljs-keyword">int</span>, <span class="hljs-keyword">int</span>&gt; pii;<br><span class="hljs-keyword">typedef</span> pair&lt;string, string&gt; pss;<br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> rep(i, a, n) for (int i = a; i &lt; n; ++i)</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> per(i, a, n) for (int i = n - 1; i &gt;= a; --i)</span><br><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> DEBUG_INPUT DEBUG_INPUT</span><br><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">** 函数名：isNum</span><br><span class="hljs-comment">** 函数功能：用来检测是否为合法输入数</span><br><span class="hljs-comment">** 参数名称与类型：</span><br><span class="hljs-comment">**  string s</span><br><span class="hljs-comment">** 返回值：</span><br><span class="hljs-comment">**  bool</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-keyword">bool</span> <span class="hljs-title">isNum</span><span class="hljs-params">(string s)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">bool</span> flag = <span class="hljs-literal">false</span>;<br>    <span class="hljs-keyword">if</span> (s == <span class="hljs-string">&quot;&quot;</span>)<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    <span class="hljs-built_in">rep</span>(i, <span class="hljs-number">0</span>, s.<span class="hljs-built_in">size</span>())<br>    &#123;<br>        <span class="hljs-keyword">if</span> (i == <span class="hljs-number">0</span> &amp;&amp; s[i] == <span class="hljs-string">&#x27;-&#x27;</span>)<br>            <span class="hljs-keyword">continue</span>;<br>        <span class="hljs-keyword">if</span> (s[i] &lt; <span class="hljs-string">&#x27;0&#x27;</span> || s[i] &gt; <span class="hljs-string">&#x27;9&#x27;</span>)<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>&#125;<br><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">** 函数名：getAdd</span><br><span class="hljs-comment">** 函数功能：根据两输入值获取商值</span><br><span class="hljs-comment">** 参数名称与类型：</span><br><span class="hljs-comment">**  int a</span><br><span class="hljs-comment">**  int b</span><br><span class="hljs-comment">** 返回值类型：</span><br><span class="hljs-comment">**  long long</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function">ll <span class="hljs-title">getAdd</span><span class="hljs-params">(<span class="hljs-keyword">int</span> a, <span class="hljs-keyword">int</span> b)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">ll</span>(a) + <span class="hljs-built_in">ll</span>(b);<br>&#125;<br><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">** 函数名：main</span><br><span class="hljs-comment">** 函数功能：主函数，入口</span><br><span class="hljs-comment">** 参数名称与类型：</span><br><span class="hljs-comment">**  int argc</span><br><span class="hljs-comment">**  char* argv[]</span><br><span class="hljs-comment">** 返回值类型：</span><br><span class="hljs-comment">**  int</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span> *argv[])</span></span><br><span class="hljs-function"></span>&#123;<br>    cout &lt;&lt; (<span class="hljs-string">&quot;======= Start Program: testAdd ================&quot;</span>) &lt;&lt; endl;<br><br><span class="hljs-meta">#<span class="hljs-meta-keyword">ifdef</span> DEBUG_INPUT</span><br>    <span class="hljs-built_in">freopen</span>(<span class="hljs-string">&quot;input&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>, stdin);<br>    <span class="hljs-comment">// freopen(&quot;output&quot;, &quot;w&quot;, stdout);</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span> <span class="hljs-comment">// DEBUG_INPUT</span></span><br>    string a, b;<br>    <span class="hljs-keyword">int</span> parseNum;<br>    <span class="hljs-keyword">while</span> (cin &gt;&gt; a &gt;&gt; b)<br>    &#123;<br>        <span class="hljs-keyword">bool</span> a_type = <span class="hljs-built_in">isNum</span>(a);<br>        <span class="hljs-keyword">bool</span> b_type = <span class="hljs-built_in">isNum</span>(b);<br>        <span class="hljs-keyword">int</span> a_int, b_int;<br>        <span class="hljs-keyword">int</span> flag = <span class="hljs-literal">true</span>;<br>        <span class="hljs-comment">// 判断非数字的情况</span><br>        <span class="hljs-keyword">if</span> (!a_type)<br>        &#123;<br>            flag = <span class="hljs-literal">false</span>;<br>            std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: a=&quot;</span> &lt;&lt; a &lt;&lt; <span class="hljs-string">&quot; is not a num.&quot;</span> &lt;&lt; endl;<br>        &#125;<br>        <span class="hljs-keyword">if</span> (!b_type)<br>        &#123;<br>            flag = <span class="hljs-literal">false</span>;<br>            std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: b=&quot;</span> &lt;&lt; b &lt;&lt; <span class="hljs-string">&quot; is not a num.&quot;</span> &lt;&lt; endl;<br>        &#125;<br>        <span class="hljs-keyword">if</span> (!flag)<br>        &#123;<br>            cout &lt;&lt; <span class="hljs-string">&quot;Try Again.&quot;</span> &lt;&lt; endl;<br>            <span class="hljs-keyword">continue</span>;<br>        &#125;<br><br>        <span class="hljs-keyword">try</span><br>        &#123;<br>            a_int = <span class="hljs-built_in">stoi</span>(a, string::<span class="hljs-built_in">size_type</span>());<br>        &#125;<br>        <span class="hljs-built_in"><span class="hljs-keyword">catch</span></span> (<span class="hljs-keyword">const</span> std::out_of_range &amp;oor)<br>        &#123;<br>            std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: Value of a out of range! &quot;</span> &lt;&lt; oor.<span class="hljs-built_in">what</span>() &lt;&lt; endl;<br>            flag = <span class="hljs-literal">false</span>;<br>        &#125;<br>        <span class="hljs-keyword">try</span><br>        &#123;<br>            b_int = <span class="hljs-built_in">stoi</span>(b, string::<span class="hljs-built_in">size_type</span>());<br>        &#125;<br>        <span class="hljs-built_in"><span class="hljs-keyword">catch</span></span> (<span class="hljs-keyword">const</span> std::out_of_range &amp;oor)<br>        &#123;<br>            std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: Value of b out of range! &quot;</span> &lt;&lt; oor.<span class="hljs-built_in">what</span>() &lt;&lt; endl;<br>            flag = <span class="hljs-literal">false</span>;<br>        &#125;<br><br>        ll ans = <span class="hljs-built_in">getAdd</span>(a_int, b_int);<br><br>        <span class="hljs-keyword">if</span> (!flag)<br>        &#123;<br>            cout &lt;&lt; <span class="hljs-string">&quot;Try Again.&quot;</span> &lt;&lt; endl;<br>            <span class="hljs-keyword">continue</span>;<br>        &#125;<br>        <span class="hljs-keyword">else</span><br>        &#123;<br>            cout &lt;&lt; <span class="hljs-string">&quot;Correct! The value is &quot;</span> &lt;&lt; ans &lt;&lt; <span class="hljs-string">&quot;.&quot;</span> &lt;&lt; endl;<br>        &#125;<br>    &#125;<br><br>    cout &lt;&lt; <span class="hljs-string">&quot;==============================================&quot;</span> &lt;&lt; endl;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<ul>
+<li>不带格式转换的程序（对照程序）</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">/*</span><br><span class="hljs-comment">** 程序名：testAddCompact</span><br><span class="hljs-comment">** 程序功能：做testAdd程序的对照组，检测数值类型转换的有效性</span><br><span class="hljs-comment">** 作者：Edwardzcn</span><br><span class="hljs-comment">*/</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;bits/stdc++.h&gt;</span></span><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">long</span> <span class="hljs-keyword">long</span> ll;<br><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> <span class="hljs-keyword">long</span> ull;<br><span class="hljs-keyword">typedef</span> pair&lt;<span class="hljs-keyword">int</span>, <span class="hljs-keyword">int</span>&gt; pii;<br><span class="hljs-keyword">typedef</span> pair&lt;string, string&gt; pss;<br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> rep(i, a, n) for (int i = a; i &lt; n; ++i)</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> per(i, a, n) for (int i = n - 1; i &gt;= a; --i)</span><br><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> DEBUG_INPUT DEBUG_INPUT</span><br><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">** 函数名：isNum</span><br><span class="hljs-comment">** 函数功能：用来检测是否为合法输入数</span><br><span class="hljs-comment">** 参数名称与类型：</span><br><span class="hljs-comment">**  string s</span><br><span class="hljs-comment">** 返回值：</span><br><span class="hljs-comment">**  bool</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-keyword">bool</span> <span class="hljs-title">isNum</span><span class="hljs-params">(string s)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">bool</span> flag = <span class="hljs-literal">false</span>;<br>    <span class="hljs-keyword">if</span> (s == <span class="hljs-string">&quot;&quot;</span>)<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    <span class="hljs-built_in">rep</span>(i, <span class="hljs-number">0</span>, s.<span class="hljs-built_in">size</span>())<br>    &#123;<br>        <span class="hljs-keyword">if</span> (i == <span class="hljs-number">0</span> &amp;&amp; s[i] == <span class="hljs-string">&#x27;-&#x27;</span>)<br>            <span class="hljs-keyword">continue</span>;<br>        <span class="hljs-keyword">if</span> (s[i] &lt; <span class="hljs-string">&#x27;0&#x27;</span> || s[i] &gt; <span class="hljs-string">&#x27;9&#x27;</span>)<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>&#125;<br><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">** 函数名：getAdd</span><br><span class="hljs-comment">** 函数功能：根据两输入值获取商值</span><br><span class="hljs-comment">** 参数名称与类型：</span><br><span class="hljs-comment">**  int a</span><br><span class="hljs-comment">**  int b</span><br><span class="hljs-comment">** 返回值类型：</span><br><span class="hljs-comment">**  long long</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function">ll <span class="hljs-title">getAdd</span><span class="hljs-params">(<span class="hljs-keyword">int</span> a, <span class="hljs-keyword">int</span> b)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">ll</span>(a + b);<br>&#125;<br><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">** 函数名：main</span><br><span class="hljs-comment">** 函数功能：主函数，入口</span><br><span class="hljs-comment">** 参数名称与类型：</span><br><span class="hljs-comment">**  int argc</span><br><span class="hljs-comment">**  char* argv[]</span><br><span class="hljs-comment">** 返回值类型：</span><br><span class="hljs-comment">**  int</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span> *argv[])</span></span><br><span class="hljs-function"></span>&#123;<br>    cout &lt;&lt; (<span class="hljs-string">&quot;======= Start Program: testAdd ================&quot;</span>) &lt;&lt; endl;<br><br><span class="hljs-meta">#<span class="hljs-meta-keyword">ifdef</span> DEBUG_INPUT</span><br>    <span class="hljs-built_in">freopen</span>(<span class="hljs-string">&quot;input&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>, stdin);<br>    <span class="hljs-comment">// freopen(&quot;output&quot;, &quot;w&quot;, stdout);</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span> <span class="hljs-comment">// DEBUG_INPUT</span></span><br>    string a, b;<br>    <span class="hljs-keyword">int</span> parseNum;<br>    <span class="hljs-keyword">while</span> (cin &gt;&gt; a &gt;&gt; b)<br>    &#123;<br>        <span class="hljs-keyword">bool</span> a_type = <span class="hljs-built_in">isNum</span>(a);<br>        <span class="hljs-keyword">bool</span> b_type = <span class="hljs-built_in">isNum</span>(b);<br>        <span class="hljs-keyword">int</span> a_int, b_int;<br>        <span class="hljs-keyword">int</span> flag = <span class="hljs-literal">true</span>;<br>        <span class="hljs-comment">// 判断非数字的情况</span><br>        <span class="hljs-keyword">if</span> (!a_type)<br>        &#123;<br>            flag = <span class="hljs-literal">false</span>;<br>            std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: a=&quot;</span> &lt;&lt; a &lt;&lt; <span class="hljs-string">&quot; is not a num.&quot;</span> &lt;&lt; endl;<br>        &#125;<br>        <span class="hljs-keyword">if</span> (!b_type)<br>        &#123;<br>            flag = <span class="hljs-literal">false</span>;<br>            std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: b=&quot;</span> &lt;&lt; b &lt;&lt; <span class="hljs-string">&quot; is not a num.&quot;</span> &lt;&lt; endl;<br>        &#125;<br>        <span class="hljs-keyword">if</span> (!flag)<br>        &#123;<br>            cout &lt;&lt; <span class="hljs-string">&quot;Try Again.&quot;</span> &lt;&lt; endl;<br>            <span class="hljs-keyword">continue</span>;<br>        &#125;<br><br>        <span class="hljs-keyword">try</span><br>        &#123;<br>            a_int = <span class="hljs-built_in">stoi</span>(a, string::<span class="hljs-built_in">size_type</span>());<br>        &#125;<br>        <span class="hljs-built_in"><span class="hljs-keyword">catch</span></span> (<span class="hljs-keyword">const</span> std::out_of_range &amp;oor)<br>        &#123;<br>            std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: Value of a out of range! &quot;</span> &lt;&lt; oor.<span class="hljs-built_in">what</span>() &lt;&lt; endl;<br>            flag = <span class="hljs-literal">false</span>;<br>        &#125;<br>        <span class="hljs-keyword">try</span><br>        &#123;<br>            b_int = <span class="hljs-built_in">stoi</span>(b, string::<span class="hljs-built_in">size_type</span>());<br>        &#125;<br>        <span class="hljs-built_in"><span class="hljs-keyword">catch</span></span> (<span class="hljs-keyword">const</span> std::out_of_range &amp;oor)<br>        &#123;<br>            std::cerr &lt;&lt; <span class="hljs-string">&quot;Error: Value of b out of range! &quot;</span> &lt;&lt; oor.<span class="hljs-built_in">what</span>() &lt;&lt; endl;<br>            flag = <span class="hljs-literal">false</span>;<br>        &#125;<br><br>        ll ans = <span class="hljs-built_in">getAdd</span>(a_int, b_int);<br><br>        <span class="hljs-keyword">if</span> (!flag)<br>        &#123;<br>            cout &lt;&lt; <span class="hljs-string">&quot;Try Again.&quot;</span> &lt;&lt; endl;<br>            <span class="hljs-keyword">continue</span>;<br>        &#125;<br>        <span class="hljs-keyword">else</span><br>        &#123;<br>            cout &lt;&lt; <span class="hljs-string">&quot;Correct! The value is &quot;</span> &lt;&lt; ans &lt;&lt; <span class="hljs-string">&quot;.&quot;</span> &lt;&lt; endl;<br>        &#125;<br>    &#125;<br><br>    cout &lt;&lt; <span class="hljs-string">&quot;==============================================&quot;</span> &lt;&lt; endl;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="tdd-测试阶段">TDD 测试阶段</h3>
+<p>下面三幅图片分别展示了我完成的情况，开始的 1.0 版本，包含了异常输入的检验，但是并不能进行越界检查。随后通过 try-catch，加入了越界检验，并完成对照程序。</p>
+<ul>
+<li><p>功能不达标，越界报错，（红灯状态）</p>
+<p>运行截图：</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/SoftwareTesting/Lab4_1.png" srcset="/img/loading.gif" lazyload alt="Lab4_1" /><figcaption>Lab4_1</figcaption>
+</figure>
+<p>测例执行情况：</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">测例编号</th>
+<th style="text-align: left;">输入</th>
+<th style="text-align: left;">预计输出</th>
+<th style="text-align: left;">实际输出</th>
+<th style="text-align: left;">备注</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">a=2147483646 b=1</td>
+<td style="text-align: left;">2147483647</td>
+<td style="text-align: left;">2147483647</td>
+<td style="text-align: left;">符合预期</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">a=2147483647 b=1</td>
+<td style="text-align: left;">2147483647</td>
+<td style="text-align: left;">2147483648</td>
+<td style="text-align: left;">符合预期</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">a=2147483647 b=2147483647</td>
+<td style="text-align: left;">4294967294</td>
+<td style="text-align: left;">4294967294</td>
+<td style="text-align: left;">符合预期</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">a=-2147483647 b=-1</td>
+<td style="text-align: left;">-2147483648</td>
+<td style="text-align: left;">-2147483648</td>
+<td style="text-align: left;">符合预期</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">a=-2147483648 b=-1</td>
+<td style="text-align: left;">-2147483649</td>
+<td style="text-align: left;">-2147483649</td>
+<td style="text-align: left;">符合预期</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">a=-2147483648 b=-2147483648</td>
+<td style="text-align: left;">-4294967296</td>
+<td style="text-align: left;">-4294967296</td>
+<td style="text-align: left;">符合预期</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">7</td>
+<td style="text-align: left;">a=0.005 b = asdfab</td>
+<td style="text-align: left;">2 Error</td>
+<td style="text-align: left;">2 Error</td>
+<td style="text-align: left;">符合预期</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">8</td>
+<td style="text-align: left;">a=2147483648 b=-2147483649</td>
+<td style="text-align: left;">2 Error</td>
+<td style="text-align: left;">程序故障</td>
+<td style="text-align: left;">不符合预期</td>
+</tr>
+</tbody>
+</table></li>
+<li><p>功能达标（绿灯状态）</p>
+<p>运行截图：</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/SoftwareTesting/Lab4_2.png" srcset="/img/loading.gif" lazyload alt="Lab4_2" /><figcaption>Lab4_2</figcaption>
+</figure>
+<p>测例执行情况：</p>
+<p>测例执行情况：</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">测例编号</th>
+<th style="text-align: left;">输入</th>
+<th style="text-align: left;">预计输出</th>
+<th style="text-align: left;">实际输出</th>
+<th style="text-align: left;">备注</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">a=2147483646 b=1</td>
+<td style="text-align: left;">2147483647</td>
+<td style="text-align: left;">2147483647</td>
+<td style="text-align: left;">符合预期</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">a=2147483647 b=1</td>
+<td style="text-align: left;">2147483647</td>
+<td style="text-align: left;">2147483648</td>
+<td style="text-align: left;">符合预期</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">a=2147483647 b=2147483647</td>
+<td style="text-align: left;">4294967294</td>
+<td style="text-align: left;">4294967294</td>
+<td style="text-align: left;">符合预期</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">a=-2147483647 b=-1</td>
+<td style="text-align: left;">-2147483648</td>
+<td style="text-align: left;">-2147483648</td>
+<td style="text-align: left;">符合预期</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">a=-2147483648 b=-1</td>
+<td style="text-align: left;">-2147483649</td>
+<td style="text-align: left;">-2147483649</td>
+<td style="text-align: left;">符合预期</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">a=-2147483648 b=-2147483648</td>
+<td style="text-align: left;">-4294967296</td>
+<td style="text-align: left;">-4294967296</td>
+<td style="text-align: left;">符合预期</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">7</td>
+<td style="text-align: left;">a=0.005 b = asdfab</td>
+<td style="text-align: left;">2 Error</td>
+<td style="text-align: left;">2 Error</td>
+<td style="text-align: left;">符合预期</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">8</td>
+<td style="text-align: left;">a=2147483648 b=-2147483649</td>
+<td style="text-align: left;">2 Error</td>
+<td style="text-align: left;">2 Error</td>
+<td style="text-align: left;">符合预期</td>
+</tr>
+</tbody>
+</table></li>
+<li><p>对照程序</p>
+<p>运行截图：</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/SoftwareTesting/Lab4_3.png" srcset="/img/loading.gif" lazyload alt="Lab4_3" /><figcaption>Lab4_3</figcaption>
+</figure>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">测例编号</th>
+<th style="text-align: left;">输入</th>
+<th style="text-align: left;">预计输出</th>
+<th style="text-align: left;">实际输出</th>
+<th style="text-align: left;">备注</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">a=2147483646 b=1</td>
+<td style="text-align: left;">2147483647</td>
+<td style="text-align: left;">2147483647</td>
+<td style="text-align: left;">符合预期</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">a=2147483647 b=1</td>
+<td style="text-align: left;">2147483647</td>
+<td style="text-align: left;">-2147483648</td>
+<td style="text-align: left;">符合预期，对照程序运算不进行转化</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">a=2147483647 b=2147483647</td>
+<td style="text-align: left;">4294967294</td>
+<td style="text-align: left;">-2</td>
+<td style="text-align: left;">符合预期，对照程序运算不进行转化</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">a=-2147483647 b=-1</td>
+<td style="text-align: left;">-2147483648</td>
+<td style="text-align: left;">-2147483648</td>
+<td style="text-align: left;">符合预期</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">a=-2147483648 b=-1</td>
+<td style="text-align: left;">-2147483649</td>
+<td style="text-align: left;">2147483647</td>
+<td style="text-align: left;">符合预期</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">a=-2147483648 b=-2147483648</td>
+<td style="text-align: left;">-4294967296</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">符合预期，对照程序运算不进行转化</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">7</td>
+<td style="text-align: left;">a=0.005 b = asdfab</td>
+<td style="text-align: left;">2 Error</td>
+<td style="text-align: left;">2 Error</td>
+<td style="text-align: left;">符合预期</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">8</td>
+<td style="text-align: left;">a=2147483648 b=-2147483649</td>
+<td style="text-align: left;">2 Error</td>
+<td style="text-align: left;">2 Error</td>
+<td style="text-align: left;">符合预期</td>
+</tr>
+</tbody>
+</table></li>
+</ul>
+<p>重构代码已经进行过，上一节代码中可以体现，另外我觉得重构必然导致回归测试，否则对于软件产品上线运行是极不负责任的。</p>
+<h2 id="实验总结">实验总结</h2>
+<p>本次实验完全按照 TDD 的过程进行程序（项目）设计，<strong>先构建样例，再构建程序</strong>，非常深刻的感受到 TDD 作为敏捷开发的一个分支的特点和优劣势。</p>
+<p>在本次实验中还同时借边界测试温习了一下源码补码相关的内容。测试样例的编写由于构建测例在先，使用偏向黑盒的测例构造方法（注重功能，强调试错），同步做了一个对照程序来确认验证程序的突出性质。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/%E8%BD%AF%E4%BB%B6%E6%B5%8B%E8%AF%95/">软件测试</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/%E8%BD%AF%E4%BB%B6%E6%B5%8B%E8%AF%95/">软件测试</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/post/d0bec3bf.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">软件测试学习——测试工具学习</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/post/5d89a75a.html">
+                        <span class="hidden-mobile">软件测试学习——黑盒测试实验报告</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="remark42"></div>
+  <script type="text/javascript">
+    var schema = document.documentElement.getAttribute('data-user-color-scheme');
+    if (schema !== 'light' && schema !== 'dark') {
+      schema = 'light';
+    }
+    var remark_config = Object.assign(
+      {"host":"https://remark42.edwardzcn98yx.com","site_id":"www.edwardzcn98yx.com","max_shown_comments":20,"locale":"zh","components":["embed"]},
+      {
+        url: '/post/bafae70a.html',
+        page_title: '软件测试学习——TDD流程实验报告',
+        theme: schema,
+      }
+    );
+
+    Fluid.utils.loadComments('#remark42', function() {
+      (function (c) {
+        for (var i = 0; i < c.length; i++) {
+          var d = document, s = d.createElement('script');
+          s.src = remark_config.host + '/web/' + c[i] + '.js';
+          s.defer = true;
+          (d.head || d.body).appendChild(s);
+        }
+      })(remark_config.components || ['embed']);
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        冀ICP证18024730号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+            
+            <span>湘公网安备43010402000641号</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://lib.baomitu.com/mathjax/3.2.0/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+</body>
+</html>

@@ -1,0 +1,702 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="计算机系统概述
+操作系统地体系结构
+大内核和微内核
+操作系统体系结构，关于操作系统在核心态应该提供什么服务、怎样提供服务？有关这一问题的回答形成了两种主要的体系结构：大内核（单一内核）和微内核。
+大内核系统将操作系统的主要功能模块都作为一个紧密联系的整体运行在核心态，从而为应用提供高性能的系统服务。因为各管理模块之间共享信息，能有效利用相互之间的有效特性，所以具有无可比拟的性能优势。
+但">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  
+  <title>操作系统学习——知识点复习整理提纲 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://lib.baomitu.com/highlight.js/10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+  
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bookmark"></i>
+                select
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Computer-Science/">
+                    <i class="iconfont icon-codeforces"></i>
+                    Computer Science
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%98%85%E8%AF%BB/">
+                    <i class="iconfont icon-bookmark-fill"></i>
+                    Life Reading
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%9A%8F%E7%AC%94/">
+                    <i class="iconfont icon-note"></i>
+                    Life Essay
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Research/Report/">
+                    <i class="iconfont icon-clipcheck"></i>
+                    Weekly Report
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/photos">
+                <i class="iconfont icon-image"></i>
+                gallery
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="操作系统学习——知识点复习整理提纲">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      Edwardzcn
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-07-11 21:39" pubdate>
+        2020年7月11日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.5k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      35
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">操作系统学习——知识点复习整理提纲</h1>
+            
+            <div class="markdown-body">
+              <h1 id="计算机系统概述">计算机系统概述</h1>
+<h2 id="操作系统地体系结构">操作系统地体系结构</h2>
+<h3 id="大内核和微内核">大内核和微内核</h3>
+<p>操作系统体系结构，关于操作系统在核心态应该提供什么服务、怎样提供服务？有关这一问题的回答形成了两种主要的体系结构：<strong>大内核</strong>（单一内核）和<strong>微内核</strong>。</p>
+<p>大内核系统将操作系统的主要功能模块都作为<strong>一个紧密联系的整体</strong>运行在核心态，从而为应用提供高性能的系统服务。因为各管理模块之间共享信息，能有效利用相互之间的有效特性，所以具有无可比拟的性能优势。</p>
+<p>但随着体系结构应用需求的发展，操作系统的设计规模增长，内核功能如进程管理、虚存、I/O 与设备管理、IPC、文件系统等几个层次，层次间接口定义越发复杂，层次间界限也逐渐模糊。</p>
+<p>为解决操作系统内核代码难以维护的问题，提出了微内核的体系结构。它将内核中最基本的功能（如进程管理等）保留在内核，而将那些不需要在核心态执行的功能移到用户态（？存疑。不应该是逐层陷入内核么）执行，从而降低了内核的设计复杂性。那些移出内核的操作系统代码根据分层的原则被划分成若干服务程序，它们的执行相互独立，交互则都借助于微内核进行通信。</p>
+<p><strong>需要证明的是</strong>，微内核在系统效率上并没有论证由于大内核（陷入过程/通信机制影响了系统的效率）。</p>
+<h2 id="疑难区分点">疑难区分点</h2>
+<ol type="1">
+<li><p>并行性与并发性的区别和联系</p>
+<p>并行性（parallel）和并发性（concurrency）是既相似又有区别的两个概念，并行性是指两个或多个事件再同一时刻发生，并发性是指两个或多个事件再同一时间间隔内发生。</p>
+<p>在多道程序环境下，并发程序是指在一段时间内，宏观上有多个程序同时运行，但在单处理器系统中每个时刻却仅能有一道程序执行，故微观上这些程序只能分时地交替执行。若在计算机系统中有多个处理器，则这些可以并发执行地程序便被分配到多个处理器上，实现并行执行，即利用每个处理器来处理一个可并发执行地程序。</p></li>
+<li><p>特权指令与非特权指令</p>
+<p>特权指令，是指有特殊权限地指令，由于这类指令地权限最大，使用不当将导致整个系统崩溃，如清内存、置时钟、分配系统资源、修改虚存地段表或页表、修改用户地访问权限等。为保证系统安全，这类指令只能用于<strong>操作系统</strong>或<strong>其他系统软件</strong>，不直接提供给用户使用。</p>
+<p>特权指令必须在核心态执行，用户态下只能使用非特权指令，核心态下可以使用全部指令。在用户态下使用特权指令时，将<strong>产生中断以阻止用户使用特权指令</strong>。用户态转换为核心态地唯一途径是<strong>中断或者异常</strong>？</p></li>
+</ol>
+<p>进程管理 进程与线程 进程的概念和特征 设计概念（数学不严谨的 Specification）：在多道程序环境下，允许多个程序并发执行，此时它们将失去封闭性，并具有间歇性不可再现性的特征（单道的确定性被破坏？）。为此引入了进程（Process）的概念，以便更好描述和控制程序的并发执行，实现操作系统的并发性和共享性（最基本的两个特征），进程曾是分时系统的基本运作单位（面向进程设计的系统），现代系统中多作为线程的容器（面向线程设计的系统）。</p>
+<p>具体实现（实体描述 Implementation）：为了使参与并发执行的程序（含数据）能独立地运行，必须为之配置一个专门的数据结构，称为进程控制块（Process Control Block，PCB）。系统利用 PCB 来描述进程的基本情况和运行状态，进而控制和管理进程。相应地，由程序段、相关数据段和 PCB 三部分构成了进程映像（进程实体）。</p>
+<p>注意：PCB 是进程存在的唯一标识！</p>
+<p>引入进程实体概念后，我们可以把进程定义为：“进程是进程实体的运行过程（抽象实现），是系统进行资源分配和调度的一个独立单位。”</p>
+<p>进程的特征 进程的性质描述。</p>
+<p>动态性：进程是程序的一次执行，有执行状态和生命周期。 并发性：多个进程实体同时存在内存中，能够在一段时间内同时执行（联系并发 concurrency 的概念）。并发是进程的重要特征。 独立性： 异步性： 结构性： 进程的阻塞和唤醒 这里描述的进程阻塞过程和唤醒过程实际上就对应了后面一小节，其他调度参见调度的短期调度</p>
+<p>正在执行的进程，由于期待的某些事件未发生，由系统自动执行阻塞原语 Block，使自己由运行态变为阻塞态。可见，进程的阻塞时进程自身的一种主动行为（或者理解为内核行为），也因此只有处于运行态的进程（获得 CPU），才可能将其转换为阻塞态。操作：找 PCB、改未阻塞态、插入等待队列。</p>
+<p>当阻塞进程所期待的事件出现时，如它所启动的 I/O 操作已完成或其所期待的数据已到达，由有关进程（如提供数据的进程）调用唤醒原语 Wakeup，将等待该事件的进程唤醒。操作：找 PCB、从等待队列中移出、置就绪态、插入就绪队列等待调度器调度。</p>
+<p>上下文 Switch（切换）负担的主要来源。在计算机科学中，任务（task）的上下文（英语：context）是一个任务所必不可少的一组数据（该任务可以是进程、线程）。这些数据允许任务中断，在这之后仍可在同一个地方继续执行（现场情况）。上下文的这一概念在中断的任务的场景下具有重大意义，其中，任务在被中断之后，处理器保存上下文并提供中断处理（interrupt service routine）。因此，上下文越小，延迟越小。</p>
+<p>上下文的数据可能存放于处理器寄存器、任务所利用的内存、某些操作系统管理的任务所使用的控制寄存器（control registers）。</p>
+<p>（笔者自己的调查）针对放置在寄存器（Register）还是内存（Memory）中我个人看法如下：</p>
+<p>寄存器：最小执行单位（进程/线程）处就绪态时，CPU 利用寄存器内容做计算，此时上下文数据通过 Load/Store（假定 ARM 指令集）将上下文相关数据从内存传送至寄存器 任务所用内存：最小执行单位（进程/线程）处于阻塞态时，不利用 CPU 时间，此时上下文数据应在内存中保存。 中期调度——挂起的时候应该会把上下文也储存在磁盘上？</p>
+<p>进程切换 对于通常的进程而言，其创建、撤销及要求由系统设备完成的 I/O 操作，都是利用系统调用而进入内核，再由内核中的相应处理程序予以完成的。进程切换同样是在内核的支持下实现的，因此可以说，任何进程都是在操作系统内核的支持下运行的，是与内核紧密相关的。</p>
+<p>进程切换是指处理机从一个进程的运行转到另一个进程上运行，在这个过程中，进程的运行环境产生实质性变化。进程切换的过程如下:</p>
+<p>保存处理机的上下文，包括程序计数器和其他寄存器。 更新 PCB 信息。 把进程的 PCB 移入相应的队列，如就绪、在某事件的阻塞等队列。 选择另一个进程执行，并更新其 PCB。 更新内存管理的数据结构。 恢复处理机上下文（所选择的另一个进程） 疑难区分点</p>
+<a id="more"></a>
+<h1 id="进程管理">进程管理</h1>
+<h2 id="进程与线程">进程与线程</h2>
+<h3 id="进程的概念和特征">进程的概念和特征</h3>
+<p>设计概念（数学不严谨的 Specification）：在多道程序环境下，允许多个程序并发执行，此时它们将失去封闭性，并具有间歇性不可再现性的特征（单道的确定性被破坏？）。为此引入了进程（Process）的概念，以便更好描述和控制程序的并发执行，实现操作系统的并发性和共享性（最基本的两个特征），进程曾是分时系统的基本运作单位（面向进程设计的系统），现代系统中多作为线程的容器（面向线程设计的系统）。</p>
+<p>具体实现（实体描述 Implementation）：为了使参与并发执行的程序（含数据）能独立地运行，必须为之配置一个专门的数据结构，称为<strong>进程控制块</strong>（Process Control Block，PCB）。系统利用 PCB 来描述进程的基本情况和运行状态，进而控制和管理进程。相应地，由<strong>程序段</strong>、<strong>相关数据段</strong>和<strong>PCB</strong>三部分构成了进程映像（进程实体）。</p>
+<p>注意：PCB 是进程存在的<strong>唯一标识</strong>！</p>
+<p>引入进程实体概念后，我们可以把进程定义为：“进程是进程实体的运行过程（抽象实现），是系统进行资源分配和调度的一个独立单位。”</p>
+<h3 id="进程的特征">进程的特征</h3>
+<p>进程的性质描述。</p>
+<ul>
+<li><strong>动态性</strong>：进程是程序的一次执行，有执行状态和生命周期。</li>
+<li><strong>并发性</strong>：多个进程实体同时存在内存中，能够在一段时间内同时执行（联系并发 concurrency 的概念）。并发是进程的重要特征。</li>
+<li><strong>独立性</strong>：</li>
+<li><strong>异步性</strong>：</li>
+<li><strong>结构性</strong>：</li>
+</ul>
+<h3 id="进程的阻塞和唤醒">进程的阻塞和唤醒</h3>
+<p>这里描述的进程阻塞过程和唤醒过程实际上就对应了后面一小节，其他<a href="https://www.edwardzcn98yx.com/post/c2ed6fef.html">调度</a>参见调度的短期调度</p>
+<p>正在执行的进程，由于期待的某些事件未发生，由系统自动执行阻塞原语<code>Block</code>，使自己由运行态变为阻塞态。可见，进程的阻塞时进程自身的一种主动行为（或者理解为内核行为），也因此只有处于运行态的进程（获得 CPU），才可能将其转换为阻塞态。操作：找 PCB、改未阻塞态、插入等待队列。</p>
+<p>当阻塞进程所期待的事件出现时，如它所启动的 I/O 操作已完成或其所期待的数据已到达，由有关进程（如提供数据的进程）调用唤醒原语<code>Wakeup</code>，将等待该事件的进程唤醒。操作：找 PCB、从等待队列中移出、置就绪态、插入就绪队列等待调度器调度。</p>
+<h3 id="上下文">上下文</h3>
+<p>Switch（切换）负担的主要来源。在计算机科学中，任务（task）的上下文（英语：context）是一个任务所必不可少的一组数据（该任务可以是进程、线程）。这些数据允许任务中断，在这之后仍可在同一个地方继续执行（现场情况）。上下文的这一概念在中断的任务的场景下具有重大意义，其中，任务在被中断之后，处理器保存上下文并提供中断处理（interrupt service routine）。因此，上下文越小，延迟越小。</p>
+<p>上下文的数据可能存放于处理器寄存器、任务所利用的内存、某些操作系统管理的任务所使用的控制寄存器（control registers）。</p>
+<p>（笔者自己的调查）针对放置在寄存器（Register）还是内存（Memory）中我个人看法如下：</p>
+<ul>
+<li>寄存器：最小执行单位（进程/线程）处就绪态时，CPU 利用寄存器内容做计算，此时上下文数据通过 Load/Store（假定 ARM 指令集）将上下文相关数据从内存传送至寄存器</li>
+<li>任务所用内存：最小执行单位（进程/线程）处于阻塞态时，不利用 CPU 时间，此时上下文数据应在内存中保存。</li>
+</ul>
+<p>中期调度——挂起的时候应该会把上下文也储存在磁盘上？</p>
+<h3 id="进程切换">进程切换</h3>
+<p>对于通常的进程而言，其创建、撤销及要求由系统设备完成的 I/O 操作，都是利用系统调用而进入内核，再由内核中的相应处理程序予以完成的。进程切换同样是在内核的支持下实现的，因此可以说，任何进程都是在操作系统内核的支持下运行的，是与内核紧密相关的。</p>
+<p>进程切换是指处理机从一个进程的运行转到另一个进程上运行，在这个过程中，进程的运行环境产生实质性变化。进程切换的过程如下:</p>
+<ol type="1">
+<li>保存处理机的上下文，包括程序计数器和其他寄存器。</li>
+<li>更新 PCB 信息。</li>
+<li>把进程的 PCB 移入相应的队列，如就绪、在某事件的阻塞等队列。</li>
+<li>选择另一个进程执行，并更新其 PCB。</li>
+<li>更新内存管理的数据结构。</li>
+<li>恢复处理机上下文（所选择的另一个进程）</li>
+</ol>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/post/41412e7c.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">《我执》读书笔记</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/post/a06ab0a.html">
+                        <span class="hidden-mobile">Coq学习——FRAP阅读笔记Chap12</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="remark42"></div>
+  <script type="text/javascript">
+    var schema = document.documentElement.getAttribute('data-user-color-scheme');
+    if (schema !== 'light' && schema !== 'dark') {
+      schema = 'light';
+    }
+    var remark_config = Object.assign(
+      {"host":"https://remark42.edwardzcn98yx.com","site_id":"www.edwardzcn98yx.com","max_shown_comments":20,"locale":"zh","components":["embed"]},
+      {
+        url: '/post/c2ed6fef.html',
+        page_title: '操作系统学习——知识点复习整理提纲',
+        theme: schema,
+      }
+    );
+
+    Fluid.utils.loadComments('#remark42', function() {
+      (function (c) {
+        for (var i = 0; i < c.length; i++) {
+          var d = document, s = d.createElement('script');
+          s.src = remark_config.host + '/web/' + c[i] + '.js';
+          s.defer = true;
+          (d.head || d.body).appendChild(s);
+        }
+      })(remark_config.components || ['embed']);
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        冀ICP证18024730号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+            
+            <span>湘公网安备43010402000641号</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://lib.baomitu.com/mathjax/3.2.0/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+</body>
+</html>

@@ -1,0 +1,808 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="
+Step 1
+题目摘要引言
+Title
+Testing Database Engines via Pivoted Query Synthesis
+通过 Pivoted Query 方法来检测数据库引擎
+Abstract
+DBMSs 的检测，fuzzers 被广泛永安里检测 crash bugs，但是针对 logic bugs 的通用方法一直是空白。
+提出一种 novel and ">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  
+  <title>OSDI20——Testing-Database-Engines-via-Pivoted-Query-Synthesis - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://lib.baomitu.com/highlight.js/10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+  
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bookmark"></i>
+                select
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Computer-Science/">
+                    <i class="iconfont icon-codeforces"></i>
+                    Computer Science
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%98%85%E8%AF%BB/">
+                    <i class="iconfont icon-bookmark-fill"></i>
+                    Life Reading
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%9A%8F%E7%AC%94/">
+                    <i class="iconfont icon-note"></i>
+                    Life Essay
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Research/Report/">
+                    <i class="iconfont icon-clipcheck"></i>
+                    Weekly Report
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/photos">
+                <i class="iconfont icon-image"></i>
+                gallery
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="OSDI20——Testing-Database-Engines-via-Pivoted-Query-Synthesis">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      Edwardzcn
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-03-24 09:24" pubdate>
+        2020年3月24日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.3k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      27
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">OSDI20——Testing-Database-Engines-via-Pivoted-Query-Synthesis</h1>
+            
+            <div class="markdown-body">
+              <!--文章由 3step 模板生成三步法阅读文献笔记记录-->
+<h1 id="step-1">Step 1</h1>
+<h2 id="题目摘要引言">题目摘要引言</h2>
+<h3 id="title">Title</h3>
+<p>Testing Database Engines via Pivoted Query Synthesis</p>
+<p>通过 Pivoted Query 方法来检测数据库引擎</p>
+<h3 id="abstract">Abstract</h3>
+<p>DBMSs 的检测，fuzzers 被广泛永安里检测 crash bugs，但是针对 logic bugs 的通用方法一直是空白。</p>
+<p>提出一种 novel and general 方法，Pivoted Query Synthesis.</p>
+<p>核心方法：去随机拿去 pivot row....</p>
+<h3 id="introduction">Introduction</h3>
+<p>基于关系模型的 DBMSs 是许多应用的核心组件。关于其检测工具，较为出名的有<a target="_blank" rel="noopener" href="https://github.com/anse1/sqlsmith">SQLsmith</a>，可以探测导致 crash 的异常。以及模糊检测工具 Fuzzers 比如 AFL，也被 DBMSs 日常应用。但是这些方法都无法检测 logic bugs。</p>
+<blockquote>
+<p>关于 Fuzzing</p>
+<p>模糊检测是识别实际软件中安全问题的最强大，最成熟的策略之一。 它负责迄今为止在安全性至关重要的软件中发现的绝大多数远程代码执行和特权提升错误。</p>
+<p>不幸的是，Fuzzing 比较浅显： 盲目的，随机的变异使得极不可能到达测试代码中的某些代码路径，从而使某些漏洞牢不可破。</p>
+</blockquote>
+<p>logic bugs 难以自动化探测。</p>
+<ul>
+<li>key challenge：找到 test oracle，能告知一个系统根据指定输入，是否表现正常。</li>
+<li>prior work：differential testing 方法，在多个 DBMSs 执行相同一段 test oracle，并对比输出的不同。实现工具：RAGS，局限：尽管 DBMSs 都使用 SQL，但都对标准进行扩展，并在一些部分不尽相同，因此在不同 DBMSs 实现完全一致的语义很困难。</li>
+</ul>
+<p>本文的方法：</p>
+<ul>
+<li>Pivoted Query Synthesis （PQS）</li>
+<li>实现工具：SQLancer</li>
+<li>核心思路：randomly-selected row（pivot row），组织查询，使得其结果必须包含该 pivot row。</li>
+</ul>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/OSDI20/PQS_01.png" srcset="/img/loading.gif" lazyload alt="PQS_01.png" /><figcaption>PQS_01.png</figcaption>
+</figure>
+<p>以 Listing 1 为例，通过该方法发现了 13 年起就存在的 critical bug，而且简单的例子在不同的 SQL 中实现也不尽相同。3 种 DBMS 都实现了 <code>IS NOT TRUE</code>，但是语义不同，对于 SQLite，仅 fetch value 0，而不会产生如 Listing 1 的 bug。</p>
+<p>limitations: 只能部分验证查询结果，对于聚合函数，结果集的大小或是顺序，不能查验。此外，实施该技术所需的工作量取决于要测试的操作的复杂性，这对于复杂的操作符或功能而言可能会很高。</p>
+<p>contribution：</p>
+<ul>
+<li>高效的查找 bug 方法：PQS</li>
+<li>工具：SQLancer</li>
+<li>一份评估</li>
+</ul>
+<h3 id="background">Background</h3>
+<blockquote>
+<p><strong>Database management systems.</strong> aim to test relational DBMSs (based on relational data model)</p>
+<p><span class="math inline">\(R \subseteq S_1 \times S_2 \times \cdots \times S_n\)</span>，<span class="math inline">\(S_1,S_2,\cdots,S_n\)</span> are referred to as domains. More commonly, a relation is referred to as a <span class="math inline">\(table\)</span> and a domain is referred to as a <span class="math inline">\(data ~ type\)</span>. Each tuple in this relation is referred to as a row.</p>
+</blockquote>
+<blockquote>
+<p><strong>Test oracles.</strong> An effective <strong>test oracle</strong> is crucial for automatic testing approaches. A test oracle assesses whether a given test case has passed. Manuaaly written test cases encode the programmer's knowledge who thus acts as a test oracle. In this work, we are interested only in automatic test oracles, which would allow comprehensively testing a DBMS.</p>
+</blockquote>
+<blockquote>
+<p><strong>Tested DBMSs.</strong> Focused on three popular and widely-used open-source DBMSs: SQLite, MySQL, and PostgreSQL. They are among the most popular and widely-used ones.</p>
+</blockquote>
+<h2 id="基本理论概况">基本理论概况</h2>
+<h2 id="结论部分">结论部分</h2>
+<p>介绍了一种用于探测 DBMSs bug 的新方法，PQS，并且实现了 SQLancer 工具，据此在三个最流行的 DBMS 种找到至少 96 个 bug。当前仅实现了功能描述的一个子集，剩余可能作为后续研究。</p>
+<p>PQS 的一个缺点是需要针对每个要被测试的 DBMS 进行实现，未来工作，可能通过提供共同的构建模块（common ？）来减少这种工作。</p>
+<p>PQS 可以拓展为（取反），比如对其值要求为 Fasle 或者 NULL，但却错误地提取到 pivot row（应该是提取不到的）。</p>
+<!-- 确定作者的成过以及点出的经验、问题、改进方 -->
+<h2 id="回答基本问题">回答基本问题</h2>
+<ol type="1">
+<li><p>类别</p>
+<p>测试类</p>
+<!-- 这篇论文是什么类型？测试类？对现有系统进行分析的？对原型系统进行描述的？--></li>
+<li><p>内容</p>
+<p>暂无</p>
+<!-- 你读过的其他论文有没有与之相关的？相关性与区别最直接体现在哪里？文章中分析问题用的什么理论基础（通过瞥一眼数学概况与核心证明可以得到）。 --></li>
+<li><p>正确性</p>
+<p>真实有效，有应用并找出实际的 bug。</p>
+<!-- 结论是否看起来真实有效？ --></li>
+<li><p>创新点</p>
+<p>pivot row 来自动化寻找 logic bugs</p>
+<!-- 论文的主要创新点是什么？总结提到的经验、问题和改进方法是什么？ --></li>
+<li><p>清晰度</p>
+<p>清晰</p>
+<!-- 这篇论文是否写的条理清晰 --></li>
+</ol>
+<h2 id="阅读选择">阅读选择</h2>
+<p>继续阅读</p>
+<!--
+1. 继续阅读：论文有价值担保，研究领域非常切合，对当前进行工作有极大帮助，圈内爆火文章
+2. 不继续阅读：论文不吸引自己，论文价值/正确性存疑，论文作者给出了不适当的假设。
+3. 库存保留并标记：当前不处于自己的研究领域，但不久的日后相关论文会有用。
+-->
+<a id="more"></a>
+<h1 id="step-2">Step 2</h1>
+<h2 id="细读笔记">细读笔记</h2>
+<h3 id="pivoted-query-synthesis">Pivoted Query Synthesis</h3>
+<p>核心：随机选取 pivot row，随机生成一组布尔谓词，对它们进行修改使得基于 AST 的解释器求值为真。将其放置在 WHERE 和 JOIN 后，表达式（子句）为真使得该 pivot row 必然会被选择到。如果没有则说明探测到 bug。</p>
+<p>testing oracle，依赖 AST 解释器。作者同时解释了，可能对于复杂的操作符（如正则）有一定的实现复杂度，但是可以避免其他 DBMS 设计中的苦难，也不会影响工具的性能。</p>
+<h4 id="overview">Overview</h4>
+<p>Figure 1 展示了细节流程</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/OSDI20/PQS_02.png" srcset="/img/loading.gif" lazyload alt="PQS_02.png" /><figcaption>PQS_02.png</figcaption>
+</figure>
+<p>循环可以从 Step 2，开始重新随机挑选一个 pivot row，或者从 Step 1 开始重新构建 database。</p>
+<p>core idea is given by how we construct the test oracle (Step 2 -&gt; Step 7).</p>
+<h4 id="query-generation-checking">Query Generation &amp; Checking</h4>
+<p>解释如何生成随机的谓词，纠正并在查询中使用 (Step 3 -&gt; Step 5)</p>
+<blockquote>
+<p>Random predicate generation. 根据 database schema （列名和类型）构造达到指定深度的 AST。根据层数选择是否允许在随即类型中加入一元、二元等运算符，这样就可以控制层数。</p>
+</blockquote>
+<p>Random expression generation 不是本论文的贡献，random query operation 里斯 RAGs 和 SQLsmith 中都有实现。</p>
+<p>根据 DBMS 的 SQL“方言”文档，手动实现了表达式生成器。</p>
+<blockquote>
+<p>Expression evaluation.</p>
+</blockquote>
+<p>check TRUE. 每一个节点必须提供 <span class="math inline">\(\mathsf{execute()}\)</span> 方法来计算节点的结果。 Leaf nodes directly return their assigned constant value. Column nodes are assigned the valuethat corresponds to their column in the pivot row.</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/OSDI20/PQS_03.png" srcset="/img/loading.gif" lazyload alt="PQS_03.png" /><figcaption>PQS_03.png</figcaption>
+</figure>
+<p>AST interpreters 要比 programming language 要简单很多，因为所有的节点都是字面值（换言之，不需要考虑可变存储）。bottleneck，DBMS 如何计算值，而不是 SQLancer，比如 LIKE 正则表达操作符，要超过 50 代码行 in SQLancer</p>
+<blockquote>
+<p>Expression rectification.</p>
+</blockquote>
+<p>值的矫正，Step 4 需要保证最终值为 TRUE。SQL 基于 TRUE，FALSE 和 NULL 三值逻辑。为了使最终结果为 TRUE，使用 Algorithm 3.</p>
+<p>类似一个简单的修复，如果预期使 TRUE 的，那么就是我们最终想要的表达式，直接输出<span class="math inline">\(randexpr\)</span>，如果是 FALSE，则在前面填充一个 NOT 一元操作，如果是 NULL，则<span class="math inline">\(randexpr ~ ISNULL\)</span></p>
+<blockquote>
+<p>Query generation</p>
+</blockquote>
+<p>Step 5，用于 WHERE 子句，保证 pivot row 在查询的输出中，以及用于 JOIN 子句，使得连接表格后，pivot row 出现在结果集中。</p>
+<blockquote>
+<p>Checking containment</p>
+</blockquote>
+<p>检测 pivot row 是否出现在结果集中是最后一部。构造查询，将 Step 6 和 Step 7 组合在一起，DBMS 提供了一些运算符来检测“包含”，比如 IN 和 INTERSECT。</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/OSDI20/PQS_04.png" srcset="/img/loading.gif" lazyload alt="PQS_04.png" /><figcaption>PQS_04.png</figcaption>
+</figure>
+<h4 id="random-state-generation">Random State Generation</h4>
+<p>回过头来讲 Dababase 状态的构造。</p>
+<p>第一步是使用 CREATE TABLE 陈述构造表，后续陈述是启发式的。</p>
+<p>这一部分 The random database generation 也并非本文的贡献，很多方法都已被提出，并且可以与 PQS 相配合。</p>
+<!-- 要仔细阅读论文，但是诸如证明等信息要忽略掉 -->
+<h2 id="问题记录">问题记录</h2>
+<h2 id="未读且值得读文献记录">未读（且值得读）文献记录</h2>
+<!-- 在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 -->
+<h1 id="step-3">Step 3</h1>
+<!-- 试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。 -->
+<h2 id="思路复现">思路复现</h2>
+<!-- 推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ -->
+<h3 id="pqs-implementation-details">PQS Implementation Details</h3>
+<p>本节主要解释了实现部分的决策。</p>
+<h4 id="error-handling">Error handling</h4>
+<p>理想：语法+语义都正确。但是语义正确很难达到，比如说对于唯一值的要求。如果要满足语义正确需要附加的检测机制，权衡下，通过 Error message 反馈出来。</p>
+<h4 id="performance">Performance</h4>
+<p>每个线程跑独立的 database（Step 1 生成）。为了充分利用每个 CPU，我们降低了生成导致 CPU 利用率较低的 SQL 状态语句的可能性（例如 PostgreSQL 中的 VACUUM）。通常，SQLancer 每秒生成 5,0000 至 20,000 条语句，具体取决于正在测试的 DBMS。 由于我们测试的 DBMS 比其他语句快得多，因此 SQLancer 为每个数据库生成 100,000 个随机查询。</p>
+<h4 id="number-of-rows">Number of rows</h4>
+<p>大多数 bugs 通过限制 rows 为较低数目（10-30）时找到。太多数目可能由于不受限制的表连接而使得行数进一步爆炸。</p>
+<p>潜在的问题是，这可能会阻止 PQS 检测仅针对具有许多行的表触发的错误。 作者认为未来的工作可以通过限制查询结果的基数来解决此问题</p>
+<h3 id="evaluation">Evaluation</h3>
+<h4 id="setup">Setup</h4>
+<p>laptop</p>
+<p>6-core Intel i7-8850H 2.60GHz</p>
+<p>32GB memory</p>
+<p>System： Ubuntu 19.04</p>
+<p>DBMS versions: latest release version</p>
+<p>SQLite 3.28(trunk version)</p>
+<p>MySQL: 8.0.16-17</p>
+<p>PostgreSQL: 11.4(Beta 2 version)</p>
+<h4 id="baseline">Baseline</h4>
+<p>没有使用的基准，RAGS 时 20 多年前提出的，而且没有公开。SQLsmith，AFL 和其他随机查询生成工具与模糊检测工具，只探测 crash bugs，这一子集可能与 SQLancer 探测的 crash bugs 有重叠，但这并不重要。</p>
+<h2 id="证明与推理复现">证明与推理复现</h2>
+<!-- 分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源 -->
+<h2 id="实验验证复现">实验验证复现</h2>
+<!-- Rework -->
+<p>bug 的文章，都是以bug report来表示的，并不是性能图标。这才是重点！！！！！</p>
+<p>三个图标，从左到右要求递增</p>
+<ul>
+<li>available：开源的</li>
+<li>functional：可用的</li>
+<li>reproduced：开源的代码能再现文章的内容</li>
+</ul>
+<p>找到别人的没找到的很重要！</p>
+<p>这个区分logic bug很重要，说明工作的重点体现出来了。</p>
+<p>scalability 的问题</p>
+<p>VLDB里面很多paper，抓取SQLite语句进行分析，通过重写SQL，提升性能？</p>
+<p>evaluation是重点！简单的idea能找到很多bug对于本身来说是加分点！</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Research/">Research</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Research/Paper/">Paper</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/%E4%B8%89%E6%AD%A5%E6%B3%95/">三步法</a>
+                    
+                      <a class="hover-with-bg" href="/tag/Paper/">Paper</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/post/a65b0def.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">【洛谷-P2430】解题报告（01背包）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/post/32dcdd6d.html">
+                        <span class="hidden-mobile">多媒体原理与系统——音频wave文件</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="remark42"></div>
+  <script type="text/javascript">
+    var schema = document.documentElement.getAttribute('data-user-color-scheme');
+    if (schema !== 'light' && schema !== 'dark') {
+      schema = 'light';
+    }
+    var remark_config = Object.assign(
+      {"host":"https://remark42.edwardzcn98yx.com","site_id":"www.edwardzcn98yx.com","max_shown_comments":20,"locale":"zh","components":["embed"]},
+      {
+        url: '/post/c7d2df5.html',
+        page_title: 'OSDI20——Testing-Database-Engines-via-Pivoted-Query-Synthesis',
+        theme: schema,
+      }
+    );
+
+    Fluid.utils.loadComments('#remark42', function() {
+      (function (c) {
+        for (var i = 0; i < c.length; i++) {
+          var d = document, s = d.createElement('script');
+          s.src = remark_config.host + '/web/' + c[i] + '.js';
+          s.defer = true;
+          (d.head || d.body).appendChild(s);
+        }
+      })(remark_config.components || ['embed']);
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        冀ICP证18024730号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+            
+            <span>湘公网安备43010402000641号</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://lib.baomitu.com/mathjax/3.2.0/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+</body>
+</html>

@@ -1,0 +1,736 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="本节课主要讨论的是 Google 的文件系统 GFS 的论文。
+Big Strorage
+存储抽象问题，或许对于分布式系统来说，你能想到很多，但是提供一个简单的存储接口storage interface会更方便，更通常。
+我们会主要讨论如何更好的设计 big storage 的接口以及如何设计存储系统的内部来提供更好的性能。
+文章中还有很多关键词汇，如parallel performanc">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  
+  <title>分布式系统学习——MIT6.824-Lecture3课堂笔记 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://lib.baomitu.com/highlight.js/10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+  
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bookmark"></i>
+                select
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Computer-Science/">
+                    <i class="iconfont icon-codeforces"></i>
+                    Computer Science
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%98%85%E8%AF%BB/">
+                    <i class="iconfont icon-bookmark-fill"></i>
+                    Life Reading
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%9A%8F%E7%AC%94/">
+                    <i class="iconfont icon-note"></i>
+                    Life Essay
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Research/Report/">
+                    <i class="iconfont icon-clipcheck"></i>
+                    Weekly Report
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/photos">
+                <i class="iconfont icon-image"></i>
+                gallery
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="分布式系统学习——MIT6.824-Lecture3课堂笔记">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      Edwardzcn
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-06-01 16:45" pubdate>
+        2020年6月1日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.7k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      31
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">分布式系统学习——MIT6.824-Lecture3课堂笔记</h1>
+            
+            <div class="markdown-body">
+              <p>本节课主要讨论的是 Google 的文件系统 GFS 的论文。</p>
+<h1 id="big-strorage">Big Strorage</h1>
+<p>存储抽象问题，或许对于分布式系统来说，你能想到很多，但是提供一个简单的存储接口<code>storage interface</code>会更方便，更通常。</p>
+<p>我们会主要讨论如何更好的设计 big storage 的接口以及如何设计存储系统的内部来提供更好的性能。</p>
+<p>文章中还有很多关键词汇，如<code>parallel performance</code>，<code>fault tolerance replication</code>，<code>consistency</code>。文章展开很自然、直接，容易理解。</p>
+<p>教授在讲解 GFS 前先理了一下分布式存储系统的思路。</p>
+<h2 id="why-hard">Why hard</h2>
+<p>Performance -&gt; Sharding（碎片化）</p>
+<p>我们需要将数据分片储存到很多个储存节点上，也需要从很多个节点（clients）中读取数据进行处理。如果你分片到成百上千个 server 上，总会有个别宕掉。错误是 constant 的。</p>
+<p>Faults -&gt; Tolerance</p>
+<p>所以我们需要<code>automatic fault-tolerant systems</code>能够自动化容错的系统。提供容错能力最直接有效的方法是使用备份（replication）转移到多台机器上，So，一台坏掉，我们就需要启动备份容灾的能力。</p>
+<p>Tolerance -&gt; Replication</p>
+<p>那多个备份，就要小心<code>out of sync</code>不同步的情况，这样才能保证使用任意备份都可以用来 tolerate the fault（备份间应是 interchangeably）。</p>
+<p>Replication -&gt; Inconsistency</p>
+<p>通过更合理的设计，能避免 inconsistency 带来的影响。反之，则需要更多机器间的确认。这样挤占吞吐量会降低性能。</p>
+<p>Consistency -&gt; Low Performance</p>
+<p>这样就产生了一个奇怪的 loop，从提高性能出发却得到了更差的性能，感觉做了无用功？</p>
+<h2 id="strong-consistency">Strong Consistency</h2>
+<p>好的一致性就让 client 和 server 之间的操作像对待单一机器一样，这个在课程后面会再详细说明。</p>
+<p>一个例子，并发的两个 client，C1 和 C2 在同时修改了相同 key 的 value，C1 修改 keyx 值为 1，C2 修改相同 key 值为 2.如果之后读该 key，值该是多少呢？如果读出来的值总是一致且确定的，具备强一致性。</p>
+<h2 id="bad-replication-design">Bad Replication Design</h2>
+<p>两个 k-v store 的 server，S1 和 S2，我们希望他们彼此独立，因为如果一台宕掉，另一台要能继续支持我们的工作。还是 C1 和 C2，每个 client 分别给 server 发出写命令。</p>
+<p>那么很有可能出现这样的情况，S1 接收顺序为 C1C2，而 S2 接收顺序为 C2C1，那么 S1 最终 key x 的 value 为 2，S2 最终 key x 的 value 为 1。</p>
+<p>人们设计了很多层级的一致性，以及哪些不一致情况可被 reveal。</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/GFS/GFS_1.png" srcset="/img/loading.gif" lazyload alt="GFS_1" /><figcaption>GFS_1</figcaption>
+</figure>
+<a id="more"></a>
+<h1 id="gfs">GFS</h1>
+<p>想法诞生自 2003 年，科学界这十几年来发展出各种各样的高并行的适合分布式存储系统的设计。但是！工业界上少有真正将这些理论<code>academic ideas</code>应用。但在这篇 paper 发布的时候，Google 就已经开始构建严谨的分布式系统。</p>
+<p>Google 有太大太大的数据，单一硬盘根本无力应对。包括爬取拷贝（crawl copy）、流视频、超大日志文件等。需要高效存储（GFS 的工作）以及高效分析（MapReduce 的工作）。</p>
+<h2 id="concerning-goals">Concerning Goals</h2>
+<p>Big Fast Global</p>
+<p>面向巨大数据，高效处理，还要对 Google 内部基本所有人都可用。</p>
+<p>Sharding Automatic recovery</p>
+<p>数据分片划分，以及自动容错恢复</p>
+<h2 id="non-goals">Non Goals</h2>
+<p>Placing replicas（因为是 Single data center）</p>
+<p>考虑在单一数据中心的服务，跨区域的不考虑</p>
+<p>Big sequential access</p>
+<p>不考虑</p>
+<h2 id="发布时情况">发布时情况</h2>
+<p>带来了业界对超大规模数据的探索，反映了真实世界经验。学界从来没有考虑过这么大规模的数据（在当时）。</p>
+<p>有意思的是，GFS 好像并不会保证强一致性？设计的目的就是高效（High performance），允许其中的一点小错误。</p>
+<p>而且只使用单一 Master（因为设计者觉得够了）。</p>
+<h2 id="structure">Structure</h2>
+<p>结构</p>
+<p>一个 master server 和众多 chunk server。</p>
+<h3 id="master-server-data">Master Server Data</h3>
+<p>关注两个 table</p>
+<p>table1： 储存映射（map）： Filename -&gt; an array of chunk ID's(chunk handles)</p>
+<p>告诉我们去哪里找 data。chunk 大小设定 64MB。</p>
+<p>table2： 储存映射（map）： chunk ID's(chunk handle) -&gt; a list of chunk servers, version, primary, lease expiration（租约到期时间）</p>
+<p>两个 table 都在 master 的 RAM 和硬盘中，一些数据需要可持久化，否则 master 挂掉就完了。所以加入日志与检查点</p>
+<p>log, checkpoint —— on disk</p>
+<p>使用 log 而非 database（b-tree 或 hash table）来<strong>记录操作</strong>的原因是 append log 容易，只需要加入一些 log records 即可，而数据结构则需要再开辟一个空间写改变。log 写得会快些。</p>
+<p>我们不希望 master 挂掉要从 install chunk 这种远古时期开始重新构建系统，所以我们还需要固定的检查点。</p>
+<h3 id="read-过程">Read 过程</h3>
+<p>应用想读取已知文件名（filename），一定偏移量（offset）的数据。</p>
+<ul>
+<li>Step1. client(name, off) -&gt; master</li>
+<li>Step2. master(handles,list of servers) -&gt; client</li>
+</ul>
+<p>找寻最近的可使用 server，（或许从 list 中找相同机架的是最近的）。 会 Cache 来提高重访问的效率。</p>
+<ul>
+<li>Step3. client() -&gt; one chunk server</li>
+<li>Step4. chunk server(data) -&gt; client</li>
+</ul>
+<p>Q&amp;A 被问及最多的是，系统如何返回合理的 a list of chunk server handlers（如果我没理解错的话），教授说这是 GFS library 做的事情，Client 会链接这个 library，比如访问的 filename 和 offset 涉及 Chunk7 的最后几 bytes 和 Chunk8 的前几字节，然后 put them together in a buffer 并返回给应用程序。</p>
+<h3 id="write-过程">Write 过程</h3>
+<p>写讨论起来更复杂一些。在文件名对应的文件后面 append 些内容。应用所在的 client 需要知道 the last chunk。不幸的是，reading 可以在多个 client 并发获取最新的内容，但是并发写是需要 have a primary 的那个机器写。</p>
+<ul>
+<li><p>no primary—— on master</p>
+<p>在这种情形下，master 需要找到那些获取了最新 copy 的 chunk servers。尤其考虑到掉线很久重连的 server。这种情形下，client 询问，工作都在 master 上。</p>
+<p>find up-to-date</p>
+<p>chunk 的 version number 与 master 记录相等（这可以解释为什么 version number 需要在 master 中可持久化记录在硬盘上）</p>
+<p>Q：如果 master 这里记录的 version number 是 17，找不到 chunk server 的 version 与他相等。 A：那或许可以等待，或许就告诉 client（好吧我不知道该怎么办了）。</p>
+<p>master 记录一个列表的 chunk server 的版本号，chunk server 记录自己的版本号，这样在应用请求的时候，master 就可以查询并且选择性找到那些版本号匹配的 chunk server。</p></li>
+<li><p>primary</p>
+<p>选择 primary chunk server 和 secondary chunk server，优先增加 primary 的版本号，再通知到其他 secondary 的版本号。</p>
+<p>Q：是否会出现 chunk server 版本号高于 master server 的情况？ A：教授说这也是他对论文的一个问题，master 会接受这个版本号（来自 primary 的），他认为这种满足了一定 master failure 的容错能力。教授认为版本号会被 master 可持久化在硬盘上，通知后掉电应该仍能保持最新，同学提出是否是 ACK（确认消息）为抵达，或许有道理。</p>
+<p>挑选出的 primary chunk server 会有一个租约期 lease time（60s），这是确保不会有两个 primary 的策略（一会儿详细解释）。</p>
+<p>primary picks offset</p>
+<p>all replicas told to write at the offset</p>
+<p>先行写在临时位置，直到所有 secondary 都 finish，再发送给 primary 信息。primary 收到大量同时的请求（并发的），选择一个顺序，逐个执行客户请求，并通知 secondary。</p>
+<p>if secondary if all &quot;yes&quot; primary(&quot;success&quot;) -&gt; client else primary(&quot;no/failure&quot;) -&gt; client</p>
+<p>如果失败的话，客户就要 reissue（不过听意思，好像是 library 的逻辑，并不需要用户继续提交），所以 eventually，客户会得到一个 ok？</p>
+<p>Q：确切的存储位置，可能会对某项操作速度有明显的影响（普通策略，可能会先传递到远的再到近的。）</p>
+<p>A：文章中有提及设计者的一个改良“开始是传递到每个 replica”，然后文章转向成“先出地道最近的 replicas 之后再链式传递到所有 replica”，这个传递链是经过排序优化的，所以会极大化减小不同启动位置（exact path）产生的 bottleneck。</p>
+<p>Q：如果只有一个 secondary server 返回失败，为何 master 不起动新的版本号并把这个 secondary 抛弃呢？</p>
+<p>A：paper 只是简单重启整个任务，如果 ping 不通再进行版本号的更替，更多情况下，可能是网络传输的问题，这个 server 不见得真的出现什么问题。我个人觉得是网络问题多见的话，那 master 立即再尝试一遍任务或许是最好的选择。</p>
+<p>lease， double primary， split brain，</p>
+<p>Q：（没有太听清楚问题）为什么？secondary 需要向 master 确认？</p>
+<p>A：教授举了一个（好恶心的例子），server 2 作为 secondary 向 master 询问谁是 primary，master 告诉它的消息“server 1 是 primary”还在传递中，结果 master 发现 sever 1 挂掉了。又发送新的消息（这里疑惑，master 可以直接选择新的 primary 吗，什么时候可以选择）。那么 server 请求的 primary 是谁的消息，刚一收到，就是 outdate 的。</p></li>
+</ul>
+<h1 id="sync">sync</h1>
+<p>教授给了张 replica num=3，但是由于故障，replica 存在 blank 的情况，引出 sync 的问题。</p>
+<p>需要保持 replica 保持 sync，这个就是 Lab2 &amp; Lab3 需要同学们完成的事情。You can't have there partial operations that are applied to only some and not others and that means that there has to be some mechanism.您不能只将部分操作应用于某些操作，而不能应用于其他操作，这意味着必须有某种机制。</p>
+<p>什么样的机制 where the system even if the client dies where the system says we don't wait a minute there was this operation I haven't finished it yet. So you build systems in which the primary actually make sure the backups get every message.即使客户在系统说我们不等一分钟的情况下死亡，也喜欢系统在哪里，我还没有完成此操作。 因此，您构建的系统中，主数据库实际上会确保备份获得每条消息。</p>
+<h1 id="issue">issue</h1>
+<h2 id="duplicate-detection">duplicate detection</h2>
+<p>防止 B 出现两次</p>
+<h2 id="two-phase-commit">two-phase commit</h2>
+<p>primary 先向所有 secondary 询问是否可以保证操作（promise），待所有回复保证后再真正执行操作。</p>
+<h2 id="left-operations">left operations</h2>
+<p>当 primary 挂掉（过期会续租），还存续一些已经分配给 secondary 做的任务、operation，新选出的代表可能会有和这些 operations 不同的地方，需要 resynchronization。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/">分布式系统</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/">分布式系统</a>
+                    
+                      <a class="hover-with-bg" href="/tag/6-824/">6.824</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/post/ea4ba2a6.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">《有所不为的反叛者》读书摘录</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/post/6b2b2581.html">
+                        <span class="hidden-mobile">分布式系统学习——MIT6.824-Lecture2课堂笔记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="remark42"></div>
+  <script type="text/javascript">
+    var schema = document.documentElement.getAttribute('data-user-color-scheme');
+    if (schema !== 'light' && schema !== 'dark') {
+      schema = 'light';
+    }
+    var remark_config = Object.assign(
+      {"host":"https://remark42.edwardzcn98yx.com","site_id":"www.edwardzcn98yx.com","max_shown_comments":20,"locale":"zh","components":["embed"]},
+      {
+        url: '/post/b6bdfc04.html',
+        page_title: '分布式系统学习——MIT6.824-Lecture3课堂笔记',
+        theme: schema,
+      }
+    );
+
+    Fluid.utils.loadComments('#remark42', function() {
+      (function (c) {
+        for (var i = 0; i < c.length; i++) {
+          var d = document, s = d.createElement('script');
+          s.src = remark_config.host + '/web/' + c[i] + '.js';
+          s.defer = true;
+          (d.head || d.body).appendChild(s);
+        }
+      })(remark_config.components || ['embed']);
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        冀ICP证18024730号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+            
+            <span>湘公网安备43010402000641号</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://lib.baomitu.com/mathjax/3.2.0/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+</body>
+</html>

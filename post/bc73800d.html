@@ -1,0 +1,804 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="动态规划（DP）简介
+
+Those who cannot remember the past are condemned to repeat it.
+
+什么是动态规划算法
+
+Dynamic programming is both a mathematical optimization method and a computer programming method. The metho">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  
+  <title>算法与数据结构学习——DP背包问题备课提纲 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://lib.baomitu.com/highlight.js/10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+  
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bookmark"></i>
+                select
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Computer-Science/">
+                    <i class="iconfont icon-codeforces"></i>
+                    Computer Science
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%98%85%E8%AF%BB/">
+                    <i class="iconfont icon-bookmark-fill"></i>
+                    Life Reading
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%9A%8F%E7%AC%94/">
+                    <i class="iconfont icon-note"></i>
+                    Life Essay
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Research/Report/">
+                    <i class="iconfont icon-clipcheck"></i>
+                    Weekly Report
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/photos">
+                <i class="iconfont icon-image"></i>
+                gallery
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="算法与数据结构学习——DP背包问题备课提纲">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      Edwardzcn
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-04-17 13:16" pubdate>
+        2020年4月17日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.6k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      55
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">算法与数据结构学习——DP背包问题备课提纲</h1>
+            
+            <div class="markdown-body">
+              <h1 id="动态规划dp简介">动态规划（DP）简介</h1>
+<blockquote>
+<p>Those who cannot remember the past are condemned to repeat it.</p>
+</blockquote>
+<h2 id="什么是动态规划算法">什么是动态规划算法</h2>
+<blockquote>
+<p>Dynamic programming is both a mathematical optimization method and a computer programming method. The method was developed by Richard Bellman in the 1950s and has found applications in numerous fields, from aerospace engineering to economics. In both contexts it refers to simplifying a complicated problem by breaking it down into simpler sub-problems in a recursive manner.</p>
+<p>Dynamic programming has evolvd into a major paradigm of algorithm design in computer science. The name was coined in 1957 by Richard Bellman to decribe a type of <code>optimum control problem</code>.</p>
+</blockquote>
+<p>根据前述内容以及余老师 PPT 上的介绍，动态规划（DP）诞生初用于描述一类问题而非描述一种求解方式。不过随着时间演变，现在 DP 更常用来表示一类算法（尤其在 CS 领域）。</p>
+<h2 id="核心思想">核心思想</h2>
+<ul>
+<li>解决小规模的子问题</li>
+<li>将小规模问题的解（解集）储存起来</li>
+<li>利用小规模问题解集状态转移至大规模问题的解集状态</li>
+<li>最终解（最大规模的 final 解）即为我们所求的最终解</li>
+</ul>
+<h2 id="适用条件">适用条件</h2>
+<blockquote>
+<p>There are two key attributes that a problem must have in order for dynamic programming to be applicable: optimal substructure and overlapping sub-problems.</p>
+</blockquote>
+<h3 id="最优子结构optimal-structure">最优子结构（Optimal structure）</h3>
+<p>A problem is said to have <code>optimal substructure</code> if an optimal solution can be constructed efficiently from optimal sulutions to its subprolems. Also is called <code>Principle of Optimality</code> by Bellman.</p>
+<h3 id="子问题重叠overlapping-sub-problems">子问题重叠（Overlapping sub-problems）</h3>
+<p>子问题重叠并不是定义 DP 类型问题的必要条件，但是当子问题出现大规模重叠时，DP 算法更能体现效果，最简单直接的例子：分治思想和 DP 思想求解斐波那契额数列。</p>
+<h2 id="随便谈谈">随便谈谈</h2>
+<h3 id="与分治法divide-and-conquer对比">与分治法（Divide and Conquer）对比</h3>
+<blockquote>
+<p>If a problem can be solved by combining optimal solutions to non-overlapping sub-problems, the strategy is called &quot;divide and conquer&quot; instead.[1] This is why merge sort and quick sort are not classified as dynamic programming problems -- Introduction to Algorithms (2nd ed.), MIT Press.</p>
+</blockquote>
+<p>子问题孤立，更适用于分治法，这点出了“Divide and Conquer”与“Dynamic Programming”，两种算法思想的本质不同。此外，求解过程中，分治法倾向于从顶向下递归分解问题然后再递归合成大规模问题的解，而动态规划算法则初始计算小问题的解，根据状态转移方程自底向上计算所求状态的解。</p>
+<h3 id="与贪心算法greedy对比">与贪心算法（Greedy）对比</h3>
+<p>贪心算法，对于尚未加入解集的元素按固定策略（最大或最小）选取状态转移，即总是遵循某种规则，做出局部最优的选择，以推导出全局最优解，所解决的问题也具有最优子结构性质。</p>
+<p>以即将要讨论的 01 背包问题为例，贪心想法是在一次选择中选取未选择物体中价值/重量比最高的。这个局部选择是最优的，但不考虑整体背包选择方案是否最优。而动态优化则要求当前拾取物体从之前状态（减去该物体重量的最优态）转移过来，这样就保证了一定的全局性质。</p>
+<h3 id="前向性">前向性</h3>
+<p>No backwards: depending on the current state.</p>
+<p>下一时刻的状态只与当前状态有关，而和当前状态之前的状态无关，当前的状态是对以往决策的总结，个人理解，这就是<code>Dynamic</code>的体现。</p>
+<a id="more"></a>
+<h1 id="经典-dp-问题背包问题">经典 DP 问题：背包问题</h1>
+<p>背包问题相信大家都不陌生，它是动态规划算法学习过程中不得不提的经典系列问题，而 01 背包问题又是该系列问题的基础。</p>
+<p>在编程解决问题的过程中，我们常会使用空间优化与常数优化来加速程序的执行，在程序设计竞赛中，由于时间上的限制，我们的关注点常在程序的运行结果是否与标程的运行结果相一致，对于优化的影响却无暇关心。</p>
+<p>优化问题，也是计算机科学家与专业编程人员常常关注的点，利用本节课的时间，我们会着重讨论求解 01 背包问题的优化方式以及其影响。</p>
+<h2 id="背包题目">01 背包题目</h2>
+<p>有<span class="math inline">\(N\)</span>件物品和一个容量为<span class="math inline">\(V\)</span>的背包。放入第<span class="math inline">\(i\)</span>件物品耗费的费用是<span class="math inline">\(C_i\)</span>，得到的价值是<span class="math inline">\(Value_i\)</span>。求解将哪些物品装入背包可使价值总和最大。</p>
+<h2 id="基本解题思路">基本解题思路</h2>
+<p>因为每种物品只有一件，选择只有放（1）、不放（0）两种状态，所以称这类问题为 01 背包问题。</p>
+<p>该问题对应的子问题为：<strong>取其中<span class="math inline">\(i\)</span>件物品放入背包得到的最大价值</strong>。为了方便，我们给原物体一个序，则对应子问题为：<strong>取前<span class="math inline">\(i\)</span>件物品放入背包得到的最大价值</strong>。根据该子问题，我们定义状态<span class="math inline">\(F[i,v]\)</span>为前<span class="math inline">\(i\)</span>件物品放入限制重量为<span class="math inline">\(v\)</span>所能得到的最大价值，然后我们可以想出状态转移方程。</p>
+<p><span class="math display">\[F[i,v] = max \{ F[i-1,v] , F[i-1,v-C_i] + Value_i \}\]</span></p>
+<p>该状态转移方程的含义为：按序逐个拾取物体的过程中，拾取<span class="math inline">\(i\)</span>号且背包限制为<span class="math inline">\(v\)</span>重量状态（<span class="math inline">\(F[i,v]\)</span>），其只由两种状态转移而来，不选择该物体（则状态取值同相同限重量拾取上个物体时的状态 <span class="math inline">\(F[i-1,v]\)</span>），选择该物体（则状态取值由上次选择时，限重为当下限重减去此次拾取物体重量的状态转移而来<span class="math inline">\(F[i-1,v-C_i]+Value_i\)</span>）。</p>
+<p>最优子结构性质与无后向性是可证的，见下一节附加内容。</p>
+<p>原文特别强调了上述转移方程的重要性，也做了相应的解释：</p>
+<blockquote>
+<p>这个方程非常重要，基本上所有跟背包象关的问题的方程都是由它衍生出来的。所以有必要将它详细解释一下：“将前<span class="math inline">\(i\)</span>件物品放入容量为<span class="math inline">\(v\)</span>的背包中”这个子问题，若只考虑第<span class="math inline">\(i\)</span>件物品的策略（放或不放），那么就可以转化为一个只和前<span class="math inline">\(i-1\)</span>件物品相关的问题。如果不放第<span class="math inline">\(i\)</span>件物品，那么问题就转化为“前<span class="math inline">\(i-1\)</span>件物品放入容量为<span class="math inline">\(v\)</span>的背包中”，价值为<span class="math inline">\(F[i-1,v]\)</span>；如果放第<span class="math inline">\(i\)</span>件物品，那么问题就转化为“前<span class="math inline">\(i-1\)</span>件物品放入剩下的容量为<span class="math inline">\(v-C_i\)</span>的背包中”，此时能获得的最大价值就是<span class="math inline">\(F[i-1,v-C_i]\)</span>再加上通过放入第<span class="math inline">\(i\)</span>件物品获得的价值<span class="math inline">\(Value_i\)</span>。</p>
+</blockquote>
+<p>伪代码描述：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs C++">F[<span class="hljs-number">0</span>,<span class="hljs-number">0.</span>.V] ← <span class="hljs-number">0</span><br><span class="hljs-keyword">for</span> i ← <span class="hljs-number">1</span> to n<br>    <span class="hljs-keyword">for</span> v ← w[i] to V<br>        F[i,v] ← max&#123;F[i<span class="hljs-number">-1</span>,v] , F[i<span class="hljs-number">-1</span>,v-w[i]]+v[i]&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="附加最优子结构证明">附加：最优子结构证明</h2>
+<p>学习自博客<a target="_blank" rel="noopener" href="https://blog.csdn.net/mspolo/article/details/8738676">01 背包存在最优子结构的证明</a></p>
+<p>表述：</p>
+<blockquote>
+<p><span class="math inline">\(n\)</span>为背包重量限制，<span class="math inline">\(w[i]\)</span>为<span class="math inline">\(i\)</span>物体重量，<span class="math inline">\(v[i]\)</span>为<span class="math inline">\(i\)</span>物体价值，如果<span class="math inline">\((z_1,z_2 \cdots z_k)\)</span>是问题<span class="math inline">\(f_k(n)\)</span>的最优解，那么</p>
+<ol type="1">
+<li>对于任意<span class="math inline">\(1 \le j \le k\)</span>，有<span class="math inline">\(z_j = 1\)</span>（确定<span class="math inline">\(j\)</span>物体状态为取），则有<span class="math inline">\((z_1,z_2 \cdots z_{j_1} , z_{j+1} , z_{j+2} \cdots z_k)\)</span>是问题<span class="math inline">\(f_{k-1}(n-w[j])+ v[j]\)</span>的最优解</li>
+<li>对于任意<span class="math inline">\(1 \le j \le k\)</span>，有<span class="math inline">\(z_j = 0\)</span>（确定<span class="math inline">\(j\)</span>物体状态为不取），则有<span class="math inline">\((z_1,z_2 \cdots z_{j_1} , z_{j+1} , z_{j+2} \cdots z_k)\)</span>是问题<span class="math inline">\(f_{k-1}(n)\)</span>的最优解。</li>
+</ol>
+<p>这里 <span class="math inline">\(i\)</span> 表示子问题的规模，表述为将 <span class="math inline">\(i\)</span> 个物品放入容量为<span class="math inline">\(v\)</span>的背包中，</p>
+</blockquote>
+<p>证明（反证法）：</p>
+<p>假设子问题不是最优解，对于情况 1，假设存在<span class="math inline">\((z_1&#39;,z_2&#39; \cdots z_{j-1}&#39; , z_{j+1}&#39; ,\cdots z_k&#39;)\)</span> 是子问题的最优解，那么 <span class="math inline">\(f_k(n)\)</span>的最优解将会是<span class="math inline">\((z_1&#39;,z_2&#39; \cdots z_{j-1}&#39; , z_j , z_{j+1}&#39; \cdots z_k&#39;)\)</span>，与假设矛盾。情况 2 同理。</p>
+<h1 id="算法优化与代价">算法优化与代价</h1>
+<h2 id="空间复杂度优化">空间复杂度优化</h2>
+<p>由于要使用<span class="math inline">\(dp[n][v]\)</span>状态空间，如果储存全部状态，根据伪代码思路，该动态优化算法的时间和空间复杂度均为<span class="math inline">\(O(VN)\)</span>，其中时间复杂度应该已经不能再优化了，但空间复杂度却可以优化到<span class="math inline">\(O(V)\)</span>。</p>
+<p>我们观察状态转移方程</p>
+<p><span class="math display">\[F[i,v] = max \{ F[i-1,v] , F[i-1,v-C_i] + Value_i \}\]</span></p>
+<p>我们每轮计算前<span class="math inline">\(i\)</span>个在不同限重背包的最优值时，利用的状态只有<span class="math inline">\(i-1\)</span>时的状态，也即上一轮外层循环得到的值，据此我们可以使用一些优化方法。</p>
+<h3 id="滚动数组">滚动数组</h3>
+<p>每次都使用固定的几个存储空间，来达到压缩 or 节省存储空间的目的。主要应用在递推或动态规划中。</p>
+<p>代码描述</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-keyword">for</span> (i=<span class="hljs-number">1</span> ;i &lt;= n; i++)<br>&#123;<br>    <span class="hljs-keyword">for</span> (v = w[i] ; v &lt;= V ; v++)<br>    &#123;<br>        dp[<span class="hljs-number">1</span>][v] = <span class="hljs-built_in">max</span>(dp[<span class="hljs-number">0</span>][v],dp[<span class="hljs-number">0</span>][v-w[i]]+v[i]);<br>    &#125;<br>    <span class="hljs-comment">// 一轮更新结束后统一翻转</span><br>    <span class="hljs-keyword">for</span> (v = <span class="hljs-number">0</span>; v&lt;=V ; v++)&#123;<br>        dp[<span class="hljs-number">0</span>][v] = dp[<span class="hljs-number">1</span>][v];<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>当然我们还发现状态转移方程中，只会利用背包限重状态小于等于要更新状态的已知状态，所以我们按逆序（从大到小）遍历内层循环，就可以避免在同一轮外层循环中先更新的影响后更新的值，由此修改滚动数组代码。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-keyword">for</span> (i=<span class="hljs-number">1</span> ;i &lt;= n; i++)<br>&#123;<br>    <span class="hljs-keyword">for</span> (v = V ; v &gt;= w[i] ; v--)<br>    &#123;<br>        dp[<span class="hljs-number">1</span>][v] = <span class="hljs-built_in">max</span>(dp[<span class="hljs-number">0</span>][v],dp[<span class="hljs-number">0</span>][v-w[i]]+v[i]);<br>        dp[<span class="hljs-number">0</span>][v] = dp[<span class="hljs-number">1</span>][v];<br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="压缩至一维数组">压缩至一维数组</h3>
+<p>那既然逆序已经避免同一轮更新中先更新的影响后更新的值，实际上滚动数组也非必要了。我们使用一维数组便可实现状态转移，并且保证计算<span class="math inline">\(dp[v]\)</span>时，<span class="math inline">\(dp[v-w[i]]\)</span>保存的是对应二维<span class="math inline">\(dp[i-1][v-w[i]]\)</span>的值。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-keyword">for</span> (i=<span class="hljs-number">1</span> ;i &lt;= n; i++)<br>&#123;<br>    <span class="hljs-keyword">for</span> (v = V ; v &gt;= w[i] ; v--)<br>    &#123;<br>        dp[v] = <span class="hljs-built_in">max</span>(dp[v],dp[v-w[i]]+v[i]);<br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="时间复杂度常数优化">时间复杂度常数优化</h2>
+<p>伪代码中</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-keyword">for</span> i ← <span class="hljs-number">1</span> to n<br>    <span class="hljs-keyword">for</span> v ← V to w[i]<br></code></pre></td></tr></table></figure>
+<p>《背九》原作者给出可以优化为<span class="math inline">\(V \quad to \quad max(V − \sum_i^N C_i, C_i)\)</span>。我个人认为可以严格到<span class="math inline">\(V \quad to \quad max(V - \sum_{i+1}^N C_i,C_i)\)</span>。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-keyword">for</span> i ← <span class="hljs-number">1</span> to n<br>    <span class="hljs-keyword">for</span> v ← <span class="hljs-function">V to <span class="hljs-title">max</span><span class="hljs-params">(w[i],V-(w[i+<span class="hljs-number">1</span>]+...+w[n]))</span></span><br></code></pre></td></tr></table></figure>
+<p>如何理解这个常数优化？，我们需要回过头来再看看状态转移方程。</p>
+<p><span class="math display">\[F[i,v] = max \{ F[i-1,v] , F[i-1,v-C_i] + Value_i \}\]</span></p>
+<p>我们固定某一限重状态随<span class="math inline">\(i\)</span>递增的变化，不妨研究与最终答案相关的，<span class="math inline">\(final(i)= F[i][V]\)</span>。我们发现在<span class="math inline">\(i\)</span>递增一轮过程中。<span class="math inline">\(final\)</span>只会变动一次，且只有两个可能的方向，不变（延续<span class="math inline">\(i\)</span>上一轮递增后得到的结果），改变（受<span class="math inline">\(F[i-1][V-w[i]]\)</span>影响）。</p>
+<p>如果我们将，可以影响<span class="math inline">\(final\)</span>的所有限重状态，随<span class="math inline">\(i\)</span>减小（逆序），画出来，我们可以发现能够影响到答案（最终状态）的边界是逐渐减小的。</p>
+<p>我们可以发现，能够影响<span class="math inline">\(final\)</span>的重量状态是有限的，并且随<span class="math inline">\(i\)</span>减小，可影响的状态逐渐扩张，最后一次只有<span class="math inline">\(final=dp[n][V]\)</span>单一状态影响最终答案（因为它本身就是最终答案），每一轮可能影响到<span class="math inline">\(final\)</span>的边界应是，<span class="math inline">\(max(V - \sum_{i+1}^N Value_i,C_i)\)</span>，这里可以补充一下，原作者认为是求和下限应为<span class="math inline">\(i\)</span>，带入最后<span class="math inline">\(i=N\)</span>我们发现在最后一轮除了更新<span class="math inline">\(dp[N]\)</span>还更新了其他与最终答案无关的状态，所以我觉得这个更严格的界限是正确的。</p>
+<p>反过来想也可以，在计算<span class="math inline">\(dp[v]\)</span>时，若某一限重状态最终能够影响<span class="math inline">\(final\)</span>，必然要经过几轮<span class="math inline">\(i\)</span>递增（理想状态是，<span class="math inline">\(dp[v+w[i+1]\)</span>每次都能受到影响），这也提醒我们，某一状态影响最终结果是需要一定时间限制的，在<span class="math inline">\(i\)</span>逐渐靠近<span class="math inline">\(n\)</span>时，即便我们遇到重量很小但是价值很大的一颗“金子”，我们也不一定需要从它的重量开始更新状态。</p>
+<p>举例来讲比如最后三个物体是</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-comment">// n = 10   V = 50</span><br><span class="hljs-comment">// 当前dp[50]=150</span><br>w[n<span class="hljs-number">-2</span>]=<span class="hljs-number">2</span>  v[n<span class="hljs-number">-2</span>]=<span class="hljs-number">100</span> <span class="hljs-comment">//金子</span><br>w[n<span class="hljs-number">-1</span>]=<span class="hljs-number">5</span>  v[n<span class="hljs-number">-1</span>]=<span class="hljs-number">40</span><br>w[n]=<span class="hljs-number">3</span>    v[n]=<span class="hljs-number">50</span><br></code></pre></td></tr></table></figure>
+<p>此时<span class="math inline">\(w[i] = 2\)</span>,<span class="math inline">\(V-sum=42\)</span>（按照底为<span class="math inline">\(i+1\)</span>的求和）。如果只是为了获得正确的<span class="math inline">\(dp[50]\)</span>，我们需要从<span class="math inline">\(v=50\)</span>更新到<span class="math inline">\(v=42\)</span>就够了呢？还是说要更新到<span class="math inline">\(v=2\)</span>，显然，我们更新到<span class="math inline">\(v=42\)</span>就够了，即便后面两个物体在最优解中都要取，<span class="math inline">\(dp[42]\)</span>会影响下一轮的<span class="math inline">\(dp[47]\)</span>，进而影响最终的<span class="math inline">\(dp[50]\)</span>。</p>
+<h2 id="优化的代价">优化的代价</h2>
+<blockquote>
+<p>优化不是无代价的</p>
+</blockquote>
+<p>承上面例子，显然根据常数优化算法，我们最终可以得到正确的<span class="math inline">\(dp[50]\)</span>，但我们在想，有没有少些什么？</p>
+<p>很明显啊，在倒数第三轮外层循环我们没有计算新的<span class="math inline">\(dp[2]\)</span>（而大概率碰到金子，2 格背包我们应该捡起来啊！），那么不更新的代价是什么呢？</p>
+<p>针对题目，影响最终答案么？</p>
+<p><strong>不影响</strong>。</p>
+<p>不针对题目，影响答案么？</p>
+<p><strong>影响</strong>，因为改变了状态空间解集。</p>
+<h3 id="朴素二维动态规划得到的解集">朴素二维动态规划得到的解集</h3>
+<p><span class="math inline">\(dp[n][V]\)</span>储存了（在该遍历序下）<strong>任意小于序长度前缀，任意小于最大限制容量</strong>的解集。也即在不增删修改物品条件下，后续满足上述条件的任意询问<span class="math inline">\(Q_1\)</span>，都可以在<span class="math inline">\(O(1)\)</span>的时间给出答案。</p>
+<h3 id="一维压缩空间优化得到的解集">一维压缩空间优化得到的解集</h3>
+<p><span class="math inline">\(dp[V]\)</span>储存了<strong>长度等于序长，任意小于最大限制容量</strong>的解集。同样，不改变物体，对该序询问容量小于限制的背包问题<span class="math inline">\(Q_2\)</span>，都可以在<span class="math inline">\(O(1)\)</span>的时间给出答案，但是如果想询问前缀问题（而非序长），则不能获得，<strong>因为在外层循环迭代中，没有保留这部分结果</strong>。</p>
+<h3 id="空间优化常数优化的解集">空间优化+常数优化的解集</h3>
+<p>只能保证<span class="math inline">\(dp[i],i=V\)</span>单个值是正确的，而<strong>其他值均无意义</strong>。</p>
+<p>根据上述这些“发现”，我们能学到什么？</p>
+<p>对于正在讨论的问题，如果关注单解，那么空间+常数优化自然是很好的选择，但是如果数据固定而频繁询问，不考虑更新算法的话，那么朴素的二维 dp 或许是最好的。优化不应该是盲目的，有些优化需要我们理解背后更深的意义及影响，才能更好的应用在我们的程序中。</p>
+<h1 id="其他-dp-优化算法">其他 DP 优化算法</h1>
+<p>空间复杂度常与实现方式有关，这里我们考虑通用的时间复杂度优化，影响动态规划时间复杂度的因素：</p>
+<p>时间复杂度=所需计算状态总数*每个状态转移的状态数*每次状态转移的时间</p>
+<p>通常，我们考虑对动态优化算法进行优化时，要从上述三个因素着手。</p>
+<blockquote>
+<p>需要指出的是：这三者之间不是相互独立的，而是相互联系，矛盾而统一的。有时，实现了某个因素的优化，另外两个因素也随之得到了优化；有时，实现某个因素的优化却要以增大另一因素为代价。因此，这就要求我们在优化时，坚持“全局观”，实现三者的平衡。 ——《动态规划算法的优化技巧》毛子青</p>
+</blockquote>
+<p>回顾 01 背包问题时间复杂度常数优化，我们是优化了所需计算状态总数（对应二维数组容易理解）。本节后面内容，将结合其他经典的动态规划问题，介绍另外的优化方法。</p>
+<h2 id="矩阵优化递推">矩阵优化递推</h2>
+<p>常用于线性递推式，能以对数优化线性计算。通用模型：</p>
+<p><span class="math display">\[f(n-1) = a f(n-1) + b f(n-2) + c\]</span></p>
+<p>矩阵递推式代替原有递推式，将所求转换为矩阵连乘形式。</p>
+<p>$$ = </p>
+
+<p>$$</p>
+<p>这样做有什么好处呢？将系数矩阵设为<span class="math inline">\(base\)</span></p>
+<p><span class="math display">\[
+base = 
+\left[
+    \begin{matrix}
+    a &amp; b &amp; c \\
+    1 &amp; 0 &amp; 0 \\
+    0 &amp; 0 &amp; 1 \\
+    \end{matrix}
+\right]
+\]</span></p>
+<p><span class="math display">\[
+\left[
+ \begin{matrix}
+   f(n) \\
+   f(n-1) \\
+   1
+  \end{matrix}
+\right]
+={base}^{n-2}
+\left[
+\begin{matrix}
+    f(2) \\
+    f(1) \\
+    1\\
+\end{matrix}
+\right]
+\]</span></p>
+<p><span class="math inline">\({base}^{n-2}\)</span>可用快速幂算法加速运算。</p>
+<p>举例题目：【洛谷-P1962 斐波那契数列】【CSU-1895 Apache is late again】</p>
+<p>这里以后者题目为例。</p>
+<p>利用（矩阵）快速幂算法进行运算。</p>
+<h2 id="利用决策单调性进行优化">利用决策单调性进行优化</h2>
+<p>学习自毛子青的《动态规划算法的优化技巧》，该优化方法针对每个状态转移数的优化。</p>
+<p>石子合并问题也是经典的DP问题，描述如下： 在一个操场上摆放着一排n（n≤20）堆石子。现要将石子有次序地合并成一堆。规定每次只能选相邻的2堆石子合并成新的一堆，并将新的一堆石子数记为该次合并的得分。</p>
+<p>试编程求出将n堆石子合并成一堆的最小得分和最大得分以及相应的合并方案。</p>
+<p>核心：状态转移方程</p>
+<p><span class="math display">\[m[i,j] = \min_{i&lt;k≤j} \{m[i, k-1]+m[k,j] + \sum_{l=i}^jd[l] \}  \quad i＜j \]</span></p>
+<h3 id="四边形不等式">四边形不等式</h3>
+<p>当函数<span class="math inline">\(w[i,j]\)</span>满足<span class="math inline">\(w[i,j]+w[i&#39;,j&#39;] \le w[i&#39;,j] + w[i,j&#39;] , \quad i \le i&#39; \le j \le j&#39;\)</span>。</p>
+<p>当函数<span class="math inline">\(w[i,j]\)</span>满足<span class="math inline">\(w[i&#39;,j]≤w[i,j&#39;] \quad i \le i&#39; \le j \le j&#39;\)</span>时称<span class="math inline">\(w\)</span>关于区间包含关系单调。</p>
+<p>在石子归并问题中，我们可以依次证明<span class="math inline">\(\sum_{l=i}^j𝑑[l]\)</span>、<span class="math inline">\(𝑚[𝑖,𝑗]\)</span>、<span class="math inline">\(𝑠[𝑖,𝑗]\)</span>满足四边形不等式。所以优化状态转移数，状态转移方程为：</p>
+<p><span class="math display">\[m[i,j] = \min_{s[i,j-1]&lt;k≤s[i+1,j]} \{m[i, k-1]+m[k,j] + \sum_{l=i}^jd[l] \}  \quad i＜j \]</span></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">算法与数据结构</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">算法与数据结构</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/post/ce028a8.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">密码技术学习——Keccak原像破解赛题前置知识点总结</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/post/1590e320.html">
+                        <span class="hidden-mobile">算法与数据结构学习——01背包问题常数优化算法对问题解集的影响</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="remark42"></div>
+  <script type="text/javascript">
+    var schema = document.documentElement.getAttribute('data-user-color-scheme');
+    if (schema !== 'light' && schema !== 'dark') {
+      schema = 'light';
+    }
+    var remark_config = Object.assign(
+      {"host":"https://remark42.edwardzcn98yx.com","site_id":"www.edwardzcn98yx.com","max_shown_comments":20,"locale":"zh","components":["embed"]},
+      {
+        url: '/post/bc73800d.html',
+        page_title: '算法与数据结构学习——DP背包问题备课提纲',
+        theme: schema,
+      }
+    );
+
+    Fluid.utils.loadComments('#remark42', function() {
+      (function (c) {
+        for (var i = 0; i < c.length; i++) {
+          var d = document, s = d.createElement('script');
+          s.src = remark_config.host + '/web/' + c[i] + '.js';
+          s.defer = true;
+          (d.head || d.body).appendChild(s);
+        }
+      })(remark_config.components || ['embed']);
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        冀ICP证18024730号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+            
+            <span>湘公网安备43010402000641号</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://lib.baomitu.com/mathjax/3.2.0/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+</body>
+</html>

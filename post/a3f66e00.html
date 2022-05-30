@@ -1,0 +1,743 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="New Directions in Cloud Programming | Joseph Hellerstein
+BG
+CS 历史上不同计算平台催生出不同的编程环境
+Minicomputers PDP-11 1970 -- C 语言
+Supercomputers Cray-1 1976 -- Chapel MPI
+Personal Computers Macintosh 1984 -- ">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  
+  <title>New Directions in Cloud Programming | Joseph Hellerstein - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://lib.baomitu.com/highlight.js/10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+  
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bookmark"></i>
+                select
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Computer-Science/">
+                    <i class="iconfont icon-codeforces"></i>
+                    Computer Science
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%98%85%E8%AF%BB/">
+                    <i class="iconfont icon-bookmark-fill"></i>
+                    Life Reading
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%9A%8F%E7%AC%94/">
+                    <i class="iconfont icon-note"></i>
+                    Life Essay
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Research/Report/">
+                    <i class="iconfont icon-clipcheck"></i>
+                    Weekly Report
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/photos">
+                <i class="iconfont icon-image"></i>
+                gallery
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="New Directions in Cloud Programming | Joseph Hellerstein">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      Edwardzcn
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-02-24 15:49" pubdate>
+        2022年2月24日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.2k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      15
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">New Directions in Cloud Programming | Joseph Hellerstein</h1>
+            
+            <div class="markdown-body">
+              <h1 id="new-directions-in-cloud-programming-joseph-hellerstein">New Directions in Cloud Programming | Joseph Hellerstein</h1>
+<h2 id="bg">BG</h2>
+<p>CS 历史上不同计算平台催生出不同的编程环境</p>
+<p>Minicomputers PDP-11 1970 -- C 语言</p>
+<p>Supercomputers Cray-1 1976 -- Chapel MPI</p>
+<p>Personal Computers Macintosh 1984 -- Hypercard and Labview(Graphical Programming/ low code no code programming)</p>
+<p>Smart Phones -- Swift Android 移动化开发</p>
+<p>Public Cloud AWS 2006 -- ?</p>
+<p>缺少一种 programming model 来完全激发 public cloud 的潜力</p>
+<h2 id="the-big-query">The Big Query</h2>
+<p>如何利用公有云环境进行编程，使得第三方可以充分利用如此广阔的公有云资源构建软件被 Joe 认为是未来十年中最值得关注的问题与发展点。</p>
+<ul>
+<li>How will people program the cloud?</li>
+<li>Its hard! 主要难点在以下
+<ul>
+<li>Parallelism &amp; partial failure</li>
+<li>Heterogeneous hard ware &amp; networks</li>
+<li>Dynamic autoscaling</li>
+<li>Data: persistence, lantency and scale</li>
+</ul></li>
+</ul>
+<p>A grand challenge across core computer science</p>
+<h2 id="serverless-computing">Serverless Computing</h2>
+<p>Joe 实验室所作的一系列工作</p>
+<ul>
+<li>CIDR 19: Systems critical
+<ul>
+<li>关注到 Serverless 作为突破口的文章 <a target="_blank" rel="noopener" href="http://cidrdb.org/cidr2019/papers/p119-hellerstein-cidr19.pdf">Serverless Computing: One Step Forward, Two Steps Back</a></li>
+</ul></li>
+<li>2019-present: Systems work
+<ul>
+<li>主要关注一些系统级别的工作，构建了如下</li>
+<li><a target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.14778/3407790.3407836">Cloudburst: Stateful FaaS</a></li>
+</ul></li>
+</ul>
+<p>Yet severless is just sequential UDFs in the cloud.</p>
+<p>仅仅是开始</p>
+<h2 id="a-new-pact-for-cloud-programming">A New PACT for Cloud Programming</h2>
+<p>A declaration of four independent <em>facets</em> to <em>evolutionize</em> cloud programming in the 20's</p>
+<p>new pact for cloud programming 云环境编程演进的四个独立声明</p>
+<ul>
+<li>Program Semantics 程序语义: The functionality of the program，表达了程序的功能</li>
+<li>Avallability 可靠性: tolerate / independent failures，程序可以容忍多少错误（故障）</li>
+<li>Consistency 一致性: the consistency models that you want on your APIs， 程序提供的 API 所选择的一致性模型，应是 application-specific guarantees per API</li>
+<li>Targets for Optimization: what kinds of cost and performance you're willing to deal with 面向/针对的是哪一些代价和性能</li>
+</ul>
+<h2 id="facted-programming-declarations-independent">Facted Programming: Declarations, independent</h2>
+<ul>
+<li>Programmers specify each facet in isolation，具备一定的隔离性，比如程序员对程序语义设计的时候可以不考虑选择的一致性模型，另外调整一致性模型的时候可以不改变原有的程序语义代码。</li>
+<li>Clarity of intent, separation of concerns 兴趣点清晰明了，关注点相互分离
+<ul>
+<li>Compare to complexity of current distributed programs!（混合着语义和一致性模型的选择）</li>
+</ul></li>
+<li>Each facet has its own syntax and code generator 每个 facet 独立的语义和 code generator，这一点对于底层 infrastructure 也是好的
+<ul>
+<li>Program Synthesis: Codegen via search, rather than rule-based</li>
+</ul></li>
+</ul>
+<p>拆开来看各个环节</p>
+<h2 id="p-program-semantics">P: Program Semantics</h2>
+<p>&quot;Just told me what you want your program to do.&quot;</p>
+<p>就目前而言，与社区中所讲的 IR 提供的 declarative specification 较为相似（高一级别的抽象）</p>
+<p>但是写 IR 应是编译器以及熟悉编译器的程序员可以写出的，对更多现代程序员中陌生，所以 Joe 所提倡的技术，被称为“Declarative IR + Verified Lifiting”，即通过程序员更熟悉的框架，输入魏 Sequential Program，ORM(Object Relational Modeling) 等，通过 Verified Lifiting 自动化的生成 IR 表达。</p>
+<p>使用 Verified Lifting 可增量，且自动地生成 Declrative IR</p>
+<figure>
+<img src="https://eddyblog.edwardzcn98yx.com/CIDR19/CIDR19-hellersterin-1.png" srcset="/img/loading.gif" lazyload alt="CIDR19-1" /><figcaption>CIDR19-1</figcaption>
+</figure>
+<h2 id="a-avallability">A: Avallability</h2>
+<p>&quot;Tolerate <em>f</em> independent failures.&quot;</p>
+<p>需要声明其容错能力，提供多少冗余。应该算是比较简单的一个刻画面，都需要指定<span class="math inline">\(f\)</span></p>
+<p>注意这里指定容错能力是基于每个 API 的，换言之针对不同的 API 我们可以提供不同的可用性（容错能力）取决于我们的资源配置/API 的价值。</p>
+<p>这里我们还需要声明独立性（相关性），比如是 VMs，同机架，不同 DCs 或者 AZs。</p>
+<figure>
+<img src="https://eddyblog.edwardzcn98yx.com/CIDR19/CIDR19-hellersterin-2.png" srcset="/img/loading.gif" lazyload alt="CIDR19-2" /><figcaption>CIDR19-2</figcaption>
+</figure>
+<h2 id="c-consistency">C: Consistency</h2>
+<p>&quot;Trickiest parts of distributed programming.&quot;</p>
+<p>在骑过去十年分布式系统发展的过程中，社区学习到的组主要的经验就是，Consistency Level 应该是在应用层指定的，应是 per API/op，而不是在数据存储层（per 记录？），能带来的好处，可以做很多有意义的事（Joe 举例，比如 column analysis，remove coordination from monotonic）</p>
+<p>Types of guarantees 两种类型的 consistency guarantee</p>
+<ul>
+<li>History-based
+<ul>
+<li>ACID isolation, replica consistency</li>
+</ul></li>
+<li>Property-based
+<ul>
+<li>E.g. determinism or invariants</li>
+</ul></li>
+</ul>
+<p>见得比较多的是 History-based guarantee，但是 Property-based guarantee 也会受到关注，比如我希望分布式的程序的 outcome 是确定的，又或者是我们也不 care 最终的一致性，而是希望有不变式能在过程中始终被保证（比如外键啊，余额非负等常见情况）。</p>
+<figure>
+<img src="https://eddyblog.edwardzcn98yx.com/CIDR19/CIDR19-hellersterin-3.png" srcset="/img/loading.gif" lazyload alt="CIDR19-3" /><figcaption>CIDR19-3</figcaption>
+</figure>
+<h2 id="t-targets-for-optimization">T: Targets for Optimization</h2>
+<p>&quot;Theme: start simple, enrich over time.&quot;</p>
+<p>核心是 Cost 和 Performance(这里侧重提的是 latency 的目标)</p>
+<figure>
+<img src="https://eddyblog.edwardzcn98yx.com/CIDR19/CIDR19-hellersterin-4.png" srcset="/img/loading.gif" lazyload alt="CIDR19-4" /><figcaption>CIDR19-4</figcaption>
+</figure>
+<h2 id="hydro">HYDRO</h2>
+<p>Joe 所在小组的工作，基于 PACT 的 Programming Stack</p>
+<p>最顶层的输入，各种编程模型的输入（Sequential Code， Functinal Compute e.g. Spark）</p>
+<p>通过 Verified Lifting 翻译成 Declarative PACT IR(HYDROLOGIC)，与 PACT 的四个组件共同编译生成 HYDROFLOW</p>
+<figure>
+<img src="https://eddyblog.edwardzcn98yx.com/CIDR19/CIDR19-hellersterin-5.png" srcset="/img/loading.gif" lazyload alt="CIDR19-5" /><figcaption>CIDR19-5</figcaption>
+</figure>
+<h2 id="more-information">More Information</h2>
+<ul>
+<li>Paper: https://arxiv.org/abs/2101.01159</li>
+<li>Hydro: https://hydro-project.github.io/</li>
+<li>Blog Post: https://bit.ly/stateofserverlessart</li>
+<li>DSF@Berkeley: htps://dsf.berkeley.edu</li>
+</ul>
+<a id="more"></a>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Research/">Research</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Research/Paper/">Paper</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/Paper/">Paper</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/post/52bf5d70.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">《一个叫欧维的男人决定去死》读书摘录</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/post/b56932d5.html">
+                        <span class="hidden-mobile">《局外人》读书摘录</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="remark42"></div>
+  <script type="text/javascript">
+    var schema = document.documentElement.getAttribute('data-user-color-scheme');
+    if (schema !== 'light' && schema !== 'dark') {
+      schema = 'light';
+    }
+    var remark_config = Object.assign(
+      {"host":"https://remark42.edwardzcn98yx.com","site_id":"www.edwardzcn98yx.com","max_shown_comments":20,"locale":"zh","components":["embed"]},
+      {
+        url: '/post/a3f66e00.html',
+        page_title: 'New Directions in Cloud Programming | Joseph Hellerstein',
+        theme: schema,
+      }
+    );
+
+    Fluid.utils.loadComments('#remark42', function() {
+      (function (c) {
+        for (var i = 0; i < c.length; i++) {
+          var d = document, s = d.createElement('script');
+          s.src = remark_config.host + '/web/' + c[i] + '.js';
+          s.defer = true;
+          (d.head || d.body).appendChild(s);
+        }
+      })(remark_config.components || ['embed']);
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        冀ICP证18024730号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+            
+            <span>湘公网安备43010402000641号</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://lib.baomitu.com/mathjax/3.2.0/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+</body>
+</html>

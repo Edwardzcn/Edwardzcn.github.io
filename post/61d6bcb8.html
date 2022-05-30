@@ -1,0 +1,724 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="
+Step 1
+题目摘要引言
+Title
+Yaurus: Lightweight Parallel Logging for In-Memory Database Management
+轻量级并行日志记录内存数据库管理系统
+Abstract
+现有的单流日志记录方案（single-stream Logging）不适合内存数据库管理系统 (DBMS)，因为单日志通常是性能瓶颈。 为了克服这">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  
+  <title>USTCReadingGroup——Taurus - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://lib.baomitu.com/highlight.js/10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+  
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bookmark"></i>
+                select
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Computer-Science/">
+                    <i class="iconfont icon-codeforces"></i>
+                    Computer Science
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%98%85%E8%AF%BB/">
+                    <i class="iconfont icon-bookmark-fill"></i>
+                    Life Reading
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%9A%8F%E7%AC%94/">
+                    <i class="iconfont icon-note"></i>
+                    Life Essay
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Research/Report/">
+                    <i class="iconfont icon-clipcheck"></i>
+                    Weekly Report
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/photos">
+                <i class="iconfont icon-image"></i>
+                gallery
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="USTCReadingGroup——Taurus">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      Edwardzcn
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-10-06 09:15" pubdate>
+        2021年10月6日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      22
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">USTCReadingGroup——Taurus</h1>
+            
+            <div class="markdown-body">
+              <!--文章由 3step 模板生成三步法阅读文献笔记记录-->
+<h1 id="step-1">Step 1</h1>
+<h2 id="题目摘要引言">题目摘要引言</h2>
+<h3 id="title">Title</h3>
+<p>Yaurus: Lightweight Parallel Logging for In-Memory Database Management</p>
+<p>轻量级并行日志记录内存数据库管理系统</p>
+<h3 id="abstract">Abstract</h3>
+<p>现有的单流日志记录方案（single-stream Logging）不适合内存数据库管理系统 (DBMS)，因为单日志通常是性能瓶颈。 为了克服这个问题，我们提出了 Taurus，一种使用多个日志流的高效并行日志记录方案，并且兼容数据和命令日志记录。 Taurus 使用日志序列号 (log sequence numbers LSNs) 向量跟踪和编码事务依赖性。 这些向量确保在日志记录中完全捕获依赖关系并在恢复中正确强制执行。 我们对内存 DBMS 的实验评估表明，与单流数据记录和命令记录相比，Taurus 的并行记录分别实现了高达 9.9 倍和 2.9 倍的加速。 它还使 DBMS 的恢复速度分别比这些基线数据和命令记录快 22.9 倍和 75.6 倍。 我们还将 Taurus 与两种最先进的并行日志记录方案进行了比较，结果表明 DBMS 在 NVMe 驱动器上实现了高达 2.8 倍的性能提升，在 HDD 上实现了 9.2 倍的性能提升。</p>
+<h3 id="introduction">Introduction</h3>
+<p><strong>事务与奔溃一致性</strong></p>
+<p>数据库管理系统 (DBMS) 保证即使系统崩溃，事务对数据库的修改也能持续存在。 强制执行持久性的最常见方法是预写日志（write-ahead-Logging WAL），其中每个事务在提交之前将其更改顺序写入持久性存储设备（例如 HDD、SSD、NVM）。 随着现代多核硬件并行性的提高和高吞吐量内存式 DBMS 的上升趋势，顺序日志记录（sequential logging）引起的可扩展性瓶颈是繁重的，激发了对并行解决方案的需求。</p>
+<p>然而，执行并行日志记录并非易事，因为系统必须确保事务的正确恢复顺序。 尽管这在顺序日志中很简单，因为 LSN（日志文件中事务记录的位置）明确定义了事务的顺序，但在没有中央 LSN 的情况下有效恢复分布在多个日志中的事务并不容易。 并行日志记录方案必须跨多个日志维护事务的顺序信息才能正确恢复</p>
+<p><strong>回顾历史上的多个并行日志和恢复协议</strong></p>
+<p>文献 [16, 35, 37, 44] 中有几个并行的测井和恢复协议。 然而，这些先前的设计在其范围 scope 和适用性 applicability 方面受到限制。 一些算法只支持并行数据日志而不支持并行命令日志 [14, 35, 44]； 有些只能并行化恢复过程，而不能并行化日志记录过程 [8, 30]； 一些协议假设使用 NVM 硬件，但不适用于传统存储设备 [3, 4, 6, 10, 15, 21, 22, 36]。 因此，先前提出的方法对于不同操作环境中的现代 DBMS 来说是不够的</p>
+<p><strong>引出 Taurus</strong></p>
+<p>为了克服这些限制，我们提出了 Taurus，一种并行执行日至记录和恢复的轻量级协议，支持数据和命令日志记录，并与多种并发控制方案兼容。 Taurus 通过跟踪事务间的依赖关系来实现这一点。 恢复算法使用此信息来确定事务的顺序。 Taurus 将依赖关系编码为 LSN 向量，我们将其定义为 LSN 向量 (LV)。 <strong>LSN 向量的灵感来自向量时钟，以在消息传递系统中强制执行偏序 [11, 27]</strong>。 为了减少维护 LV 的开销，Taurus 根据观察到 DBMS 可以恢复没有任何顺序依赖关系的事务来压缩向量</p>
+<p><strong>性能评价</strong></p>
+<p>我们将 Taurus 的性能与串行日志记录方案（有和没有 RAID-0 设置）和最先进的并行日志记录方案（即 Silo-R [35, 44] 和 Plover [45]）进行比较 在 YCSB 和 TPC-C 基准测试中。 我们对 8 个 NVMe SSD 的评估表明，具有数据记录的 Taurus 在运行时优于串行数据记录 9.9 倍，具有命令记录的 Taurus 优于串行命令记录的 2.9 倍。 在恢复期间，具有数据记录和命令记录的 Taurus 分别比串行基线快 22.9 倍和 75.6 倍。 带数据记录的 Taurus 与其他并行方案的性能相匹配，带命令记录的 Taurus 在运行时和恢复时的速度提高了 2.8 倍。 对 8 个 HDD 的另一项评估表明，具有命令日志记录的 Taurus 在日志记录和恢复方面分别比这些并行算法快 9.2 倍和 6.4 倍</p>
+<h3 id="contribution">Contribution</h3>
+<ul>
+<li>我们提出了支持命令记录和数据记录的 Taurus 并行方案。 我们在扩展版本 [39] 中正式证明了正确性和活性。</li>
+<li>我们提出了优化建议，以减少 Taurus 维护的依赖信息和扩展的内存占用，以支持多种并发控制算法。</li>
+<li>我们根据顺序和并行日志记录方案评估 Taurus，并展示其优势和通用性。</li>
+<li>我们在 https://github.com/yuxiamit/DBx1000_logging 开源 Taurus 和评估脚本。</li>
+</ul>
+<h2 id="基本理论概况">基本理论概况</h2>
+<h3 id="background">Background</h3>
+<h4 id="serial-logging">Serial Logging</h4>
+<p>Coventional Way</p>
+<p>协议保证：<em>ordering invariant</em>，如果<span class="math inline">\(T2\)</span> 依赖<span class="math inline">\(T1\)</span>，那么 DBMS 会在<span class="math inline">\(T1\)</span> 写入磁盘后写入<span class="math inline">\(T2\)</span></p>
+<p>恢复过程，DBMS 读取 log 并顺序执行每一个事务直至遇到不完整记录，或者文件文件结尾。</p>
+<p>通常，有两类日志记录方案。 第一个是数据日志 <em>data logging</em>，其中日志记录包含事务对数据库所做的物理修改。 恢复过程将这些更改重新应用到数据库。 另一个类别，命令日志 <em>command logging</em> [26]，通过仅记录高级命令（比如调用存储过程）来减少日志数据量。 这些命令的日志记录通常小于物理更改。 恢复过程涉及更多计算，因为所有事务都被重新执行。 如果磁盘带宽是瓶颈，命令日志记录可以大大优于数据日志记录</p>
+<p>尽管串行日志本质上是顺序的，但可以通过使用充当单个存储设备的 RAID 磁盘来提高其性能 [31]。 如果 DBMS 使用数据记录 [33, 35, 44]，串行记录也可以支持并行恢复。 但是区分串行日志记录和并行日志记录的基本属性是它依赖于尊重事务之间所有数据依赖性的单个日志流。 在具有许多 CPU 内核的现代内存 DBMS 上，这样的单个日志流是可扩展性瓶颈 [35]。 由于缓存一致性流量，竞争单个原子 LSN 计数器会抑制性能</p>
+<h4 id="parallel-logging-challenges">Parallel Logging Challenges</h4>
+<p>Modern Way but Challenging</p>
+<p>并行日志允许事务写入多个日志流（例如，每个磁盘一个流），从而避免串行日志的可扩展性瓶颈，以满足内存 DBMS 的高吞吐量需求。</p>
+<p>多个流抑制了交易的固有自然顺序。 因此，需要其他机制来跟踪和强制执行这些事务之间的排序。</p>
+<p>举例，T2 T1 比高兴，T2 Read-After-Write 依赖 T1 但是 T2 先写好 T1 未写好，Crash，DBMS 必须意识到这种依赖。</p>
+<p>主要面临的挑战：</p>
+<ul>
+<li>挑战 1：When to Commit a Transaction</li>
+<li>挑战 2：Whether to Recover a Transaction</li>
+<li>挑战 3：Determine the Recovery Order</li>
+</ul>
+<h2 id="结论部分">结论部分</h2>
+<!-- 确定作者的成过以及点出的经验、问题、改进方 -->
+<h2 id="回答基本问题">回答基本问题</h2>
+<ol type="1">
+<li><p>类别</p>
+<!-- 这篇论文是什么类型？测试类？对现有系统进行分析的？对原型系统进行描述的？--></li>
+<li><p>内容</p>
+<!-- 你读过的其他论文有没有与之相关的？相关性与区别最直接体现在哪里？文章中分析问题用的什么理论基础（通过瞥一眼数学概况与核心证明可以得到）。 --></li>
+<li><p>正确性</p>
+<!-- 结论是否看起来真实有效？ --></li>
+<li><p>创新点</p>
+<!-- 论文的主要创新点是什么？总结提到的经验、问题和改进方法是什么？ --></li>
+<li><p>清晰度</p>
+<!-- 这篇论文是否写的条理清晰 --></li>
+</ol>
+<h2 id="阅读选择">阅读选择</h2>
+<p>继续阅读</p>
+<!--
+1. 继续阅读：论文有价值担保，研究领域非常切合，对当前进行工作有极大帮助，圈内爆火文章
+2. 不继续阅读：论文不吸引自己，论文价值/正确性存疑，论文作者给出了不适当的假设。
+3. 库存保留并标记：当前不处于自己的研究领域，但不久的日后相关论文会有用。
+-->
+<a id="more"></a>
+<h1 id="step-2">Step 2</h1>
+<h2 id="细读笔记">细读笔记</h2>
+<h3 id="taurus-parallel-logging">Taurus Parallel Logging</h3>
+<h4 id="lsn-vector">3.1 LSN Vector</h4>
+<p><strong>形式化描述及其定义</strong></p>
+<h4 id="logging-operations">Logging Operations</h4>
+<p>日志记录过程</p>
+<h4 id="recovering-operations">Recovering Operations</h4>
+<p>恢复过程</p>
+<h4 id="supporting-index-operations">Supporting Index Operations</h4>
+<h3 id="optimizations-and-extensions">Optimizations and Extensions</h3>
+<p>主要的方法：LV Compression,Vectorization，以及支持拓展：OCC，拓展，多版本 MVCC（Multi-Versioning）</p>
+<!-- 要仔细阅读论文，但是诸如证明等信息要忽略掉 -->
+<h2 id="问题记录">问题记录</h2>
+<h2 id="未读且值得读文献记录">未读（且值得读）文献记录</h2>
+<!-- 在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 -->
+<h1 id="step-3">Step 3</h1>
+<!-- 试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。 -->
+<h2 id="思路复现">思路复现</h2>
+<!-- 推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ -->
+<h2 id="证明与推理复现">证明与推理复现</h2>
+<!-- 分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源 -->
+<h2 id="实验验证复现">实验验证复现</h2>
+<!-- Rework -->
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/TODO/">TODO</a>
+                    
+                      <a class="hover-with-bg" href="/categories/TODO/TODO/">TODO</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/%E4%B8%89%E6%AD%A5%E6%B3%95/">三步法</a>
+                    
+                      <a class="hover-with-bg" href="/tag/TODO/">TODO</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/post/25d71311.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Everything-about-Logging-Research</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/post/ae670d08.html">
+                        <span class="hidden-mobile">Rust学习——TRPL-Part8</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="remark42"></div>
+  <script type="text/javascript">
+    var schema = document.documentElement.getAttribute('data-user-color-scheme');
+    if (schema !== 'light' && schema !== 'dark') {
+      schema = 'light';
+    }
+    var remark_config = Object.assign(
+      {"host":"https://remark42.edwardzcn98yx.com","site_id":"www.edwardzcn98yx.com","max_shown_comments":20,"locale":"zh","components":["embed"]},
+      {
+        url: '/post/61d6bcb8.html',
+        page_title: 'USTCReadingGroup——Taurus',
+        theme: schema,
+      }
+    );
+
+    Fluid.utils.loadComments('#remark42', function() {
+      (function (c) {
+        for (var i = 0; i < c.length; i++) {
+          var d = document, s = d.createElement('script');
+          s.src = remark_config.host + '/web/' + c[i] + '.js';
+          s.defer = true;
+          (d.head || d.body).appendChild(s);
+        }
+      })(remark_config.components || ['embed']);
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        冀ICP证18024730号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+            
+            <span>湘公网安备43010402000641号</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://lib.baomitu.com/mathjax/3.2.0/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+</body>
+</html>

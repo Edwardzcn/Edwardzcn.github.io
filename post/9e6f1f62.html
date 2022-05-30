@@ -1,0 +1,872 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="
+Step 1
+题目摘要引言
+题目
+寻找一个易于理解的共识算法（拓展版本）
+摘要
+Raft 是解决 log replication management 的分布式共识算法，相当于(multi-)Paxos 效果。为了便于理解，Raft 将共识算法的几个步骤分离开，包括leader 选举、log 复制、安全性。它强调了一致性以减少必须考虑的 states 数量（这个是不是对比 Paxos">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  
+  <title>分布式系统学习——Raft拓展版本论文学习 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://lib.baomitu.com/highlight.js/10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+  
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bookmark"></i>
+                select
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Computer-Science/">
+                    <i class="iconfont icon-codeforces"></i>
+                    Computer Science
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%98%85%E8%AF%BB/">
+                    <i class="iconfont icon-bookmark-fill"></i>
+                    Life Reading
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%9A%8F%E7%AC%94/">
+                    <i class="iconfont icon-note"></i>
+                    Life Essay
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Research/Report/">
+                    <i class="iconfont icon-clipcheck"></i>
+                    Weekly Report
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/photos">
+                <i class="iconfont icon-image"></i>
+                gallery
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="分布式系统学习——Raft拓展版本论文学习">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      Edwardzcn
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-06-13 15:33" pubdate>
+        2020年6月13日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.9k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      57
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">分布式系统学习——Raft拓展版本论文学习</h1>
+            
+            <div class="markdown-body">
+              <!--文章由 3step 模板生成三步法阅读文献笔记记录-->
+<h1 id="step-1">Step 1</h1>
+<h2 id="题目摘要引言">题目摘要引言</h2>
+<h3 id="题目">题目</h3>
+<p>寻找一个易于理解的共识算法（拓展版本）</p>
+<h3 id="摘要">摘要</h3>
+<p>Raft 是解决 log replication management 的分布式共识算法，相当于(multi-)Paxos 效果。为了便于理解，Raft 将共识算法的几个步骤分离开，包括<strong>leader 选举</strong>、<strong>log 复制</strong>、<strong>安全性</strong>。它强调了一致性以减少必须考虑的 states 数量（这个是不是对比 Paxos 说的）。Raft 还包括一个用 overlapping majorities（多数重叠）来改变集群成员的新机制。</p>
+<h3 id="引言">引言</h3>
+<p>共识算法允许一组机器在个别成员出现故障时仍能作为一个相关联的群体持续工作。正因为如此，它们在构建可靠的大型软件系统中扮演着重要的角色。Paxos 主导了过去十年关于共识算法的讨论（算法研究、课程教学）。</p>
+<ul>
+<li>Paxos 太难理解了，而且为了支持实际系统，它的架构仍要做许多复杂的调整。</li>
+<li>Raft 设计初衷就是<strong>可理解性</strong>：能被实际系统应用且比 Paxos 更易于学习。</li>
+</ul>
+<p>Raft 为增强<strong>可理解性</strong>，在以下方面做出努力：</p>
+<ul>
+<li>拆解过程：将<strong>leader 选举</strong>、<strong>log 复制</strong>、<strong>安全性</strong>拆分开。</li>
+<li>减少状态空间数：与 Paxos 对比，Raft 降低了不确定性程度（这个不太理解，英文是 nondeterminism）和服务器间出现不一致的方式。</li>
+</ul>
+<p>Raft 新颖的特点：</p>
+<ul>
+<li><strong>Strong leader</strong>：与其他共识算法相比，Raft 有一个更“强势”的领导者。比如，log entries 只会从 leader 开始然后影响其他 servers（flow from the leader to other servers）。</li>
+<li><strong>Leader election</strong>：Raft 使用随机计时器来启动选举过程，这仅需要在现有的 heartbeats（心跳线）机制上增加一点内容，就可以快捷又迅速地解决冲突。</li>
+<li><strong>Membership changes</strong>：Raft 机制对于改变集群中机器配置使用一种新的方法<code>joint consensus</code>，该方法保证转换过程前后两配置下有一个重叠部分（保证一个 majority 的重叠），这样在配置转换过程中，系统仍可以正常工作。</li>
+</ul>
+<p>Raft 有多个开源版本的实现并被应用于实际系统中，教学上得到更好的反馈，其安全性能也得到详细说明和证明。</p>
+<h2 id="基本理论概况">基本理论概况</h2>
+<h2 id="结论部分">结论部分</h2>
+<!-- 确定作者的成过以及点出的经验、问题、改进方 -->
+<p>启发：在算法设计过程中，<strong>可理解性</strong>同正确性、效率和简洁性同样重要。其他几个性质在开发人员将算法应用于实际系统前都无法验证。而缺少可理解性，可能会使得开发人员在实现的过程中产生误解偏离设计者的原有意图（除非开发者对算法有非常深刻的理解并具备将其实现的直觉），这就导致实现很难保证期望的性质。</p>
+<p>本问讨论了分布式共识算法的设计问题，提出一个新的算法——Raft，相比原来广为流传的 Paxos 来说，更易于理解，且相信能为系统构建提供更好的途径。在设计途中，我们发现自己不断重复使用一些技术，例如分解问题和简化状态空间。 这些技术不仅提高了 Raft 的可理解性，而且更加容易相信它的正确性。</p>
+<h2 id="回答基本问题">回答基本问题</h2>
+<ol type="1">
+<li>类别</li>
+</ol>
+<!-- 这篇论文是什么类型？测试类？对现有系统进行分析的？对原型系统进行描述的？-->
+<p>基于原有算法进行的新算法设计。</p>
+<ol start="2" type="1">
+<li>内容</li>
+</ol>
+<!-- 你读过的其他论文有没有与之相关的？相关性与区别最直接体现在哪里？文章中分析问题用的什么理论基础（通过瞥一眼数学概况与核心证明可以得到）。 -->
+<p>Reading Group 所提到的，结合 Erasure Code 的方案——CRaft。</p>
+<p><a target="_blank" rel="noopener" href="https://www.usenix.org/system/files/fast20-wang_zizhong.pdf">CRaft 论文</a></p>
+<p><a href="https://www.edwardzcn98yx.com/post/262d18ab.html">CRaft 阅读笔记</a></p>
+<ol type="1">
+<li>正确性</li>
+</ol>
+<!-- 结论是否看起来真实有效？ -->
+<p>正确</p>
+<ol start="4" type="1">
+<li>创新点</li>
+</ol>
+<!-- 论文的主要创新点是什么？总结提到的经验、问题和改进方法是什么？ -->
+<p>可理解性，可理解性。</p>
+<ol start="5" type="1">
+<li>清晰度</li>
+</ol>
+<!-- 这篇论文是否写的条理清晰 -->
+<p>清晰</p>
+<h2 id="阅读选择">阅读选择</h2>
+<!--
+1. 继续阅读：论文有价值担保，研究领域非常切合，对当前进行工作有极大帮助，圈内爆火文章
+2. 不继续阅读：论文不吸引自己，论文价值/正确性存疑，论文作者给出了不适当的假设。
+3. 库存保留并标记：当前不处于自己的研究领域，但不久的日后相关论文会有用。
+-->
+<p>继续阅读！</p>
+<a id="more"></a>
+<h1 id="step-2">Step 2</h1>
+<h2 id="细读笔记">细读笔记</h2>
+<!-- 要仔细阅读论文，但是诸如证明等信息要忽略掉 -->
+<h3 id="状态机复制">状态机复制</h3>
+<p>共识算法常出现在状态机复制（replicated state machine）上下文中。一组服务器上的状态机计算相同的粗笨，这样即使其中一些服务器宕机，仍能继续工作。状态机复制常用于解决分布式系统的容错问题。</p>
+<p>状态机复制常用 replicated log 来实现。每个服务器存储一个包含一系列命令的日志，其状态机按顺序执行这些命令。每个日志以相同的顺序包含相同的命令，因此每个状态机处理相同的命令序列。由于状态机是确定的，所以每个状态机都计算相同的状态和相同的输出序列。</p>
+<p>而保证 replicated log 一致就是共识算法的工作。共识模块负责将客户端命令加入日志，并与其他服务器的共识模块通信以保证日志最终以相同的顺序包含相同的请求（same requests in the same order）。当命令被正确地复制，服务器地状态机就会按照日志顺序执行并将结果返回给客户端。</p>
+<p>实际系统应用地一致性算法通常有以下特征：</p>
+<ul>
+<li>保证 non-Byzantine 条件下的安全性（即只设计以应对 fail stop）</li>
+<li>只要保证 majority（绝对多数）的机器是正常且可以通信的，系统就具备完备功能。</li>
+<li>不依赖 timing 来保证一致性（<strong>这一点以前不清楚，作者解释，在最坏情况下，错误时钟和极端消息可能会导致可用性问题</strong>）。</li>
+<li>通常情况下，当 majority 都回复了一次远程调用（RPC）时，命令就完成了，minority 的速度较慢的机器不会影响系统的整体性能。</li>
+</ul>
+<h3 id="paxos-的优劣势">Paxos 的优劣势</h3>
+<p>Leslie Lamport 的 Paxos 协议是该领域近年被讨论最多的。文章中对 Paxos 评价是这样的。</p>
+<blockquote>
+<p>Paxos first defines a protocol capable of reachingagreement on a single decision, such as a single replicatedlog entry. We refer to this subset assingle-decree Paxos.Paxos then combines multiple instances of this protocol tofacilitate a series of decisions such as a log (multi-Paxos).Paxos ensures both safety and liveness, and it supportschanges in cluster membership. Its correctness has beenproven, and it is efficient in the normal case. Paxos 首先定义了一种协议，该协议能够就单个决定达成共识，例如单个复制日志条目。 我们将这个子集称为单命令 Paxos，然后 Paxos 组合了该协议的多个实例以促进一系列决策，例如日志（multi-Paxos）.Paxos 确保安全性和活跃性，并支持集群成员身份的更改。 它的正确性已经被证明，并且在正常情况下是有效的</p>
+<p>Unfortunately, Paxos has two significant drawbacks.The first drawback is that Paxos is exceptionally diffi-cult to understand. The full explanation [15] is notori-ously opaque; few people succeed in understanding it, andonly with great effort. As a result, there have been severalattempts to explain Paxos in simpler terms [16, 20, 21].These explanations focus on the single-decree subset, yetthey are still challenging. In an informal survey of atten-dees at NSDI 2012, we found few people who were com-fortable with Paxos, even among seasoned researchers.We struggled with Paxos ourselves; we were not able tounderstand the complete protocol until after reading sev-eral simplified explanations and designing our own alter-native protocol, a process that took almost a year. 不幸的是，Paxos 有两个明显的缺点。第一个缺点是 Paxos 非常难以理解。 完整的解释[15]非常模糊，只有很少的人能够成功地理解它。 结果，有几种尝试用较简单的术语来解释 Paxos [16，20，21]。这些解释集中在单法则子集上，但它们仍然具有挑战性。 在 NSDI 2012 上对与会者的非正式调查中，我们发现很少有人对 Paxos 感到满意，即使是经验丰富的研究人员也是如此。 在阅读了一些简化的说明并设计了我们自己的替代协议后，我们才了解完整的协议，这一过程耗时近一年。</p>
+<p>We hypothesize that Paxos’ opaqueness derives fromits choice of the single-decree subset as its foundation.Single-decree Paxos is dense and subtle: it is divided intotwo stages that do not have simple intuitive explanationsand cannot be understood independently. Because of this,it is difficult to develop intuitions about why the single-decree protocol works. The composition rules for multi-Paxos add significant additional complexity and subtlety.We believe that the overall problem of reaching consensuson multiple decisions (i.e., a log instead of a single entry)can be decomposed in other ways that are more direct andobvious. 我们假设 Paxos 的不透明性源于它对单法则子集的选择的基础。单法则 Paxos 是密集而微妙的：它分为两个阶段，没有简单的直观解释，无法独立理解。 因此，难以理解单法令协议为何起作用的直觉。 多 Paxos 的组成规则增加了许多额外的复杂性和微妙之处。我们认为，可以通过其他更直接和明显的方式来分解在多个决策（即对数而不是单个条目）上达成共识的总体问题。</p>
+<p>The second problem with Paxos is that it does not pro-vide a good foundation for building practical implemen-tations. One reason is that there is no widely agreed-upon algorithm for multi-Paxos. Lamport s descriptionsare mostly about single-decree Paxos; he sketched possi-ble approaches to multi-Paxos, but many details are miss-ing. There have been several attempts to flesh out and op-timize Paxos, such as [26], [39], and [13], but these differ2 from each other and from Lamport s sketches.Systems such as Chubby [4] have implemented Paxos-like algo-rithms, but in most cases their details have not been pub-lished. Paxos 的第二个问题是，它没有为构建实际实现提供良好的基础。一个原因是，对于 multi-Paxos，还没有得到广泛认可的算法。Lamport 的描述大多是关于单一法令的 Paxos;他概述了多 paxos 可能的方法，但是很多细节都被遗漏了。已经有一些尝试来充实和调整 Paxos，如[26]、[39]和[13]，但它们彼此不同，也不同于 Lamport 的草图。像 Chubby[4]这样的系统已经实现了类似 paxos 的算法，但它们的很多细节还没有公开。</p>
+</blockquote>
+<p>single-decree decomposition 的另一个结果是 Paxos 难以用于构建实际系统。详细解释还是看文章吧。</p>
+<p>因此，实际系统与 Paxos 几乎没有相似之处，都从 Paxos 开始，讲述实现的困难，然后发展出完全不同的体系结构。Chubby 的实现者对 Paxos 的评价很典型：</p>
+<blockquote>
+<p>There are significant gaps between the description ofthe Paxos algorithm and the needs of a real-worldsystem. . . . the final system will be based on an un-proven protocol</p>
+</blockquote>
+<h3 id="designing-for-understandability">Designing for understandability</h3>
+<p>在 Raft 设计过程中存在许多要做取舍的点，取舍基于<strong>可理解性</strong>。设计者总是在想如何能使读者完全理解设计方法和实现。</p>
+<p>这种“方便理解”的设计是主观的，不过提出了两种普遍使用的技术：过程拆解、简化状态机状态。</p>
+<h3 id="the-raft-consensus-algorithm">The Raft consensus algorithm</h3>
+<p>算法主体部分。</p>
+<p>图 2（也就是 6.824 课程教授提到的要特别注意的图）提供了简化版算法以供参考。</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Raft/Raft_1.png" srcset="/img/loading.gif" lazyload alt="Raft_1" /><figcaption>Raft_1</figcaption>
+</figure>
+<p>图 3 列出了算法的核心性质。</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Raft/Raft_2.png" srcset="/img/loading.gif" lazyload alt="Raft_2" /><figcaption>Raft_2</figcaption>
+</figure>
+<p>文章拆分成四个模块来介绍</p>
+<p>Step 2 阅读中着重理解一下各部分的介绍，对 Safety 证明部分粗略浏览下，放在 Step 3 中进一步阅读。</p>
+<h4 id="raft-basics">Raft basics</h4>
+<p>每个 server 的三种状态：<strong>leader</strong>，<strong>follower</strong>，<strong>candidate</strong>。系统保证正常情况下只有一个 Leader，在这个架构下。<strong>Leader is strong and followers are passive.</strong>。Leader 负责处理所有客户端请求并展开 replication，而 follower 不会自发启动任何请求，只会被动应答 candidate 和 leader。Candidate（候选者）是用来进行 leader 选举时的状态。如图 4 所示。</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Raft/Raft_3.png" srcset="/img/loading.gif" lazyload alt="Raft_3" /><figcaption>Raft_3</figcaption>
+</figure>
+<p>Raft 将时间划分为不同长短的 term（任期），用连续整数来标识，每届任期都从一次选举开始。若选票分裂，没有选出 leader，则任期以无 leader 情况结束，并且会在稍后启动新的一轮选举（random time）。如图 5 所示。</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Raft/Raft_4.png" srcset="/img/loading.gif" lazyload alt="Raft_4" /><figcaption>Raft_4</figcaption>
+</figure>
+<p>在一些情况下（比如网络中断、延迟、隔离），server 可能会观察不到选举过程甚至整个任期。Term 在 Raft 中像一个<a href="https://www.edwardzcn98yx.com/post/b6a38e07.html">逻辑时钟</a>（没错，Lamport 他又来了）。<code>currentTerm</code>在每台机器上都会被持久化维护。服务器间的交流（比如选举信息或是指令执行），类似 Lamport 逻辑时钟的事件（自增原则要看后面的实现细节）。如果一个服务器的 currentterm 比另一个服务器的 currentterm 小，那么它将其 currentterm 更新为更大的值。如果一个候选人或领导发现他的任期已经过期，它立即恢复到 follower 状态。如果服务器收到一个过去任期的请求，它将拒绝该请求。</p>
+<p>Raft 机器间交流通过 RPC 实现，仅需要两种类型的 RPC，后续章节添加了一种 RPC 用来传递快照。</p>
+<ul>
+<li>RequestVote PRCs：由 candidates 发起用于选举（在 Leader election 一节中着重介绍）。</li>
+<li>AppendEntries RPCs：由 leaders 发起，以 heartbeat 形式提供 replicate log 的功能。</li>
+</ul>
+<h4 id="leader-election">Leader election</h4>
+<p>主体过程描述如下</p>
+<ul>
+<li>以 follower 身份启动，如果能持续收到来自 candidate 和 leader 的消息，follower 身份会维持。</li>
+<li>在丢失通信达到一定时间（election timeout）后，follower 会开始启动一次选举。</li>
+<li>follower 增加它的 currentTerm 值并转换到 candidate 状态。</li>
+<li>为自己投票同时并行启动 RequestVote RPCs 访问集群内其他机器。</li>
+<li>candidate 维持其身份直至
+<ul>
+<li>赢得选举
+<ul>
+<li>得到 majority 的选票</li>
+<li>转换为 leader 身份并开始发送心跳线信息</li>
+</ul></li>
+<li>其他机器赢得选举
+<ul>
+<li>比较 AppendEntries RPC 中 term 与 currentTerm 的大小，RPC 中任期大于等于自身任期，则转变为 follower。</li>
+<li>否则拒绝 RPC 请求，保持 candidate 身份。</li>
+</ul></li>
+<li>一段时间后发现没有人赢得选举
+<ul>
+<li>多个 candidate 发起选举导致选票分裂无人当选</li>
+<li>每个 candidate 经过一小段时间后重启选举</li>
+<li>没有其他措施保证时，选票分裂可能重复。（改进：再下次选举前加入 150-300ms 的随机延时）</li>
+<li>从<strong>可理解性</strong>角度抉择：设计者对算法进行了多次调整、包括 rank candidate 形式，每次调整后都会出现新的情况。最后得到的结论，随机重试的方法更明显和可理解。</li>
+</ul></li>
+</ul></li>
+</ul>
+<h4 id="log-replication">Log replication</h4>
+<p>图 6 显示日志的组织情况。</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Raft/Raft_5.png" srcset="/img/loading.gif" lazyload alt="Raft_5" /><figcaption>Raft_5</figcaption>
+</figure>
+<ul>
+<li>选出 leader 后，leader 与客户端进行通信，接受并反馈客户端请求。</li>
+<li>leader 持续向其他机器并行发送 AppendEntries RPCs，维持身份同时拷贝 entry（但不执行）。</li>
+<li>leader 决定什么时间可以<strong>commited</strong> entry（提交），即使集群机器可以执行 entry。
+<ul>
+<li>条件：当 leader 创建的 entry 被 replicated 到绝对多数的机器。</li>
+</ul></li>
+<li>leader 持续跟踪要进行 commit（已经建立好）的最大的 log index，并将该索引包含在后续的 AppendEntries RPCs 中，以便其他机器最终发现。</li>
+<li>follower 获知 entry 被 commited，便在本地执行该日志。</li>
+</ul>
+<p>Raft 保持下面的重要性质，他们共同构成图 3 的（Log Matching）：</p>
+<ul>
+<li>两份日志中的 entry 块，<strong>若具有相同的 log index 和 term，则储存相同命令</strong>。</li>
+<li>两份日志中的 entry 块，<strong>若具有相同的 log index 和 term，则在之前的日志记录都是相同的</strong>。</li>
+</ul>
+<p>正常情况下，leader 和 follower 间的日志都是一致的，但是如果发生 crash，会出现各种不一致的情况（多出未 commit 的 entry 块、缺少块、历史块产生冲突）。</p>
+<p>在 Raft 中，leader 强迫 follower 遵循自己的日志记录，也即冲突覆盖。 后面 Safty 小节将说明，再加上一个限制条件，这是安全的。</p>
+<p>为了进行覆盖，leader 需要找到和 follower 达成一致的最近 entry，并删除之后所有的 entries。leader 未每个 follower 维护一个<code>nextIndex</code>，标明下一个该传送的 log entry。当一个 leader 刚被选举上台时，他初始化全部 follower 的<code>nextIndex</code>为 leader 最后一个 log+1。如果 follower 与 leader 的日志不一致，AppendEntries RPC 中的一致性检查失败，然后 leader 递减<code>nextIndex</code>的值再次发送 AppendEntries RPC 请求，直至找到能 match 的日志位置。然后如上述，删除后递增<code>nextIndex</code>持续进行请求。</p>
+<p>优化 AppendEntries 交互的方法</p>
+<blockquote>
+<p>当 AppendEntries 失败时，follower 可以知道冲突块所在的 term，以及该 term 第一个块。这样<code>nextIndex</code>一次可以减去该 term 冲突块的数。（作者质疑这种优化的必要性，理由是 failure 并非那么频繁，不会出现大量需要小步修正的 entries）</p>
+</blockquote>
+<p>这种 log replication 机制，对于新选出的 leader，无需额外操作既可以保证集群中日志记录逐渐收敛，并且满足 leader 不重写自己日志的性质。同时只要绝对多数的机器正常运转，一轮 RPCs 就可以将新的 entry 复制到机器上，少数故障不会影响系统表现。</p>
+<h4 id="safety">Safety</h4>
+<p>到目前为止所描述的机制还不足以确保每个状态机以同样的顺序执行完全相同的命令，增加一些限制。</p>
+<ul>
+<li><p>选举限制</p>
+<p>个人理解：鸽巢定理的应用</p>
+<p>Raft 使用一个简单的机制保证先前任期 leader 的所有 commited entries 会存在在新选举的 leader 上。这样就保证了日志流是单向的（leader 到 followers）。</p>
+<p>一个 entry 想要被 commited 要得到<strong>majority</strong>的机器的回应，而一个 candidate 必须联系集群中的<strong>majority</strong>才能当选，根据<strong>鸽巢定理</strong>，每条 commited entry 必须至少出现在 candidate 联系的机器中的一台上，如下图所示。</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Raft/Raft_6.png" srcset="/img/loading.gif" lazyload alt="Raft_6" /><figcaption>Raft_6</figcaption>
+</figure>
+<p>Raft 按如下方式定义日志的新旧：</p>
+<ul>
+<li>不同 term，则越后面的 term 越新（逻辑时钟）</li>
+<li>相同 term，越长的 log 越新</li>
+</ul></li>
+<li><p>提交先前任期的 entry</p>
+<p>对于前一任期 replicate 但是未 commit 的 entry，现在任期的新 leader 在继续 replicate 时无法第一时间意识到达到绝对多数（从而有可能延迟或者忽略到该 commit 的 entry，而被后续任期的 entry 覆盖），如下图所示。</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Raft/Raft_7.png" srcset="/img/loading.gif" lazyload alt="Raft_7" /><figcaption>Raft_7</figcaption>
+</figure>
+<p>Raft 要求 leader 在 replicate 先前任期中的 entry 时，保留其原有的 term（在其他一些共识算法中，leader 必须使用新的 term 编号来进行复制。）为了避免图中的问题，Raft<strong>不会</strong>根据副本计数来提交过去任期的 entry，<strong>只会</strong>根据计数提交当前任期内的 entry。（交现在不交过去）</p></li>
+<li><p>安全性争论</p>
+<p>反证法证明 Leader Completeness Property</p>
+<p>过程 Pass，见第三部分。</p>
+<p>根据 Leader Completeness Property，可以证明 State Machine Property。</p>
+<p>证明 Pass，见第三部分。</p></li>
+</ul>
+<h4 id="follower-and-candidate-crashes">Follower and candidate crashes</h4>
+<p>先前讨论的是 leader 出状况，实际上 follower 和 candidate 的崩溃情况要简单些。</p>
+<ul>
+<li>follower 或 candidate 崩溃，leader 持续发送 AppendEntries RPCs</li>
+<li>重连时 RPC 会连通</li>
+<li>若 follower 或 candidate 接受到 RPC 但是在返回结果前崩溃，那么重连时会收到相同的 RPC，因为 Raft RPC 是幂等的，所以无影响。</li>
+</ul>
+<h4 id="timing-and-availablility">Timing and availablility</h4>
+<p>Raft 设计要求，系统安全性不依赖于时间，不会因事件过快/过慢导致错误结果。但还是有些地方肯定存在时间限制。</p>
+<p>Leader election 过程时间要求。</p>
+<p><span class="math display">\[broadcastTime \ll electionTimeout \ll MTBF\]</span></p>
+<ul>
+<li><strong>broadcastTime</strong>：并行发送 RPCs 到各个机器并收到回复的平均时间。</li>
+<li><strong>electionTimeout</strong>：前面描述的判定一轮选举的 timeout</li>
+<li><strong>MTBF</strong>：单个机器故障间隙的平均时间。</li>
+</ul>
+<p>分析，Pass，详情见第三节。大致理解，不能太频繁重设 leader，但又要保证真正故障时系统不会长时间停滞。</p>
+<h2 id="问题记录">问题记录</h2>
+<h2 id="未读且值得读文献记录">未读（且值得读）文献记录</h2>
+<!-- 在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 -->
+<p><a target="_blank" rel="noopener" href="http://research.microsoft.com/users/lamport/pubs/pubs.html#lamport-paxos">Lamport 发明 Paxos 的前前后后</a></p>
+<p><a target="_blank" rel="noopener" href="http://research.microsoft.com/users/lamport/pubs/lamport-paxos.pdf">The Part-Time Parliament ── Lamport 于 1998 年发表在 ACM Transactions on Computer Systems</a> 注：这是该算法第一次公开发表。</p>
+<p><a target="_blank" rel="noopener" href="http://www.cs.utexas.edu/users/lorenzo/corsi/cs380d/past/03F/notes/paxos-simple.pdf">Paxos made simple</a> 注：Lamport 觉得同行无法接受他的幽默感，于是用容易接受的方法重新表述了一遍。</p>
+<p><a target="_blank" rel="noopener" href="https://research.google/pubs/pub39966/">Google Spanner</a></p>
+<h1 id="step-3">Step 3</h1>
+<!-- 试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。 -->
+<h2 id="思路复现">思路复现</h2>
+<!-- 推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ -->
+<h2 id="证明与推理复现">证明与推理复现</h2>
+<!-- 分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源 -->
+<h2 id="实验验证复现">实验验证复现</h2>
+<!-- Rework -->
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/">分布式系统</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/%E4%B8%89%E6%AD%A5%E6%B3%95/">三步法</a>
+                    
+                      <a class="hover-with-bg" href="/tag/Paper/">Paper</a>
+                    
+                      <a class="hover-with-bg" href="/tag/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/">分布式系统</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/post/a0c7159f.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">分布式系统学习——OSDI2018PM哈希方案</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/post/c66fbeaf.html">
+                        <span class="hidden-mobile">多媒体原理与系统——期末复习知识点汇总</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="remark42"></div>
+  <script type="text/javascript">
+    var schema = document.documentElement.getAttribute('data-user-color-scheme');
+    if (schema !== 'light' && schema !== 'dark') {
+      schema = 'light';
+    }
+    var remark_config = Object.assign(
+      {"host":"https://remark42.edwardzcn98yx.com","site_id":"www.edwardzcn98yx.com","max_shown_comments":20,"locale":"zh","components":["embed"]},
+      {
+        url: '/post/9e6f1f62.html',
+        page_title: '分布式系统学习——Raft拓展版本论文学习',
+        theme: schema,
+      }
+    );
+
+    Fluid.utils.loadComments('#remark42', function() {
+      (function (c) {
+        for (var i = 0; i < c.length; i++) {
+          var d = document, s = d.createElement('script');
+          s.src = remark_config.host + '/web/' + c[i] + '.js';
+          s.defer = true;
+          (d.head || d.body).appendChild(s);
+        }
+      })(remark_config.components || ['embed']);
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        冀ICP证18024730号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+            
+            <span>湘公网安备43010402000641号</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://lib.baomitu.com/mathjax/3.2.0/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+</body>
+</html>

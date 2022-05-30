@@ -1,0 +1,756 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="基本概念
+对于一张\(8\)位灰度图像，像素灰度值\(r \in [0,256), r \in Z\)，必然满足一特定的概率分布\(p(x)\)，直方图可理解为分块显示的概率密度函数。
+以下面几图为例（彩色图取 R 通道）
+
+Sample0
+
+(代码见附录)
+由图片可以看出来，图一小猫亮度高的地方更多，所以直方图上显示出在灰度级高端分布更密集，而图二的风景图相反，图三的阿童木则明显亮">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  
+  <title>数字图像处理——直方图均衡 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://lib.baomitu.com/highlight.js/10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+  
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bookmark"></i>
+                select
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Computer-Science/">
+                    <i class="iconfont icon-codeforces"></i>
+                    Computer Science
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%98%85%E8%AF%BB/">
+                    <i class="iconfont icon-bookmark-fill"></i>
+                    Life Reading
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%9A%8F%E7%AC%94/">
+                    <i class="iconfont icon-note"></i>
+                    Life Essay
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Research/Report/">
+                    <i class="iconfont icon-clipcheck"></i>
+                    Weekly Report
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/photos">
+                <i class="iconfont icon-image"></i>
+                gallery
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="数字图像处理——直方图均衡">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      Edwardzcn
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2019-09-21 18:17" pubdate>
+        2019年9月21日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.9k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      57
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">数字图像处理——直方图均衡</h1>
+            
+            <div class="markdown-body">
+              <h1 id="基本概念">基本概念</h1>
+<p>对于一张<span class="math inline">\(8\)</span>位灰度图像，像素灰度值<span class="math inline">\(r \in [0,256), r \in Z\)</span>，必然满足一特定的概率分布<span class="math inline">\(p(x)\)</span>，直方图可理解为分块显示的概率密度函数。</p>
+<p>以下面几图为例（彩色图取 R 通道）</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/HistogramEqualization/output_6_0.png" srcset="/img/loading.gif" lazyload alt="Sample0" /><figcaption>Sample0</figcaption>
+</figure>
+<p>(代码见附录)</p>
+<p>由图片可以看出来，图一小猫亮度高的地方更多，所以直方图上显示出在灰度级高端分布更密集，而图二的风景图相反，图三的阿童木则明显亮暗区分较为明显，所以在直方图上体现为两极化。</p>
+<p>在某些情况下，我们希望通过某种函数变换<span class="math inline">\(s = T(r)\)</span>，使变换后的函数概率分布均匀化（或贴近均匀），这就是<strong>直方图均衡</strong></p>
+<a id="more"></a>
+<h1 id="概率论基础">概率论基础</h1>
+<p>根据课本 P74 页，<span class="math inline">\(p_r(r)\)</span>和<span class="math inline">\(p_s(s)\)</span>分别表示随机变量<span class="math inline">\(r\)</span>和<span class="math inline">\(s\)</span>的概率密度函数，<strong>概率论的一个基本结果是，如果<span class="math inline">\(p_r(r)\)</span>和<span class="math inline">\(T(r)\)</span>已知且<span class="math inline">\(s = T(r)\)</span>具备单调性，在感兴趣的值域上是连续且可微的，则变换后的变量<span class="math inline">\(s\)</span>的概率密度函数可由下面的简单公式得到：</strong></p>
+<p><span class="math display">\[p_s(s) = p_r(r) \left| \frac{\mathrm{d}r}{\mathrm{d}s} \right|\]</span></p>
+<p>这个式子怎么推导的呢？实际上我们就是在求一个<strong>随机变量函数的概率分布</strong>，概率论是学过的，这里回忆一下给出推导。</p>
+<p>设<span class="math inline">\(r\)</span>为随机变量，其概率分布符合<span class="math inline">\(p_r(r)\)</span>，另有一单调的函数（变换）<span class="math inline">\(s = T(r)\)</span>，现在求<span class="math inline">\(s\)</span>的概率分布，设<span class="math inline">\(r\)</span>值域均为<span class="math inline">\([0,L-1]\)</span>。</p>
+<p>由分布函数公式</p>
+<p><span class="math display">\[F(x) = \int_{0}^{x} p(m) \mathrm{d}m\]</span></p>
+<p>得<span class="math inline">\(r\)</span>得分布函数</p>
+<p><span class="math display">\[F_r(r) = \int_{0}^{r} p_r(m) \mathrm{d}m \]</span></p>
+<p>又因为<span class="math inline">\(s = T(r)\)</span>为单调函数，存在反函数<span class="math inline">\(r = T^{-1}(s)\)</span></p>
+<p><span class="math display">\[F_s(s) = F_r(T^{-1}(s)) = \int_{0}^{ T^{-1}(s) } p_r(m) \mathrm{d}m \]</span></p>
+<p>概率密度函数为分布函数的导数</p>
+<p><span class="math display">\[p_s(s) = \left| \frac{\mathrm{d} F_s(s)}{\mathrm{d}s} \right|\]</span></p>
+<p>应用链式求导法则</p>
+<p><span class="math display">\[p_s(s) = \left| \frac{\mathrm{d}F_s(s)}{\mathrm{d}s} \right|\]</span></p>
+<p><span class="math display">\[p_s(s) = \frac{\mathrm{d}F_r(r)}{\mathrm{d}r} \left| \frac{ \mathrm{d} r}{ \mathrm{d}s}  \right|\]</span></p>
+<p><span class="math display">\[p_s(s) = p_r(r) \left| \frac{ \mathrm{d} r}{ \mathrm{d}s}  \right|\]</span></p>
+<p>则得到了书本上的公式。</p>
+<h1 id="均衡变换">均衡变换</h1>
+<p>有了上述式子，我们会发现特殊的性质</p>
+<ol type="1">
+<li><p>若<span class="math inline">\(T(r)\)</span>恰为<span class="math inline">\(r\)</span>的分布函数，则 <span class="math display">\[s = T(r) = \int_{0}^{r} p_r(m) \mathrm{d}m \]</span> <span class="math display">\[\frac{\mathrm{d}s}{\mathrm{d}r} = p_r(r)\]</span> <span class="math display">\[p_s(s) = p_r(r) \left| \frac{ \mathrm{d} r}{ \mathrm{d}s}  \right| = p_r(r) \frac{1}{p_r(r)} = 1\]</span></p>
+<p>则<span class="math inline">\(s\)</span>为均匀分布<span class="math inline">\(s \in [0,1]\)</span> 且<span class="math inline">\(p_s(s)\)</span>值恒为<span class="math inline">\(1\)</span></p></li>
+<li><p>若<span class="math inline">\(T(r)\)</span>为<span class="math inline">\(r\)</span>分布函数映射到<span class="math inline">\([0,L-1]\)</span>，则 <span class="math display">\[s = T(r) = (L-1) \int_{0}^{r} p_r(m) \mathrm{d}m\]</span> <span class="math display">\[p_s(s) = p_r(r) \frac{1}{(L-1) p_r(r)} = \frac{1}{L-1}\]</span> 则<span class="math inline">\(s\)</span>为均匀分布，且<span class="math inline">\(p_s(s)=\frac{1}{L-1}\)</span></p></li>
+</ol>
+<p>这便是我们想要的函数变换，<strong>无论<span class="math inline">\(p_r(r)\)</span>分布如何</strong>，经过这种类分布函数的函数变换，得到的<span class="math inline">\(p_s(s)\)</span>就是一个<strong>均匀分布</strong>。</p>
+<h1 id="三通道混合均衡-vs.-分别均衡">三通道混合均衡 vs. 分别均衡</h1>
+<p>平台的讨论区里留下了一个有趣的问题：<strong>对于三通道 RGB 图像，对每个通道均衡后合并的图像有时会产生严重的色彩失真。</strong></p>
+<p>我的一点理解：</p>
+<h2 id="何为失真">何为失真</h2>
+<p>在我们的处理过程中，色彩失真（与实际偏差过大），我们可以简单理解为显色偏向与原图产生较大差异，产生新的偏色甚至反向偏色。</p>
+<h2 id="我的实验">我的实验</h2>
+<p>我将一张自己原来拍摄的风景图，R，G，B 三个通道分别进行了直方图均衡，但是没有一同合并，而是与当前未变换的剩下两通道叠加后的图片。</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/HistogramEqualization/output_3_0.png" srcset="/img/loading.gif" lazyload alt="ThreeChannels1" /><figcaption>ThreeChannels1</figcaption>
+</figure>
+<p>下图是原图，分离的红色通道均衡化图（灰度），均衡化红色通道与原剩余通道叠加图</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/HistogramEqualization/output_2_0.png" srcset="/img/loading.gif" lazyload alt="ThreeChannels2" /><figcaption>ThreeChannels2</figcaption>
+</figure>
+<p>结合原图与与直方图我们不难看出，由于是夜晚照的风景照，整体画面大部分偏暗，所以三个通道的直方图都集中在灰度较低的地方（分布略有偏差）。</p>
+<p>当我只均衡一个通道时，该通道直方图中高灰度区域很明显会被提拉上来。</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/HistogramEqualization/output_3_1.png" srcset="/img/loading.gif" lazyload alt="ThreeChannels3" /><figcaption>ThreeChannels3</figcaption>
+</figure>
+<p>而相较于其他两通道的中高灰度，被均衡的通道明显概率分布更大。</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/HistogramEqualization/output_3_2.png" srcset="/img/loading.gif" lazyload alt="ThreeChannels4" /><figcaption>ThreeChannels4</figcaption>
+</figure>
+<p>所以整体画面会偏向均衡的通道的颜色，如最下面三张合并后的效果所示。</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/HistogramEqualization/output_3_3.png" srcset="/img/loading.gif" lazyload alt="ThreeChannels5" /><figcaption>ThreeChannels5</figcaption>
+</figure>
+<h2 id="进一步思考">进一步思考</h2>
+<p>这种均衡的变换同时也会牺牲掉原本通道高亮的部分，上图蓝色通道的变换最容易看出这种效果。</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/HistogramEqualization/output_3_4.png" srcset="/img/loading.gif" lazyload alt="ThreeChannels6" /><figcaption>ThreeChannels6</figcaption>
+</figure>
+<p>均衡化的蓝色通道和剩余两通道合并后的图像中，道路灯光周围较暗的区域更偏向红橙色，这是因为牺牲了原本蓝色在这一灰度范围分布密度的优势，均摊到其他灰度区域后，红绿通道便更加凸显。</p>
+<h2 id="进两步思考">进两步思考</h2>
+<p>无论是从数学推导，还是上述直方图，函数曲线都可以看出来，不同通道颜色的概率密度函数还有累积分布函数都是不同的，则<strong>不同通道像素值的相对大小</strong>就可能发生改变。</p>
+<p>举个例子，若红色通道<span class="math inline">\(T_{red}(2) = 8\)</span>，而蓝色通道<span class="math inline">\({T_{blue}(5) = 6}\)</span>，绿色通道假定不变，则原来像素点<span class="math inline">\(a = (2,4,5)\)</span> 变换后为<span class="math inline">\(a&#39; = (8,4,6)\)</span>由偏向蓝色变为偏向红色。</p>
+<p>不同通道值对变换后不保序（相同通道由于同一函数单调性确定，必然保序），导致了失真的可能性变大。</p>
+<p>因而，若采用三通道合并计算灰度的概率分布然后计算累积分布函数的话，由于使用相同的函数变换，<strong>无论是相同通道还是不同通道的两个值<span class="math inline">\(i\)</span>,<span class="math inline">\(j\)</span>，经函数变换后保留其大小关系，如<span class="math inline">\(i&lt;j \to T(i) &lt; T(j)\)</span></strong>。</p>
+<p>这样，虽然在一定程度上牺牲了逐个通道的均衡化效果，但整体上避免了颜色的失真。</p>
+<h2 id="进三步思考">进三步思考</h2>
+<h3 id="实验">实验</h3>
+<p>我使用了一些图片做验证，左中右分别对应原图、三通道分别均衡化、整体均衡化的函数曲线和图像。</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/HistogramEqualization/output_5_0.png" srcset="/img/loading.gif" lazyload alt="Compare0" /><figcaption>Compare0</figcaption>
+</figure>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/HistogramEqualization/output_5_1.png" srcset="/img/loading.gif" lazyload alt="Compare1" /><figcaption>Compare1</figcaption>
+</figure>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/ImageProcess/HistogramEqualization/output_5_2.png" srcset="/img/loading.gif" lazyload alt="Compare2" /><figcaption>Compare2</figcaption>
+</figure>
+<h3 id="结论">结论</h3>
+<p>基本符合预期，整体均衡可以最大程度保留颜色的保真度，三通道虽然在各颜色通道都可以达到均衡效果，但是会造成一定的颜色失真。</p>
+<h1 id="核心代码">核心代码</h1>
+<h2 id="获取-rgb-三通道图像">获取 RGB 三通道图像</h2>
+<p>需要注意的是，cv2 读取图像为 BGR，需要转换成 RGB。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">GetRGB</span>(<span class="hljs-params">path</span>):</span><br>    im_BGR = cv2.imread(path,cv2.COLOR_GRAY2RGB)<br>    im = cv2.cvtColor(im_BGR,cv2.COLOR_BGR2RGB)<br>    <span class="hljs-keyword">return</span> im<br></code></pre></td></tr></table></figure>
+<h2 id="获取不同灰度值计数值">获取不同灰度值计数值</h2>
+<ol type="1">
+<li><p>通过访问指定位置像素</p>
+<p>相同测试环境，耗时 7m9s（最慢）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(height):<br>    <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(width):<br>        caculate_num[input_image[i][j]] += <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure></li>
+<li><p>遍历元素</p>
+<p>相同测试环境，耗时 14.4s（较慢）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> input_image:<br>    <span class="hljs-keyword">for</span> px <span class="hljs-keyword">in</span> line:<br>        caculate_num[px] +=<span class="hljs-number">1</span><br></code></pre></td></tr></table></figure></li>
+<li><p>向量化比较</p>
+<p>相同测试环境，耗时小于 10s（较快）</p>
+<p>解释加速原理，img==pixel 得到一个 bool 数组，而 img[]则取出数组为真值的 index 数组，然后就可以用 len()计数了。比较产生 bool 数组是向量操作，底层优化，所以加速效果明显。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cumsum</span>(<span class="hljs-params">img, bins</span>):</span><br>    histogram = np.zeros(bins)<br>    <span class="hljs-keyword">for</span> pixel <span class="hljs-keyword">in</span> np.arange(<span class="hljs-number">0</span>, bins, <span class="hljs-number">1</span>):<br>        histogram[pixel] += <span class="hljs-built_in">len</span>(img[img==pixel])<br><span class="hljs-keyword">return</span> histogram<br><br>caculate_num = cumsum(input_image,<span class="hljs-number">256</span>)<br><span class="hljs-built_in">print</span>(np.shape(caculate_num))<br></code></pre></td></tr></table></figure></li>
+<li><p>调用 np.histogram()的方法</p>
+<p>相同测试环境，耗时 644ms（最快）</p>
+<p>快的原因不了解，有时间看看源码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">caculate_num,index_x = np.histogram(input_image,np.arange(<span class="hljs-number">0</span>,<span class="hljs-number">256</span>))<br> caculate_num = np.append(caculate_num,<span class="hljs-number">1</span>)<br></code></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="直方图均衡化">直方图均衡化</h2>
+<p>输入三通/单通道图像，返回均衡化后的图像和查找表</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">CaculateHistogram</span>(<span class="hljs-params">input_image</span>):</span><br>    <span class="hljs-comment"># 参数1. 图像</span><br>    <span class="hljs-comment"># 输出1. 总像素值</span><br>    <span class="hljs-comment"># 输出2. 灰度值分布计数</span><br>    <span class="hljs-comment"># 输出3. 灰度值分布前缀和（用来做后续直方图平局奴化）</span><br>    <span class="hljs-comment"># 区分单通道还是三通道图像</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(np.shape(input_image)) == <span class="hljs-number">3</span>:<br>           height,width,level = np.shape(input_image)<br>           summ = height*width*level<br>    <span class="hljs-keyword">else</span> :<br>           height,width = np.shape(input_image)<br>           summ = height*width<br>    caculate_num,index_x = np.histogram(input_image,np.arange(<span class="hljs-number">0</span>,<span class="hljs-number">256</span>))<br>    caculate_num = np.append(caculate_num,<span class="hljs-number">1</span>)<br><br><br>    sum_num = np.copy(caculate_num)<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">256</span>):<br>        sum_num[i] = sum_num[i-<span class="hljs-number">1</span>] + sum_num[i]<br>    <span class="hljs-keyword">return</span> summ,caculate_num,sum_num<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cumsum</span>(<span class="hljs-params">img, bins</span>):</span><br>    histogram = np.zeros(bins)<br>    <span class="hljs-keyword">for</span> pixel <span class="hljs-keyword">in</span> np.arange(<span class="hljs-number">0</span>, bins, <span class="hljs-number">1</span>):<br>        histogram[pixel] += <span class="hljs-built_in">len</span>(img[img==pixel])<br>    <span class="hljs-keyword">return</span> histogram<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">HistogramEqualizationLUT</span>(<span class="hljs-params">input_image</span>):</span><br>    size,data,data_sum = CaculateHistogram(input_image)<br>    fxy  = <span class="hljs-keyword">lambda</span> x: (<span class="hljs-number">255</span>*data_sum[x])//size<br>    table = np.array([fxy(i) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">256</span>)])<br>    lut = <span class="hljs-keyword">lambda</span> x: table[x]<br>    <span class="hljs-keyword">return</span> lut(input_image),table<br></code></pre></td></tr></table></figure>
+<p>注意要用 lambda，不可以直接 input_new = table[input_image]</p>
+<h2 id="绘图函数">绘图函数</h2>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># OK, Do something interesting!</span><br><span class="hljs-comment"># 写一个整合函数，对每个输入图像的三通道都画出其三通道的函数变换图像和</span><br><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">DrawPerChannel</span>(<span class="hljs-params">input_img,split_channel : <span class="hljs-built_in">int</span>, channel_color ,plotline = <span class="hljs-literal">None</span>, histogram = <span class="hljs-literal">None</span>, pic = <span class="hljs-literal">None</span></span>):</span><br><span class="hljs-comment">#     该通道的均衡曲线（分布函数曲线）</span><br><span class="hljs-comment">#     获取分离的通道</span><br>    input_channel = input_img[:,:,split_channel]<br>    temp_he,temp_table = HistogramEqualizationLUT(input_channel)<br>    <span class="hljs-keyword">if</span> plotline != <span class="hljs-literal">None</span>:<br>        plotline.set_title(<span class="hljs-string">&quot;The function of &quot;</span>+channel_color+<span class="hljs-string">&quot; channel&quot;</span>)<br>        plotline.plot(np.arange(<span class="hljs-number">256</span>),np.arange(<span class="hljs-number">256</span>),color = <span class="hljs-string">&quot;black&quot;</span>,label = <span class="hljs-string">&quot;$r_&#123;&quot;</span> + channel_color +<span class="hljs-string">&quot;&#125;$&quot;</span>)<br>        plotline.plot(np.arange(<span class="hljs-number">256</span>),temp_table,color = channel_color ,label = <span class="hljs-string">&quot;$T(r_&#123;&quot;</span>+ channel_color +<span class="hljs-string">&quot;&#125;)$&quot;</span>)<br>        plotline.legend()<br><span class="hljs-comment">#     该通道的灰度分布直方图</span><br>    <span class="hljs-keyword">if</span> histogram != <span class="hljs-literal">None</span>:<br>        kwargs = <span class="hljs-built_in">dict</span>(bins = <span class="hljs-number">25</span>, histtype=<span class="hljs-string">&#x27;bar&#x27;</span>, edgecolor = <span class="hljs-string">&quot;white&quot;</span>,alpha=<span class="hljs-number">0.5</span>, density  = <span class="hljs-literal">True</span>)<br>        histogram.set_title(<span class="hljs-string">&quot;The histogram of &quot;</span>+channel_color+<span class="hljs-string">&quot; channel&quot;</span>)<br>        histogram.hist(input_channel.flatten(), color = <span class="hljs-string">&quot;black&quot;</span>,**kwargs, label = channel_color +<span class="hljs-string">&quot; original&quot;</span>)<br>        histogram.hist(temp_he.flatten(), color = channel_color , **kwargs, label = channel_color +<span class="hljs-string">&quot; after he&quot;</span>)<br>        histogram.legend()<br><span class="hljs-comment">#     该通道均匀后叠加到原图像的效果</span><br>    <span class="hljs-keyword">if</span> pic != <span class="hljs-literal">None</span>:<br>        show_img = input_img.copy()<br>        show_img[:,:,split_channel] = temp_he<br>        pic.imshow(show_img)<br><br><br><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">DrawChannelsEqualization</span>(<span class="hljs-params">img_with_3channels</span>):</span><br>    plt.figure(figsize=(<span class="hljs-number">30</span>,<span class="hljs-number">30</span>))<br><span class="hljs-comment">#     调用库函数</span><br><span class="hljs-comment">#     r,g,b = cv2.split(im)</span><br><span class="hljs-comment">#     直接分离</span><br><span class="hljs-comment">#     r,g,b = img_with_3channels[:,:,0],img_with_3channels[:,:,1],img_with_3channels[:,:,2]</span><br>    DrawPerChannel(img_with_3channels,<span class="hljs-number">0</span>,<span class="hljs-string">&quot;red&quot;</span>,plt.subplot(<span class="hljs-number">331</span>),plt.subplot(<span class="hljs-number">334</span>),plt.subplot(<span class="hljs-number">337</span>))<br>    DrawPerChannel(img_with_3channels,<span class="hljs-number">1</span>,<span class="hljs-string">&quot;green&quot;</span>,plt.subplot(<span class="hljs-number">332</span>),plt.subplot(<span class="hljs-number">335</span>),plt.subplot(<span class="hljs-number">338</span>))<br>    DrawPerChannel(img_with_3channels,<span class="hljs-number">2</span>,<span class="hljs-string">&quot;blue&quot;</span>,plt.subplot(<span class="hljs-number">333</span>),plt.subplot(<span class="hljs-number">336</span>),plt.subplot(<span class="hljs-number">339</span>))<br>    plt.show()<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 测试三通道分别做均衡化后效果和采取统一函数做均衡化的效果</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">DrawCompareEqualization</span>(<span class="hljs-params">im_with_3_channel</span>):</span><br>    together_img,together_table = HistogramEqualizationLUT(im_with_3_channel)<br>    seperate_img = im_with_3_channel.copy()<br>    seperate_table = np.array([together_table,together_table,together_table])<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">3</span>):<br>        seperate_img[:,:,i],seperate_table[i] = HistogramEqualizationLUT(im_with_3_channel[:,:,i])<br><br>    plt.figure(figsize=(<span class="hljs-number">15</span>,<span class="hljs-number">10</span>))<br>    plotline0 = plt.subplot(<span class="hljs-number">231</span>)<br>    plotline0.set_title(<span class="hljs-string">&quot;No Change&quot;</span>)<br>    plotline0.plot(np.arange(<span class="hljs-number">256</span>),np.arange(<span class="hljs-number">256</span>),color = <span class="hljs-string">&quot;black&quot;</span>,label = <span class="hljs-string">&quot;$r$&quot;</span>)<br>    plotline1 = plt.subplot(<span class="hljs-number">232</span>)<br>    plotline1.set_title(<span class="hljs-string">&quot;Seperate Change&quot;</span>)<br>    plotline1.plot(np.arange(<span class="hljs-number">256</span>),np.arange(<span class="hljs-number">256</span>),color = <span class="hljs-string">&quot;black&quot;</span>,label = <span class="hljs-string">&quot;$r$&quot;</span>)<br>    plotline1.plot(np.arange(<span class="hljs-number">256</span>),seperate_table[<span class="hljs-number">0</span>],color = <span class="hljs-string">&quot;red&quot;</span> ,label = <span class="hljs-string">&quot;$T(r_&#123;red&#125;)$&quot;</span>)<br>    plotline1.plot(np.arange(<span class="hljs-number">256</span>),seperate_table[<span class="hljs-number">1</span>],color = <span class="hljs-string">&quot;green&quot;</span> ,label = <span class="hljs-string">&quot;$T(r_&#123;green&#125;)$&quot;</span>)<br>    plotline1.plot(np.arange(<span class="hljs-number">256</span>),seperate_table[<span class="hljs-number">2</span>],color = <span class="hljs-string">&quot;blue&quot;</span> ,label = <span class="hljs-string">&quot;$T(r_&#123;blue&#125;)$&quot;</span>)<br>    plotline1.legend()<br>    plotline2 = plt.subplot(<span class="hljs-number">233</span>)<br>    plotline2.set_title(<span class="hljs-string">&quot;Together Change&quot;</span>)<br>    plotline2.plot(np.arange(<span class="hljs-number">256</span>),np.arange(<span class="hljs-number">256</span>),color = <span class="hljs-string">&quot;black&quot;</span>,label = <span class="hljs-string">&quot;$r$&quot;</span>)<br>    plotline2.plot(np.arange(<span class="hljs-number">256</span>),together_table,color = <span class="hljs-string">&quot;orange&quot;</span> ,label = <span class="hljs-string">&quot;$T(r_&#123;together&#125;)$&quot;</span>)<br>    plotline2.legend()<br>    pic0 = plt.subplot(<span class="hljs-number">234</span>)<br>    pic0.imshow(im_with_3_channel)<br>    pic1 = plt.subplot(<span class="hljs-number">235</span>)<br>    pic1.imshow(seperate_img)<br>    pic2 = plt.subplot(<span class="hljs-number">236</span>)<br>    pic2.imshow(together_img)<br>    plt.show()<br></code></pre></td></tr></table></figure>
+<h1 id="完整代码">完整代码</h1>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">import</span> cv2<br><span class="hljs-keyword">import</span> imageio<br><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">GetRGB</span>(<span class="hljs-params">path</span>):</span><br>    im_BGR = cv2.imread(path,cv2.COLOR_GRAY2RGB)<br>    im = cv2.cvtColor(im_BGR,cv2.COLOR_BGR2RGB)<br>    <span class="hljs-keyword">return</span> im<br><br>im = GetRGB(<span class="hljs-string">&#x27;./3_2Photo/1.jpg&#x27;</span>)<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 尝试直方图均衡化，</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">CaculateHistogram</span>(<span class="hljs-params">input_image</span>):</span><br>    <span class="hljs-comment"># 参数1. 单通道8位灰度图像</span><br>    <span class="hljs-comment"># 输出1. 总像素值</span><br>    <span class="hljs-comment"># 输出2. 灰度值分布计数</span><br>    <span class="hljs-comment"># 输出3. 灰度值分布前缀和（用来做后续直方图平局奴化）</span><br><br>    <span class="hljs-comment"># 区分通道</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(np.shape(input_image)) == <span class="hljs-number">3</span>:<br>           height,width,level = np.shape(input_image)<br>           summ = height*width*level<br>    <span class="hljs-keyword">else</span> :<br>           height,width = np.shape(input_image)<br>           summ = height*width<br><br><br><span class="hljs-comment">#     第一种 通过访问指定位置像素  耗时executed in 7m 9s</span><br><span class="hljs-comment">#     巨慢无比</span><br><span class="hljs-comment">#     for i in range(height):</span><br><span class="hljs-comment">#         for j in range(width):</span><br><span class="hljs-comment">#             caculate_num[input_image[i][j]] += 1</span><br><br><span class="hljs-comment">#     第二种 直接拆分行，像素获取像素值  耗时executed in 14.4s</span><br><span class="hljs-comment">#     for line in input_image:</span><br><span class="hljs-comment">#         for px in line:</span><br><span class="hljs-comment">#             caculate_num[px] +=1</span><br><br><span class="hljs-comment">#     第三种 调用np.histogram()方法  耗时executed in 644ms</span><br>    caculate_num,index_x = GetHistogramArray(input_image)<br>    caculate_num = np.append(caculate_num,<span class="hljs-number">1</span>)<br><span class="hljs-comment">#     print(np.shape(caculate_num))</span><br>    <span class="hljs-comment">#     第四种 吕少推荐的方法(还没看懂)</span><br><span class="hljs-comment">#     caculate_num = cumsum(input_image,256)</span><br><span class="hljs-comment">#     print(np.shape(caculate_num))</span><br><br>    sum_num = np.copy(caculate_num)<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">256</span>):<br><span class="hljs-comment">#         print(sum_num[i-1],caculate_num[i])</span><br>        sum_num[i] = sum_num[i-<span class="hljs-number">1</span>] + sum_num[i]<br>    <span class="hljs-keyword">return</span> summ,caculate_num,sum_num<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">GetHistogramArray</span>(<span class="hljs-params">image</span>):</span><br>    <span class="hljs-keyword">return</span> np.histogram(image,np.arange(<span class="hljs-number">0</span>,<span class="hljs-number">256</span>));<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cumsum</span>(<span class="hljs-params">img, bins</span>):</span><br><br>    histogram = np.zeros(bins)<br>    <span class="hljs-keyword">for</span> pixel <span class="hljs-keyword">in</span> np.arange(<span class="hljs-number">0</span>, bins, <span class="hljs-number">1</span>):<br>        histogram[pixel] += <span class="hljs-built_in">len</span>(img[img==pixel])<br><br>    <span class="hljs-keyword">return</span> histogram<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">HistogramEqualizationLUT</span>(<span class="hljs-params">input_image</span>):</span><br>    <span class="hljs-comment"># 参数1, 单通道8位灰度图像</span><br>    <span class="hljs-comment"># 输出1. 单通道8位灰度图像（直方图均衡化后）</span><br>    size,data,data_sum = CaculateHistogram(input_image)<br>    fxy  = <span class="hljs-keyword">lambda</span> x: (<span class="hljs-number">255</span>*data_sum[x])//size<br>    table = np.array([fxy(i) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">256</span>)])<br><span class="hljs-comment">#     print(table)</span><br><span class="hljs-comment">#     不可以这样</span><br><span class="hljs-comment">#     image_new = table[input_image]</span><br>    lut = <span class="hljs-keyword">lambda</span> x: table[x]<br>    <span class="hljs-keyword">return</span> lut(input_image),table<br><br><br>red_channel_he,red_lut_table = HistogramEqualizationLUT(im[:,:,<span class="hljs-number">0</span>])<br>all_he,lut_table = HistogramEqualizationLUT(im)<br><br><br>plt.figure(figsize=(<span class="hljs-number">20</span>,<span class="hljs-number">10</span>))<br>ax1 = plt.subplot(<span class="hljs-number">231</span>)<br>ax1.set_title(<span class="hljs-string">&quot;Original&quot;</span>)<br>ax1.imshow(im)<br><br>ax2 = plt.subplot(<span class="hljs-number">232</span>)<br>ax2.set_title(<span class="hljs-string">&quot;Red Channel HE&quot;</span>)<br>ax2.imshow(red_channel_he, cmap = <span class="hljs-string">&#x27;gray&#x27;</span>)<br><br><br>new_im = np.copy(im)<br>new_im[:,:,<span class="hljs-number">0</span>] = red_channel_he<br>ax3 = plt.subplot(<span class="hljs-number">233</span>)<br>ax3.set_title(<span class="hljs-string">&quot;Image With Red Channel HE&quot;</span>)<br>ax3.imshow(new_im)<br><br>ax4 = plt.subplot(<span class="hljs-number">234</span>)<br>ax4.set_title(<span class="hljs-string">&quot;Original&quot;</span>)<br>ax4.imshow(im)<br><br>ax5 = plt.subplot(<span class="hljs-number">235</span>)<br>ax5.set_title(<span class="hljs-string">&quot;All Channel Together HE&quot;</span>)<br>ax5.imshow(all_he,cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br><br>ax6 = plt.subplot(<span class="hljs-number">236</span>)<br>ax6.set_title(<span class="hljs-string">&quot;All Channel Together HE&quot;</span>)<br>ax6.imshow(all_he)<br><br>plt.show()<br><br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># OK, Do something interesting!</span><br><span class="hljs-comment"># 写一个整合函数，对每个输入图像的三通道都画出其三通道的函数变换图像和</span><br><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">DrawPerChannel</span>(<span class="hljs-params">input_img,split_channel : <span class="hljs-built_in">int</span>, channel_color ,plotline = <span class="hljs-literal">None</span>, histogram = <span class="hljs-literal">None</span>, pic = <span class="hljs-literal">None</span></span>):</span><br><span class="hljs-comment">#     该通道的均衡曲线（分布函数曲线）</span><br><span class="hljs-comment">#     获取分离的通道</span><br>    input_channel = input_img[:,:,split_channel]<br>    temp_he,temp_table = HistogramEqualizationLUT(input_channel)<br>    <span class="hljs-keyword">if</span> plotline != <span class="hljs-literal">None</span>:<br>        plotline.set_title(<span class="hljs-string">&quot;The function of &quot;</span>+channel_color+<span class="hljs-string">&quot; channel&quot;</span>)<br>        plotline.plot(np.arange(<span class="hljs-number">256</span>),np.arange(<span class="hljs-number">256</span>),color = <span class="hljs-string">&quot;black&quot;</span>,label = <span class="hljs-string">&quot;$r_&#123;&quot;</span> + channel_color +<span class="hljs-string">&quot;&#125;$&quot;</span>)<br>        plotline.plot(np.arange(<span class="hljs-number">256</span>),temp_table,color = channel_color ,label = <span class="hljs-string">&quot;$T(r_&#123;&quot;</span>+ channel_color +<span class="hljs-string">&quot;&#125;)$&quot;</span>)<br>        plotline.legend()<br><span class="hljs-comment">#     该通道的灰度分布直方图</span><br>    <span class="hljs-keyword">if</span> histogram != <span class="hljs-literal">None</span>:<br>        kwargs = <span class="hljs-built_in">dict</span>(bins = <span class="hljs-number">25</span>, histtype=<span class="hljs-string">&#x27;bar&#x27;</span>, edgecolor = <span class="hljs-string">&quot;white&quot;</span>,alpha=<span class="hljs-number">0.5</span>, density  = <span class="hljs-literal">True</span>)<br>        histogram.set_title(<span class="hljs-string">&quot;The histogram of &quot;</span>+channel_color+<span class="hljs-string">&quot; channel&quot;</span>)<br>        histogram.hist(input_channel.flatten(), color = <span class="hljs-string">&quot;black&quot;</span>,**kwargs, label = channel_color +<span class="hljs-string">&quot; original&quot;</span>)<br>        histogram.hist(temp_he.flatten(), color = channel_color , **kwargs, label = channel_color +<span class="hljs-string">&quot; after he&quot;</span>)<br>        histogram.legend()<br><span class="hljs-comment">#     该通道均匀后叠加到原图像的效果</span><br>    <span class="hljs-keyword">if</span> pic != <span class="hljs-literal">None</span>:<br>        show_img = input_img.copy()<br>        show_img[:,:,split_channel] = temp_he<br>        pic.imshow(show_img)<br><br><br><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">DrawChannelsEqualization</span>(<span class="hljs-params">img_with_3channels</span>):</span><br>    plt.figure(figsize=(<span class="hljs-number">30</span>,<span class="hljs-number">30</span>))<br><span class="hljs-comment">#     调用库函数</span><br><span class="hljs-comment">#     r,g,b = cv2.split(im)</span><br><span class="hljs-comment">#     直接分离</span><br><span class="hljs-comment">#     r,g,b = img_with_3channels[:,:,0],img_with_3channels[:,:,1],img_with_3channels[:,:,2]</span><br>    DrawPerChannel(img_with_3channels,<span class="hljs-number">0</span>,<span class="hljs-string">&quot;red&quot;</span>,plt.subplot(<span class="hljs-number">331</span>),plt.subplot(<span class="hljs-number">334</span>),plt.subplot(<span class="hljs-number">337</span>))<br>    DrawPerChannel(img_with_3channels,<span class="hljs-number">1</span>,<span class="hljs-string">&quot;green&quot;</span>,plt.subplot(<span class="hljs-number">332</span>),plt.subplot(<span class="hljs-number">335</span>),plt.subplot(<span class="hljs-number">338</span>))<br>    DrawPerChannel(img_with_3channels,<span class="hljs-number">2</span>,<span class="hljs-string">&quot;blue&quot;</span>,plt.subplot(<span class="hljs-number">333</span>),plt.subplot(<span class="hljs-number">336</span>),plt.subplot(<span class="hljs-number">339</span>))<br>    plt.show()<br><br>DrawChannelsEqualization(im)<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 测试三通道分别做均衡化后效果和采取统一函数做均衡化的效果</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">DrawCompareEqualization</span>(<span class="hljs-params">im_with_3_channel</span>):</span><br>    together_img,together_table = HistogramEqualizationLUT(im_with_3_channel)<br>    seperate_img = im_with_3_channel.copy()<br>    seperate_table = np.array([together_table,together_table,together_table])<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">3</span>):<br>        seperate_img[:,:,i],seperate_table[i] = HistogramEqualizationLUT(im_with_3_channel[:,:,i])<br><br>    plt.figure(figsize=(<span class="hljs-number">15</span>,<span class="hljs-number">10</span>))<br>    plotline0 = plt.subplot(<span class="hljs-number">231</span>)<br>    plotline0.set_title(<span class="hljs-string">&quot;No Change&quot;</span>)<br>    plotline0.plot(np.arange(<span class="hljs-number">256</span>),np.arange(<span class="hljs-number">256</span>),color = <span class="hljs-string">&quot;black&quot;</span>,label = <span class="hljs-string">&quot;$r$&quot;</span>)<br>    plotline1 = plt.subplot(<span class="hljs-number">232</span>)<br>    plotline1.set_title(<span class="hljs-string">&quot;Seperate Change&quot;</span>)<br>    plotline1.plot(np.arange(<span class="hljs-number">256</span>),np.arange(<span class="hljs-number">256</span>),color = <span class="hljs-string">&quot;black&quot;</span>,label = <span class="hljs-string">&quot;$r$&quot;</span>)<br>    plotline1.plot(np.arange(<span class="hljs-number">256</span>),seperate_table[<span class="hljs-number">0</span>],color = <span class="hljs-string">&quot;red&quot;</span> ,label = <span class="hljs-string">&quot;$T(r_&#123;red&#125;)$&quot;</span>)<br>    plotline1.plot(np.arange(<span class="hljs-number">256</span>),seperate_table[<span class="hljs-number">1</span>],color = <span class="hljs-string">&quot;green&quot;</span> ,label = <span class="hljs-string">&quot;$T(r_&#123;green&#125;)$&quot;</span>)<br>    plotline1.plot(np.arange(<span class="hljs-number">256</span>),seperate_table[<span class="hljs-number">2</span>],color = <span class="hljs-string">&quot;blue&quot;</span> ,label = <span class="hljs-string">&quot;$T(r_&#123;blue&#125;)$&quot;</span>)<br>    plotline1.legend()<br>    plotline2 = plt.subplot(<span class="hljs-number">233</span>)<br>    plotline2.set_title(<span class="hljs-string">&quot;Together Change&quot;</span>)<br>    plotline2.plot(np.arange(<span class="hljs-number">256</span>),np.arange(<span class="hljs-number">256</span>),color = <span class="hljs-string">&quot;black&quot;</span>,label = <span class="hljs-string">&quot;$r$&quot;</span>)<br>    plotline2.plot(np.arange(<span class="hljs-number">256</span>),together_table,color = <span class="hljs-string">&quot;orange&quot;</span> ,label = <span class="hljs-string">&quot;$T(r_&#123;together&#125;)$&quot;</span>)<br>    plotline2.legend()<br>    pic0 = plt.subplot(<span class="hljs-number">234</span>)<br>    pic0.imshow(im_with_3_channel)<br>    pic1 = plt.subplot(<span class="hljs-number">235</span>)<br>    pic1.imshow(seperate_img)<br>    pic2 = plt.subplot(<span class="hljs-number">236</span>)<br>    pic2.imshow(together_img)<br>    plt.show()<br><br>DrawCompareEqualization(im)<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 多来几组样例</span><br><br>imtest1 = imageio.imread(<span class="hljs-string">&#x27;imageio:chelsea.png&#x27;</span>)<br>imtest2 = GetRGB(<span class="hljs-string">&#x27;./3_2Photo/2.jpg&#x27;</span>)<br>imtest3 = GetRGB(<span class="hljs-string">&#x27;./3_2Photo/3.jpg&#x27;</span>)<br>imtest4 = GetRGB(<span class="hljs-string">&#x27;./3_2Photo/4.tif&#x27;</span>)<br><br>DrawCompareEqualization(imtest1)<br><span class="hljs-comment"># DrawCompareEqualization(imtest2)</span><br>DrawCompareEqualization(imtest3)<br>DrawCompareEqualization(imtest4)<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 展示直方图</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">DrawHist</span>(<span class="hljs-params">input_img,pic_handle,histogram_handle</span>):</span><br>    kwargs = <span class="hljs-built_in">dict</span>(bins = <span class="hljs-number">25</span>, histtype=<span class="hljs-string">&#x27;bar&#x27;</span>, edgecolor = <span class="hljs-string">&quot;white&quot;</span>,alpha=<span class="hljs-number">0.5</span>, density  = <span class="hljs-literal">True</span>)<br>    pic_handle.set_title(<span class="hljs-string">&quot;The Image&quot;</span>)<br>    pic_handle.imshow(input_img,cmap = <span class="hljs-string">&quot;gray&quot;</span>)<br>    histogram_handle.set_title(<span class="hljs-string">&quot;The histogram_handle&quot;</span>)<br>    histogram_handle.hist(input_img.flatten(),**kwargs)<br><br><br>plt.figure(figsize=(<span class="hljs-number">20</span>,<span class="hljs-number">15</span>))<br>DrawHist(imtest1[:,:,<span class="hljs-number">0</span>],plt.subplot(<span class="hljs-number">321</span>),plt.subplot(<span class="hljs-number">322</span>))<br>DrawHist(imtest2[:,:,<span class="hljs-number">0</span>],plt.subplot(<span class="hljs-number">323</span>),plt.subplot(<span class="hljs-number">324</span>))<br>DrawHist(imtest3[:,:,<span class="hljs-number">0</span>],plt.subplot(<span class="hljs-number">325</span>),plt.subplot(<span class="hljs-number">326</span>))<br>plt.show()<br></code></pre></td></tr></table></figure>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/">数字图像处理</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/">数字图像处理</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/post/973eccf1.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">数字图像处理——直方图匹配</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/post/460fad29.html">
+                        <span class="hidden-mobile">数论学习——黄金分割率</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="remark42"></div>
+  <script type="text/javascript">
+    var schema = document.documentElement.getAttribute('data-user-color-scheme');
+    if (schema !== 'light' && schema !== 'dark') {
+      schema = 'light';
+    }
+    var remark_config = Object.assign(
+      {"host":"https://remark42.edwardzcn98yx.com","site_id":"www.edwardzcn98yx.com","max_shown_comments":20,"locale":"zh","components":["embed"]},
+      {
+        url: '/post/b44049c5.html',
+        page_title: '数字图像处理——直方图均衡',
+        theme: schema,
+      }
+    );
+
+    Fluid.utils.loadComments('#remark42', function() {
+      (function (c) {
+        for (var i = 0; i < c.length; i++) {
+          var d = document, s = d.createElement('script');
+          s.src = remark_config.host + '/web/' + c[i] + '.js';
+          s.defer = true;
+          (d.head || d.body).appendChild(s);
+        }
+      })(remark_config.components || ['embed']);
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        冀ICP证18024730号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+            
+            <span>湘公网安备43010402000641号</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://lib.baomitu.com/mathjax/3.2.0/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+</body>
+</html>

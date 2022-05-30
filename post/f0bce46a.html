@@ -1,0 +1,736 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="Emacs——基本操作入门
+环境： Ubuntu20.04 内核 5.4
+安装： 使用包管理工具sudo apt-get install emacs
+主要依赖 Ctrl（CONTROL key）和 Alt （META or EDIT or ALT key）.、
+Master Emacs in 21 Days 后面可以跟随学习一下。
+Merlin自动补全问题
+Basic cursor c">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  
+  <title>Emacs——基本操作入门 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://lib.baomitu.com/highlight.js/10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+  
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bookmark"></i>
+                select
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Computer-Science/">
+                    <i class="iconfont icon-codeforces"></i>
+                    Computer Science
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%98%85%E8%AF%BB/">
+                    <i class="iconfont icon-bookmark-fill"></i>
+                    Life Reading
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%9A%8F%E7%AC%94/">
+                    <i class="iconfont icon-note"></i>
+                    Life Essay
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Research/Report/">
+                    <i class="iconfont icon-clipcheck"></i>
+                    Weekly Report
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/photos">
+                <i class="iconfont icon-image"></i>
+                gallery
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Emacs——基本操作入门">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      Edwardzcn
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-09-22 17:25" pubdate>
+        2020年9月22日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      14
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Emacs——基本操作入门</h1>
+            
+            <div class="markdown-body">
+              <h1 id="emacs基本操作入门">Emacs——基本操作入门</h1>
+<p>环境： Ubuntu20.04 内核 5.4</p>
+<p>安装： 使用包管理工具<code>sudo apt-get install emacs</code></p>
+<p>主要依赖 Ctrl（CONTROL key）和 Alt （META or EDIT or ALT key）.、</p>
+<p><a target="_blank" rel="noopener" href="https://book.emacs-china.org/">Master Emacs in 21 Days</a> 后面可以跟随学习一下。</p>
+<p><a href="https://g%20ithub.com/ocaml/merlin/issues/283">Merlin自动补全问题</a></p>
+<h2 id="basic-cursor-control">Basic cursor control</h2>
+<p><code>C-v</code>下翻页，<code>M-v</code>上翻页。</p>
+<p>光标移动，<code>C-p</code>,<code>C-n</code>配合<code>M-f</code>,<code>M-b</code>使用（可以移动光标所在单词的开头结尾）。</p>
+<ul>
+<li><code>C-f</code> Move forward a character</li>
+<li><code>C-b</code> Move backward a character</li>
+<li><code>M-f</code> Move forward a word</li>
+<li><code>M-b</code> Move backward a word</li>
+<li><code>C-n</code> Move to next line</li>
+<li><code>C-p</code> Move to previous line</li>
+<li><code>C-a</code> Move to beginning of line</li>
+<li><code>C-e</code> Move to end of line</li>
+<li><code>M-a</code> Move back to beginning of sentence</li>
+<li><code>M-e</code> Move forward to end of sentence</li>
+<li><code>M-&lt;</code> Move to the <strong>begining of the whole test</strong> (Shift + <code>M-comma</code>)</li>
+<li><code>M-&gt;</code> Move to the <strong>end of the whole text</strong> (Shift + <code>M-dot</code>)</li>
+</ul>
+<p>建议上述 Emacs 风格移动的原因：</p>
+<ul>
+<li>在任何终端适用</li>
+<li>不用移动出打字区，更高效</li>
+<li><p>便于理解更高级的控制方式</p></li>
+<li><p><code>C-u num C-*</code>指定数量参数（numeric argument）.</p></li>
+</ul>
+<a id="more"></a>
+<ul>
+<li><code>C-g</code> Stop the command safely.</li>
+</ul>
+<h2 id="disabled-commands">Disabled commands</h2>
+<p>一些防误触的指令指定为 Disabled，调用会报警告。敲 Space 会临时使用一次。</p>
+<h2 id="windows">Windows</h2>
+<p>窗口相关操作</p>
+<ul>
+<li><code>C-x 1</code> 维持单窗口，kill others（比如需要使用该指令删除 help 窗口）</li>
+<li><code>C-h k C-f</code> 貌似是打开帮助界面解释后面的指令</li>
+</ul>
+<h2 id="inserting-and-deleting">Inserting and deleting</h2>
+<p>插入，自动换行的，输入插入，Delte 键删除。换行&lt; Return &gt;会根据上下文调整换行后的前进字符数，称“electric”.</p>
+<p>Inseting 可以使用<code>C-u num</code>来重复添加。</p>
+<ul>
+<li><code>&lt;DEL&gt;</code> Delete the character just before the cursor</li>
+<li><code>C-d</code> Delete the next character after the cursor</li>
+<li><code>M-&lt;DEL&gt;</code> Kill the word immediately before the cursor</li>
+<li><code>M-d</code> Kill the next word after the cursor</li>
+<li><code>C-k</code> Kill from the cursor position to end of line</li>
+<li><code>M-k</code> Kill to the end of the current sentence</li>
+</ul>
+<p>选中（Mark set），最简单的方式使用<code>C-&lt;SPC&gt;</code>开启 Mark set 提示，然后配合光标移动操作选定。</p>
+<p>Kill and yank，或许习惯上使用<code>C-k</code>（剪整行）或者单 word<code>M-&lt;DEL&gt;</code>（前）或者<code>M-d</code>（后），贴的话就是<code>C-y</code>. <strong>Emacs Kill 是有队列的，可以 kill 很多行再按序 yank</strong>，另外<code>M-y</code>可以切换上一次 Kill 的内容。</p>
+<h2 id="undo">Undo</h2>
+<p><code>C-/</code> 不会 Undo 光标移动的操作。</p>
+<h2 id="files">Files</h2>
+<p>先要找到文件<code>C-x C-f</code>，找到文件,搜索过程<code>Tab</code>会在子窗口列出所有符合搜索条件的文件。敲击<code>&lt;Return&gt;</code>进行确认（操作不存在的文件等于写新文件）。</p>
+<p>对于文件的修改应该是类似缓冲区，都没有直接物理修改（持久化）本身文件（为了避免出现 half-change 的情况）。应使用<code>C-x C-s</code>存储文件。</p>
+<h2 id="buffer">Buffer</h2>
+<ul>
+<li><code>C-x C-b</code> 列出 buffers。</li>
+<li><code>C-x b &lt;FILENAME&gt;</code> 切换到另一个 buffer</li>
+<li><code>C-x s</code> Save some buffers</li>
+</ul>
+<p>有关 Message 和操作日志，可以通过<code>C-x b *Message*</code>查看（也是一个 buffer）。</p>
+<h2 id="extending-the-command-set">Extending the command set</h2>
+<p>使用<code>X</code>进行指令的扩展,如<code>C-x</code>(Character eXtend.)和<code>M-x</code>(Named command eXtend),下面列出一些常见的扩展指令:</p>
+<ul>
+<li><code>C-x C-f</code> <strong>Find file</strong></li>
+<li><code>C-x C-s</code> <strong>Save file</strong></li>
+<li><code>C-x s</code> Save some buffers</li>
+<li><code>C-x C-b</code> <strong>List buffers</strong></li>
+<li><code>C-x b</code> <strong>Switch buffer</strong></li>
+<li><code>C-x C-c</code> <strong>Quit Emacs</strong></li>
+<li><code>C-x 1</code> Delete all but one window</li>
+<li><code>C-x u</code> Undo</li>
+</ul>
+<p><code>M-x</code>使用场合很少,输入切换到底部,需要输入指令全称(比如<code>replace-string</code>).</p>
+<h2 id="auto-save">Auto Save</h2>
+<ul>
+<li>auto save file: 用“#”开头结尾</li>
+<li>recover： 找到原始文件（非“#”文件），执行<code>M-x</code>输入<code>recover-this-file</code>.</li>
+</ul>
+<h2 id="mode">Mode</h2>
+<p>没有太细致研究。</p>
+<!-- TODO -->
+<h2 id="searching">Searching</h2>
+<p><code>C-s</code>开启搜索，输入搜索内容后再<code>C-s</code>，则转向下一符合搜索的内容，<code>&lt;Return&gt;</code>终止搜索。</p>
+<h2 id="multiple-windows">Multiple windows</h2>
+<p>同时开启多个窗口（多屏操作），emacs 习惯用“frames”来表示其他应用中的“windows”（即多个带控制 bar 的视窗），window 指光标分处的不同屏幕。</p>
+<ul>
+<li><code>C-x 2</code>开启两个 windows，光标在上</li>
+<li><code>C-M-v</code> 下窗口向下滑.</li>
+<li><code>C-x o</code> 切换光标所在的屏幕</li>
+</ul>
+<h2 id="multiple-frames">Multiple frames</h2>
+<ul>
+<li><code>C-x 5 2</code>： See a new frame appear on your screen.</li>
+<li><code>C-x 5 0</code>: This removes the selected frame.</li>
+</ul>
+<h2 id="more-features">More Features</h2>
+<p>实践中体验，使用 Help menu，<code>C-h r</code>.</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Career/">Career</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Career/%E5%B7%A5%E5%85%B7/">工具</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/%E5%B7%A5%E5%85%B7/">工具</a>
+                    
+                      <a class="hover-with-bg" href="/tag/Emacs/">Emacs</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/post/ff828ef6.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">OCaml学习——《Real-World-Ocaml》Chap1</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/post/6d03197a.html">
+                        <span class="hidden-mobile">形式化方法——Software-Reliability-Methods-Chap3</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="remark42"></div>
+  <script type="text/javascript">
+    var schema = document.documentElement.getAttribute('data-user-color-scheme');
+    if (schema !== 'light' && schema !== 'dark') {
+      schema = 'light';
+    }
+    var remark_config = Object.assign(
+      {"host":"https://remark42.edwardzcn98yx.com","site_id":"www.edwardzcn98yx.com","max_shown_comments":20,"locale":"zh","components":["embed"]},
+      {
+        url: '/post/f0bce46a.html',
+        page_title: 'Emacs——基本操作入门',
+        theme: schema,
+      }
+    );
+
+    Fluid.utils.loadComments('#remark42', function() {
+      (function (c) {
+        for (var i = 0; i < c.length; i++) {
+          var d = document, s = d.createElement('script');
+          s.src = remark_config.host + '/web/' + c[i] + '.js';
+          s.defer = true;
+          (d.head || d.body).appendChild(s);
+        }
+      })(remark_config.components || ['embed']);
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        冀ICP证18024730号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+            
+            <span>湘公网安备43010402000641号</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://lib.baomitu.com/mathjax/3.2.0/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+</body>
+</html>

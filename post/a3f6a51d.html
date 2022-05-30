@@ -1,0 +1,845 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="
+Step 1
+题目摘要引言
+Title
+There Is More Consensus in Egalitarian Parliaments
+平等议会产生更多共识，题目设计的很有意思。
+相较于 Paxos 其他变体的特征
+
+availability without interruption as long as a simple majority of replicas are ">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  
+  <title>SOSP13——There-Is-More-Consensus-in-Egalitarian-Parliamens - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://lib.baomitu.com/highlight.js/10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+  
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bookmark"></i>
+                select
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Computer-Science/">
+                    <i class="iconfont icon-codeforces"></i>
+                    Computer Science
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%98%85%E8%AF%BB/">
+                    <i class="iconfont icon-bookmark-fill"></i>
+                    Life Reading
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%9A%8F%E7%AC%94/">
+                    <i class="iconfont icon-note"></i>
+                    Life Essay
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Research/Report/">
+                    <i class="iconfont icon-clipcheck"></i>
+                    Weekly Report
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/photos">
+                <i class="iconfont icon-image"></i>
+                gallery
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="SOSP13——There-Is-More-Consensus-in-Egalitarian-Parliamens">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      Edwardzcn
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-03-03 15:56" pubdate>
+        2021年3月3日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.8k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      37
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">SOSP13——There-Is-More-Consensus-in-Egalitarian-Parliamens</h1>
+            
+            <div class="markdown-body">
+              <!--文章由 3step 模板生成三步法阅读文献笔记记录-->
+<h1 id="step-1">Step 1</h1>
+<h2 id="题目摘要引言">题目摘要引言</h2>
+<h3 id="title">Title</h3>
+<p>There Is More Consensus in Egalitarian Parliaments</p>
+<p>平等议会产生更多共识，题目设计的很有意思。</p>
+<p>相较于 Paxos 其他变体的特征</p>
+<ol type="1">
+<li>availability without interruption as long as a simple majority of replicas are reachable---its availability is not interrupted when replicas crash or fail to respond;</li>
+<li>uniform load balancing across all replicas---no replicas experience higher load because they have special roles; and （负载在全局环境下是均衡的，不会有机器因特殊身份而负载过量）</li>
+<li>optimal commit latency in the wide-area when tolerating one and two failures, under realistic conditions.</li>
+</ol>
+<p>Egalitarian Paxos is to our knowledge the first distributed consensus protocol to achieve all of these goals efficiently: requiring only a simple majority of replicas to be non-faulty, using a number of messages linear in the number of replicas to choose a command, and committing commands after just one communication round (one round trip) in the common case or after at most two rounds in any case.</p>
+<h3 id="introduction">Introduction</h3>
+<p>Distributed computing 对 Replication protocol 的需求</p>
+<ol type="1">
+<li>集群内拷贝的高吞吐量 high throughput for replication in-side a computing cluster;</li>
+<li>跨数据中心的低延时 low latency for repli-cation across data centers</li>
+</ol>
+<p>在无故障操作的情况下，会出现大量 clients 同单一 leader 通信的情况。&quot;Multi-Paxos&quot;的优化方案，是实际系统常用的优化手段，但是更换 leader 会带来额外的共识机制，大大降低了性能。</p>
+<p>分析这种机制的 limitation</p>
+<ol type="1">
+<li>leader 的额外通信信息可能成为 bottleneck 从而限制了系统的 scalability</li>
+<li>geo-replication 情况下，client 和远处的 leader 通信需要额外的开销</li>
+<li>single-master，在前一个 master 失效的情况下，必须要等后一个 master 被选举，否则功能就是失效的。换言之，必须经过 master election 这个过程</li>
+</ol>
+<p>Egalitarian Paxos (EPaxos) 没有指定的 leader 选举的过程，相对而言 client 可以任意的选择一个 replica 去传递信息，EPaxos 这种设计使得负载完全平摊到所有的机器中，也能更好地处理暂时、永久的缓慢节点，以及由于 geo-replication 引起的延迟 gap。</p>
+<p>另外 high availability 体现在没有 leader（leader 选举过程）带来的服务中断。只要有多数的机器保持服务就行。</p>
+<p>Section 2 和 Section 3 是进行传统 Paxos 及其变体的分析。EPaxos 的比较对象</p>
+<ul>
+<li>Multi-Paxos</li>
+<li>Mencius</li>
+<li>Generalized Paxos</li>
+</ul>
+<p>Section 7 是集中比较，比较说明 Mencius 在节点同构时是高效的，而 EPaxos 在更复杂的现实环境下，比如 wide-area replication、 failures 以及不同节点性能差异较大时，体现出整体更好的吞吐量。</p>
+<h2 id="基本理论概况">基本理论概况</h2>
+<h2 id="结论部分">结论部分</h2>
+<p>给出了 EPaxos 是的设计与实现，一种新的状态机复制协议。证明其 decentralized 非中心化以及 uncoordinated 去协调设计对于设计实现 geo-replicated（wide area replication） 且要求保证高可用、高性能的应用有理论与实践价值。</p>
+<!-- 确定作者的成过以及点出的经验、问题、改进方 -->
+<h2 id="回答基本问题">回答基本问题</h2>
+<ol type="1">
+<li><p>类别</p>
+<!-- 这篇论文是什么类型？测试类？对现有系统进行分析的？对原型系统进行描述的？-->
+<p>原型系统描述</p></li>
+<li><p>内容</p>
+<p>与 Raft、Paxos 关系更近，暂时没有理清和 Explicit Consistency、RedBlue Consistency 等的关系。</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/163373813">知乎上阿里技术的简要介绍</a></p>
+<!-- 你读过的其他论文有没有与之相关的？相关性与区别最直接体现在哪里？文章中分析问题用的什么理论基础（通过瞥一眼数学概况与核心证明可以得到）。 --></li>
+<li><p>正确性</p>
+<p>需要跑代码测试</p>
+<!-- 结论是否看起来真实有效？ --></li>
+<li><p>创新点</p>
+<p>从 leader/master 特殊身份的传统思维跳出</p>
+<!-- 论文的主要创新点是什么？总结提到的经验、问题和改进方法是什么？ --></li>
+<li><p>清晰度</p>
+<p>清晰</p>
+<!-- 这篇论文是否写的条理清晰 --></li>
+</ol>
+<h2 id="阅读选择">阅读选择</h2>
+<p>继续阅读</p>
+<!--
+1. 继续阅读：论文有价值担保，研究领域非常切合，对当前进行工作有极大帮助，圈内爆火文章
+2. 不继续阅读：论文不吸引自己，论文价值/正确性存疑，论文作者给出了不适当的假设。
+3. 库存保留并标记：当前不处于自己的研究领域，但不久的日后相关论文会有用。
+-->
+<a id="more"></a>
+<h1 id="step-2">Step 2</h1>
+<h2 id="细读笔记">细读笔记</h2>
+<h3 id="paxos-background">Paxos Background</h3>
+<p>状态机复制（state machine replication）的任务：Make a set of possibly faulty distributed processors execute the same commands in the same order.</p>
+<p><span class="math inline">\(N\)</span> is the total number of replicas, at least <span class="math inline">\(\lfloor N/2 \rfloor+1\)</span> must be non-faulty.</p>
+<p>All Paxos variants handle non-Byzantine failures. Paxos 讨论的情形都是 fail-stop 型的故障，而非 Byzantine 型的故障。</p>
+<p>状态机的执行是一系列 pre-ordered instatnce 序列。相似的，Raft 的叫 log？</p>
+<p>在收到 client 的命令请求后，一个 replica 会通过向至少大多数 replica 发送<em>Prepare</em>消息，来尝试成为尚未使用的 instance 的领导者。关于<em>Prepare</em>消息的应答，可能是已经对该 instance 进行了选举（这种情形下不采用新提出的命令）。如果一个潜在的 leader 得到了二分之一多数的 Accept，那么它将根据这些接收消息，将提议发送这些二分之一多数结点。如果这些消息也被大多数 replica 接受了，那么 leader 回在本地却让人，并异步的通知其他 replica 和 client。</p>
+<p>2 round trips 问题：传统的方式，都需要经过一轮对 leader 的 accept+一轮对 instance/log 的 commit？</p>
+<p>Section 3 继续探讨其他 Paoxs 的变种对原有 Paxos 的改进</p>
+<h3 id="egalitarian-paxos-overview">Egalitarian Paxos Overview</h3>
+<!-- 要仔细阅读论文，但是诸如证明等信息要忽略掉 -->
+<p><a href="#title">再度陈述</a>，EPaxos 主要的优化目标：</p>
+<ol type="1">
+<li>optimal commit latency in the wide area (due to geo-replication)</li>
+<li>optimal load balancing across all replicas, to achieve high throughput(remove the single leader canonical mode), and</li>
+<li>graceful performance degradation when some replicas become slow or crash(keep fault tolerance)</li>
+</ol>
+<p><strong>A novel way to order commands</strong>:</p>
+<p>先前的两种思路</p>
+<ul>
+<li>order commands by having a single stable leader choose the order (as in Multi-Paxos and Generalized Paxos) 通过单一稳定的领导者来决定顺序</li>
+<li>order commands by assignning them to instances(command slots) in a pre-ordered instance space (as in canonical Paxos and Mencius) 将命令分配到预先定好顺序的 slot 中</li>
+</ul>
+<p>EPaxos 的方式： <strong>dynamic</strong> and <strong>decentralized</strong></p>
+<blockquote>
+<p>In contrast,EPaxos orders the instances dynamically and in a decentralized fashion: in the process of choosing (i.e., voting) acommand in an instance, each participant attaches order-ing constraints to that command 在实例中选择（即投票）命令的过程中，每个参与者将排序约束附加到该命令</p>
+</blockquote>
+<p>这样看就是从一排全局 slot，像是变成了每个 replicate 一排自己的 slot + constraints，<strong>如何加入 constraints 很重要，这个需要关注一下代码实现</strong>。</p>
+<p>order 的方式（很重要，据文章所讲这是 EPaxos 优势的源头）：</p>
+<ol type="1">
+<li>首先，commit command 取决于任何可能的多副本的输入，（不需要像 Multi-Paxos 一样要求 stable leader 必须包含在内，也不需要像 Mencius 需求来自全部 replica 的消息）。如此改善了大范围跨度的提交延迟、可用性以及性能的鲁棒性，因为这样把高最快的 replica 与最慢的 replica 分离开。</li>
+<li>其次，propose command，可以从任何一个副本发出，而不是一个特别的 proposer 或者 leader，这有益于负载均衡，并提升吞吐量。</li>
+</ol>
+<p>In taking this ordering approach, EPaxos must maintain safety and provide a linearizable ordering of commands. EPaxos 必须保证安全性，以及这些指令的可线性。</p>
+<p>一些保证正确性与优化手段。</p>
+<p>当 commands interfere 时，会接受彼此的“依赖”，用于产出正确的执行序列。</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/EPaxos/EPaxos_1.png" srcset="/img/loading.gif" lazyload alt="EPaxos_1.png" /><figcaption>EPaxos_1.png</figcaption>
+</figure>
+<p>q Figure 1 展示了不同 Replica 之间，是否 interface 的不同情况。注意在 <span class="math inline">\(R3\)</span> 和 <span class="math inline">\(R2/R4\)</span> 相比较，只有 <span class="math inline">\(R3\)</span> 先接受了 <span class="math inline">\(C4\)</span>，后接受了 <span class="math inline">\(C3\)</span> 所以返回了依赖（<span class="math inline">\(C3 \rightarrow C4\)</span>要求）。</p>
+<h3 id="comparison-with-related-work">Comparison with Related Work</h3>
+<ul>
+<li><p><em>Multi-Paxos</em>：由于建立了单一的 stable leader，每一项 command 的消息交互量，leader 是 non-leader 的 N 倍，从而容易变为影响系统可用性的 bottleneck，一些 Paxos 的应用实例（比如 Chubby）也证明类似设计当 leader 故障时，系统会暂时处于不可用状态。</p>
+<blockquote>
+<p>This problem is not easily solved:aggressive leader re-election can cause stalls if multiplereplicas believe they are the leader. Chubby [4] and Box-wood [22] use Multi-Paxos, while ZooKeeper [12] relieson a stable leader protocol similar to Multi-Paxos.</p>
+</blockquote></li>
+<li><p><em>Generalized Paxos</em>： 允许在不 interface 的情况下，乱序提交 commits。仍要求有一个 stable leader 来处理更多的信息。EPaxos 和 Generalized Paxos 相比优势，fast-path 需要沟通的 replica -1，slow path 只需要额外一轮（而不是两轮）</p></li>
+</ul>
+<h3 id="detail">Detail</h3>
+<h4 id="preliminaries">Preliminaries</h4>
+<p>预先的定义：</p>
+<ol type="1">
+<li>在 clients 和 replicas 间传递消息是异步的。</li>
+<li>故障是 non-Byzantine 的，<span class="math inline">\(N = 2 F+1\)</span>， <span class="math inline">\(F\)</span> 表示最大容错数量</li>
+</ol>
+<p>系统的整体状态包含每个 replica 拥有的 序列 instances，可看作 N 行（对应 N 个 replica）的二维表格。与 Multi-Paxos 不同，instance 的序并不是预先定义的（pre-determined）是根据协议动态确定的。</p>
+<p>需要区分指令的 commit 和 execute。要修改状态，client 向选定的 replica 发送 <span class="math inline">\(Request(command)\)</span>。<span class="math inline">\(RequestReply\)</span> 会通知 replica 指令的 commit 的情况，但是并没有是否执行的信息。仅在有客户机要读取先前提交的更新命令的时候，系统才有必要执行这些指令。要读取（部分）状态，client 发送<span class="math inline">\(Read(objectIDs)\)</span>的消息并等待回复，是个 no-op 操作，相当于<span class="math inline">\(RequestAndRead(no-op,objectIDs)\)</span>。</p>
+<p>需要定义 interference，<strong>command interference</strong>：存在一个指令序列<span class="math inline">\(\Sigma\)</span>使得<span class="math inline">\(\Sigma, \delta,\gamma\)</span>执行结果（状态机状态不同，或返回不同内容）与<span class="math inline">\(\Sigma,\gamma,\delta\)</span></p>
+<h4 id="protocol-guarantees">Protocol Guarantees</h4>
+<p>形式化保证，与其他 Paxos 变体类似</p>
+<ol type="1">
+<li>Nontriviality（非平凡）： replica commit 的命令必然由 client 提交</li>
+<li>Stability（稳定性）：已提交的命令在任何时候都是之后时间提交命令的子集。更进一步，如果在时间点<span class="math inline">\(t_1\)</span>，一个 replica <span class="math inline">\(R\)</span> 具有命令<span class="math inline">\(\gamma\)</span>提交在实例<span class="math inline">\(Q\)</span>。则<span class="math inline">\(R\)</span> 在任意 <span class="math inline">\(t_2 &gt; t_1\)</span>都有命令<span class="math inline">\(\gamma\)</span>提交在实例<span class="math inline">\(Q\)</span>。</li>
+<li>Consistency： 两个 replica 永远不会在相同 instance 有不同的提交命令。</li>
+<li>Execution consistency: 如果两个 interfer 指令 <span class="math inline">\(\gamma\)</span> 和 <span class="math inline">\(\delta\)</span> 都被成功提交（被任意 replicas）（注意我们刚刚区分了 commit 不同于 execute），则可以保证在每一 replica 中， 两个指令都以相同序被执行。</li>
+<li>Execution linearizability：如果两个 interfer 指令 <span class="math inline">\(\gamma\)</span> 和 <span class="math inline">\(\delta\)</span> 被 replica 串行化/序列化过，那么保证在每个 replica，一个命令都会在另一个命令之前执行。</li>
+<li>Liveness (w/ high probability)：指令最终会被每个正常的 replica 提交，只要过半数地 replicas 是正常的，并且信息在 time out 都传递到</li>
+</ol>
+<p>需要区分一下 Execution Consistency 和 Execution linearizability</p>
+<p>一个是如果都被 commit，则保证在任一 replica 上执行序是确定的。另一是如果被 client 序列化，则在任一 replica 上执行序也是固定的</p>
+<h4 id="basic-commit-protocol">Basic Commit Protocol</h4>
+<p>先介绍基础的，下一小节再介绍其升级版。</p>
+<p>基础版本：</p>
+<blockquote>
+<p>quorum: We usequorumto denote both a set of replicas with a particularcardinality, and the cardinality of that set. 使用 quorum 来表示一组具有特定基数的副本，以及该组的基数</p>
+</blockquote>
+<ul>
+<li>basic EPaxos: fast quorum <span class="math inline">\(2F\)</span> （out of <span class="math inline">\(2F+1\)</span>)</li>
+<li>optimized EPaxos: fast quorum only <span class="math inline">\(F+ \lfloor \frac{F+1}{2} \rfloor\)</span></li>
+</ul>
+<p>slow-path quorum size is always <span class="math inline">\(F+1\)</span>.</p>
+<h4 id="the-commit-protocol">The Commit Protocol</h4>
+<p>正如前述，EPaxos 中命令的提交和执行是分离的。</p>
+<p>EPaxos 包含两部分</p>
+<ol type="1">
+<li>用于确定（选择） commit commands 以及附加的 order constraint(attributes) 协议</li>
+<li>基于这些 order 要求，确定实际 execute order 的算法</li>
+</ol>
+<p>针对 1，commit protocol 被分割成了许多 phases，但并不是所有指令都会执行全部 phases</p>
+<blockquote>
+<p>fast-path: 如果一个在经过 phase 1 就已经提交，则称为 fast-path slow-path: 涉及附加得 phase 2 过程（Paxos accept phase）</p>
+</blockquote>
+<h2 id="问题记录">问题记录</h2>
+<h2 id="未读且值得读文献记录">未读（且值得读）文献记录</h2>
+<!-- 在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 -->
+<h1 id="step-3">Step 3</h1>
+<!-- 试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。 -->
+<h2 id="思路复现">思路复现</h2>
+<!-- 推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ -->
+<h2 id="证明与推理复现">证明与推理复现</h2>
+<!-- 分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源 -->
+<h3 id="design">Design</h3>
+<h2 id="实验验证复现">实验验证复现</h2>
+<!-- Rework -->
+<h1 id="original-presentation">Original Presentation</h1>
+<h2 id="state-machine-replication">State Machine Replication</h2>
+<p>Why Paxos popular?</p>
+<ul>
+<li>fast protocol</li>
+<li>No external failure detector required</li>
+<li>Fast fail-over (high availability)</li>
+</ul>
+<h2 id="overview-of-paxos">Overview of Paxos</h2>
+<p>Cononical:</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/EPaxos/EPaxos_2.png" srcset="/img/loading.gif" lazyload alt="EPaxos_2.png" /><figcaption>EPaxos_2.png</figcaption>
+</figure>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/EPaxos/EPaxos_3.png" srcset="/img/loading.gif" lazyload alt="EPaxos_3.png" /><figcaption>EPaxos_3.png</figcaption>
+</figure>
+<p>2 RTTs per slot</p>
+<ul>
+<li>Take ownership of a slot (who leader's the command)</li>
+<li>Propose command</li>
+</ul>
+<p>Multi-Paxos</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/EPaxos/EPaxos_4.png" srcset="/img/loading.gif" lazyload alt="EPaxos_4.png" /><figcaption>EPaxos_4.png</figcaption>
+</figure>
+<p>1 RTT(omit the leader election)</p>
+<h2 id="epaxos-intuition">EPaxos intuition</h2>
+<p>linear command slot space -&gt; subspace with ownership to different replicas</p>
+<p>attach ordering constraints</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/EPaxos/EPaxos_5.png" srcset="/img/loading.gif" lazyload alt="EPaxos_5.png" /><figcaption>EPaxos_5.png</figcaption>
+</figure>
+<p>线性化的保证</p>
+<p>两个性质</p>
+<p>图、强连通分量</p>
+<p>Q: sorting the dependencies seem quite expensive, so how do you keep this precedure small and how does this impact the request latency.</p>
+<p>A: not expensive. It's just an algorithm of finding strong-connective component that's linear in the number of edges. In practice the number of edges similar to the number of nodes (not too many). Depends on the interface rate, but says even the interface rate is small, these graphs never gets too large.</p>
+<h4 id="notes">Notes</h4>
+<p>code: 关注到 UpdateAttributes</p>
+<p><a target="_blank" rel="noopener" href="http://eddyblog.oss-cn-shenzhen.aliyuncs.com/EPaxos/2517349.2517350.pdf">test</a></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Research/">Research</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Research/Paper/">Paper</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/%E4%B8%89%E6%AD%A5%E6%B3%95/">三步法</a>
+                    
+                      <a class="hover-with-bg" href="/tag/Paper/">Paper</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/post/8baface1.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">如何更好的参与or完成一场ReadingGroup</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/post/782fc9e5.html">
+                        <span class="hidden-mobile">OSDI12——Making-Geo-Replicated-Systems-Fast-as-Possible</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="remark42"></div>
+  <script type="text/javascript">
+    var schema = document.documentElement.getAttribute('data-user-color-scheme');
+    if (schema !== 'light' && schema !== 'dark') {
+      schema = 'light';
+    }
+    var remark_config = Object.assign(
+      {"host":"https://remark42.edwardzcn98yx.com","site_id":"www.edwardzcn98yx.com","max_shown_comments":20,"locale":"zh","components":["embed"]},
+      {
+        url: '/post/a3f6a51d.html',
+        page_title: 'SOSP13——There-Is-More-Consensus-in-Egalitarian-Parliamens',
+        theme: schema,
+      }
+    );
+
+    Fluid.utils.loadComments('#remark42', function() {
+      (function (c) {
+        for (var i = 0; i < c.length; i++) {
+          var d = document, s = d.createElement('script');
+          s.src = remark_config.host + '/web/' + c[i] + '.js';
+          s.defer = true;
+          (d.head || d.body).appendChild(s);
+        }
+      })(remark_config.components || ['embed']);
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        冀ICP证18024730号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+            
+            <span>湘公网安备43010402000641号</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://lib.baomitu.com/mathjax/3.2.0/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+</body>
+</html>

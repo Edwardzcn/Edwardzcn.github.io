@@ -1,0 +1,744 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="过程式编程
+我学习的主要关注点是 Go 语言的并发编程，而过程式编程是并发编成和面向对象编程的基础，这一节主要细致探究过程式编程中的一些问题（语句控制结构、自定义类型和函数等）
+语句基础
+形式上 Go 语言语法需要分号，但是编译器帮我们完成了这项任务，在以字母字面量、字符串字面量、右括号系列、一些特定关键字和增建操作符结尾的非空行末尾自动加上了分号。
+两个地方必须使用分号：
+
+一行中放">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  
+  <title>Go学习——《Go语言程序设计》Chap5 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://lib.baomitu.com/highlight.js/10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+  
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bookmark"></i>
+                select
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Computer-Science/">
+                    <i class="iconfont icon-codeforces"></i>
+                    Computer Science
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%98%85%E8%AF%BB/">
+                    <i class="iconfont icon-bookmark-fill"></i>
+                    Life Reading
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%9A%8F%E7%AC%94/">
+                    <i class="iconfont icon-note"></i>
+                    Life Essay
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Research/Report/">
+                    <i class="iconfont icon-clipcheck"></i>
+                    Weekly Report
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/photos">
+                <i class="iconfont icon-image"></i>
+                gallery
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Go学习——《Go语言程序设计》Chap5">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      Edwardzcn
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2019-11-18 14:17" pubdate>
+        2019年11月18日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.4k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      37
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Go学习——《Go语言程序设计》Chap5</h1>
+            
+            <div class="markdown-body">
+              <h1 id="过程式编程">过程式编程</h1>
+<p>我学习的主要关注点是 Go 语言的并发编程，而过程式编程是并发编成和面向对象编程的基础，这一节主要细致探究过程式编程中的一些问题（语句控制结构、自定义类型和函数等）</p>
+<h2 id="语句基础">语句基础</h2>
+<p>形式上 Go 语言语法需要分号，但是编译器帮我们完成了这项任务，在以<strong>字母字面量、字符串字面量、右括号系列、一些特定关键字和增建操作符</strong>结尾的<strong>非空行末尾</strong>自动加上了分号。</p>
+<p>两个地方必须使用分号：</p>
+<ul>
+<li>一行中放入一条或者多条语句</li>
+<li>原始 for 循环</li>
+</ul>
+<p>自动插入分号的一个重要结果是<strong>一个左大括号不能单独成行</strong>（变相限制了代码风格），比如下面这个就是不可通过编译的</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-comment">// 错误代码</span><br><span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++<br>&#123;<br>    fmt.Println(i)<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>内置函数</p>
+<p>除了之前见到较多的<code>append()</code>，<code>len()</code>，<code>cap()</code>，<code>make()</code>等，要着重关注学习异常相关的两个内置函数：</p>
+<ul>
+<li><code>panic(x)</code> 抛出一个运行时异常，其值为 x。</li>
+<li><code>recover()</code> 捕获一个运行时异常。</li>
+</ul>
+<h3 id="快速声明操作符">快速声明操作符</h3>
+<p>快速声明操作符号<code>:=</code>用于同时在一个语句中声明和赋值一个变量。多个逗号分割的用法和<code>=</code>赋值操作符一样，需要强调的是，其本身不会新建作用域，即<strong>除了必须至少有一个非空变量为新的，如果变量已经存在了，它就会被直接赋值，而不会新建一个变量，除非该<code>:=</code>操作符位于作用域的起始处，如<code>if</code>或者<code>for</code>语句中的初始化语句</strong>。</p>
+<p><code>:=</code>可以创建“影子”变量覆盖外层同名变量的值，这很方便，但在有些地方可能会引起失误和问题。</p>
+<p>我们可以在有<strong>一到多个命名返回值</strong>的函数中写<strong>无需返回值的裸 return</strong>。这种情况下，返回值将是命名的返回值，它们在函数入口被初始化为其类型零值。</p>
+<p>如果出现了返回值同名“影子”变量且涉及到 return，好在 Go 编译器会给出一个错误消息，正如下面这个样子。</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Go/Go_Ch5_1.png" srcset="/img/loading.gif" lazyload alt="png" /><figcaption>png</figcaption>
+</figure>
+<h3 id="类型转换">类型转换</h3>
+<p>转换语法</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Go">resultOfType := Type(expression)<br></code></pre></td></tr></table></figure>
+<p>非数值类型之间的转换不会丢失精度，但是数值类型之间可能会。</p>
+<h3 id="类型断言">类型断言</h3>
+<p>方式有安全/非安全（抛出异常）两种</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs Go">resultOfType, boolean := expression.(Type) <span class="hljs-comment">// 安全类型断言</span><br>resultOfType := expression.(Type) <span class="hljs-comment">//非安全类型断言，失败时panic()</span><br></code></pre></td></tr></table></figure>
+<p>if+类型断言赋值给同名变量（影子变量）很常见，如果目标类型可以是很多类型之一，我们可以使用类型开关。</p>
+<h2 id="分支">分支</h2>
+<h3 id="if-语句">if 语句</h3>
+<p>Go 里面的经典用法：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-keyword">if</span> optionalSatement1; booleanExpression1&#123;<br>    block1<br>&#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> optionalStatement2; booleanExpression2&#123;<br>    block2<br>&#125;<span class="hljs-keyword">else</span> &#123;<br>    block3<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>放在 if 语句中的<code>optionalStatement</code>作用于整个 if...else...if 语句，也限制于其中。</p>
+<h3 id="switch-语句">switch 语句</h3>
+<p>Go 语言中有两种类型的 switch 语句：表达式开关（expression switch）和类型开关（type switch）。表达式开关语句对于 C/C++/Java 程序员来说比较熟悉，然而类型开关语句是 Go<strong>专有的</strong>。</p>
+<p>需要强调的是，不同于 C/C++/Java，Go 语言的 switch 语句不会自动地乡下贯穿（因此不用每个 case 后面都加 break），相反，我们可以在需要的时候通过显式地调用 fallthrough 语句来这样做。</p>
+<ul>
+<li><p>表达式开关 紧凑经典实用举例：</p>
+<p>只使用一个表达式，一个带返回类型的函数，然后用逗号分割相同操作的不同 case（而舍弃用 fallthrough 贯穿写）。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-keyword">switch</span> Suffix(file)&#123;<br>    <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;.gz&quot;</span>:<br>        <span class="hljs-keyword">return</span> GzipFileList(file)<br>    <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;.tar&quot;</span>, <span class="hljs-string">&quot;.tar.gz&quot;</span>, <span class="hljs-string">&quot;tgz&quot;</span>:<br>        <span class="hljs-keyword">return</span> TarFileList(file)<br>    <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;.zip&quot;</span>:<br>        <span class="hljs-keyword">return</span> ZipFileList(file)<br>&#125;<br></code></pre></td></tr></table></figure></li>
+<li><p>字符开关 与类型断言相似，但是使用<code>type</code>关键字代替实际类型，以用于表示任意类型</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-keyword">switch</span> x.(<span class="hljs-keyword">type</span>)&#123;<br>    <span class="hljs-keyword">case</span> <span class="hljs-keyword">bool</span>:<br>        block1<br>    <span class="hljs-keyword">case</span> <span class="hljs-keyword">float64</span>:<br>        block2<br>    <span class="hljs-keyword">case</span> <span class="hljs-keyword">int</span>,<span class="hljs-keyword">int8</span>,<span class="hljs-keyword">int16</span>,<span class="hljs-keyword">int32</span>,<span class="hljs-keyword">int64</span>:<br>        block3<br>    <span class="hljs-keyword">case</span> <span class="hljs-literal">nil</span>:<br>        block4<br>    <span class="hljs-keyword">case</span> <span class="hljs-keyword">string</span>:<br>        block5<br>    <span class="hljs-keyword">default</span>:<br>        block6<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>经典应用，反序列化一个内部结构未知的原始 JSON 对象，并创建和打印 JSON 对象的字符串表示。</p></li>
+</ul>
+<a id="more"></a>
+<h3 id="for-循环语句">for 循环语句</h3>
+<p>for 和 for...range，记住 Go 的循环全是 for，包括但不限于</p>
+<ul>
+<li>for{} -&gt; while(1)</li>
+<li>for Expression -&gt; while(expression)</li>
+<li>for k,v := range() -&gt; for k,v in ...</li>
+</ul>
+<h3 id="通信和并发语句">通信和并发语句</h3>
+<p>通信与并发特性在第 7 章详讲，这里描述基本语法。</p>
+<ul>
+<li><p><code>goroutine</code></p>
+<p><code>goroutine</code>是程序中与其他<code>goroutine</code>完全相互独立而并发执行的函数或者方法调用。每一个 Go 程序都至少有一个，即 main 函数中运行的。</p>
+<p><code>goroutine</code>非常像轻量级的线程或者协程。它们可以被大批量地创建。所有的<code>goroutine</code>共享相同的地址空间。同时 Go 语言提供了锁原语 🔓 来保证数据能够安全地跨<code>goroutine</code>共享。然而，Go 语言推荐的并发编程方式是通信，而非共享数据。</p>
+<p>创建方式</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-keyword">go</span> function(argu) <span class="hljs-comment">// 调用已有的函数</span><br><span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(parameters)</span></span> &#123; block &#125; (argu) <span class="hljs-comment">// 调用一个临时创建的匿名函数</span><br></code></pre></td></tr></table></figure>
+<p>被调用函数执行会立即进行，但是是在另一个<code>goroutine</code>上执行，并且当前<code>goroutine</code>（包含 go 语句的）会从下一条语句中恢复。</p></li>
+<li><p>通信</p>
+<p>通过通信管道实现多个<code>goroutine</code>之间通信（发送接受数据）。发送分为阻塞发送 （<code>channeel &lt;- value</code>）和非阻塞发送（<code>select</code>实现）</p>
+<p>创建通道的方式</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> Type) <span class="hljs-comment">//未指定容量，同步</span><br><span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> Type, capacity)  <span class="hljs-comment">//指定容量，异步。</span><br></code></pre></td></tr></table></figure>
+<p>我的实验代码，实验结果输出至 testoutput.txt，发现每次运行，输出顺序不一致，可以体现不同<code>goroutine</code>的相对独立。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-comment">// createChannel 接受一个int类型的参数，返回一个int类型的通道</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">createChannel</span><span class="hljs-params">(startInt <span class="hljs-keyword">int</span>, chanName <span class="hljs-keyword">string</span>)</span> <span class="hljs-title">chan</span> <span class="hljs-title">int</span></span> &#123;<br>    next := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">int</span>)<br>    <span class="hljs-comment">// 建立新的goruntime</span><br>    <span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(i <span class="hljs-keyword">int</span>, name <span class="hljs-keyword">string</span>)</span></span> &#123;<br>        <span class="hljs-keyword">for</span> &#123;<br>            next &lt;- i<br>            fmt.Printf(<span class="hljs-string">&quot;Channel %8s is now adding number %d\n&quot;</span>, name, i)<br>            i++<br>        &#125;<br>    &#125;(startInt, chanName)<br>    <span class="hljs-comment">// 由于chan是引用类型，所以返回以后在子goruntime还会继续运行</span><br>    <span class="hljs-keyword">return</span> next<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>  counterA := createChannel(<span class="hljs-number">8</span>, <span class="hljs-string">&quot;ChannelA&quot;</span>)<br>  counterB := createChannel(<span class="hljs-number">108</span>, <span class="hljs-string">&quot;ChannelB&quot;</span>)<br>  <span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">20</span>; i++ &#123;<br>      a := &lt;-counterA<br>      fmt.Printf(<span class="hljs-string">&quot;(A-&gt;%d, B-&gt;%d)\n&quot;</span>, a, &lt;-counterB)<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><code>select</code>语句，在一个<code>select</code>语句中，如果发现任意一句可以继续执行（没有被阻塞），则选择。如果全部通道都被阻塞，有 default 则执行并从<code>select</code>后恢复，否则整个语句阻塞，直到一一句可以继续执行。</p></li>
+</ul>
+<h3 id="deferpanic-和-recover">defer、panic 和 recover</h3>
+<p>defer 语句用于延迟一个函数或者方法（或者当前所创建的匿名函数）的执行，它会再外围函数或者方法返回之前但是其返回值计算之后执行。这样就有可能在一个<strong>延迟执行</strong>的函数内部<strong>修改函数的命名返回值</strong>。多个 defer 语句按 LIFO 顺序执行。</p>
+<p>defer 最常用是保证一个文件使用完以后关闭<code>defer file.Close()</code></p>
+<p>panic 和 revover，前文已经阐述过 Go 语言将错误和异常区分对待，错误（可预期的）常通过函数的返回值形式实现，而对于“不可能发生”的情况（异常）我们使用内置的<code>panic()</code>函数。</p>
+<p>当内置的<code>panic()</code>函数被调用时，外围函数或者方法的执行会立即中止。然后，任何延迟执行的函数或者方法都会被调用，就像返回一样。最后，调用返回到该外围函数的调用者，就像该外围调用函数或者方法调用了<code>panic()</code>一样，该过程在调用栈中重复发生：函数停止执行，调用延迟执行函数等。当到达<code>main()</code>函数时不再有可以返回的调用者，因此这时程序会中止，并将包含传入原始<code>panic()</code>函数中的值的调用栈信息输出到<code>os.Stderr</code>。</p>
+<p>上面所描述的只是一个异常发生时正常情况下所展开的。然而，如果其中有个延迟执行的函数或者方法包含一个对内值的<code>recover()</code>函数（可能值在一个延迟执行的函数或者方法中调用），该异常展开就会中止（被捕获）。这种情况下，我们就能够以任何我们想要的方式相应该异常（忽略，转错误等）。</p>
+<h3 id="异常和错误的使用规范">异常和错误的使用规范</h3>
+<p><strong>绝大多数情况下，Go 语言标准库实验嗯 error 值而非异常。</strong>（标准库的规范），对于我们手写的自定义的包，尽量不要使用<code>panic()</code>，如果要使用，也要避免异常离开这个自定义包的边界，可以用<code>recover()</code>捕获异常并返回一个相应的错误值，就像标准库中所作的那样。</p>
+<p>作为一个程序员，如果程序中有逻辑错误，我们希望程序能够立马崩溃，以便我们可以发现并修改该问题。但一旦程序部署好了，我们就不想让我们的程序崩溃。</p>
+<p>对于任何特殊情况下可能运行也G可能不运行的函数或者方法，如果调用了<code>panic()</code>函数或者调用了发生异常的函数或者方法，我们应该使用<code>recover()</code>以保证将异常转换成错误。理想情况下，<code>recover()</code>函数应该在尽可能接近于<code>panic()</code>的地方背调用，并在设置其外围函数 error 返回值之前尽可能合理的将程序恢复到健康状态。对于 main 包的<code>main()</code>函数，我们可以放入一个<strong>“捕获一切”的<code>recover</code>函数</strong>，用于记录任何捕获的异常。</p>
+<h2 id="自定义函数">自定义函数</h2>
+<p>这里内容有点繁杂，需要自己多动手实践体会</p>
+<p>关于返回值：如果函数有返回值，则函数必须至少有一个 return 语句或者<code>panic()</code>调用，如果返回值不是命名的，则 return 语句必须指定和返回值列表一样多的值。如果有命名，也尽量写全 return（空 return 语句虽然合法，但是被认为是一种拙劣的写法。）</p>
+<h3 id="函数参数">函数参数</h3>
+<ul>
+<li><p>函数调用可以作为函数参数</p>
+<p>需要类型和数量匹配，如<code>Heron(a,b,c)</code>与<code>Heron(PythagoreanTriple(i,i+1))</code>，其中<code>PythagoreanTriple(i,i+1)</code>返回三个整数值。</p></li>
+<li><p>可变函数参数</p>
+<p>最后一个类型前面加一个省略号，在函数里面这个参数实际上变成了一个对应参数类型的切片。如我们有一个签名是<code>Join(first string, xs ...String)</code>的函数，<code>xs</code>类型实际上是<code>[]string</code></p>
+<p>常见的可变参数设置是：完全任意（可空参），至少一参，至少两参（前面单独列出即可）。</p></li>
+<li><p>可选参数</p>
+<p>Go 没有直接支持可选参数，要实现也不难，只需增加一个额外的结构体即可，而且 Go 语言能保证所有值都会被初始化为零值。</p></li>
+</ul>
+<p>一个比较优雅的做法是这样定义函数 <code>ProcessItems(items Items, options Options)</code>，其中 Options 结构体保存了所有其他参数的值，其结构为：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-keyword">type</span> Options <span class="hljs-keyword">struct</span>&#123;<br>    First <span class="hljs-keyword">int</span> <span class="hljs-comment">//要处理的第一项</span><br>    Last <span class="hljs-keyword">int</span> <span class="hljs-comment">//要处理的最后一项</span><br>    Audit <span class="hljs-keyword">bool</span> <span class="hljs-comment">//如果为true，所有动作都被记录</span><br>    ErrorHandler <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(item Item)</span></span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>Go 保证结构体传入初始化为零值，大部分需要默认场合（全零值的情况），调用很简单，如果需要制定一个或者多个，则填入对应的字段名即可，如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs Go">ProcessItems(items, Options&#123;&#125;)<br>ProcessItems(items, Options&#123;Audit: <span class="hljs-literal">true</span>, ErrorHandler: errorHandler&#125;)<br></code></pre></td></tr></table></figure>
+<h3 id="init函数和-main函数">init()函数和 main()函数</h3>
+<p>Go 语言保留两个函数名：<code>init()</code>函数用来导入包后执行，全<code>main()</code>函数，作为入口，这两个函数不显示调用，也不可接受任何参数，不返回任何结果。建议一个包最多只用一个<code>init()</code>函数。</p>
+<p>程序启动顺序如下：</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Go/Go_Ch5_2.png" srcset="/img/loading.gif" lazyload alt="png" /><figcaption>png</figcaption>
+</figure>
+<h3 id="闭包">闭包</h3>
+<p>这是个重要的概念，所谓闭包就是一个函数“捕获”了和它在同意作用域地其他常量和变量（或许可以理解成声明时就调用了在这个作用域地其他常量和变量），闭包使用这些捕获的量且不关心它们是否已经超出作用域，所以只要闭包还在使用它，这些变量就还会存在。在 Go 语言里，<strong>所有的匿名函数（Go 语言规范中称之为函数字面量）</strong>都是<strong>闭包</strong>。</p>
+<p>闭包没有名字，通常使用方法时赋值给一个变量或者将它放在一个数据结构里（如映射/切片）。</p>
+<p>另外，工厂函数（装饰函数）返回的也常为一个函数闭包，函数闭包也常出现在一些函数参数中</p>
+<h3 id="运行时选择函数">运行时选择函数</h3>
+<p>在 Go 语言里，函数属于第一类值（first-class value），也就是说，你可以将它保存到一个变量（实际上是一个引用）里，这样我们就可以在运行时决定要执行哪一个函数（比 if-else 运行时选择来的快）。</p>
+<p>根据书上写的实验</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/Go/">Go</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/Go/">Go</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/post/d296acb5.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">投资银行学——Lec3</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/post/bb820b96.html">
+                        <span class="hidden-mobile">IOS——IOS系统使用Google服务</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="remark42"></div>
+  <script type="text/javascript">
+    var schema = document.documentElement.getAttribute('data-user-color-scheme');
+    if (schema !== 'light' && schema !== 'dark') {
+      schema = 'light';
+    }
+    var remark_config = Object.assign(
+      {"host":"https://remark42.edwardzcn98yx.com","site_id":"www.edwardzcn98yx.com","max_shown_comments":20,"locale":"zh","components":["embed"]},
+      {
+        url: '/post/e99105ce.html',
+        page_title: 'Go学习——《Go语言程序设计》Chap5',
+        theme: schema,
+      }
+    );
+
+    Fluid.utils.loadComments('#remark42', function() {
+      (function (c) {
+        for (var i = 0; i < c.length; i++) {
+          var d = document, s = d.createElement('script');
+          s.src = remark_config.host + '/web/' + c[i] + '.js';
+          s.defer = true;
+          (d.head || d.body).appendChild(s);
+        }
+      })(remark_config.components || ['embed']);
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        冀ICP证18024730号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+            
+            <span>湘公网安备43010402000641号</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://lib.baomitu.com/mathjax/3.2.0/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+</body>
+</html>

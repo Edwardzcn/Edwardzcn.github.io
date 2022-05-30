@@ -1,0 +1,704 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="这是一个利用（可爱的）Hexo搭建的博客">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  
+  <title>Coq学习——《Software-Foundation》Volume1.1-Basic - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://lib.baomitu.com/highlight.js/10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+  
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bookmark"></i>
+                select
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Computer-Science/">
+                    <i class="iconfont icon-codeforces"></i>
+                    Computer Science
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%98%85%E8%AF%BB/">
+                    <i class="iconfont icon-bookmark-fill"></i>
+                    Life Reading
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%9A%8F%E7%AC%94/">
+                    <i class="iconfont icon-note"></i>
+                    Life Essay
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Research/Report/">
+                    <i class="iconfont icon-clipcheck"></i>
+                    Weekly Report
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/photos">
+                <i class="iconfont icon-image"></i>
+                gallery
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Coq学习——《Software-Foundation》Volume1.1-Basic">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      Edwardzcn
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-10-26 10:14" pubdate>
+        2020年10月26日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.1k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      20
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Coq学习——《Software-Foundation》Volume1.1-Basic</h1>
+            
+            <div class="markdown-body">
+              <h1 id="basic">Basic</h1>
+<h2 id="intro">Intro</h2>
+<p>Functional style and the sense of &quot;functional&quot; in &quot;functional programming&quot;</p>
+<ul>
+<li>Pure without side effects, then all we need to undersatand about it is how it maps inputs to outputs(compute a mathematical objects).
+<ul>
+<li>programs &lt;-&gt; mathematical objects</li>
+<li>well behavior &lt;-&gt; correct proofs</li>
+</ul></li>
+</ul>
+<h2 id="data-and-functions">Data and Functions</h2>
+<h3 id="new-types-from-old">New Types from Old</h3>
+<p>Apart from enumerate types (their definitions explicitly enumerate a finite set of elements called <code>constructors</code>).<code>cunstructors</code>是构造元素(like word)，<code>constructor expressions</code>是构造表示(like sentence)，用来描述 constructor 到零个或者多个 constructor 或 constructor expressions 的映射。</p>
+<p><code>Inductive</code> 定义包含了一组 constructor expressions 并赋予名字。The definitions say which constructor expressions belong to the specific sets(like [rgb]).</p>
+<ul>
+<li>Start with an infinite set of <em>constructors</em>. (E.g. [red] [primary])</li>
+<li><em>Constructor expressions</em> are formed by applying <em>constructors</em> to zero or more other constructors or constructor. (E.g. [red] that is zero [primary red] apply [primary] to another constructor [red] 1 param)</li>
+</ul>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> rgb : <span class="hljs-keyword">Type</span> :=<br>  | <span class="hljs-type">red</span><br>  | <span class="hljs-type">green</span><br>  | <span class="hljs-type">blue</span>.<br><br><span class="hljs-keyword">Inductive</span> color : <span class="hljs-keyword">Type</span> :=<br>  | <span class="hljs-type">black</span><br>  | <span class="hljs-type">white</span><br>  | <span class="hljs-type">primary</span> (p : rgb).<br></code></pre></td></tr></table></figure>
+<p><code>Definition</code> define functions just as we did for the enumerate types.</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs Coq"><span class="hljs-keyword">Definition</span> monochrome (c : color) : bool :=<br>  <span class="hljs-keyword">match</span> c <span class="hljs-built_in">with</span><br>  | <span class="hljs-type">black</span> =&gt; true<br>  | <span class="hljs-type">white</span> =&gt; true<br>  | <span class="hljs-type">primary</span> p =&gt; false<br>  <span class="hljs-keyword">end</span>.<br></code></pre></td></tr></table></figure>
+<h3 id="modules">Modules</h3>
+<p>Aid in organizing large developments. Like name space. Definitions are referred to by names like [X.foo] instead of just [foo]. Limit the scope of definitions and reuse names.</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs Coq"><span class="hljs-keyword">Module</span> Playground.<br>  <span class="hljs-keyword">Definition</span> b : rgb := blue.<br><span class="hljs-keyword">End</span> Playground.<br><br><span class="hljs-keyword">Definition</span> b : bool := true.<br><br><span class="hljs-keyword">Check</span> Playground.b : rgb.<br><span class="hljs-keyword">Check</span> b : bool.<br></code></pre></td></tr></table></figure>
+<h3 id="tuples">Tuples</h3>
+<p>Multiple parameters canbe used to create a tuple type.</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> bit : <span class="hljs-keyword">Type</span> :=<br>  | <span class="hljs-type">B0</span><br>  | <span class="hljs-type">B1</span>.<br><br><span class="hljs-keyword">Inductive</span> nybble : <span class="hljs-keyword">Type</span> :=<br>  | <span class="hljs-type">bits</span> (b0 b1 b2 b3 : bit).<br><br><span class="hljs-keyword">Check</span> (bits B1 B0 B1 B0)<br>    : nybble.<br></code></pre></td></tr></table></figure>
+<p>The [bits] constructor ([bits] is a constructor and bits ( have 4 bits) is a constructor is a constructor expression) acts as a wrapper for its contents.</p>
+<p><code>match x with</code>pattern-matching</p>
+<h3 id="numbers">Numbers</h3>
+<p>Neither base 10 or base 2. We wish here to choose a representation that makes <em>proofs</em> simpler (even simpler than binary), so we use <strong>base 1</strong>, namely unary.</p>
+<p>To represent unary numbers with a Coq datatype, we use two constructors. Here is the complete datatype definition.</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> nat : <span class="hljs-keyword">Type</span> :=<br>  | <span class="hljs-type">O</span><br>  | <span class="hljs-type">S</span> (n : nat).<br></code></pre></td></tr></table></figure>
+<p>Unary here is like counting the infinite numbers, but give infinite (only two) constructors expressions or inductive rules to describe it, which makes proofs simpler.</p>
+<p>We've done so far is just to define a <em>representation</em> of numbers: a way of writing them down. The names [O] and [S] are arnotrary without any special meaning. Actually we could write essentially the same definition this way:</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs Coq"><span class="hljs-keyword">Inductive</span> nat&#x27; : <span class="hljs-keyword">Type</span> :=<br>  | <span class="hljs-type">stop</span><br>  | <span class="hljs-type">tick</span> (foo : nat&#x27;).<br></code></pre></td></tr></table></figure>
+<p>[nat] compare to [rgb] and [color]（理解之前的<code>rgb</code>拆开的原因，这样控制 primary 生成的链有限）。</p>
+<p>Coq provides a tiny bit of built-in magic for parsing and printing nat (unary base 1 &lt;-&gt;decimal base 10):</p>
+<ul>
+<li>Ordinary decimal numerals canbe used as an alternative to the &quot;unary&quot; notation.</li>
+<li>Coq prints numbers in decimal form by default.</li>
+</ul>
+<p>For convinience.</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs Coq"><span class="hljs-keyword">Check</span> (S (S (S (S O)))).<br><span class="hljs-comment">(* ===&gt; 4 : nat *)</span><br><br><span class="hljs-keyword">Definition</span> minustwo (n : nat) : nat :=<br>  <span class="hljs-keyword">match</span> n <span class="hljs-built_in">with</span><br>    | <span class="hljs-type">O</span> =&gt; O<br>    | <span class="hljs-type">S</span> O =&gt; O<br>    | <span class="hljs-type">S</span> (S n&#x27;) =&gt; n&#x27;<br>  <span class="hljs-keyword">end</span>.<br><br><span class="hljs-keyword">Compute</span> (minustwo <span class="hljs-number">4</span>).<br><span class="hljs-comment">(* Equal to minustwo S(S(S(S(O)))) *)</span><br><span class="hljs-keyword">Compute</span> (minustwo (S(S(S(S O))))).<br><span class="hljs-comment">(* ===&gt; 2 : nat *)</span><br></code></pre></td></tr></table></figure>
+<p>Pattern matching with recursion. Introoduced with the keyword [Fixpoint] instead of [Definition].</p>
+<h2 id="proof-by-simplification">Proof by Simplification</h2>
+<p>The proofs of examples claimed before were always the same: use [simpl] [reflexivity] to check that both sides contain identical values.</p>
+<p>[reflexivity] is more powerful than I have expected. It automatically perfoem some simplification.</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> plus_O_n&#x27; : <span class="hljs-keyword">forall</span> n : nat, <span class="hljs-number">0</span> + n = n.<br><span class="hljs-keyword">Proof</span>.<br>  <span class="hljs-built_in">intros</span> n. <span class="hljs-built_in">reflexivity</span>. <span class="hljs-keyword">Qed</span>.<br><br><span class="hljs-keyword">Theorem</span> plus_O_n&#x27;&#x27; : <span class="hljs-keyword">forall</span> n : nat, <span class="hljs-number">0</span> + n = n.<br><span class="hljs-keyword">Proof</span>.<br>  <span class="hljs-built_in">intros</span> m. <span class="hljs-built_in">reflexivity</span>. <span class="hljs-keyword">Qed</span>.<br></code></pre></td></tr></table></figure>
+<ul>
+<li>[Theorem] instead of [Example] (for style)</li>
+<li>[forall n:nat] talks all nat.</li>
+<li>[intros] from the quantifier in the goal to a <em>context</em> of current assumptions.</li>
+</ul>
+<p>A <em>tactics</em> is a command that is used between [Proof] and [Qed] to guide the process.</p>
+<h2 id="proof-by-rewriting">Proof by Rewriting</h2>
+<p>Without universal claim about all nat, talk about a specialized property only holds when [n = m].</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> plus_id_example : <span class="hljs-keyword">forall</span> n m:nat,<br>  n = m -&gt;<br>  n + n = m + m.<br></code></pre></td></tr></table></figure>
+<p>After [intros] we get [n] [m] are arbitrary numbers. We can't just use simplification to prove (absolutely imposibble) but need to use the hypothesis.</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs Coq"><span class="hljs-keyword">Proof</span>.<br>  <span class="hljs-comment">(* move both quantifiers into the context: *)</span><br>  <span class="hljs-built_in">intros</span> n m.<br>  <span class="hljs-comment">(* move the hypothesis into the context: *)</span><br>  <span class="hljs-built_in">intros</span> H.<br>  <span class="hljs-comment">(* rewrite the goal using the hypothesis: *)</span><br>  <span class="hljs-built_in">rewrite</span> -&gt; H.<br>  <span class="hljs-built_in">reflexivity</span>.  <span class="hljs-keyword">Qed</span>.<br></code></pre></td></tr></table></figure>
+<p>With [rewrite &lt;- / -&gt;] tactics we can use previously proved theorems or hypothesis to <strong>rewrite</strong> our goal.</p>
+<h2 id="proof-by-case-analysis">Proof by Case Analysis</h2>
+<p>Not everything can be proved by simple calculation and rewriting.</p>
+<p>Block like this.</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> plus_1_neq_0_firsttry : <span class="hljs-keyword">forall</span> n : nat,<br>  (n + <span class="hljs-number">1</span>) =? <span class="hljs-number">0</span> = false.<br><span class="hljs-keyword">Proof</span>.<br>  <span class="hljs-built_in">intros</span> n.<br>  <span class="hljs-built_in">simpl</span>.  <span class="hljs-comment">(* does nothing! *)</span><br><span class="hljs-keyword">Abort</span>.<br></code></pre></td></tr></table></figure>
+<p>Reason: [n] and [n + 1] (Notation of plus n 1) lie on each side of [=?]. [equ] [plus] begins by performing match on first argument. Both unknown number [n]! Match fail.</p>
+<blockquote>
+<p>The reason for this is that the definitions of both [eqb] and [+] begin by performing a [match] on their first argument. But here, the first argument to [+] is the unknown number [n] and the argument to [eqb] is the compound expression [n + 1]; neither can be simplified.</p>
+</blockquote>
+<p>Tells Coq to consider seprately, the cases where [n = O] and where [n = S n'] is called <em>destruct</em>.</p>
+<p>Exercise</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> andb_true_elim2 : <span class="hljs-keyword">forall</span> b c : bool,<br>  andb b c = true -&gt; c = true.<br><span class="hljs-keyword">Proof</span>.<br>  <span class="hljs-built_in">intros</span> b c.<br>  <span class="hljs-built_in">destruct</span> b eqn:Eb.<br>  &#123;<br>    <span class="hljs-built_in">simpl</span>.<br>    <span class="hljs-built_in">intros</span> H.<br>    <span class="hljs-built_in">rewrite</span> &lt;- H.<br>    <span class="hljs-built_in">reflexivity</span>.<br>  &#125;<br>  &#123;<br>    <span class="hljs-built_in">simpl</span>.<br>    <span class="hljs-built_in">destruct</span> c eqn:Ec.<br>    - <span class="hljs-built_in">simpl</span>. <span class="hljs-built_in">reflexivity</span>.<br>    - <span class="hljs-built_in">intros</span> H. <span class="hljs-built_in">rewrite</span> -&gt; H. <span class="hljs-built_in">reflexivity</span>.<br>  &#125;<br><span class="hljs-keyword">Qed</span>.<br></code></pre></td></tr></table></figure>
+<p>If there are no constructor arguments that need names, we can just write [[]] to get the case analysis.</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs Coq"><span class="hljs-keyword">Theorem</span> andb_commutative&#x27;&#x27; :<br>  <span class="hljs-keyword">forall</span> b c, andb b c = andb c b.<br><span class="hljs-keyword">Proof</span>.<br>  <span class="hljs-built_in">intros</span> [] [].<br>  - <span class="hljs-built_in">reflexivity</span>.<br>  - <span class="hljs-built_in">reflexivity</span>.<br>  - <span class="hljs-built_in">reflexivity</span>.<br>  - <span class="hljs-built_in">reflexivity</span>.<br><span class="hljs-keyword">Qed</span>.<br></code></pre></td></tr></table></figure>
+<h2 id="fixpoints-and-structural-recursion-optional">Fixpoints and Structural Recursion (Optional)</h2>
+<p>decreasing and <em>structural recursion</em></p>
+<p>Coq demands that some argument of <em>every</em> [Fixpoint] definition is &quot;decreasing&quot;.</p>
+<h2 id="tests">Tests</h2>
+<p>Not to intros. at the very begining.</p>
+<p>All passed. 14/14.</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/">形式化验证</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/">形式化验证</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/post/5bc3fcb5.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Coq学习——《Software-Foundation》Volume1.2-Induction</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/post/8b5886df.html">
+                        <span class="hidden-mobile">形式化方法——Proofs-and-Algorithms-Part1</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="remark42"></div>
+  <script type="text/javascript">
+    var schema = document.documentElement.getAttribute('data-user-color-scheme');
+    if (schema !== 'light' && schema !== 'dark') {
+      schema = 'light';
+    }
+    var remark_config = Object.assign(
+      {"host":"https://remark42.edwardzcn98yx.com","site_id":"www.edwardzcn98yx.com","max_shown_comments":20,"locale":"zh","components":["embed"]},
+      {
+        url: '/post/5a0a968e.html',
+        page_title: 'Coq学习——《Software-Foundation》Volume1.1-Basic',
+        theme: schema,
+      }
+    );
+
+    Fluid.utils.loadComments('#remark42', function() {
+      (function (c) {
+        for (var i = 0; i < c.length; i++) {
+          var d = document, s = d.createElement('script');
+          s.src = remark_config.host + '/web/' + c[i] + '.js';
+          s.defer = true;
+          (d.head || d.body).appendChild(s);
+        }
+      })(remark_config.components || ['embed']);
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        冀ICP证18024730号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+            
+            <span>湘公网安备43010402000641号</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://lib.baomitu.com/mathjax/3.2.0/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+</body>
+</html>

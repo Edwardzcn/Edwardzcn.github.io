@@ -1,0 +1,748 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="
+Step 1
+题目摘要引言
+Title
+针对 geo-replicated 系统的细粒度一致性（模型）
+Abstract
+跨地域的系统节点，提供了低延迟，但是为了保证系统整体的状态收敛以及一些不变式，跨地域的协调也是必须的。研究如何提升性能，减少高开销的跨地域同步成为研究热点。
+文章提出了一个新型的一致性模型 Partial Order-Restrictions consisten">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  
+  <title>ATC18-Fine-grained-consistency-for-geo-replicated-systems - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://lib.baomitu.com/highlight.js/10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+  
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bookmark"></i>
+                select
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Computer-Science/">
+                    <i class="iconfont icon-codeforces"></i>
+                    Computer Science
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%98%85%E8%AF%BB/">
+                    <i class="iconfont icon-bookmark-fill"></i>
+                    Life Reading
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%9A%8F%E7%AC%94/">
+                    <i class="iconfont icon-note"></i>
+                    Life Essay
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Research/Report/">
+                    <i class="iconfont icon-clipcheck"></i>
+                    Weekly Report
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/photos">
+                <i class="iconfont icon-image"></i>
+                gallery
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="ATC18-Fine-grained-consistency-for-geo-replicated-systems">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      Edwardzcn
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-03-22 13:54" pubdate>
+        2021年3月22日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.9k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      23
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">ATC18-Fine-grained-consistency-for-geo-replicated-systems</h1>
+            
+            <div class="markdown-body">
+              <!--文章由 3step 模板生成三步法阅读文献笔记记录-->
+<h1 id="step-1">Step 1</h1>
+<h2 id="题目摘要引言">题目摘要引言</h2>
+<h3 id="title">Title</h3>
+<p>针对 geo-replicated 系统的细粒度一致性（模型）</p>
+<h3 id="abstract">Abstract</h3>
+<p>跨地域的系统节点，提供了低延迟，但是为了保证系统整体的状态收敛以及一些不变式，跨地域的协调也是必须的。研究如何提升性能，减少高开销的跨地域同步成为研究热点。</p>
+<p>文章提出了一个新型的一致性模型 Partial Order-Restrictions consistency(PoR consistency)。</p>
+<p>为了提供高效的 PoR 一致的 replication，实现了 Olisipo，一个考虑受限制操作的相对频率来分配不同协调策略的协调服务（系统）。</p>
+<h3 id="introduction">Introduction</h3>
+<p>关于一致性的探讨，一些学者主张完全放弃强一致性而采取较弱的一致性的模型（比如 Eventual Consistency 和 Causal Consistency），其他学者则主张在单个系统中建立多层次共存的混合一致性，比如本文作者的前置工作 RedBlue Consistency，类似的混合一致性允许一部分操作在强一致性下执行，而其他操作在较弱一致性下执行。</p>
+<p>核心是一套 labeling 的方法来帮助编程人员为不同操作赋上合适的一致性级别。方法对于一些应用是高效的，但仍然发现了一些不必要的 coordination。这里没有表述清楚，似乎是特别的一对操作间需要同步，但是不需要与其他操作同步，但是在原有机制的要求下会要求强一致性从而产生与其他操作额外的 coordination。更进一步，类似 POPL16 提出的通用的更细粒度的协调，也缺少精确的方法来识别一组限制以确保安全。</p>
+<p>PoR，吃进一组限制，强制要求这些限制在所有偏序中满足。通过增加/减少限制来强化/弱化一致性模型。</p>
+<p>部署应用 PoR 一致性的应用最重要的是定义一组限制条件，可以保证状态收敛并保护不变式。这是一大人工困难，作者的解决方法是设计了一些指导原则。</p>
+<h2 id="基本理论概况">基本理论概况</h2>
+<h2 id="结论部分">结论部分</h2>
+<p>改进方法，结合了 conflict relation 来提供一种更加通用的方式，以冲突对的增加/减少，来对应强/弱一致性。</p>
+<p>并且提供了一个 coordination serviced，Olisipo 来高效序列化操作。</p>
+<p>在不同场景下运行 RUBiS 体现出新设计更高的性能。</p>
+<!-- 确定作者的成过以及点出的经验、问题、改进方 -->
+<h2 id="回答基本问题">回答基本问题</h2>
+<ol type="1">
+<li><p>类别</p>
+<p>对原型系统进行描述，严格的说，是参照一种 general 理论的具体系统实现。</p>
+<!-- 这篇论文是什么类型？测试类？对现有系统进行分析的？对原型系统进行描述的？--></li>
+<li><p>内容</p>
+<p>POPL16 Cause I'm Strong Enough</p>
+<p>OSDI12 RedBlue Consistency</p>
+<!-- 你读过的其他论文有没有与之相关的？相关性与区别最直接体现在哪里？文章中分析问题用的什么理论基础（通过瞥一眼数学概况与核心证明可以得到）。 --></li>
+<li><p>正确性</p>
+<p>待定</p>
+<!-- 结论是否看起来真实有效？ --></li>
+<li><p>创新点</p>
+<p>general, general, general</p>
+<!-- 论文的主要创新点是什么？总结提到的经验、问题和改进方法是什么？ --></li>
+<li><p>清晰度</p>
+<p>清晰</p>
+<!-- 这篇论文是否写的条理清晰 --></li>
+</ol>
+<h2 id="阅读选择">阅读选择</h2>
+<p>继续阅读</p>
+<!--
+1. 继续阅读：论文有价值担保，研究领域非常切合，对当前进行工作有极大帮助，圈内爆火文章
+2. 不继续阅读：论文不吸引自己，论文价值/正确性存疑，论文作者给出了不适当的假设。
+3. 库存保留并标记：当前不处于自己的研究领域，但不久的日后相关论文会有用。
+-->
+<a id="more"></a>
+<h1 id="step-2">Step 2</h1>
+<h2 id="细读笔记">细读笔记</h2>
+<h3 id="system-model">System model</h3>
+<p>&quot;site&quot; and &quot;replica&quot; are interchangeable</p>
+<p>系统定义了操作集和可达状态集。每个操作由一个 user 在一个 site 提出，我们称之为 u's primary site，表示为<span class="math inline">\(site(u)\)</span>。操作的数学定义是一个函数（ generator 函数 <span class="math inline">\(g_u\)</span>），接收当前系统状态<span class="math inline">\(S\)</span>并返回一个函数与 side effects 相对应的函数（shadow 函数，<span class="math inline">\(h_u(S)\)</span>）。（这里已经十分贴近 POPL16 中的数学描述了</p>
+<p>从实现角度来说，generator 函数会现在 primary site 的沙盒中进行，不与其他并发操作交互，之后会将其 side effect 对应的 shadow function 传递给其他 replica 并执行。</p>
+<p><strong>一条预定的性质</strong>：任意 replica 执行了相同 shadow operation 集后达到相同的状态，<strong>收敛性要求</strong>。（回忆 POPL 的交换性）。另外系统还需要维护一组特定于应用程序的<strong>不变式</strong>。</p>
+<h3 id="redblue-consistency">RedBlue consistency</h3>
+<p>RedBlue consistency，将 shadow operations 分离为 blue operations :blue_circle: 和 red operations :red_circle:</p>
+<ul>
+<li>blue operations :blue_circle: :执行顺序在不同 site 中可以是不同的。</li>
+<li>red operations :red_circle: :在所有 site 中都要保持相同的相对顺序。</li>
+</ul>
+<p>为确保收敛，red operation 的一个充分条件，如果它不是全局通信的。为确保不变式，（这里有些没太听明白），被作用在与 generate 不同的状态的所有阴影操作都要标红？pass checks 的标蓝。</p>
+<h3 id="partial-order-restrictions-consistency">Partial Order-Restrictions consistency</h3>
+<h4 id="motivation">Motivation</h4>
+<p>eBay-like auction service</p>
+<p>RedBlue 的解决方法，既然<span class="math inline">\(\mathsf{placeBid}\)</span>操作和<span class="math inline">\(\mathsf{closeAuction}\)</span>和本应用特定的 invariant 产生冲突，就应该全部标注为 red。</p>
+<p>而这种情况下，label 这两个操作在这个简单的应用中等同于将一致性强化为强一致性。任意两两操作之间的执行顺序都是确定的，正如同自己所想，实际上<span class="math inline">\(\mathsf{placeBid}\)</span>的操作是不需要 order 的，因为 order 不影响最后的 winner 人选。</p>
+<p>交给 PoR，允许 developer 在单一系统中推理各种细粒度一致性。</p>
+<!-- 要仔细阅读论文，但是诸如证明等信息要忽略掉 -->
+<p>关于状态收敛与保证不变式</p>
+<h3 id="a-glimpse-of-olisipo">A Glimpse of Olisipo</h3>
+<p>一般来说？通过 Paxos 和 Raft 实现的一致性系统满足强一致性。根据先前对 <span class="math inline">\(\mathsf{placeBid}\)</span>操作和<span class="math inline">\(\mathsf{closeAuction}\)</span>操作的分析，设计一个 coordination service，命名为 Olisipo，来提供各种 coordination 策略。Trade-off: cost of each op and the overall cost. 记录了运行时的操作的执行平吕来选择更高效的 coordination 机制。</p>
+<h4 id="coordination-protocols">Coordination protocols</h4>
+<p>two built-in protocols, symmetric(Sym) and asymmetric(Asym)，支持拓展更多定制的 coordination 策略（需要根据文章要求配置指定的接口）。主要区别：</p>
+<ul>
+<li>symmetric：the restricted op <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span> coordinate with each</li>
+<li><p>asymmetric：one as default and the other to obtain permission</p></li>
+<li><p><strong>Sym.</strong>:</p>
+<p>维护一个中心的逻辑计时服务。对于每一对限制<span class="math inline">\(r(u,v)\)</span>，两个 counters <span class="math inline">\(c_u\)</span>和<span class="math inline">\(c_v\)</span>。每一个都代表相对类型操作被底层系统接受的总数。每个 replica 保留一份 counters 的 copy，用以记录被该 replica 执行的操作的数量。</p>
+<p>初始，所有 replica 的本地 counter 和全局 counter 都初始化为 0。当一个 replica 接收到操作时，先使本地 counter 服务联络全局 counter 增加相关操作类型的计数器，然后返回一个最新的计数器副本。比对，如果相同（表示没有并发其他操作？）则立即执行，否则除非其他缺失操作（递交到其他 replica 还没有传递到本地）被本地 relica 接收到。</p>
+<p>counter-service 的容错性由一个 Paxos-like 的状态机复制模型提供。</p></li>
+<li><p><strong>Asym.</strong>：</p>
+<p>去中心方式来实现分布式限制（障碍 barrier）。当一个受限制操作对<span class="math inline">\((u,v)\)</span>中的<span class="math inline">\(u\)</span>陷入某一个 replica 的 barrier 中，会向其他 replica 广播加入申请。这要求其他 replica 都停止<span class="math inline">\(v\)</span>的操作，直到接收所有 replica 的许可后，<span class="math inline">\(u\)</span>才会被执行，并通知所有的 replica 自己已经离开 barrier（在本通知中也附带刚刚执行的<span class="math inline">\(u\)</span>的影响）。</p>
+<p>执行负担很大，如果操作中的一边较少出现会有改善（问题，仍然要陷入 barrier 和接受 ACK，为什么会改善？）</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/PoRConsistency/PoR_01.png" srcset="/img/loading.gif" lazyload alt="PoR_01.png" /><figcaption>PoR_01.png</figcaption>
+</figure></li>
+</ul>
+<h2 id="问题记录">问题记录</h2>
+<h2 id="未读且值得读文献记录">未读（且值得读）文献记录</h2>
+<!-- 在第二步中，找到以上几篇论文中相同的引用文献、在引用文献中重复的作者名，这些就是你所调研领域的重点论文和科研人员，下载那些重点论文暂时搁到一边。继续访问那些重要科研人员的网页，看下那些论文是在什么会议集结出版的。这能帮你找到那个领域的顶级会议，因为那些重要科研人员通常会在顶级会议发表论文。 -->
+<h1 id="step-3">Step 3</h1>
+<!-- 试着“在脑中重新实现（virtually re-implement）”那篇论文：也就是，和作者一样做出相同的假设，然后重新实现相同的工作。通过对比你自己得出的和论文中给出的结果，不仅可以很轻易验证一篇论文的创新点是否真实，而且还能发现论文中不会讲的缺点和假想。 -->
+<h2 id="思路复现">思路复现</h2>
+<h3 id="partial-order-restrictions-consistency-1">Partial Order-Restrictions consistency</h3>
+<p>Defining PoR consistency</p>
+<ol type="1">
+<li>a set of Restrictions</li>
+<li>a restricted partial order(R-order)</li>
+<li>a set of site-specific causal serializations</li>
+</ol>
+<blockquote>
+<p>Def 1 (Restriction). Given a set of operations <span class="math inline">\(U\)</span>, a restriction is a symmetric binary relation on <span class="math inline">\(U \times U\)</span></p>
+<p>For any two operations <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span> in <span class="math inline">\(U\)</span>, if there exists a restriction relation between them, we donate the relation as <span class="math inline">\(r(u,v)\)</span>.</p>
+</blockquote>
+<blockquote>
+<p>Def 2 (Restricted partial order). Given a set of operations <span class="math inline">\(U\)</span>, and a set of restrictions <span class="math inline">\(R\)</span> over <span class="math inline">\(U\)</span>, a restricted partial order (or short, R-order) is a partial order <span class="math inline">\(O = (U,\prec)\)</span> with the following constraint</p>
+</blockquote>
+<p><span class="math display">\[\forall u,v \in U, r(u,v) \in R \Rightarrow u \prec v \lor v \prec u\]</span></p>
+<p>注意这里或的关系，Restricted 关系导出的 R-order 是取对称的一边。</p>
+<p>This definition places constraints on a global view of a replicated system;</p>
+<!-- 推敲作者是如何立题，如何找到突破口，在其中是否有抉择，如何做出的假设？ -->
+<h2 id="证明与推理复现">证明与推理复现</h2>
+<!-- 分析证明过程，确定证明的正确性以及完整性。对证明过程做拓展，调研证明思路来源 -->
+<h2 id="实验验证复现">实验验证复现</h2>
+<!-- Rework -->
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Research/">Research</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Research/Paper/">Paper</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/%E4%B8%89%E6%AD%A5%E6%B3%95/">三步法</a>
+                    
+                      <a class="hover-with-bg" href="/tag/TODO/">TODO</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/post/b9139001.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">越野装备选择攻略</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/post/c5f0ca5e.html">
+                        <span class="hidden-mobile">POPL16——Reasoning-about-Consistency-Choices-in-Distributed-Systems</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="remark42"></div>
+  <script type="text/javascript">
+    var schema = document.documentElement.getAttribute('data-user-color-scheme');
+    if (schema !== 'light' && schema !== 'dark') {
+      schema = 'light';
+    }
+    var remark_config = Object.assign(
+      {"host":"https://remark42.edwardzcn98yx.com","site_id":"www.edwardzcn98yx.com","max_shown_comments":20,"locale":"zh","components":["embed"]},
+      {
+        url: '/post/9d6c5080.html',
+        page_title: 'ATC18-Fine-grained-consistency-for-geo-replicated-systems',
+        theme: schema,
+      }
+    );
+
+    Fluid.utils.loadComments('#remark42', function() {
+      (function (c) {
+        for (var i = 0; i < c.length; i++) {
+          var d = document, s = d.createElement('script');
+          s.src = remark_config.host + '/web/' + c[i] + '.js';
+          s.defer = true;
+          (d.head || d.body).appendChild(s);
+        }
+      })(remark_config.components || ['embed']);
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        冀ICP证18024730号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+            
+            <span>湘公网安备43010402000641号</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://lib.baomitu.com/mathjax/3.2.0/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+</body>
+</html>

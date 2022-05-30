@@ -1,0 +1,689 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <link rel="icon" href="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="Chap3 列表和模式
+列表基础
+列表构造，表示基础，[; ;]语法糖，::直接构造。空表[]用来结束一个列表。空表是多态的，这意味着它可以用于任意类型的元素。
+123let empty_list = [];;let one_element_list = 3::empty_list;;let one_element_list = &amp;quot;test&amp;quot;::empty_list;;">
+  <meta name="author" content="Edwardzcn">
+  <meta name="keywords" content="Edward&#39;s blog">
+  
+  <title>OCaml学习——《Real-World-Ocaml》Chap3 - Edward&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://lib.baomitu.com/highlight.js/10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+  
+<link rel="stylesheet" href="/css/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Edwardzcn</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-bookmark"></i>
+                select
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Computer-Science/">
+                    <i class="iconfont icon-codeforces"></i>
+                    Computer Science
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%98%85%E8%AF%BB/">
+                    <i class="iconfont icon-bookmark-fill"></i>
+                    Life Reading
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Life/%E9%9A%8F%E7%AC%94/">
+                    <i class="iconfont icon-note"></i>
+                    Life Essay
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/Research/Report/">
+                    <i class="iconfont icon-clipcheck"></i>
+                    Weekly Report
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/photos">
+                <i class="iconfont icon-image"></i>
+                gallery
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Blog/bg2.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="OCaml学习——《Real-World-Ocaml》Chap3">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      Edwardzcn
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-10-01 14:45" pubdate>
+        2020年10月1日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.2k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      28
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">OCaml学习——《Real-World-Ocaml》Chap3</h1>
+            
+            <div class="markdown-body">
+              <h1 id="chap3-列表和模式">Chap3 列表和模式</h1>
+<h2 id="列表基础">列表基础</h2>
+<p>列表构造，表示基础，<code>[; ;]</code>语法糖，<code>::</code>直接构造。空表<code>[]</code>用来结束一个列表。空表是多态的，这意味着它可以用于任意类型的元素。</p>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> empty_list = <span class="hljs-literal">[]</span>;;<br><span class="hljs-keyword">let</span> one_element_list = <span class="hljs-number">3</span>::empty_list;;<br><span class="hljs-keyword">let</span> one_element_list = <span class="hljs-string">&quot;test&quot;</span>::empty_list;;<br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs Bash"><span class="hljs-comment"># let empty_list = [];;</span><br>val empty_list : <span class="hljs-string">&#x27;a list = []</span><br><span class="hljs-string"># let one_element_list = 3::empty_list;;</span><br><span class="hljs-string">val one_element_list : int list = [3]</span><br><span class="hljs-string"># let one_element_list = &quot;test&quot;::empty_list;;</span><br><span class="hljs-string">val one_element_list : string list = [&quot;test&quot;]</span><br></code></pre></td></tr></table></figure>
+<h2 id="使用模式从列表抽取数据">使用模式从列表抽取数据</h2>
+<p>可以使用<code>match</code>语句从列表读出数据。注意<code>match</code>可以用来绑定变量，<code>-&gt;</code>左边，所以可能遮蔽原有定义。模式可以描述数据结构的布局，甚至可以包含直接量，一些练习：</p>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> drop_value l to_drop =<br>  <span class="hljs-keyword">match</span> l <span class="hljs-keyword">with</span><br>  | <span class="hljs-literal">[]</span>-&gt; <span class="hljs-literal">[]</span><br>  | to_drop::tl -&gt; drop_value tl to_drop <span class="hljs-comment">(* 绑定新的to_drop *)</span><br>  | hd::tl -&gt; hd::drop_value tl to_drop;; <span class="hljs-comment">(* 警告没有使用该match *)</span><br>drop_value [<span class="hljs-number">1</span>;<span class="hljs-number">2</span>;<span class="hljs-number">3</span>;<span class="hljs-number">4</span>;<span class="hljs-number">5</span>;] <span class="hljs-number">5</span>;;     <span class="hljs-comment">(* 由于非空都走了to_drop::tl 全删除了 *)</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs Bash"><span class="hljs-comment"># let rec drop_value l to_drop =</span><br>  match l with<br>  | []-&gt; []<br>  | to_drop::tl -&gt; drop_value tl to_drop<br>  | hd::tl -&gt; hd::drop_value tl to_drop;;<br>        Characters 103-109:<br>    | hd::tl -&gt; hd::drop_value tl to_drop;;<br>      ^^^^^^<br>Warning 11: this match <span class="hljs-keyword">case</span> is unused.<br>val drop_value : <span class="hljs-string">&#x27;a list -&gt; &#x27;</span>a -&gt; <span class="hljs-string">&#x27;a list = &lt;fun&gt;</span><br><span class="hljs-string"># drop_value [1;2;3;4;5;] 5;;</span><br><span class="hljs-string">- : int list = []</span><br></code></pre></td></tr></table></figure>
+<p>使用常规语句</p>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> drop_value l to_drop =<br>  <span class="hljs-keyword">match</span> l <span class="hljs-keyword">with</span><br>  | <span class="hljs-literal">[]</span> -&gt; <span class="hljs-literal">[]</span><br>  | hd::tl -&gt;<br>     <span class="hljs-keyword">let</span> new_tl = drop_value tl to_drop <span class="hljs-keyword">in</span> <span class="hljs-comment">(* 使用常规的if而不是模式匹配来判断 *)</span><br>     <span class="hljs-keyword">if</span> hd = to_drop<br>     <span class="hljs-keyword">then</span> new_tl<br>     <span class="hljs-keyword">else</span> hd::new_tl<br>;;<br>drop_value [<span class="hljs-number">1</span>;<span class="hljs-number">2</span>;<span class="hljs-number">3</span>;<span class="hljs-number">4</span>;<span class="hljs-number">5</span>;] <span class="hljs-number">5</span>;;<br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs Bash"><span class="hljs-comment">#</span><br><span class="hljs-built_in">let</span> rec drop_value l to_drop =<br>  match l with<br>  | [] -&gt; []<br>  | hd::tl -&gt;<br>     <span class="hljs-built_in">let</span> new_tl = drop_value tl to_drop <span class="hljs-keyword">in</span> (* 使用常规的<span class="hljs-keyword">if</span>而不是模式匹配来判断 *)<br>     <span class="hljs-keyword">if</span> hd = to_drop<br>     <span class="hljs-keyword">then</span> new_tl<br>     <span class="hljs-keyword">else</span> hd::new_tl;;<br>              val drop_value : <span class="hljs-string">&#x27;a list -&gt; &#x27;</span>a -&gt; <span class="hljs-string">&#x27;a list = &lt;fun&gt;</span><br><span class="hljs-string">#   drop_value [1;2;3;4;5;] 5;;</span><br><span class="hljs-string">- : int list = [1; 2; 3; 4]</span><br></code></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>模式匹配的优劣，基于<code>match</code>的实现比基于<code>if</code>的实现快很多倍。之所以存在这个差别，是因为我们实际上需要把相同的工作做很多次。</p>
+<ul>
+<li><p>性能：</p>
+<p>模式匹配要比手工编写的其他代码更为高效。不过，字符串的匹配有所例外，实际上这会顺序地进行测试，所以如果匹配包含一个很长的字符串序列，这些匹配可能还不如散列表。但大多数情况下，模式匹配在性能上都明显有优势。</p></li>
+<li><p>检测错误：</p>
+<p>OCaml 能够查找模式匹配中的问题：在<code>drop_value</code>的错误实现中，OCaml 提醒我们最后一个情况是多余的。</p>
+<p>OCaml 还会检查<code>match</code>语句的完备性，编译器对于缺少的情况会产生警告，还会给出无法匹配的模式的一个例子。对于涉及用户自定义类型的例子，这种完备性检查的意义更重大。</p>
+<p>还相当于一种重构工具。可以指导你哪些地方需要调整代码来处理不断变化的类型。</p></li>
+</ul>
+<h2 id="有效使用-list-模块">有效使用 List 模块</h2>
+<ul>
+<li><code>List.map</code> 取一个列表和一个函数，对于列表每个元素使用<code>map</code>。</li>
+<li><code>List.map2_exn</code> 取两个列表和一个函数，用函数结合两列表，<code>_exn</code>则是因为两个列表长度不一致，该函数会报错。</li>
+<li><code>List.fold</code> 取一个要处理的列表，一个初始化的迭代器<code>~init</code>，以及用来更新这个累加器的函数。该函数遍历列表更新迭代器，返回最终迭代器的值。</li>
+</ul>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs OCaml"><span class="hljs-type">List</span>.fold ~init:<span class="hljs-literal">[]</span> ~f:(<span class="hljs-keyword">fun</span> biao x -&gt; x :: biao) [<span class="hljs-number">1</span>;<span class="hljs-number">2</span>;<span class="hljs-number">3</span>;<span class="hljs-number">4</span>];; <span class="hljs-comment">(* List.fold 实验 *)</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs Bash"><span class="hljs-comment"># List.fold ~init:[] ~f:(fun biao x -&gt; x :: biao) [1;2;3;4];;</span><br>- : int list = [4; 3; 2; 1]<br></code></pre></td></tr></table></figure>
+<p>结合上述三个函数，计算列的最大宽度。</p>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> max_width header rows =     <span class="hljs-comment">(* 计算列的最大宽度 *)</span><br>  <span class="hljs-keyword">let</span> lengths l = <span class="hljs-type">List</span>.map ~f:<span class="hljs-type">String</span>.length l <span class="hljs-keyword">in</span><br>  <span class="hljs-type">List</span>.fold rows<br>    ~init:(lengths header)<br>    ~f:(<span class="hljs-keyword">fun</span> acc row -&gt; <span class="hljs-type">List</span>.map2_exn  ~f:<span class="hljs-type">Int</span>.max acc (lengths row));;<br></code></pre></td></tr></table></figure>
+<p>代码解释，利用<code>List.map</code>定义限制作用域的函数<code>lengths</code>,利用<code>List.fold</code>迭代每一行，迭代函数是利用<code>List.map2_exn</code>取最大值，初始化为标题行的长度。</p>
+<p>后续代码示例中包括了根据获取长度利用<code>String.make</code>生成长度适当的短横线字符串。以及字符串连接，在字符串两边增加定界符。以及根据 padding 渲染每一行。</p>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> render_separator widths =   <span class="hljs-comment">(* width是数值列表，由上面maxwidth得到 *)</span><br>  <span class="hljs-keyword">let</span> pieces = <span class="hljs-type">List</span>.map widths<br>                 ~f:(<span class="hljs-keyword">fun</span> w -&gt; <span class="hljs-type">String</span>.make (w+<span class="hljs-number">2</span>) <span class="hljs-string">&#x27;-&#x27;</span>)<br>  <span class="hljs-keyword">in</span><br>  <span class="hljs-string">&quot;|&quot;</span> ^ <span class="hljs-type">String</span>.concat ~sep:<span class="hljs-string">&quot;+&quot;</span> pieces ^ <span class="hljs-string">&quot;|&quot;</span>;;<br><br><span class="hljs-keyword">let</span> pad s length = <span class="hljs-comment">(* 编写代码显示这些数据行 *)</span><br>  <span class="hljs-string">&quot; &quot;</span> ^ s ^ <span class="hljs-type">String</span>.make(length - <span class="hljs-type">String</span>.length s + <span class="hljs-number">1</span>) <span class="hljs-string">&#x27; &#x27;</span>;;<br>pad <span class="hljs-string">&quot;hello&quot;</span> <span class="hljs-number">10</span>;;<br><br><span class="hljs-keyword">let</span> render_row row widths =<br>  <span class="hljs-keyword">let</span> padded = <span class="hljs-type">List</span>.map2_exn row widths ~f:pad <span class="hljs-keyword">in</span><br>  <span class="hljs-string">&quot;|&quot;</span> ^ <span class="hljs-type">String</span>.concat ~sep:<span class="hljs-string">&quot;|&quot;</span> padded ^ <span class="hljs-string">&quot;|&quot;</span><br>;;<br>render_row [<span class="hljs-string">&quot;Hello&quot;</span>;<span class="hljs-string">&quot;World&quot;</span>] [<span class="hljs-number">10</span>;<span class="hljs-number">15</span>];;<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>关于 <code>String.concat</code> 和<code>^</code>的性能</p>
+<p>由于<code>^</code>是一个成对处理字符串的操作符。要避免使用<code>^</code>来连接大量字符串，因为每次运行时，它都会分配一个新的字符串。组装大字符串时，<code>^</code>可能带来严重的性能问题。</p>
+</blockquote>
+<p>最终汇集整个工作</p>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> render_table header rows = <span class="hljs-comment">(* 汇集整个工作建立表格 *)</span><br>  <span class="hljs-keyword">let</span> widths = max_width header rows <span class="hljs-keyword">in</span> <span class="hljs-comment">(* 利用max_width获取梅列宽的widths *)</span><br>  <span class="hljs-type">String</span>.concat ~sep:<span class="hljs-string">&quot;\n&quot;</span>               <span class="hljs-comment">(* 插入换行分隔符号 *)</span><br>    ( render_row header widths          <span class="hljs-comment">(* 渲染header *)</span><br>      :: render_separator widths        <span class="hljs-comment">(* 渲染分界 *)</span><br>    :: <span class="hljs-type">List</span>.map rows ~f:(<span class="hljs-keyword">fun</span> row -&gt; render_row row widths) <span class="hljs-comment">(* 为了渲染每一行，需要再次使用List.map *)</span><br>    );;<br></code></pre></td></tr></table></figure>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs OCaml"><span class="hljs-comment">(* 测试一下最初的例子 *)</span><br>printf <span class="hljs-string">&quot;\n%s\n&quot;</span><br>  (render_table<br>      [ <span class="hljs-string">&quot;language&quot;</span>;<span class="hljs-string">&quot;architect&quot;</span>;<span class="hljs-string">&quot;first class&quot;</span>]<br>      [ [<span class="hljs-string">&quot;Lisp&quot;</span>;<span class="hljs-string">&quot;John McCarthy&quot;</span>;<span class="hljs-string">&quot;1958&quot;</span>];<br>        [<span class="hljs-string">&quot;C&quot;</span>;<span class="hljs-string">&quot;Dennis Ritchie&quot;</span>;<span class="hljs-string">&quot;1969&quot;</span>];<br>        [<span class="hljs-string">&quot;ML&quot;</span>;<span class="hljs-string">&quot;Robin Milner&quot;</span>;<span class="hljs-string">&quot;1973&quot;</span>];<br>        [<span class="hljs-string">&quot;OCaml&quot;</span>;<span class="hljs-string">&quot;Xavier Leroy&quot;</span>;<span class="hljs-string">&quot;1996&quot;</span>];<br>      ]);;<br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs Bash">| language | architect      | first class |<br>|----------+----------------+-------------|<br>| Lisp     | John McCarthy  | 1958        |<br>| C        | Dennis Ritchie | 1969        |<br>| ML       | Robin Milner   | 1973        |<br>| OCaml    | Xavier Leroy   | 1996        |<br>- : Base.unit = ()<br></code></pre></td></tr></table></figure>
+<p>其他有用的列表函数，参考在线文档（现在 page not found 了）</p>
+<ul>
+<li><code>List.reduce</code> 特殊版本的<code>fold</code>，不需要一个明确的初始值 init。</li>
+<li><code>List.filter</code>,<code>List.filter_map</code> 对列表中一个子集进行操作。</li>
+<li><code>List.append</code> 进行列表的连接，合并,<code>@</code>运算符与函数等价。</li>
+<li><code>List.concat</code> 用来连接一个由列表组成的列表。</li>
+</ul>
+<h2 id="尾递归">尾递归</h2>
+<p>Tail Recursion，计算一个 OCaml 的长度，唯一的办法是从头到尾遍历整个列表。因此，计算列表长度花费的时间与列表的大小成正比。考虑下面两种写法，分别是简单函数和尾递归函数。</p>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs OCaml"><span class="hljs-comment">(* 非尾递归 *)</span><br><span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> length = <span class="hljs-keyword">function</span>       <span class="hljs-comment">(* 无名函数接受一个列表为参数 *)</span><br>  | <span class="hljs-literal">[]</span> -&gt; <span class="hljs-number">0</span><br>  | _ :: tl -&gt; <span class="hljs-number">1</span> + length tl<br>;;<br><br><span class="hljs-comment">(* 尾递归 *)</span><br><span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> length_plus_n l n =     <span class="hljs-comment">(* 接受列表和数值两个参数 *)</span><br>  <span class="hljs-keyword">match</span> l <span class="hljs-keyword">with</span><br>  | <span class="hljs-literal">[]</span> -&gt; n<br>  | _ :: tl -&gt; length_plus_n tl (n+<span class="hljs-number">1</span>)<br>;;<br><br><span class="hljs-keyword">let</span> make_list n  = <span class="hljs-type">List</span>.init n ~f:(<span class="hljs-keyword">fun</span> x -&gt; x);;<br>length_plus_n (make_list <span class="hljs-number">500000</span>) <span class="hljs-number">0</span>;;<br>length (make_list <span class="hljs-number">500000</span>);;<br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs Bash"><span class="hljs-comment"># length_plus_n (make_list 500000) 0;;</span><br>- : int = 500000<br><span class="hljs-comment"># length (make_list 500000);;</span><br>Stack overflow during evaluation (looping recursion?).<br>Raised by primitive operation at file <span class="hljs-string">&quot;//toplevel//&quot;</span>, line 51, characters 19-28<br></code></pre></td></tr></table></figure>
+<p>函数调用需要一些空间来跟踪与这个调用相关联的信息，<strong>如传入函数的参数</strong>，<strong>或者函数调用完成后开始执行的那个代码的位置</strong>。为了支持嵌套函数调用，常用一个堆栈来组织，对于各个嵌套的函数调用会分别分配一个新的栈帧，成功是再释放。非尾递归的函数会分配很多数量的栈帧，耗尽空间。而尾递归中的调用是一个尾调用可以巧妙避开这问题，不需要分配新的栈帧。</p>
+<p>什么时候一个调用是尾调用？函数（调用者）调用另一个函数（被调用者）。<strong>被调用者的返回的值，如果调用者除了返回这个值不做任何其他处理，则认为这个调用是一个尾调用</strong>。尾调用优化很有意义，因为调用者完成一个尾调用时，调用者的栈帧不再使用，<strong>所以不用保留这个栈帧</strong>。因此，不用为被调用者分配一个新栈帧，<strong>编译器完全可以重用调用者的栈帧</strong>。</p>
+<p>当嵌套调用序列深度与数据规模基本相同时，通常都应当使用尾递归。</p>
+<h2 id="更简洁更快速的模式">更简洁更快速的模式</h2>
+<p>利用<code>as</code>模式减少分配，<code>function</code>可以替代显式的<code>match</code>，<code>when</code>子句可以让代码更为简介，为模式增加一个额外的前置条件。</p>
+<p>练习</p>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs OCaml"><span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> destutter = <span class="hljs-keyword">function</span><br>  | <span class="hljs-literal">[]</span> | [_] <span class="hljs-keyword">as</span> l -&gt; l<br>  | hd::(hd :: _ <span class="hljs-keyword">as</span> tl) <span class="hljs-keyword">when</span>  hd =hd&#x27; -&gt; destutter tl<br>  | hd:: tl -&gt; hd :: destutter tl<br>;;<br></code></pre></td></tr></table></figure>
+<p>有关<code>=</code>的多态比较，类似的还有<code>&lt;</code>,<code>&gt;=</code>,<code>compare</code>，内置于运行时库的底层，基础是对于所比较的值的类型<strong>几乎完全忽略这些类型的有关信息</strong>，而只考虑<strong>值在内存中的结构</strong>。我们无法自行构建这些函数。另外注意一些使用限制，比如函数值的<code>=</code>比较会在运行时Fail。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/">Computer Science</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Science/OCaml/">OCaml</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tag/OCaml/">OCaml</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/post/8fe87a79.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">OCaml学习——《Real-World-Ocaml》Chap4</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/post/5ed09799.html">
+                        <span class="hidden-mobile">《战争时期的日本精神史》读书笔记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="remark42"></div>
+  <script type="text/javascript">
+    var schema = document.documentElement.getAttribute('data-user-color-scheme');
+    if (schema !== 'light' && schema !== 'dark') {
+      schema = 'light';
+    }
+    var remark_config = Object.assign(
+      {"host":"https://remark42.edwardzcn98yx.com","site_id":"www.edwardzcn98yx.com","max_shown_comments":20,"locale":"zh","components":["embed"]},
+      {
+        url: '/post/118cefda.html',
+        page_title: 'OCaml学习——《Real-World-Ocaml》Chap3',
+        theme: schema,
+      }
+    );
+
+    Fluid.utils.loadComments('#remark42', function() {
+      (function (c) {
+        for (var i = 0; i < c.length; i++) {
+          var d = document, s = d.createElement('script');
+          s.src = remark_config.host + '/web/' + c[i] + '.js';
+          s.defer = true;
+          (d.head || d.body).appendChild(s);
+        }
+      })(remark_config.components || ['embed']);
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        冀ICP证18024730号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=43010402000641"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+            
+            <span>湘公网安备43010402000641号</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://lib.baomitu.com/mathjax/3.2.0/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+</body>
+</html>
