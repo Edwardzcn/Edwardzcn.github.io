@@ -60,11 +60,12 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
 
 <body>
@@ -116,7 +117,7 @@
               <a class="nav-link dropdown-toggle" target="_self" role="button"
                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -187,7 +188,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -297,12 +298,14 @@
             <h1 style="display: none">机器学习——PCA原理研究</h1>
             
             <div class="markdown-body">
-              <h1 id="PCA-原理研究"><a href="#PCA-原理研究" class="headerlink" title="PCA 原理研究"></a>PCA 原理研究</h1><p>前两次课介绍 PCA，大家应该对主成分分析降维有了一定的了解，我还有两个问题没有解决，课下自己查阅了些资料。</p>
-<ol>
+              <h1 id="pca-原理研究">PCA 原理研究</h1>
+<p>前两次课介绍 PCA，大家应该对主成分分析降维有了一定的了解，我还有两个问题没有解决，课下自己查阅了些资料。</p>
+<ol type="1">
 <li>主成分分析步骤是如何推导出来的？</li>
 <li>协方差矩阵的 n-1 如何了解？</li>
 </ol>
-<h2 id="主成分分析步骤的推导"><a href="#主成分分析步骤的推导" class="headerlink" title="主成分分析步骤的推导"></a>主成分分析步骤的推导</h2><p>PPT 上和老师分享的视频实际上在开头都有描述，较为简略。由于我们更关注 PCA 的实际操作步骤，更容易如何求矩阵的特征值和特征向量，不过这样，容易忽略：<strong>我们为什么要做矩阵正交化</strong>？我们需要回到优化目标上。</p>
+<h2 id="主成分分析步骤的推导">主成分分析步骤的推导</h2>
+<p>PPT 上和老师分享的视频实际上在开头都有描述，较为简略。由于我们更关注 PCA 的实际操作步骤，更容易如何求矩阵的特征值和特征向量，不过这样，容易忽略：<strong>我们为什么要做矩阵正交化</strong>？我们需要回到优化目标上。</p>
 <p>思路梳理</p>
 <p>降维 -&gt; 基变换、投影</p>
 <p>分散-&gt; 投影的方差最大</p>
@@ -315,7 +318,8 @@
 <p>优化目标矩阵对角化等价</p>
 <p>寻找矩阵对角化方式</p>
 <p>求特征值，特征向量。</p>
-<h3 id="协方差矩阵对角化"><a href="#协方差矩阵对角化" class="headerlink" title="协方差矩阵对角化"></a>协方差矩阵对角化</h3><p>根据上述推导，我们发现要达到优化目前，等价于将协方差矩阵对角化：即除对角线外的其它元素化为 0，并且在对角线上将元素按大小从上到下排列，这样我们就达到了优化目的。这样说可能还不是很明晰，我们进一步看下原矩阵与基变换后矩阵协方差矩阵的关系：</p>
+<h3 id="协方差矩阵对角化">协方差矩阵对角化</h3>
+<p>根据上述推导，我们发现要达到优化目前，等价于将协方差矩阵对角化：即除对角线外的其它元素化为 0，并且在对角线上将元素按大小从上到下排列，这样我们就达到了优化目的。这样说可能还不是很明晰，我们进一步看下原矩阵与基变换后矩阵协方差矩阵的关系：</p>
 
             </div>
             <hr>
@@ -552,10 +556,6 @@
 
 
 
-  <script  src="/js/local-search.js" ></script>
-
-
-
 
 
 
@@ -568,6 +568,21 @@
       typing(title)
       
     })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
   </script>
 
 

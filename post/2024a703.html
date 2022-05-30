@@ -16,8 +16,9 @@
   <meta name="theme-color" content="#2f4154">
   <meta name="description" content="（可以关注一下 Future Generation Computer Systems）
 集群技术初识——以 Linux 负载均衡集群学习为例
-写在前面本文主要参考：章文嵩博士所写的Linux 服务器集群系统介绍，集群技术（原理篇），高俊峰所著《高性能 Linux 服务器构建实战》，魔软运维社所著《大规模 Linux 集群架构最佳实践》。
-由于查阅资料的时候不懂得地方太多，所以多数只能从概念上简单理">
+写在前面
+本文主要参考：章文嵩博士所写的Linux 服务器集群系统介绍，集群技术（原理篇），高俊峰所著《高性能 Linux 服务器构建实战》，魔软运维社所著《大规模 Linux 集群架构最佳实践》。
+由于查阅资料的时候不懂得地方太多，所以多数只能从概">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
   
@@ -63,11 +64,12 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
 
 <body>
@@ -119,7 +121,7 @@
               <a class="nav-link dropdown-toggle" target="_self" role="button"
                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -190,7 +192,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -302,13 +304,17 @@
             <div class="markdown-body">
               <p>（可以关注一下 Future Generation Computer Systems）</p>
 <p>集群技术初识——以 Linux 负载均衡集群学习为例</p>
-<h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>本文主要参考：章文嵩博士所写的<a target="_blank" rel="noopener" href="http://www.linuxvirtualserver.org/zh/lvs1.html#author1">Linux 服务器集群系统介绍</a>，<a target="_blank" rel="noopener" href="https://blog.51cto.com/jiangzhi2013/1222666">集群技术（原理篇）</a>，高俊峰所著《高性能 Linux 服务器构建实战》，魔软运维社所著《大规模 Linux 集群架构最佳实践》。</p>
+<h1 id="写在前面">写在前面</h1>
+<p>本文主要参考：章文嵩博士所写的<a target="_blank" rel="noopener" href="http://www.linuxvirtualserver.org/zh/lvs1.html#author1">Linux 服务器集群系统介绍</a>，<a target="_blank" rel="noopener" href="https://blog.51cto.com/jiangzhi2013/1222666">集群技术（原理篇）</a>，高俊峰所著《高性能 Linux 服务器构建实战》，魔软运维社所著《大规模 Linux 集群架构最佳实践》。</p>
 <p>由于查阅资料的时候不懂得地方太多，所以多数只能从概念上简单理解，如想自己深入理解其中的奥妙，还需要完成本门课程，将基础打好，同时熟悉 Linux 系统的一些基本情况后再做深入且仔细的学习。</p>
-<h1 id="第一部分-什么是集群"><a href="#第一部分-什么是集群" class="headerlink" title="第一部分 什么是集群"></a>第一部分 什么是集群</h1><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>我们在计算机网络中已经学习了<strong>吞吐量</strong>的概念，即单位时间内成功地传送数据的数量（以比特、字节、分组等测量），我们这里着重考量接收端的吞吐能力（以带宽衡量）。</p>
+<h1 id="第一部分-什么是集群">第一部分 什么是集群</h1>
+<h2 id="背景">背景</h2>
+<p>我们在计算机网络中已经学习了<strong>吞吐量</strong>的概念，即单位时间内成功地传送数据的数量（以比特、字节、分组等测量），我们这里着重考量接收端的吞吐能力（以带宽衡量）。</p>
 <p>Internet 的飞速发展给网络带宽和服务器带来巨大的挑战。从网络技术的发展来看，网络带宽的增长远高于处理器速度和内存访问速度的增长，这是什么意思。数据出了小区门（计算机）在<strong>路途中已经可以上高速公路</strong>了，但是在<strong>小区内的行驶速度却成了难题</strong>，越来越多的瓶颈会出现在服务器端。互联网的海洋中对性能的不断提高，高可伸缩性、高可用性、可管理性、价格有效性的网络服务技术将成为网络服务技术的主导。各种平台下的技术方案应运而生。</p>
 <a id="more"></a>
-<h2 id="对称多处理系统"><a href="#对称多处理系统" class="headerlink" title="对称多处理系统"></a>对称多处理系统</h2><blockquote>
-<p>对称多处理（Symmetric Multi-Processor，简称 SMP）是由多个对称的处理器、和通过总线共享的内存和 I/O 部件所组成的计算机系统。SMP 是一种低并行度的结构，是我们通常所说的”紧耦合多处理系统”，</p>
+<h2 id="对称多处理系统">对称多处理系统</h2>
+<blockquote>
+<p>对称多处理（Symmetric Multi-Processor，简称 SMP）是由多个对称的处理器、和通过总线共享的内存和 I/O 部件所组成的计算机系统。SMP 是一种低并行度的结构，是我们通常所说的&quot;紧耦合多处理系统&quot;，</p>
 </blockquote>
 <p>SMP 的可扩展能力有限，但也有相应的优点：</p>
 <ul>
@@ -322,64 +328,63 @@
 <li>越往高端的服务器，所花费的代价越大；</li>
 <li>三是 SMP 服务器是单一故障点（Single Point of Failure），一旦该服务器或应用软件失效，会导致整个服务的中断。</li>
 </ul>
-<h2 id="集群的起源"><a href="#集群的起源" class="headerlink" title="集群的起源"></a>集群的起源</h2><p>集群并不是一个全新的概念，其实早在七十年代计算机厂商和研究机构就开始了对集群系统的研究和开发。由于主要用于科学工程计算，所以这些系统并不为大家所熟知。直到 Linux 集群的出现，集群的概念才得以广为传播。对集群的研究起源于集群系统的良好的性能可扩展性(scalability)。提高 CPU 主频和总线带宽是最初提供计算机性能的主要手段。但是这一手段对系统性能的提供是有限的。接着人们通过增加 CPU 个数和内存容量来提高性能，于是出现了向量机，对称多处理机(SMP)等。但是当 CPU 的个数超过某一阈值，象 SMP 这些多处理机系统的可扩展性就变的极差。主要瓶颈在于 CPU 访问内存的带宽并不能随着 CPU 个数的增加而有效增长。与 SMP 相反，集群系统的性能随着 CPU 个数的增加几乎是线性变化的</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/20190321os1.jpg" srcset="/img/loading.gif" lazyload alt="1"></p>
+<h2 id="集群的起源">集群的起源</h2>
+<p>集群并不是一个全新的概念，其实早在七十年代计算机厂商和研究机构就开始了对集群系统的研究和开发。由于主要用于科学工程计算，所以这些系统并不为大家所熟知。直到 Linux 集群的出现，集群的概念才得以广为传播。对集群的研究起源于集群系统的良好的性能可扩展性(scalability)。提高 CPU 主频和总线带宽是最初提供计算机性能的主要手段。但是这一手段对系统性能的提供是有限的。接着人们通过增加 CPU 个数和内存容量来提高性能，于是出现了向量机，对称多处理机(SMP)等。但是当 CPU 的个数超过某一阈值，象 SMP 这些多处理机系统的可扩展性就变的极差。主要瓶颈在于 CPU 访问内存的带宽并不能随着 CPU 个数的增加而有效增长。与 SMP 相反，集群系统的性能随着 CPU 个数的增加几乎是线性变化的</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/20190321os1.jpg" srcset="/img/loading.gif" lazyload alt="1" /><figcaption>1</figcaption>
+</figure>
 <p>集群恰恰是通过高性能网络或局域网互联的服务器集群正成为实现高可伸缩的、高可用网络服务的有效结构（而非基于单机 CPU 数量的增长）。这种松耦合结构的服务器集群系统有下列优点：</p>
 <ul>
 <li><p><strong>性能</strong></p>
-<p>网络服务的工作负载通常是大量相互独立的任务，通过一组服务器分而治之，可以获得很高的整体性能。</p>
-</li>
+<p>网络服务的工作负载通常是大量相互独立的任务，通过一组服务器分而治之，可以获得很高的整体性能。</p></li>
 <li><p><strong>性能/价格比</strong></p>
-<p>组成集群系统的 PC 服务器或 RISC 服务器和标准网络设备因为大规模生产降低成本，价格低，具有最高的性能/价格比。若整体性能随着结点数的增长而接近线性增加，该系统的性能/价格比接近于 PC 服务器。所以，这种松耦合结构比紧耦合的多处理器系统具有更好的性能/价格比。</p>
-</li>
+<p>组成集群系统的 PC 服务器或 RISC 服务器和标准网络设备因为大规模生产降低成本，价格低，具有最高的性能/价格比。若整体性能随着结点数的增长而接近线性增加，该系统的性能/价格比接近于 PC 服务器。所以，这种松耦合结构比紧耦合的多处理器系统具有更好的性能/价格比。</p></li>
 <li><p><strong>可伸缩性</strong></p>
-<p>集群系统中的结点数目可以增长到几千个，乃至上万个，其伸缩性远超过单台超级计算机。</p>
-</li>
-<li><p><strong>高可用性</strong><br>在硬件和软件上都有冗余，通过检测软硬件的故障，将故障屏蔽，由存活结点提供服务，可实现高可用性。</p>
-</li>
+<p>集群系统中的结点数目可以增长到几千个，乃至上万个，其伸缩性远超过单台超级计算机。</p></li>
+<li><p><strong>高可用性</strong> 在硬件和软件上都有冗余，通过检测软硬件的故障，将故障屏蔽，由存活结点提供服务，可实现高可用性。</p></li>
 </ul>
 <p>当然，用服务器集群系统实现可伸缩网络服务也存在很多挑战性的工作：</p>
 <ul>
-<li><p><strong>透明性</strong>（Transparency）<br>对用户透明，如何高效地使得由多个独立计算机组成的松藕合的集群系统构成一个虚拟服务器；客户端应用程序与集群系统交互时，就像与一台高性能、高可用的服务器交互一样，客户端无须作任何修改。部分服务器的切入和切出不会中断服务，这对用户也是透明的。</p>
-</li>
+<li><p><strong>透明性</strong>（Transparency） 对用户透明，如何高效地使得由多个独立计算机组成的松藕合的集群系统构成一个虚拟服务器；客户端应用程序与集群系统交互时，就像与一台高性能、高可用的服务器交互一样，客户端无须作任何修改。部分服务器的切入和切出不会中断服务，这对用户也是透明的。</p></li>
 <li><p><strong>性能</strong>（Performance）</p>
-<p>性能要接近线性加速，这需要设计很好的软硬件的体系结构，消除系统可能存在的瓶颈。将负载较均衡地调度到各台服务器上。</p>
-</li>
+<p>性能要接近线性加速，这需要设计很好的软硬件的体系结构，消除系统可能存在的瓶颈。将负载较均衡地调度到各台服务器上。</p></li>
 <li><p><strong>高可用性</strong>（Availability）</p>
-<p>需要设计和实现很好的系统资源和故障的监测和处理系统。当发现一个模块失败时，要这模块上提供的服务迁移到其他模块上。在理想状况下，这种迁移是即时的、自动的。</p>
-</li>
+<p>需要设计和实现很好的系统资源和故障的监测和处理系统。当发现一个模块失败时，要这模块上提供的服务迁移到其他模块上。在理想状况下，这种迁移是即时的、自动的。</p></li>
 <li><p><strong>可管理性</strong>（Manageability）</p>
-<p>要使集群系统变得易管理，就像管理一个单一映像系统一样。在理想状况下，软硬件模块的插入能做到即插即用（Plug &amp; Play）。</p>
-</li>
+<p>要使集群系统变得易管理，就像管理一个单一映像系统一样。在理想状况下，软硬件模块的插入能做到即插即用（Plug &amp; Play）。</p></li>
 <li><p><strong>可编程性</strong>（Programmability）</p>
-<p>在集群系统上，容易开发应用程序。</p>
-</li>
+<p>在集群系统上，容易开发应用程序。</p></li>
 </ul>
-<h2 id="集群类型"><a href="#集群类型" class="headerlink" title="集群类型"></a>集群类型</h2><p>通常我们根据需求将集群分为三类：<code>负载均衡集群（Load Balancing LB）</code><br>,<code>高可用性集群（High Availability HA）</code>,<code>高性能也叫科学集群（High Performance HP</code>。</p>
+<h2 id="集群类型">集群类型</h2>
+<p>通常我们根据需求将集群分为三类：<code>负载均衡集群（Load Balancing LB）</code> ,<code>高可用性集群（High Availability HA）</code>,<code>高性能也叫科学集群（High Performance HP</code>。</p>
 <p>下面做一下详细的介绍（来源自博客），笔者本人学习中只听闻过负载均衡集群。</p>
 <ul>
 <li><p>负载均衡集群（Load Balancing LB）</p>
-<p>负载均衡集群为企业需求提供了更实用的系统。如名称所暗示的，该系统使负载可以在计算机集群中尽可能平均地分摊处理。该负载可能是需要均衡的应用程序处理负载或网络流量负载。这样的系统非常适合于运行同一组应用程序的大量用户。每个节点都可以处理一部分负载，并且可以在节点之间动态分配负载，以实现平衡。对于网络流量也是如此。通常，网络服务器应用程序接受了太多入网流量，以致无法迅速处理，这就需要将流量发送给在其它节点上运行的网络服务器应用。还可以根据每个节点上不同的可用资源或网络的特殊环境来进行优化。</p>
-</li>
+<p>负载均衡集群为企业需求提供了更实用的系统。如名称所暗示的，该系统使负载可以在计算机集群中尽可能平均地分摊处理。该负载可能是需要均衡的应用程序处理负载或网络流量负载。这样的系统非常适合于运行同一组应用程序的大量用户。每个节点都可以处理一部分负载，并且可以在节点之间动态分配负载，以实现平衡。对于网络流量也是如此。通常，网络服务器应用程序接受了太多入网流量，以致无法迅速处理，这就需要将流量发送给在其它节点上运行的网络服务器应用。还可以根据每个节点上不同的可用资源或网络的特殊环境来进行优化。</p></li>
 <li><p>高可用性集群（High Availability HA）</p>
-<p>高可用性集群的出现是为了使集群的整体服务尽可能可用，以便考虑计算硬件和软件的易错性。如果高可用性集群中的主节点发生了故障，那么这段时间内将由次节点代替它。次节点通常是主节点的镜像，所以当它代替主节点时，它可以完全接管其身份，并且因此使系统环境对于用户是一致的。</p>
-</li>
+<p>高可用性集群的出现是为了使集群的整体服务尽可能可用，以便考虑计算硬件和软件的易错性。如果高可用性集群中的主节点发生了故障，那么这段时间内将由次节点代替它。次节点通常是主节点的镜像，所以当它代替主节点时，它可以完全接管其身份，并且因此使系统环境对于用户是一致的。</p></li>
 <li><p>高性能也叫科学集群（High Performance HP）</p>
-<p>为集群开发并行编程应用程序，以解决复杂的科学问题。这是并行计算的基础，尽管它不使用专门的并行超级计算机，这种超级计算机内部由十至上万个独立处理器组成。但它却使用商业系统，如通过高速连接来链接的一组单处理器或双处理器 PC，并且在公共消息传递层上进行通信以运行并行应用程序。因此，您会常常听说又有一种便宜的 Linux 超级计算机问世了。但它实际是一个计算机集群，其处理能力与真的超级计算机相等，通常一套象样的集群配置开销要超过 $100,000。这对一般人来说似乎是太贵了，但与价值上百万美元的专用超级计算机相比还算是便宜的。</p>
-</li>
+<p>为集群开发并行编程应用程序，以解决复杂的科学问题。这是并行计算的基础，尽管它不使用专门的并行超级计算机，这种超级计算机内部由十至上万个独立处理器组成。但它却使用商业系统，如通过高速连接来链接的一组单处理器或双处理器 PC，并且在公共消息传递层上进行通信以运行并行应用程序。因此，您会常常听说又有一种便宜的 Linux 超级计算机问世了。但它实际是一个计算机集群，其处理能力与真的超级计算机相等，通常一套象样的集群配置开销要超过 $100,000。这对一般人来说似乎是太贵了，但与价值上百万美元的专用超级计算机相比还算是便宜的。</p></li>
 </ul>
-<h2 id="集群的实现"><a href="#集群的实现" class="headerlink" title="集群的实现"></a>集群的实现</h2><p>根据网络资料，已知的负载均衡集群可以通过硬件和软件两种方式实现，其他两种集群的实现方式不太清楚。</p>
+<h2 id="集群的实现">集群的实现</h2>
+<p>根据网络资料，已知的负载均衡集群可以通过硬件和软件两种方式实现，其他两种集群的实现方式不太清楚。</p>
 <p>硬件方式：即通过专用的硬件（处理机）进行内容的分发调度，一般而言，硬件负载均衡在功能、性能上优于软件方式，不过成本昂贵。而且最重要的是该专用硬件是单点配置，即具有发生单点故障导致整个集群瘫痪的风险。</p>
 <p>软件方式：软件负载均衡解决方案是指在一台或多台服务器相应的操作系统上安装一个或多个附加软件来实现负载均衡，它的优点是基于特定环境，配置简单，使用灵活，成本低廉，可以满足一般的负载均衡需求。</p>
 <p>后面着重以 LVS（著名的开源项目）为例来说明 LVS 集群系统的实现。</p>
-<h1 id="第二部分-LVS-集群系统"><a href="#第二部分-LVS-集群系统" class="headerlink" title="第二部分 LVS 集群系统"></a>第二部分 LVS 集群系统</h1><h2 id="项目诞生"><a href="#项目诞生" class="headerlink" title="项目诞生"></a>项目诞生</h2><blockquote>
+<h1 id="第二部分-lvs-集群系统">第二部分 LVS 集群系统</h1>
+<h2 id="项目诞生">项目诞生</h2>
+<blockquote>
 <p>针对高可伸缩、高可用网络服务的需求，我们给出了基于 IP 层和基于内容请求分发的负载平衡调度解决方法，并在 Linux 内核中实现了这些方法，将一组服务器构成一个实现可伸缩的、高可用网络服务的虚拟服务器。</p>
 <p>虚拟服务器的体系结构如图 2 所示，一组服务器通过高速的局域网或者地理分布的广域网相互连接，在它们的前端有一个负载调度器（Load Balancer）。负载调度器能无缝地将网络请求调度到真实服务器上，从而使得服务器集群的结构对客户是透明的，客户访问集群系统提供的网络服务就像访 问一台高性能、高可用的服务器一样。客户程序不受服务器集群的影响不需作任何修改。系统的伸缩性通过在服务机群中透明地加入和删除一个节点来达到，通过检 测节点或服务进程故障和正确地重置系统达到高可用性。由于我们的负载调度技术是在 Linux 内核中实现的，我们称之为 Linux 虚拟服务器（Linux Virtual Server）。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/20190321os2.jpg" srcset="/img/loading.gif" lazyload alt="2"></p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/20190321os2.jpg" srcset="/img/loading.gif" lazyload alt="2" /><figcaption>2</figcaption>
+</figure>
 </blockquote>
-<h2 id="LVS-集群的组成与特点"><a href="#LVS-集群的组成与特点" class="headerlink" title="LVS 集群的组成与特点"></a>LVS 集群的组成与特点</h2><p>Linux 虚拟服务器（Linux Virtual Server，LVS）是一个由章文嵩开发的一款自由软件，利用 LVS 可以实现高可用的、可伸缩的 Web、Mail、Cache 和 Media 等网络服务。并在此基础上开发支持庞大用户数的、可伸缩的、高可用的电子商务应用。LVS 自 1998 年发展到现在，已经变得比较成熟，目前广泛应用在各种网络服务和电子商务应用中。</p>
+<h2 id="lvs-集群的组成与特点">LVS 集群的组成与特点</h2>
+<p>Linux 虚拟服务器（Linux Virtual Server，LVS）是一个由章文嵩开发的一款自由软件，利用 LVS 可以实现高可用的、可伸缩的 Web、Mail、Cache 和 Media 等网络服务。并在此基础上开发支持庞大用户数的、可伸缩的、高可用的电子商务应用。LVS 自 1998 年发展到现在，已经变得比较成熟，目前广泛应用在各种网络服务和电子商务应用中。</p>
 <p>LVS 具有很好的可伸缩性、可靠性和可管理性，通过 LVS 要实现的最终目标是：利用 Linux 操作系统和 LVS 集群软件实现一个高可用、高性能、低成本的服务器应用集群。</p>
-<h3 id="LVS-集群的组成"><a href="#LVS-集群的组成" class="headerlink" title="LVS 集群的组成"></a>LVS 集群的组成</h3><p>利用 LVS 架设的服务器集群由 3 个部分组成：最前端的是负载均衡层（用 Load Balancer 表示），中间是服务器群组层（用 Server Array 表示），底端是数据共享存储层（用 Shared Storage 表示，这里应该还涉及一些分布式存储？的知识）。在用户看来，整个 LVS 集群系统的所有内部应用结构都是透明的，最终用户只是在使用一个虚拟服务器提供的高性能服务。</p>
+<h3 id="lvs-集群的组成">LVS 集群的组成</h3>
+<p>利用 LVS 架设的服务器集群由 3 个部分组成：最前端的是负载均衡层（用 Load Balancer 表示），中间是服务器群组层（用 Server Array 表示），底端是数据共享存储层（用 Shared Storage 表示，这里应该还涉及一些分布式存储？的知识）。在用户看来，整个 LVS 集群系统的所有内部应用结构都是透明的，最终用户只是在使用一个虚拟服务器提供的高性能服务。</p>
 <p>下面对 LVS 三个组成部分进行详细的介绍：</p>
 <ul>
 <li>负载均衡层：位于整个集群系统的最前端，由一台或多台负载均衡调度器（Director Server），只有一台调度器的时候我们也将其成为 Load Balancer，LVS 核心模块 IPVS 就安装在 Director Server 上，而 Director 的主要作用类似于一个路由器，它含有为完成 LVS 功能所设定的路由表，通过这些路由表把用户的请求分发给服务器群组层的应用服务器（Real Server），整个过程对访问集群的用户是透明的。同时，在 Director Server 上还要安装对 Real Server 的监控模块 Ldirectord，此模块用于监测各个 Real Server 服务的健康状况。在 Real Server 不可用时将其从 LVS 路由表中剔除，在恢复时重新加入（伸缩性的体现）。</li>
@@ -387,68 +392,64 @@
 <li>共享存储层：是为所有 Real Server 提供共享存储空间和内容一致性的存储区域，一般由磁盘阵列设备组成。为了提供内容的一致性，一般可以通过 NFS 网络文件系统共享数据，但是 NFS 在繁忙的业务系统中，性能并不是很好，此时可以采用集群文件系统，例如 Red Hat 的 GFS 文件系统，Oracle 提供的 OCFS2 文件系统等。</li>
 </ul>
 <p>从整个 LVS 结构可以看出，Dirctor Server 是整个 LVS 的核心。目前，用于 Director Server 的操作系统只有 Linux 和 FreeBSD，Linux 2.6 内核完全内置了 LVS 的各个模块，不用任何设置就可以支持 LVS 功能。</p>
-<h3 id="LVS-集群的特点"><a href="#LVS-集群的特点" class="headerlink" title="LVS 集群的特点"></a>LVS 集群的特点</h3><ol>
+<h3 id="lvs-集群的特点">LVS 集群的特点</h3>
+<ol type="1">
 <li><p>IP 负载均衡与负载调度算法</p>
-<ol>
+<ol type="1">
 <li><p>IP 负载均衡技术</p>
 <p>负载均衡技术有很多实现方案，有<strong>基于 DNS 域名轮流解析的方法</strong>，有<strong>基于客户端调度访问的方法</strong>，有<strong>基于应用层系统负载的调度方法</strong>，还有<strong>基于 IP 地址的调度方法</strong>。在这些负载调度算法中，执行效率最高的是 IP 负载均衡技术。</p>
 <p>LVS 的 IP 负载均衡技术是通过 IPVS 模块来实现的。IPVS 是 LVS 集群系统的核心软件，它的主要作用是：安装在 Director Server 上，同时在 Director Server 上虚拟出一个 IP 地址，用户必须通过这个虚拟的 IP 地址访问服务器。这个虚拟 IP 一般称为 LVS 的 VIP，即 Virtual IP。访问的请求首先经过 VIP 到达负载调度器，然后由负载调度器从 Real Server 列表中选择一个服务器节点相应用户的请求。</p>
-<p>在用户的请求到达负载调度器后，调度器如何请求发送到提供服务的 Real Server 节点，而 Real Server 节点如何返回数据给用户，是 IPVS 实现的重点技术。IPVS 实现负载均衡地方式有 3 种，分别是<strong>NAT</strong>、<strong>TUN</strong>和<strong>DR</strong>。（原书后面有详细介绍，这里就不多写了，有兴趣之后再了解）。</p>
-</li>
+<p>在用户的请求到达负载调度器后，调度器如何请求发送到提供服务的 Real Server 节点，而 Real Server 节点如何返回数据给用户，是 IPVS 实现的重点技术。IPVS 实现负载均衡地方式有 3 种，分别是<strong>NAT</strong>、<strong>TUN</strong>和<strong>DR</strong>。（原书后面有详细介绍，这里就不多写了，有兴趣之后再了解）。</p></li>
 <li><p>负载均衡调度算法</p>
 <p>动态选择的实现，就是负载调度算法。IPVS 实现了 8 种负载调度算法。分别是，<strong>轮叫调度（Round Robin）</strong>、<strong>加权轮叫调度（Weighted Round Robin）</strong>、<strong>最少连接调度（Least Connections）</strong>、<strong>加权最少连接调度（Weighted Least Connections）</strong>、<strong>基于局部性的最少连接（Locality-Based Least Connections）</strong>、<strong>带复制的基于局部性最少连接（Locality-Based Least Connections with Replication）</strong>、<strong>目标地址散列（Destination Hashing）</strong>和<strong>源地址散列（Source Hashing）</strong>。</p>
-<p>如果想要进一步了解，请登录<a target="_blank" rel="noopener" href="http://zh.linuxvirtualserver.org">LVS 中文站点</a>，查阅更详细的信息。</p>
-</li>
-</ol>
-</li>
+<p>如果想要进一步了解，请登录<a target="_blank" rel="noopener" href="http://zh.linuxvirtualserver.org">LVS 中文站点</a>，查阅更详细的信息。</p></li>
+</ol></li>
 <li><p>高可用性</p>
-<p>LVS 是一个基于内核级别的应用软件，因此具有很高的处理性能。由 LVS 构建的负载均衡集群系统具有优秀的处理能力，每个服务节点的故障不会影响整个系统的正常使用，又能够实现负载的合理均衡，使应用具有超高负荷的服务能力，可支持上百万个并发连接请求。</p>
-</li>
+<p>LVS 是一个基于内核级别的应用软件，因此具有很高的处理性能。由 LVS 构建的负载均衡集群系统具有优秀的处理能力，每个服务节点的故障不会影响整个系统的正常使用，又能够实现负载的合理均衡，使应用具有超高负荷的服务能力，可支持上百万个并发连接请求。</p></li>
 <li><p>高可靠性</p>
-<p>LVS 负载均衡集群软件已经在企业和学校中得到了很好的普及，国内外很多大型的、关键性的 Web 站点也都采用了 LVS 集群软件，所以它的可靠性在实践中得到了很好印证。有很多由 LVS 构成的负载均衡系统，运行很长时间，从未进行过重新启动。这些都说明了 LVS 的高稳定性和高可靠性。</p>
-</li>
+<p>LVS 负载均衡集群软件已经在企业和学校中得到了很好的普及，国内外很多大型的、关键性的 Web 站点也都采用了 LVS 集群软件，所以它的可靠性在实践中得到了很好印证。有很多由 LVS 构成的负载均衡系统，运行很长时间，从未进行过重新启动。这些都说明了 LVS 的高稳定性和高可靠性。</p></li>
 <li><p>使用环境</p>
 <p>目前仅支持 Linux 和 FreeBSD 系统作为前端 Director Server，但是支持大多数的 TCP 和 UDP 协议。支持 TCP 协议的应用有：HTTP、HTTPS、FTP、SMTP、POP3、IMAP4 等等；支持 UDP 协议的应用有：DNS、NTP、ICP、视频和音频流播放协议等。</p>
-<p>LVS 对 Real Server 的操作系统没有任何限制，Real Server 可运行在任何支持 TCP/IP 的操作系统上，包括 Linux，各种 UNIX（如 FreeBSD、Sun Solaris、HP Unix 等），Mac OS 和 Windows 等。</p>
-</li>
+<p>LVS 对 Real Server 的操作系统没有任何限制，Real Server 可运行在任何支持 TCP/IP 的操作系统上，包括 Linux，各种 UNIX（如 FreeBSD、Sun Solaris、HP Unix 等），Mac OS 和 Windows 等。</p></li>
 <li><p>开源软件</p>
-<p>LVS 集群软件是按 GPL（GNU Public License 许可证发行的自由软件，因此，使用者可以得到软件的源代码，并且可以根据自己的需要进行各种修改，但是修改必须以 GPL 方式发行。</p>
-</li>
+<p>LVS 集群软件是按 GPL（GNU Public License 许可证发行的自由软件，因此，使用者可以得到软件的源代码，并且可以根据自己的需要进行各种修改，但是修改必须以 GPL 方式发行。</p></li>
 </ol>
-<h1 id="第三部分-集群系统的配套应用"><a href="#第三部分-集群系统的配套应用" class="headerlink" title="第三部分 集群系统的配套应用"></a>第三部分 集群系统的配套应用</h1><h2 id="Heartbeat"><a href="#Heartbeat" class="headerlink" title="Heartbeat"></a>Heartbeat</h2><p>如果负载均衡层（Load Balancer）仅由一台 Director Server 来实现 VIP 与集群资源的调度，就会面临单点故障后整个集群系统瘫痪的危险。为了实现 LVS 负载均衡系统下的高可用性，我们可以使用一些常用的 HA 软件，实现“双机互备”。</p>
+<h1 id="第三部分-集群系统的配套应用">第三部分 集群系统的配套应用</h1>
+<h2 id="heartbeat">Heartbeat</h2>
+<p>如果负载均衡层（Load Balancer）仅由一台 Director Server 来实现 VIP 与集群资源的调度，就会面临单点故障后整个集群系统瘫痪的危险。为了实现 LVS 负载均衡系统下的高可用性，我们可以使用一些常用的 HA 软件，实现“双机互备”。</p>
 <p>heartbeat 使 Linux-HA 项目中的一个组件，也是目前开源 HA 项目中最成功的一个例子，它提供了所有 HA 软件需要的基本功能，检测集群中的系统服务，在集群的节点间转移共享 IP 地址的所有者等。自 1999 年开始到现在，heartbeat 在行业内得到了广泛应用，也发行了很多版本，最核心的包括两个部分，其最核心包括心跳监测部分和资源接管部分，心跳监测可以通过网络链路和串口进行，而且支持冗余链路，它们之间相互发送报文来告诉对方自己当前的状态，如果在指定的时间内未受到对方发送的报文，那么就认为对方失效，这时需启动资源接管模块来接管运 行在对方主机上的资源或者服务。</p>
-<h2 id="IP-网络存储-iSCSI"><a href="#IP-网络存储-iSCSI" class="headerlink" title="IP 网络存储 iSCSI"></a>IP 网络存储 iSCSI</h2><p>主要介绍基于 IP SAN 的网络存储 iSCSI。iSCSI 技术以其低廉的构建成本和优秀的存储性能，博得了很多 CIO 和存储管理员的喜爱，目前陆续进入企业应用领域，推动了企业的存储环境向集中式转变。虽然，目前对于 iSCSI 应该在什么样的环境中使用还存在着诸多争议，但是 iSCSI 的前途使光明的，在未来的存储世界中，iSCSI 一定会占据重要的席位。</p>
-<h3 id="存储概念的术语"><a href="#存储概念的术语" class="headerlink" title="存储概念的术语"></a>存储概念的术语</h3><p>在存储的世界里，有各种各样的名词和术语，常见的有 SCSI、FC、DAS、NAS、SAN 等。本节重点介绍与存储相关的术语和知识。</p>
-<ol>
+<h2 id="ip-网络存储-iscsi">IP 网络存储 iSCSI</h2>
+<p>主要介绍基于 IP SAN 的网络存储 iSCSI。iSCSI 技术以其低廉的构建成本和优秀的存储性能，博得了很多 CIO 和存储管理员的喜爱，目前陆续进入企业应用领域，推动了企业的存储环境向集中式转变。虽然，目前对于 iSCSI 应该在什么样的环境中使用还存在着诸多争议，但是 iSCSI 的前途使光明的，在未来的存储世界中，iSCSI 一定会占据重要的席位。</p>
+<h3 id="存储概念的术语">存储概念的术语</h3>
+<p>在存储的世界里，有各种各样的名词和术语，常见的有 SCSI、FC、DAS、NAS、SAN 等。本节重点介绍与存储相关的术语和知识。</p>
+<ol type="1">
 <li><p>SCSI 介绍</p>
-<p>SCSI 是小型计算机系统接口（Small Computer System Interface）的简称，SCSI 作为输入/输出接口，主要用于硬盘、光盘、磁带机、扫描仪、打印机等设备。</p>
-</li>
+<p>SCSI 是小型计算机系统接口（Small Computer System Interface）的简称，SCSI 作为输入/输出接口，主要用于硬盘、光盘、磁带机、扫描仪、打印机等设备。</p></li>
 <li><p>FC 介绍</p>
-<p>FC 是光纤通道（Fiber Channel）的简称，是一种适合于千兆数据传输的、成熟而安全的解决方案，与传统的 SCSI 技术相比，FC 提供更高的数据传输速率，更远的传输距离，更多的设备连接支持，更稳定的性能，更简易的安装。</p>
-</li>
+<p>FC 是光纤通道（Fiber Channel）的简称，是一种适合于千兆数据传输的、成熟而安全的解决方案，与传统的 SCSI 技术相比，FC 提供更高的数据传输速率，更远的传输距离，更多的设备连接支持，更稳定的性能，更简易的安装。</p></li>
 <li><p>DAS 介绍</p>
-<p>DAS 是直联式存储（Directed-Attached Storage）的简称，是指将存储设备通过 SCSI 接口或光纤通道直接连接到一台计算机上，当服务器在地理上比较分散，很暗通过远程进行互连时，DAS 是比较好的解决方案。但是这种存储方式只能通过与之连接的主机进行访问，不能实现数据与其他主机的共享，同时，DAS 会占用服务器操作系统资源，例如 CPU 资源、IO 资源等，并且数据量越大，占用操作系统资源就越严重。</p>
-</li>
+<p>DAS 是直联式存储（Directed-Attached Storage）的简称，是指将存储设备通过 SCSI 接口或光纤通道直接连接到一台计算机上，当服务器在地理上比较分散，很暗通过远程进行互连时，DAS 是比较好的解决方案。但是这种存储方式只能通过与之连接的主机进行访问，不能实现数据与其他主机的共享，同时，DAS 会占用服务器操作系统资源，例如 CPU 资源、IO 资源等，并且数据量越大，占用操作系统资源就越严重。</p></li>
 <li><p>NAS 介绍</p>
-<p>网络接入存储（Network-Attached Storage）简称 NAS，它通过网络交换机连接存储系统和服务器，建立专门用于数据存储的私有网络，用户通过 TCP/IP 协议访问数据，采用业界标准文件共享协议如 NFS、HTTP、CIFS 来实现基于文件级的数据共享。NAS 存储使文件共享访问变得更方便和快捷，并且能很容易地增加存储容量。通过企业化的文件服务器和存储技术相结合，NAS 为那些需要共享大量文件数据的企业提供了一个高效的、可靠的、高性价比的解决方案。但是 NAS 也有一定的局限性，它会受到网络带宽和网络拥堵的影响，在一定程度上限制了 NAS 的网络传输能力。</p>
-</li>
+<p>网络接入存储（Network-Attached Storage）简称 NAS，它通过网络交换机连接存储系统和服务器，建立专门用于数据存储的私有网络，用户通过 TCP/IP 协议访问数据，采用业界标准文件共享协议如 NFS、HTTP、CIFS 来实现基于文件级的数据共享。NAS 存储使文件共享访问变得更方便和快捷，并且能很容易地增加存储容量。通过企业化的文件服务器和存储技术相结合，NAS 为那些需要共享大量文件数据的企业提供了一个高效的、可靠的、高性价比的解决方案。但是 NAS 也有一定的局限性，它会受到网络带宽和网络拥堵的影响，在一定程度上限制了 NAS 的网络传输能力。</p></li>
 <li><p>SAN 介绍</p>
 <p>存储区域网络（Storage Area Network）简称 SAN，它是一种通过光纤交换机、光线路由器、光纤集线器等设备将磁盘阵列、磁带等存储设备与相关服务器连接起来的高速专用子网。</p>
-<p>SAN 由三个部分组成，分别是连接设备（如路由器、光纤交换机和 Hub）、接口（如 SCSI、FC）、通信协议（如 IP 和 SCSI）。这三部分再加上存储设备和服务器就构成了一个 SAN 系统。SAN 提供了一个灵活的、高性能的和高扩展性的存储网络环境，它可以更加有效地传输海量地数据块。由于采用了光纤接口，因此 SAN 还具有更高的带宽，同时，SAN 也使统一管理和集中控制实现简化。现在 SAN 已经广泛应用于 ISP 和银行等，随着用户业务量增大，SAN 的应用前景将越来越光明。</p>
-</li>
+<p>SAN 由三个部分组成，分别是连接设备（如路由器、光纤交换机和 Hub）、接口（如 SCSI、FC）、通信协议（如 IP 和 SCSI）。这三部分再加上存储设备和服务器就构成了一个 SAN 系统。SAN 提供了一个灵活的、高性能的和高扩展性的存储网络环境，它可以更加有效地传输海量地数据块。由于采用了光纤接口，因此 SAN 还具有更高的带宽，同时，SAN 也使统一管理和集中控制实现简化。现在 SAN 已经广泛应用于 ISP 和银行等，随着用户业务量增大，SAN 的应用前景将越来越光明。</p></li>
 </ol>
-<h3 id="iSCSI-的概念"><a href="#iSCSI-的概念" class="headerlink" title="iSCSI 的概念"></a>iSCSI 的概念</h3><p>iSCSI，即 internet SCSI，是 IETF 制定的一项标准，用于将 SCSI 数据块映射为以太网数据包。从根本上说，它是一种基于 IP Storage 理论的新型存储技术，该技术将存储行业广泛应用的 SCSI 接口技术 IP 网络技术相结合，可以在 IP 网络上构建 SAN。简单地说，iSCSI 就是在 IP 网络上运行 SCSI 协议的一种网络存储技术。iSCSI 最初由 Cisco 和 IBM 两家开发，并且得到了广大 IP 存储技术爱好者的大力支持，这几年迅速的发展壮大。</p>
-<h3 id="FC-SAN-与-IP-SAN"><a href="#FC-SAN-与-IP-SAN" class="headerlink" title="FC SAN 与 IP SAN"></a>FC SAN 与 IP SAN</h3><p>在 iSCSI 技术出现后，通过 IP 技术搭建的存储网络也应运而生，SAN 技术也就出现了两种不同的实现方式，即 FC SAN 与 IP SAN。简单来说，以光纤搭建的存储网络就是 FC SAN，以 SCSI 技术搭建的存储网络叫做 IP SAN。</p>
+<h3 id="iscsi-的概念">iSCSI 的概念</h3>
+<p>iSCSI，即 internet SCSI，是 IETF 制定的一项标准，用于将 SCSI 数据块映射为以太网数据包。从根本上说，它是一种基于 IP Storage 理论的新型存储技术，该技术将存储行业广泛应用的 SCSI 接口技术 IP 网络技术相结合，可以在 IP 网络上构建 SAN。简单地说，iSCSI 就是在 IP 网络上运行 SCSI 协议的一种网络存储技术。iSCSI 最初由 Cisco 和 IBM 两家开发，并且得到了广大 IP 存储技术爱好者的大力支持，这几年迅速的发展壮大。</p>
+<h3 id="fc-san-与-ip-san">FC SAN 与 IP SAN</h3>
+<p>在 iSCSI 技术出现后，通过 IP 技术搭建的存储网络也应运而生，SAN 技术也就出现了两种不同的实现方式，即 FC SAN 与 IP SAN。简单来说，以光纤搭建的存储网络就是 FC SAN，以 SCSI 技术搭建的存储网络叫做 IP SAN。</p>
 <p>作为 SAN 的两种实现方式，他们各有优劣，下面从几个方面分别阐述。</p>
-<ol>
+<ol type="1">
 <li>在数据传输方式上，FC SAN 与 IP SAN 都采用块协议方式来完成，这是他们的相同点。</li>
 <li>在传输速度上，就目前传输速率而言，FC SAN（2Gbit/s）最快，iSCSI（1Gbit/s）次之。</li>
 <li>在传输距离上，FC SAN 理论上可以达到 100 公里，而事实上，传输 50 公里过后，会出现瓶颈。而通过 IP 网络的 iSCSI 技术在理论上没有距离的限制，即 iSCSI 可以进行没有距离限制的数据传输。</li>
 <li>在管理及维护成本上，架设 FC SAN 网络需要投入很多硬件成本吗，并且需要特定的工具软件进行操作管理，而 IP SAN 构建成本低廉，由于 iSCSI 是通过 IP 网络来传输数据和分配存储资源的，因此只要在现有的网络上进行管理和使用即可，这样就可以省下大笔的管理费用及培训成本。</li>
 </ol>
 <p>当然，iSCSI 的推广还存在着安全性、软硬件适配问题等，但是相信在未来的网络存储世界里，IP SAN 绝对会拥有一席之地。</p>
-<h3 id="iSCSI-的组成"><a href="#iSCSI-的组成" class="headerlink" title="iSCSI 的组成"></a>iSCSI 的组成</h3><p>一个简单的 iSCSI 系统大致有以下部分组成：</p>
-<ol>
+<h3 id="iscsi-的组成">iSCSI 的组成</h3>
+<p>一个简单的 iSCSI 系统大致有以下部分组成：</p>
+<ol type="1">
 <li>iSCSI Initiator 或者 iSCSI HBA</li>
 <li>iSCSI Target</li>
 <li>以太网交换机</li>
@@ -691,10 +692,6 @@
 
 
 
-  <script  src="/js/local-search.js" ></script>
-
-
-
 
 
 
@@ -707,6 +704,21 @@
       typing(title)
       
     })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
   </script>
 
 

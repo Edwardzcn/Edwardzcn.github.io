@@ -14,9 +14,11 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="第 0 章 Linux 的文件权限和目录配置用户与用户组用户：由于 Linux 被设计为一个多用户、多任务的系统，用户概念在 Linux 中极为重要。
+  <meta name="description" content="第 0 章 Linux 的文件权限和目录配置
+用户与用户组
+用户：由于 Linux 被设计为一个多用户、多任务的系统，用户概念在 Linux 中极为重要。
 文件所有者：为了应对多人工作环境，分离不同用户的工作环境，设置了文件的归属权（文件所有者的角色）。
-用户组：团队开发协作的需要，在用户概念之上设置了用户组的权限管理级别。每组成员相对而言更易互相修改对方的数据，但是其他组的组员则不能看到本组的文件内">
+用户组：团队开发协作的需要，在用户概念之上设置了用户组的权限管理级别。每组成员相对而言更易互相修改对方的数据，但是其他组的组员则不能看到">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
   
@@ -62,11 +64,12 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
 
 <body>
@@ -118,7 +121,7 @@
               <a class="nav-link dropdown-toggle" target="_self" role="button"
                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -189,7 +192,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -299,14 +302,20 @@
             <h1 style="display: none">操作系统学习——Linux基础学习篇（第6章）</h1>
             
             <div class="markdown-body">
-              <h1 id="第-0-章-Linux-的文件权限和目录配置"><a href="#第-0-章-Linux-的文件权限和目录配置" class="headerlink" title="第 0 章 Linux 的文件权限和目录配置"></a>第 0 章 Linux 的文件权限和目录配置</h1><h1 id="用户与用户组"><a href="#用户与用户组" class="headerlink" title="用户与用户组"></a>用户与用户组</h1><p><strong>用户</strong>：由于 Linux 被设计为一个多用户、多任务的系统，用户概念在 Linux 中极为重要。</p>
+              <h1 id="第-0-章-linux-的文件权限和目录配置">第 0 章 Linux 的文件权限和目录配置</h1>
+<h1 id="用户与用户组">用户与用户组</h1>
+<p><strong>用户</strong>：由于 Linux 被设计为一个多用户、多任务的系统，用户概念在 Linux 中极为重要。</p>
 <p><strong>文件所有者</strong>：为了应对多人工作环境，分离不同用户的工作环境，设置了文件的归属权（文件所有者的角色）。</p>
 <p><strong>用户组</strong>：团队开发协作的需要，在用户概念之上设置了用户组的权限管理级别。每组成员相对而言更易互相修改对方的数据，但是其他组的组员则不能看到本组的文件内容。</p>
-<h1 id="Linux-文件权限概念"><a href="#Linux-文件权限概念" class="headerlink" title="Linux 文件权限概念"></a>Linux 文件权限概念</h1><h2 id="Linux-文件属性"><a href="#Linux-文件属性" class="headerlink" title="Linux 文件属性"></a>Linux 文件属性</h2><p>执行命令</p>
+<h1 id="linux-文件权限概念">Linux 文件权限概念</h1>
+<h2 id="linux-文件属性">Linux 文件属性</h2>
+<p>执行命令</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ls -al<br></code></pre></td></tr></table></figure>
 <p>会得到下面的结果</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0Linux%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E7%AF%87/6.1.png" srcset="/img/loading.gif" lazyload alt="6.1"></p>
-<ol>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0Linux%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E7%AF%87/6.1.png" srcset="/img/loading.gif" lazyload alt="6.1" /><figcaption>6.1</figcaption>
+</figure>
+<ol type="1">
 <li><p>第一列代表文件权限（permission）</p>
 <p>第一个字符</p>
 <ul>
@@ -322,32 +331,28 @@
 <li>[w]表示可写</li>
 <li>[x]表示可执行</li>
 <li>第一组为文件所有者权限、第二组为同用户组权限、第三组为其他非本用户组的权限。</li>
-</ul>
-</li>
-<li><p>第二列表示有多少文件名连接到此节点（i-node）</p>
-</li>
+</ul></li>
+<li>第二列表示有多少文件名连接到此节点（i-node）</li>
 <li>第三列表示这个文件的所有者账号</li>
 <li>第四列表示这个文件所属的用户组</li>
 <li>第五列表示文件大小（默认为 B）</li>
 <li>第六列表示文件创建日期或者最近修改日期</li>
-<li>第七列表示文件名</li>
+<li><p>第七列表示文件名</p></li>
 </ol>
-<h2 id="改变文件属性和权限"><a href="#改变文件属性和权限" class="headerlink" title="改变文件属性和权限"></a>改变文件属性和权限</h2><p>三个命令</p>
-<ol>
+<h2 id="改变文件属性和权限">改变文件属性和权限</h2>
+<p>三个命令</p>
+<ol type="1">
 <li><p>chgrp 改变文件所属的用户组</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">chgrp [-R] 账号名称：组名 文件或目录<br></code></pre></td></tr></table></figure>
-<p>-R 参数表示是否要递归改变子目录下的所有文件</p>
-</li>
+<p>-R 参数表示是否要递归改变子目录下的所有文件</p></li>
 <li><p>chown 改变文件所有者</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">chown [-R] 账号名称：组名 文件或目录<br></code></pre></td></tr></table></figure>
-<p>-R 参数同上</p>
-</li>
+<p>-R 参数同上</p></li>
 <li><p>chmod 改变文件的权限</p>
 <ul>
 <li><p>数字修改</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">chmod xxx 文件目录<br></code></pre></td></tr></table></figure>
-<p>将三端权限二进制化（比如 777 就表示权限全开）</p>
-</li>
+<p>将三端权限二进制化（比如 777 就表示权限全开）</p></li>
 <li><p>符号修改</p>
 <pre><code>    | 命令 | 组对象 | 操作符 | 权限 | 文件名 |
     | :-----: | :-----: | :-----: | :-----: | :-------: |
@@ -355,54 +360,55 @@
 
     eg
 
-    <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">chmod u+r,o=rwx  xxx<br></code></pre></td></tr></table></figure>
-</code></pre><a id="more"></a>
-</li>
-</ul>
-</li>
+    <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">chmod u+r,o=rwx  xxx<br></code></pre></td></tr></table></figure></code></pre>
+<a id="more"></a></li>
+</ul></li>
 </ol>
-<h2 id="目录与文件的权限意义"><a href="#目录与文件的权限意义" class="headerlink" title="目录与文件的权限意义"></a>目录与文件的权限意义</h2><ol>
+<h2 id="目录与文件的权限意义">目录与文件的权限意义</h2>
+<ol type="1">
 <li><p>对文件的意义</p>
 <ul>
 <li>r(read)表示可以读此文件的具体内容</li>
 <li>w(write)表示可以编辑、新增或是修改文件的内容（但不含删除）</li>
 <li>x(execute)表示可以被系统执行的权限</li>
-</ul>
-</li>
+</ul></li>
 <li><p>对目录的意义</p>
 <ul>
 <li>r 表示可以读取目录结构权限，可以查询到文件名数据，也可以利用<code>ls</code>命令来获取列表内容的显示</li>
 <li>w 表示可以<strong>新建文件/目录，删除已经存在的文件和目录（无视此文件/目录的），重命名，转移文件/目录的位置</strong>。（也即，删除一个文件的权限是跟是否具备此文件所在目录的写权限有关，而跟文件本身权限无关）</li>
 <li>x 表示是否可以进入该目录成为工作目录（working directory）的权限。</li>
-</ul>
-</li>
+</ul></li>
 </ol>
-<h2 id="Linux-文件种类与扩展名"><a href="#Linux-文件种类与扩展名" class="headerlink" title="Linux 文件种类与扩展名"></a>Linux 文件种类与扩展名</h2><h3 id="文件种类"><a href="#文件种类" class="headerlink" title="文件种类"></a>文件种类</h3><p>普通文件、纯文本文件（cat 的文件）、二进制文件、数据格式文件</p>
+<h2 id="linux-文件种类与扩展名">Linux 文件种类与扩展名</h2>
+<h3 id="文件种类">文件种类</h3>
+<p>普通文件、纯文本文件（cat 的文件）、二进制文件、数据格式文件</p>
 <p>目录（d）</p>
 <p>连接文件（l）类似 Windows 下面的快捷方式</p>
 <p>设备与设备文件（device）：通常在/dev 这个目录，通常分为两种：</p>
-<ol>
+<ol type="1">
 <li><p>块（block）设备文件</p>
-<p>一些存储数据供系统随机访问的接口设备，例如硬盘等。</p>
-</li>
+<p>一些存储数据供系统随机访问的接口设备，例如硬盘等。</p></li>
 <li><p>字符（character）设备文件</p>
-<p>一些串行端口接口设备，特征是一次性读取，不能够截断输出。</p>
-</li>
+<p>一些串行端口接口设备，特征是一次性读取，不能够截断输出。</p></li>
 </ol>
 <p>套接字（socket）：网络进程通信，通常在/var/run 中</p>
 <p>管道（FIFO，pipe）：解决多个程序同时访问一个文件造成的错误问题</p>
-<h3 id="文件扩展名"><a href="#文件扩展名" class="headerlink" title="文件扩展名"></a>文件扩展名</h3><p>只是以适当的扩展名来表示是什么种类，而实际能否运行依赖数据+execute 执行权限（这一点和 Windows 判断可执行程序有很大的不同）。</p>
+<h3 id="文件扩展名">文件扩展名</h3>
+<p>只是以适当的扩展名来表示是什么种类，而实际能否运行依赖数据+execute 执行权限（这一点和 Windows 判断可执行程序有很大的不同）。</p>
 <p><code>*.sh</code>：脚本或批处理文件，主要用 shell 写。</p>
 <p><code>*Z</code>、<code>*.tar</code>、<code>*.tar.gz</code>、<code>*.zip</code>等：压缩文件，由不同压缩软件使用决定。</p>
 <p><code>*.html</code>等：网页相关文件</p>
 <p>长度限制：默认使用 Ext2/Ext3 文件系统，单一文件名/目录名限制长度为 255 字符、包含完整路径名称及目录的完整文件名为 4096 个字符。</p>
-<h2 id="Linux-目录配置"><a href="#Linux-目录配置" class="headerlink" title="Linux 目录配置"></a>Linux 目录配置</h2><h3 id="Linux-目录配置标准：FHS"><a href="#Linux-目录配置标准：FHS" class="headerlink" title="Linux 目录配置标准：FHS"></a>Linux 目录配置标准：FHS</h3><ul>
+<h2 id="linux-目录配置">Linux 目录配置</h2>
+<h3 id="linux-目录配置标准fhs">Linux 目录配置标准：FHS</h3>
+<ul>
 <li>/ (root，根目录)，与开机系统有关</li>
 <li>/usr （UNIX software resource）：与软件安装/执行有关</li>
 <li>/var （variable）：与系统运作过程有关</li>
 </ul>
 <p>其他详情可以自行百度，或者查看目录树（单独再找机会整理一下）</p>
-<h3 id="绝对路径与相对路径"><a href="#绝对路径与相对路径" class="headerlink" title="绝对路径与相对路径"></a>绝对路径与相对路径</h3><p>区别<code>/var/log</code>（绝对路径）和<code>../var/log</code>（相对路径）</p>
+<h3 id="绝对路径与相对路径">绝对路径与相对路径</h3>
+<p>区别<code>/var/log</code>（绝对路径）和<code>../var/log</code>（相对路径）</p>
 <blockquote>
 <p>网络文件常常提到类似“。/run.sh”的数据，这个命令的意义是什？</p>
 <p>答：由于命令执行需要变量（bash 章节会提及）的支持，若执行文件放置在本目录并且本目录并非正规的执行文件目录（/bin、/usr/bin 等为正规），此时要执行命令就要严格指定该执行文件。“./”代表“本目录”的意思，所以“./run.sh”代表执行本目录名下的 run.sh 文件</p>
@@ -646,10 +652,6 @@
 
 
 
-  <script  src="/js/local-search.js" ></script>
-
-
-
 
 
 
@@ -662,6 +664,21 @@
       typing(title)
       
     })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
   </script>
 
 

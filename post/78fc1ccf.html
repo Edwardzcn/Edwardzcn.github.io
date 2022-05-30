@@ -14,10 +14,10 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="原始题目给定由  N  个小写字母字符串组成的数组  A，其中每个字符串长度相等。
-选取一个删除索引序列，对于  A  中的每个字符串，删除对应每个索引处的字符。
-比如，有  A = [“abcdef”, “uvwxyz”]，删除索引序列  {0, 2, 3}，删除后  A  为[“bef”, “vyz”]。
-假设，我们选择了一组删除索引  D，那么在执行删除操作之后，最终得到的数组的元素是按 字">
+  <meta name="description" content="原始题目
+给定由  N  个小写字母字符串组成的数组  A，其中每个字符串长度相等。
+选取一个删除索引序列，对于  A  中的每个字符串，删除对应每个索引处的字符。
+比如，有  A = [&amp;quot;abcdef&amp;quot;, &amp;quot;uvwxyz&amp;quot;]，删除索引序列  {0, 2, 3}，删除后  A  为[&amp;quot;bef&amp;quot;, &amp;quot;vyz&amp;quot;]。">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
   
@@ -63,11 +63,12 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
 
 <body>
@@ -119,7 +120,7 @@
               <a class="nav-link dropdown-toggle" target="_self" role="button"
                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -190,7 +191,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -257,7 +258,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      672 字
+      680 字
     </span>
   
 
@@ -300,33 +301,35 @@
             <h1 style="display: none">【LeetCode-955】解题报告（暴力，贪心）</h1>
             
             <div class="markdown-body">
-              <h1 id="原始题目"><a href="#原始题目" class="headerlink" title="原始题目"></a>原始题目</h1><p>给定由  N  个小写字母字符串组成的数组  A，其中每个字符串长度相等。</p>
-<p>选取一个删除索引序列，对于  A  中的每个字符串，删除对应每个索引处的字符。</p>
-<p>比如，有  A = [“abcdef”, “uvwxyz”]，删除索引序列  {0, 2, 3}，删除后  A  为[“bef”, “vyz”]。</p>
-<p>假设，我们选择了一组删除索引  D，那么在执行删除操作之后，最终得到的数组的元素是按 字典序（A[0] &lt;= A[1] &lt;= A[2] … &lt;= A[A.length - 1]）排列的，然后请你返回  D.length  的最小可能值。</p>
-<h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><ol>
+              <h1 id="原始题目">原始题目</h1>
+<p>给定由  N  个小写字母字符串组成的数组  A，其中每个字符串长度相等。</p>
+<p>选取一个删除索引序列，对于  A  中的每个字符串，删除对应每个索引处的字符。</p>
+<p>比如，有  A = [&quot;abcdef&quot;, &quot;uvwxyz&quot;]，删除索引序列  {0, 2, 3}，删除后  A  为[&quot;bef&quot;, &quot;vyz&quot;]。</p>
+<p>假设，我们选择了一组删除索引  D，那么在执行删除操作之后，最终得到的数组的元素是按 字典序（A[0] &lt;= A[1] &lt;= A[2] ... &lt;= A[A.length - 1]）排列的，然后请你返回  D.length  的最小可能值。</p>
+<h1 id="解题思路">解题思路</h1>
+<ol type="1">
 <li><p>裸枚举</p>
-<p>对于每个位置，判断整体是否符合字典序，复杂度$O(WN^{2})$</p>
-</li>
+<p>对于每个位置，判断整体是否符合字典序，复杂度<span class="math inline">\(O(WN^{2})\)</span></p></li>
 <li><p>贪心</p>
-<p>对于每个间隔位置，用一个 vis 数组保存前面序列是否出现$A[i-1][j] &lt; A[i][j]$。</p>
+<p>对于每个间隔位置，用一个 vis 数组保存前面序列是否出现<span class="math inline">\(A[i-1][j] &lt; A[i][j]\)</span>。</p>
 <p>遍历每个位置，不用判断整体字符串，只需考虑新加入的列，结合 vis 数组，如何结合？</p>
 <ul>
-<li>若$vis[i] = 0$，表明之前间隔两边合法字符总是相同字符（反序字符列可以证明被删除），对于当前新加入的列，分三种情况，若出现正序，则更新为$vis[i]=1$；若相等，保持$vis[i]=0$；若出现反序，删除列，保持$vis[i]=0$。</li>
-<li>若$vis[i]=1$，表明之前间隔两边出现至少一次正序，那该间隔无需再考虑，间隔将题目要求分割到不同段的子要求。</li>
-</ul>
-</li>
+<li>若<span class="math inline">\(vis[i] = 0\)</span>，表明之前间隔两边合法字符总是相同字符（反序字符列可以证明被删除），对于当前新加入的列，分三种情况，若出现正序，则更新为<span class="math inline">\(vis[i]=1\)</span>；若相等，保持<span class="math inline">\(vis[i]=0\)</span>；若出现反序，删除列，保持<span class="math inline">\(vis[i]=0\)</span>。</li>
+<li>若<span class="math inline">\(vis[i]=1\)</span>，表明之前间隔两边出现至少一次正序，那该间隔无需再考虑，间隔将题目要求分割到不同段的子要求。</li>
+</ul></li>
 </ol>
 <a id="more"></a>
-<h1 id="解题代码"><a href="#解题代码" class="headerlink" title="解题代码"></a>解题代码</h1><ul>
+<h1 id="解题代码">解题代码</h1>
+<ul>
 <li>裸枚举</li>
 </ul>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;bits/stdc++.h&gt;</span></span><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> <span class="hljs-built_in">std</span>;<br><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">long</span> <span class="hljs-keyword">long</span> ll;<br><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> <span class="hljs-keyword">long</span> ull;<br><span class="hljs-keyword">typedef</span> <span class="hljs-built_in">pair</span>&lt;<span class="hljs-keyword">int</span>, <span class="hljs-keyword">int</span>&gt; pii;<br><span class="hljs-keyword">typedef</span> <span class="hljs-built_in">pair</span>&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">string</span>&gt; pss;<br><span class="hljs-keyword">typedef</span> <span class="hljs-built_in">vector</span>&lt;<span class="hljs-keyword">int</span>&gt; vi;<br><span class="hljs-keyword">typedef</span> <span class="hljs-built_in">vector</span>&lt;<span class="hljs-built_in">string</span>&gt; vs;<br><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> rep(i, a, n) for (int i = a; i &lt; n; ++i)</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> per(i, a, n) for (int i = n - 1; i &gt;= a; --i)</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> all(x) x.begin(), x.end()</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> mp make_pair</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> pb push_back</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> np next_permutation</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> fi first</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> se second</span><br><br><span class="hljs-function"><span class="hljs-keyword">bool</span> <span class="hljs-title">compare</span><span class="hljs-params">(<span class="hljs-built_in">vector</span>&lt;<span class="hljs-built_in">string</span>&gt;&amp; A)</span></span><br><span class="hljs-function"></span>&#123;<br>    rep(i, <span class="hljs-number">1</span>, A.size())<br>    &#123;<br>        <span class="hljs-keyword">if</span> (A[i - <span class="hljs-number">1</span>] &gt; A[i]) &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span> &#123;</span><br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">minDeletionSize</span><span class="hljs-params">(<span class="hljs-built_in">vector</span>&lt;<span class="hljs-built_in">string</span>&gt;&amp; A)</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-function"><span class="hljs-built_in">vector</span>&lt;<span class="hljs-built_in">string</span>&gt; <span class="hljs-title">test</span><span class="hljs-params">(A.size(), <span class="hljs-string">&quot;&quot;</span>)</span></span>;<br>        <span class="hljs-keyword">int</span> ans = <span class="hljs-number">0</span>;<br>        rep(i, <span class="hljs-number">0</span>, A.front().size())<br>        &#123;<br>            rep(j, <span class="hljs-number">0</span>, A.size())<br>            &#123;<br>                test[j].pb(A[j][i]);<br>            &#125;<br>            <span class="hljs-keyword">if</span> (!compare(test)) &#123;<br>                ans++;<br>                rep(j, <span class="hljs-number">0</span>, A.size())<br>                &#123;<br>                    test[j].pop_back();<br>                &#125;<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">return</span> ans;<br>    &#125;<br>&#125;;<br></code></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;bits/stdc++.h&gt;</span></span><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">long</span> <span class="hljs-keyword">long</span> ll;<br><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> <span class="hljs-keyword">long</span> ull;<br><span class="hljs-keyword">typedef</span> pair&lt;<span class="hljs-keyword">int</span>, <span class="hljs-keyword">int</span>&gt; pii;<br><span class="hljs-keyword">typedef</span> pair&lt;string, string&gt; pss;<br><span class="hljs-keyword">typedef</span> vector&lt;<span class="hljs-keyword">int</span>&gt; vi;<br><span class="hljs-keyword">typedef</span> vector&lt;string&gt; vs;<br><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> rep(i, a, n) for (int i = a; i &lt; n; ++i)</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> per(i, a, n) for (int i = n - 1; i &gt;= a; --i)</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> all(x) x.begin(), x.end()</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> mp make_pair</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> pb push_back</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> np next_permutation</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> fi first</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> se second</span><br><br><span class="hljs-function"><span class="hljs-keyword">bool</span> <span class="hljs-title">compare</span><span class="hljs-params">(vector&lt;string&gt;&amp; A)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-built_in">rep</span>(i, <span class="hljs-number">1</span>, A.<span class="hljs-built_in">size</span>())<br>    &#123;<br>        <span class="hljs-keyword">if</span> (A[i - <span class="hljs-number">1</span>] &gt; A[i]) &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span> &#123;</span><br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">minDeletionSize</span><span class="hljs-params">(vector&lt;string&gt;&amp; A)</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-function">vector&lt;string&gt; <span class="hljs-title">test</span><span class="hljs-params">(A.size(), <span class="hljs-string">&quot;&quot;</span>)</span></span>;<br>        <span class="hljs-keyword">int</span> ans = <span class="hljs-number">0</span>;<br>        <span class="hljs-built_in">rep</span>(i, <span class="hljs-number">0</span>, A.<span class="hljs-built_in">front</span>().<span class="hljs-built_in">size</span>())<br>        &#123;<br>            <span class="hljs-built_in">rep</span>(j, <span class="hljs-number">0</span>, A.<span class="hljs-built_in">size</span>())<br>            &#123;<br>                test[j].<span class="hljs-built_in">pb</span>(A[j][i]);<br>            &#125;<br>            <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">compare</span>(test)) &#123;<br>                ans++;<br>                <span class="hljs-built_in">rep</span>(j, <span class="hljs-number">0</span>, A.<span class="hljs-built_in">size</span>())<br>                &#123;<br>                    test[j].<span class="hljs-built_in">pop_back</span>();<br>                &#125;<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">return</span> ans;<br>    &#125;<br>&#125;;<br></code></pre></td></tr></table></figure>
 <ul>
 <li>贪心</li>
 </ul>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span> &#123;</span><br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">minDeletionSize</span><span class="hljs-params">(<span class="hljs-built_in">vector</span>&lt;<span class="hljs-built_in">string</span>&gt;&amp; A)</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-keyword">int</span> ans = <span class="hljs-number">0</span>;<br>        <span class="hljs-function">vi <span class="hljs-title">pos</span><span class="hljs-params">(A.size(), <span class="hljs-number">0</span>)</span></span>;<br>        rep(i, <span class="hljs-number">0</span>, A.front().size())<br>        &#123;<br>            <span class="hljs-keyword">int</span> flag = <span class="hljs-number">0</span>;<br>            rep(j, <span class="hljs-number">1</span>, A.size())<br>            &#123;<br>                <span class="hljs-keyword">if</span> (!pos[j] &amp;&amp; A[j][i] &lt; A[j - <span class="hljs-number">1</span>][i]) &#123;<br>                    ans++;<br>                    flag = <span class="hljs-number">1</span>;<br>                    <span class="hljs-keyword">break</span>;<br>                &#125;<br>            &#125;<br>            <span class="hljs-keyword">if</span> (flag)<br>                <span class="hljs-keyword">continue</span>;<br>            rep(j, <span class="hljs-number">1</span>, A.size())<br>            &#123;<br>                <span class="hljs-keyword">if</span> (A[j - <span class="hljs-number">1</span>][i] &lt; A[j][i]) &#123;<br>                    pos[j] = <span class="hljs-number">1</span>;<br>                &#125;<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">return</span> ans;<br>    &#125;<br>&#125;;<br></code></pre></td></tr></table></figure>
-<h1 id="收获与反思"><a href="#收获与反思" class="headerlink" title="收获与反思"></a>收获与反思</h1><p>暂无</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span> &#123;</span><br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">minDeletionSize</span><span class="hljs-params">(vector&lt;string&gt;&amp; A)</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-keyword">int</span> ans = <span class="hljs-number">0</span>;<br>        <span class="hljs-function">vi <span class="hljs-title">pos</span><span class="hljs-params">(A.size(), <span class="hljs-number">0</span>)</span></span>;<br>        <span class="hljs-built_in">rep</span>(i, <span class="hljs-number">0</span>, A.<span class="hljs-built_in">front</span>().<span class="hljs-built_in">size</span>())<br>        &#123;<br>            <span class="hljs-keyword">int</span> flag = <span class="hljs-number">0</span>;<br>            <span class="hljs-built_in">rep</span>(j, <span class="hljs-number">1</span>, A.<span class="hljs-built_in">size</span>())<br>            &#123;<br>                <span class="hljs-keyword">if</span> (!pos[j] &amp;&amp; A[j][i] &lt; A[j - <span class="hljs-number">1</span>][i]) &#123;<br>                    ans++;<br>                    flag = <span class="hljs-number">1</span>;<br>                    <span class="hljs-keyword">break</span>;<br>                &#125;<br>            &#125;<br>            <span class="hljs-keyword">if</span> (flag)<br>                <span class="hljs-keyword">continue</span>;<br>            <span class="hljs-built_in">rep</span>(j, <span class="hljs-number">1</span>, A.<span class="hljs-built_in">size</span>())<br>            &#123;<br>                <span class="hljs-keyword">if</span> (A[j - <span class="hljs-number">1</span>][i] &lt; A[j][i]) &#123;<br>                    pos[j] = <span class="hljs-number">1</span>;<br>                &#125;<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">return</span> ans;<br>    &#125;<br>&#125;;<br></code></pre></td></tr></table></figure>
+<h1 id="收获与反思">收获与反思</h1>
+<p>暂无</p>
 
             </div>
             <hr>
@@ -567,10 +570,6 @@
 
 
 
-  <script  src="/js/local-search.js" ></script>
-
-
-
 
 
 
@@ -583,6 +582,21 @@
       typing(title)
       
     })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
   </script>
 
 

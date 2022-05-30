@@ -14,8 +14,10 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="自定义类型读 Haskell 代码时发现有两种自定义类型的方式，速成学习做以下记录。
-data 关键字+枚举1234567data TopDecl =    DeclareType     !TypeDecl  | DeclareConst    !ConstDef  | DeclareNode     !NodeDecl  | DeclareNodeInst !NodeInstDecl  | D">
+  <meta name="description" content="自定义类型
+读 Haskell 代码时发现有两种自定义类型的方式，速成学习做以下记录。
+data 关键字+枚举
+1234567data TopDecl =    DeclareType     !TypeDecl  | DeclareConst    !ConstDef  | DeclareNode     !NodeDecl  | DeclareNodeInst !NodeInstDecl">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
   
@@ -61,11 +63,12 @@ data 关键字+枚举1234567data TopDecl =    DeclareType     !TypeDecl  | Decla
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
 
 <body>
@@ -117,7 +120,7 @@ data 关键字+枚举1234567data TopDecl =    DeclareType     !TypeDecl  | Decla
               <a class="nav-link dropdown-toggle" target="_self" role="button"
                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -188,7 +191,7 @@ data 关键字+枚举1234567data TopDecl =    DeclareType     !TypeDecl  | Decla
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -255,7 +258,7 @@ data 关键字+枚举1234567data TopDecl =    DeclareType     !TypeDecl  | Decla
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      235 字
+      236 字
     </span>
   
 
@@ -298,12 +301,15 @@ data 关键字+枚举1234567data TopDecl =    DeclareType     !TypeDecl  | Decla
             <h1 style="display: none">Haskell——自定义数据类型</h1>
             
             <div class="markdown-body">
-              <h1 id="自定义类型"><a href="#自定义类型" class="headerlink" title="自定义类型"></a>自定义类型</h1><p>读 Haskell 代码时发现有两种自定义类型的方式，速成学习做以下记录。</p>
-<h2 id="data-关键字-枚举"><a href="#data-关键字-枚举" class="headerlink" title="data 关键字+枚举"></a>data 关键字+枚举</h2><figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs Haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">TopDecl</span> =</span><br>    <span class="hljs-type">DeclareType</span>     !<span class="hljs-type">TypeDecl</span><br>  | <span class="hljs-type">DeclareConst</span>    !<span class="hljs-type">ConstDef</span><br>  | <span class="hljs-type">DeclareNode</span>     !<span class="hljs-type">NodeDecl</span><br>  | <span class="hljs-type">DeclareNodeInst</span> !<span class="hljs-type">NodeInstDecl</span><br>  | <span class="hljs-type">DeclareContract</span> !<span class="hljs-type">ContractDecl</span><br>    <span class="hljs-keyword">deriving</span> <span class="hljs-type">Show</span><br></code></pre></td></tr></table></figure>
+              <h1 id="自定义类型">自定义类型</h1>
+<p>读 Haskell 代码时发现有两种自定义类型的方式，速成学习做以下记录。</p>
+<h2 id="data-关键字枚举">data 关键字+枚举</h2>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs Haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">TopDecl</span> =</span><br>    <span class="hljs-type">DeclareType</span>     !<span class="hljs-type">TypeDecl</span><br>  | <span class="hljs-type">DeclareConst</span>    !<span class="hljs-type">ConstDef</span><br>  | <span class="hljs-type">DeclareNode</span>     !<span class="hljs-type">NodeDecl</span><br>  | <span class="hljs-type">DeclareNodeInst</span> !<span class="hljs-type">NodeInstDecl</span><br>  | <span class="hljs-type">DeclareContract</span> !<span class="hljs-type">ContractDecl</span><br>    <span class="hljs-keyword">deriving</span> <span class="hljs-type">Show</span><br></code></pre></td></tr></table></figure>
 <p>用<code>|</code>分隔的 constructor，constructor 构造器本质上是返回某一类类型的函数。对于多个构造器放在一起柯里化后更好理解。</p>
 <p>如果不加 deriving Show，则不是 Show 类型类实例，不能被 show 函数调用。</p>
 <p>以及如果加上 deriving Eq，就可以直接使用==或/=来判断它们的值的相等性了。Haskell 会先检查两个值的构造器是否一致，再用==来检查其中的每一对字段的数据是否想等。</p>
-<h2 id="data-关键字-记录语法-record-syntax"><a href="#data-关键字-记录语法-record-syntax" class="headerlink" title="data 关键字+记录语法 record syntax"></a>data 关键字+记录语法 record syntax</h2><figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs Haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Package</span> = <span class="hljs-type">Package</span></span><br>  &#123; packageName     :: !<span class="hljs-type">Ident</span><br>  , packageUses     :: ![<span class="hljs-type">Ident</span>]<br>  , packageParams   :: ![<span class="hljs-type">StaticParam</span>]   <span class="hljs-comment">-- ^ Empty list for pacakges</span><br>  , packageProvides :: ![<span class="hljs-type">PackageProvides</span>]<br>  , packageBody     :: ![<span class="hljs-type">TopDecl</span>]<br>  , packageRange    :: !<span class="hljs-type">SourceRange</span><br>  &#125; <span class="hljs-keyword">deriving</span> <span class="hljs-type">Show</span><br></code></pre></td></tr></table></figure>
+<h2 id="data-关键字记录语法-record-syntax">data 关键字+记录语法 record syntax</h2>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs Haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Package</span> = <span class="hljs-type">Package</span></span><br>  &#123; packageName     :: !<span class="hljs-type">Ident</span><br>  , packageUses     :: ![<span class="hljs-type">Ident</span>]<br>  , packageParams   :: ![<span class="hljs-type">StaticParam</span>]   <span class="hljs-comment">-- ^ Empty list for pacakges</span><br>  , packageProvides :: ![<span class="hljs-type">PackageProvides</span>]<br>  , packageBody     :: ![<span class="hljs-type">TopDecl</span>]<br>  , packageRange    :: !<span class="hljs-type">SourceRange</span><br>  &#125; <span class="hljs-keyword">deriving</span> <span class="hljs-type">Show</span><br></code></pre></td></tr></table></figure>
 <p>会自动创建多个函数，比如 packageName :: Package -&gt; !Ident</p>
 <p>允许按字段取值。</p>
 <a id="more"></a>
@@ -543,10 +549,6 @@ data 关键字+枚举1234567data TopDecl =    DeclareType     !TypeDecl  | Decla
 
 
 
-  <script  src="/js/local-search.js" ></script>
-
-
-
 
 
 
@@ -559,6 +561,21 @@ data 关键字+枚举1234567data TopDecl =    DeclareType     !TypeDecl  | Decla
       typing(title)
       
     })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
   </script>
 
 

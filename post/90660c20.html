@@ -14,9 +14,10 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="CHAPTER 2 Formalizing Program SyntaxConcrete Syntax程序定义来自程序语言，程序语言定义来自它的语法。语法描述了哪些短语是结构正确的。语义（semantics）表达了程序的意义（mean）。从concrete syntax，规定了哪些字符序列是可接受的。
-举例算术运算，我们使用文法（grammar）来表述，给出 BNF，这部分理解，略过。
-我们用得到">
+  <meta name="description" content="CHAPTER 2 Formalizing Program Syntax
+Concrete Syntax
+程序定义来自程序语言，程序语言定义来自它的语法。语法描述了哪些短语是结构正确的。语义（semantics）表达了程序的意义（mean）。从concrete syntax，规定了哪些字符序列是可接受的。
+举例算术运算，我们使用文法（grammar）来表述，给出 BNF，这部分理解，略过。">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
   
@@ -62,11 +63,12 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
 
 <body>
@@ -118,7 +120,7 @@
               <a class="nav-link dropdown-toggle" target="_self" role="button"
                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -189,7 +191,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -299,23 +301,28 @@
             <h1 style="display: none">Coq学习——FRAP阅读笔记Chap2</h1>
             
             <div class="markdown-body">
-              <h1 id="CHAPTER-2-Formalizing-Program-Syntax"><a href="#CHAPTER-2-Formalizing-Program-Syntax" class="headerlink" title="CHAPTER 2 Formalizing Program Syntax"></a>CHAPTER 2 Formalizing Program Syntax</h1><h2 id="Concrete-Syntax"><a href="#Concrete-Syntax" class="headerlink" title="Concrete Syntax"></a>Concrete Syntax</h2><p>程序定义来自程序语言，程序语言定义来自它的语法。语法描述了哪些短语是结构正确的。语义（semantics）表达了程序的意义（mean）。从<code>concrete syntax</code>，规定了哪些字符序列是可接受的。</p>
+              <h1 id="chapter-2-formalizing-program-syntax">CHAPTER 2 Formalizing Program Syntax</h1>
+<h2 id="concrete-syntax">Concrete Syntax</h2>
+<p>程序定义来自程序语言，程序语言定义来自它的语法。语法描述了哪些短语是结构正确的。语义（semantics）表达了程序的意义（mean）。从<code>concrete syntax</code>，规定了哪些字符序列是可接受的。</p>
 <p>举例算术运算，我们使用文法（grammar）来表述，给出 BNF，这部分理解，略过。</p>
-<p>我们用得到的最重要的工具将会是<code>inductive definitions</code>，用来解释如何从小集合构造大集合。更一般的表示法，是一组 <code>inference rules</code>来定义一个集合。被定义的集合一般习惯为<strong>符合所有规则的最小集</strong>。举例，给出与上面算术运算 BNF 等价的<code>inference rules</code>定义。$Exp$表示所求集。水平线表示推理，之上为真，则之下为真。</p>
+<p>我们用得到的最重要的工具将会是<code>inductive definitions</code>，用来解释如何从小集合构造大集合。更一般的表示法，是一组 <code>inference rules</code>来定义一个集合。被定义的集合一般习惯为<strong>符合所有规则的最小集</strong>。举例，给出与上面算术运算 BNF 等价的<code>inference rules</code>定义。<span class="math inline">\(Exp\)</span>表示所求集。水平线表示推理，之上为真，则之下为真。</p>
 <a id="more"></a>
-<h2 id="Abstract-Syntax"><a href="#Abstract-Syntax" class="headerlink" title="Abstract Syntax"></a>Abstract Syntax</h2><p>讲了 Concrete Syntax 后，放下它，本书剩余部分关注的是 <code>abstract syntax</code>，它是语言定义的真正核心。现在语言是 <code>abstract syntax trees</code> 抽象语法树，对应 Coq 中的 inductive type 定义或者 Haskell 中的 algebraic datatype 定义。这样的类型可通过用类型枚举它们的 constructor functions（构造函数）。</p>
-<p>对应的构造函数，这些构造函数定义了$Exp$。</p>
+<h2 id="abstract-syntax">Abstract Syntax</h2>
+<p>讲了 Concrete Syntax 后，放下它，本书剩余部分关注的是 <code>abstract syntax</code>，它是语言定义的真正核心。现在语言是 <code>abstract syntax trees</code> 抽象语法树，对应 Coq 中的 inductive type 定义或者 Haskell 中的 algebraic datatype 定义。这样的类型可通过用类型枚举它们的 constructor functions（构造函数）。</p>
+<p>对应的构造函数，这些构造函数定义了<span class="math inline">\(Exp\)</span>。</p>
 <p><strong>诀窍</strong>：将具体语法（方便写出）表示法在头脑中分解为抽象语法（方便理解）</p>
 <p>注意，将 inductive type 每个构造函数对应一个子句？否则构造函数将不完整。同时注意终止条件（Coq 称为 <code>primitive recursion</code> 原初/初始递归）。</p>
-<h2 id="Structural-Induction-Principles"><a href="#Structural-Induction-Principles" class="headerlink" title="Structural Induction Principles"></a>Structural Induction Principles</h2><p>在本书中，我们不会过多地讨论自然数的证明，而是基于将<strong>自然数</strong>视为一个简单的归纳定义集，基于<strong>结构化归纳</strong>提出一个更一般，更强大的概念，这种归纳在形式上包含数学归纳（包含数学归纳！？）。</p>
+<h2 id="structural-induction-principles">Structural Induction Principles</h2>
+<p>在本书中，我们不会过多地讨论自然数的证明，而是基于将<strong>自然数</strong>视为一个简单的归纳定义集，基于<strong>结构化归纳</strong>提出一个更一般，更强大的概念，这种归纳在形式上包含数学归纳（包含数学归纳！？）。</p>
 <p>通过对集合的归纳定义，我们得到了一个证明集合中所有元素的某些谓词的归纳原理（归纳定义和归纳原理的相关性）。需要一种 proof obligation per rule。其实还是比较了解的，就是使用谓词的形式来表示定义。</p>
 <ul>
 <li>结论用谓词表示</li>
 <li>前提用谓词表示，并假定前提的 True，即 inductive hypothesis（归纳前提）。</li>
 </ul>
-<p>理论，$\forall e ∈ Exp, ⌈e⌉ ≤ |e|$，用机器去证明。</p>
+<p>理论，<span class="math inline">\(\forall e ∈ Exp, ⌈e⌉ ≤ |e|\)</span>，用机器去证明。</p>
 <p>这种极小化证明的确如作者所说吓到我了，作者认为定理的验证检查是一种适合机器而不是人的活动，省略一些血腥的细节，这些细节将在伴随的 Coqcode 中找到。</p>
-<h2 id="Decidable-Theories"><a href="#Decidable-Theories" class="headerlink" title="Decidable Theories"></a>Decidable Theories</h2><p>这个还蛮重要的，可判定理论。</p>
+<h2 id="decidable-theories">Decidable Theories</h2>
+<p>这个还蛮重要的，可判定理论。</p>
 <p>（这个不太明白。。）</p>
 <p>徐老师的解答</p>
 <blockquote>
@@ -327,11 +334,10 @@
 <blockquote>
 <p>归纳到可判定问题，交给计算机</p>
 </blockquote>
-<h2 id="Simplification-and-Rewriting"><a href="#Simplification-and-Rewriting" class="headerlink" title="Simplification and Rewriting"></a>Simplification and Rewriting</h2><ul>
-<li><p><code>Simplification</code>：“代入”已有的 theorem 来简化或者得到中间性质。</p>
-</li>
-<li><p><code>Rewriting</code>：“重写”成不同的表现形式（同样是利用已有的理论），来达到目标的样子（接近证明或者是想要得到其他形式的性质）。</p>
-</li>
+<h2 id="simplification-and-rewriting">Simplification and Rewriting</h2>
+<ul>
+<li><p><code>Simplification</code>：“代入”已有的 theorem 来简化或者得到中间性质。</p></li>
+<li><p><code>Rewriting</code>：“重写”成不同的表现形式（同样是利用已有的理论），来达到目标的样子（接近证明或者是想要得到其他形式的性质）。</p></li>
 </ul>
 
             </div>
@@ -569,10 +575,6 @@
 
 
 
-  <script  src="/js/local-search.js" ></script>
-
-
-
 
 
 
@@ -585,6 +587,21 @@
       typing(title)
       
     })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
   </script>
 
 

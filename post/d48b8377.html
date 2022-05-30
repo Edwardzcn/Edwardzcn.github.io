@@ -14,8 +14,10 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="APSys2021 云笔记（三）Evaluating Reliability and Usage Characteristics of Flash-Based Storage in Production SystemsSpeaker: Bianca Schroeder (Professor at University of Toronto, Canada)
-With rapid developme">
+  <meta name="description" content="APSys2021 云笔记（三）
+Evaluating Reliability and Usage Characteristics of Flash-Based Storage in Production Systems
+Speaker: Bianca Schroeder (Professor at University of Toronto, Canada)
+With rapid deve">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
   
@@ -61,11 +63,12 @@ With rapid developme">
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
 
 <body>
@@ -117,7 +120,7 @@ With rapid developme">
               <a class="nav-link dropdown-toggle" target="_self" role="button"
                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -188,7 +191,7 @@ With rapid developme">
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -255,7 +258,7 @@ With rapid developme">
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      509 字
+      526 字
     </span>
   
 
@@ -298,113 +301,142 @@ With rapid developme">
             <h1 style="display: none">APSys2021云笔记（三）</h1>
             
             <div class="markdown-body">
-              <h1 id="APSys2021-云笔记（三）"><a href="#APSys2021-云笔记（三）" class="headerlink" title="APSys2021 云笔记（三）"></a>APSys2021 云笔记（三）</h1><h2 id="Evaluating-Reliability-and-Usage-Characteristics-of-Flash-Based-Storage-in-Production-Systems"><a href="#Evaluating-Reliability-and-Usage-Characteristics-of-Flash-Based-Storage-in-Production-Systems" class="headerlink" title="Evaluating Reliability and Usage Characteristics of Flash-Based Storage in Production Systems"></a>Evaluating Reliability and Usage Characteristics of Flash-Based Storage in Production Systems</h2><p>Speaker: <a target="_blank" rel="noopener" href="http://www.cs.toronto.edu/~bianca/">Bianca Schroeder</a> (Professor at University of Toronto, Canada)</p>
+              <h1 id="apsys2021-云笔记三">APSys2021 云笔记（三）</h1>
+<h2 id="evaluating-reliability-and-usage-characteristics-of-flash-based-storage-in-production-systems">Evaluating Reliability and Usage Characteristics of Flash-Based Storage in Production Systems</h2>
+<p>Speaker: <a target="_blank" rel="noopener" href="http://www.cs.toronto.edu/~bianca/">Bianca Schroeder</a> (Professor at University of Toronto, Canada)</p>
 <p>With rapid development of SSDs</p>
-<h3 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h3><ul>
+<h3 id="motivation">Motivation</h3>
+<ul>
 <li>Storage landscape has changed</li>
 <li>Stora</li>
 </ul>
 <p>Focus on another angke, This talk: the Storage(SSD) reliability.</p>
-<h3 id="This-talk"><a href="#This-talk" class="headerlink" title="This talk"></a>This talk</h3><ul>
+<h3 id="this-talk">This talk</h3>
+<ul>
 <li>Take a look at flash reliability in the wild.</li>
 <li>How can we protect against flash failures?</li>
 </ul>
-<h3 id="Take-a-look-at-flash-reliability"><a href="#Take-a-look-at-flash-reliability" class="headerlink" title="Take a look at flash reliability"></a>Take a look at flash reliability</h3><h4 id="Issue-1-ARR-Annual-replacement-rates"><a href="#Issue-1-ARR-Annual-replacement-rates" class="headerlink" title="Issue 1: ARR Annual replacement rates"></a>Issue 1: ARR Annual replacement rates</h4><ul>
-<li>[FAST’ 20] Drives in Netapp Enterprise Systems.</li>
+<h3 id="take-a-look-at-flash-reliability">Take a look at flash reliability</h3>
+<h4 id="issue-1-arr-annual-replacement-rates">Issue 1: ARR Annual replacement rates</h4>
+<ul>
+<li>[FAST' 20] Drives in Netapp Enterprise Systems.</li>
 <li>AVG ARR 0.22%, but rates vary widely</li>
 <li>much lower than HDDs</li>
 </ul>
-<h4 id="Issue-2-Rate-of-uncorrectable-errors"><a href="#Issue-2-Rate-of-uncorrectable-errors" class="headerlink" title="Issue 2: Rate of uncorrectable errors"></a>Issue 2: Rate of uncorrectable errors</h4><ul>
+<h4 id="issue-2-rate-of-uncorrectable-errors">Issue 2: Rate of uncorrectable errors</h4>
+<ul>
 <li>All SSDs experience bit errors.</li>
-<li>ECC to correct them, but sometimes uncorrectable<ul>
+<li>ECC to correct them, but sometimes uncorrectable
+<ul>
 <li>if no data redundancy, lost</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<p><img src="https://eddyblog.edwardzcn98yx.com/APSys2021/Keynote_2_01.png" srcset="/img/loading.gif" lazyload alt="Keynote_2_01"></p>
-<h4 id="Role-of-Type"><a href="#Role-of-Type" class="headerlink" title="Role of Type"></a>Role of Type</h4><p>SLC, MLC, eMLC and TLC</p>
+<figure>
+<img src="https://eddyblog.edwardzcn98yx.com/APSys2021/Keynote_2_01.png" srcset="/img/loading.gif" lazyload alt="Keynote_2_01" /><figcaption>Keynote_2_01</figcaption>
+</figure>
+<h4 id="role-of-type">Role of Type</h4>
+<p>SLC, MLC, eMLC and TLC</p>
 <p>differenct ARR, shows TLC has the most replacement rates.</p>
-<h4 id="Role-of-Age"><a href="#Role-of-Age" class="headerlink" title="Role of Age"></a>Role of Age</h4><ul>
+<h4 id="role-of-age">Role of Age</h4>
+<ul>
 <li>Usage affects the reliability of SSDs, due to wear-out of their cells.</li>
-<li>Hardware Failure (‘Bathtub Curve’) means SSDs has higher failure rate in their early life and wear-out.</li>
+<li>Hardware Failure ('Bathtub Curve') means SSDs has higher failure rate in their early life and wear-out.</li>
 </ul>
-<h4 id="Role-of-Firmware-Version"><a href="#Role-of-Firmware-Version" class="headerlink" title="Role of Firmware Version"></a>Role of Firmware Version</h4><ul>
+<h4 id="role-of-firmware-version">Role of Firmware Version</h4>
+<ul>
 <li>Compare individual firmware versions within the same family</li>
 </ul>
 <p>FV has a tremendous impact on reliability (by a factor of <strong>3-10x</strong>)!</p>
-<h3 id="Data-protection-in-enterprise-systems"><a href="#Data-protection-in-enterprise-systems" class="headerlink" title="Data protection in enterprise systems"></a>Data protection in enterprise systems</h3><p>RAID</p>
+<h3 id="data-protection-in-enterprise-systems">Data protection in enterprise systems</h3>
+<p>RAID</p>
 <ul>
-<li><p>Single parity rapid -&gt; up to two failures</p>
-</li>
-<li><p>How common double failures</p>
-</li>
-<li>RAID group size</li>
+<li><p>Single parity rapid -&gt; up to two failures</p></li>
+<li>How common double failures</li>
+<li><p>RAID group size</p></li>
 </ul>
-<h4 id="Failure-correlations-within-a-RAID-group"><a href="#Failure-correlations-within-a-RAID-group" class="headerlink" title="Failure correlations within a RAID group"></a>Failure correlations within a RAID group</h4><ul>
+<h4 id="failure-correlations-within-a-raid-group">Failure correlations within a RAID group</h4>
+<ul>
 <li>How frequency do double failures occur?</li>
-<li>How quickly after the first<ul>
+<li>How quickly after the first
+<ul>
 <li>From CDF(Time Difference in days - Cumulative Probability), 46% successive failures occur on the same day!</li>
-</ul>
-</li>
+</ul></li>
 <li>How are they related to RAID group size?</li>
 </ul>
-<p><img src="https://eddyblog.edwardzcn98yx.com/APSys2021/Keynote_2_02.png" srcset="/img/loading.gif" lazyload alt="Keynote_2_02"></p>
-<h4 id="How-do-file-systems-detect-and-recover-from-errors"><a href="#How-do-file-systems-detect-and-recover-from-errors" class="headerlink" title="How do file systems detect and recover from errors?"></a>How do file systems detect and recover from errors?</h4><ul>
+<figure>
+<img src="https://eddyblog.edwardzcn98yx.com/APSys2021/Keynote_2_02.png" srcset="/img/loading.gif" lazyload alt="Keynote_2_02" /><figcaption>Keynote_2_02</figcaption>
+</figure>
+<h4 id="how-do-file-systems-detect-and-recover-from-errors">How do file systems detect and recover from errors?</h4>
+<ul>
 <li>ext4</li>
 <li>BtrFS</li>
-<li>…</li>
+<li>...</li>
 </ul>
-<p><img src="https://eddyblog.edwardzcn98yx.com/APSys2021/Keynote_2_03.png" srcset="/img/loading.gif" lazyload alt="Keynote_2_03"></p>
-<h4 id="Using-prediction-to-improve-reliability"><a href="#Using-prediction-to-improve-reliability" class="headerlink" title="Using prediction to improve reliability"></a>Using prediction to improve reliability</h4><ul>
-<li>Prediction: model (NN, Random Forest…)</li>
-<li>Usage: improve scrubbing<ul>
+<figure>
+<img src="https://eddyblog.edwardzcn98yx.com/APSys2021/Keynote_2_03.png" srcset="/img/loading.gif" lazyload alt="Keynote_2_03" /><figcaption>Keynote_2_03</figcaption>
+</figure>
+<h4 id="using-prediction-to-improve-reliability">Using prediction to improve reliability</h4>
+<ul>
+<li>Prediction: model (NN, Random Forest...)</li>
+<li>Usage: improve scrubbing
+<ul>
 <li>Standard (fixed) -&gt; dynamically add factor X with prediction</li>
-</ul>
-</li>
+</ul></li>
 </ul>
 <p>Interesting thing: the simple model (Random Forest) better than NN. Also mentioned as Question 3 from Zekai Sun in HKU.</p>
 <a id="more"></a>
-<h2 id="DiLOS-Adding-Performance-to-Paging-based-Memory-Disaggregation"><a href="#DiLOS-Adding-Performance-to-Paging-based-Memory-Disaggregation" class="headerlink" title="DiLOS: Adding Performance to Paging-based Memory Disaggregation"></a>DiLOS: Adding Performance to Paging-based Memory Disaggregation</h2><h3 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h3><ul>
+<h2 id="dilos-adding-performance-to-paging-based-memory-disaggregation">DiLOS: Adding Performance to Paging-based Memory Disaggregation</h2>
+<h3 id="qa">Q&amp;A</h3>
+<ul>
 <li>Major difference between DiLOS and LegoOS which also uses memory disaggregagion</li>
 </ul>
 <p>uniKernel ?</p>
-<h2 id="Coalescent-Computing"><a href="#Coalescent-Computing" class="headerlink" title="Coalescent Computing"></a>Coalescent Computing</h2><p>Speaker: Kyle C. Hale (Illinois Institute of Technology)</p>
-<h3 id="Composable-Infrastructure"><a href="#Composable-Infrastructure" class="headerlink" title="Composable Infrastructure"></a>Composable Infrastructure</h3><p>Disaggregation at the Edge -&gt;</p>
-<h3 id="Cyber-Foraging"><a href="#Cyber-Foraging" class="headerlink" title="Cyber Foraging"></a>Cyber Foraging</h3><ul>
-<li>In Cyber Foraging, use devices would “live off the land”</li>
+<h2 id="coalescent-computing">Coalescent Computing</h2>
+<p>Speaker: Kyle C. Hale (Illinois Institute of Technology)</p>
+<h3 id="composable-infrastructure">Composable Infrastructure</h3>
+<p>Disaggregation at the Edge -&gt;</p>
+<h3 id="cyber-foraging">Cyber Foraging</h3>
+<ul>
+<li>In Cyber Foraging, use devices would &quot;live off the land&quot;</li>
 <li>Applications would be modified to parition into disjoint components, offloaded, sometimes using VMs</li>
 <li>Cloud offload, but with mobility</li>
 </ul>
 <blockquote>
-<p>This might be a “chicken or the egg” problem: …</p>
+<p>This might be a &quot;chicken or the egg&quot; problem: ...</p>
 </blockquote>
 <p>Ref J.Flinn Cyber Foraging Fifteen Years Later IEEE Pervasive Computing</p>
-<h3 id="What’s-Changed"><a href="#What’s-Changed" class="headerlink" title="What’s Changed?"></a>What’s Changed?</h3><ul>
-<li>…</li>
+<h3 id="whats-changed">What's Changed?</h3>
+<ul>
+<li>...</li>
 <li>Wireless latency continues to drop</li>
 </ul>
-<h3 id="Coalescent-Computing-1"><a href="#Coalescent-Computing-1" class="headerlink" title="Coalescent Computing"></a>Coalescent Computing</h3><p>Disaggregation resources at the Edge -&gt; Ephemeral Single-System Image at the Edge</p>
+<h3 id="coalescent-computing-1">Coalescent Computing</h3>
+<p>Disaggregation resources at the Edge -&gt; Ephemeral Single-System Image at the Edge</p>
 <p>Principles and Characteristics</p>
 <ul>
 <li>Transparency: user no aware of coalescence</li>
 <li>Performance: offload shold only occur so as to improve</li>
 <li>Resilience: nodes come and go often</li>
-<li>Customizability: typesof resoucrces, when at what cost…</li>
+<li>Customizability: typesof resoucrces, when at what cost...</li>
 <li>Privacy and Security: same problems in IaaS</li>
 </ul>
-<h2 id="Lessons-Learned-from-Migrating-Complex-Stateful-Applications-onto-Serverless-Platforms"><a href="#Lessons-Learned-from-Migrating-Complex-Stateful-Applications-onto-Serverless-Platforms" class="headerlink" title="Lessons Learned from Migrating Complex Stateful Applications onto Serverless Platforms"></a>Lessons Learned from Migrating Complex Stateful Applications onto Serverless Platforms</h2><h3 id="Gap-and-Motivation"><a href="#Gap-and-Motivation" class="headerlink" title="Gap and Motivation"></a>Gap and Motivation</h3><ul>
-<li>Manually migrated 4 microservice applications<ul>
+<h2 id="lessons-learned-from-migrating-complex-stateful-applications-onto-serverless-platforms">Lessons Learned from Migrating Complex Stateful Applications onto Serverless Platforms</h2>
+<h3 id="gap-and-motivation">Gap and Motivation</h3>
+<ul>
+<li>Manually migrated 4 microservice applications
+<ul>
 <li>complex and stateful</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="Sanity-Test-Scalability"><a href="#Sanity-Test-Scalability" class="headerlink" title="Sanity Test - Scalability"></a>Sanity Test - Scalability</h3><p>Increase the load until saturated</p>
-<h3 id="Conclusions"><a href="#Conclusions" class="headerlink" title="Conclusions"></a>Conclusions</h3><ul>
-<li>An automatic tool is helpful if it can<ul>
+<h3 id="sanity-test---scalability">Sanity Test - Scalability</h3>
+<p>Increase the load until saturated</p>
+<h3 id="conclusions">Conclusions</h3>
+<ul>
+<li>An automatic tool is helpful if it can
+<ul>
 <li>locate the call sites of the caller</li>
 <li>locate the inner handlers</li>
-</ul>
-</li>
+</ul></li>
 </ul>
 <p>Future: automatic tools instead manually adapt the microservice to serverless</p>
 
@@ -643,10 +675,6 @@ With rapid developme">
 
 
 
-  <script  src="/js/local-search.js" ></script>
-
-
-
 
 
 
@@ -659,6 +687,21 @@ With rapid developme">
       typing(title)
       
     })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
   </script>
 
 

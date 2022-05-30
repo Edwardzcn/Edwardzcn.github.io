@@ -14,10 +14,12 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="Replication -&amp;gt; Fault ToleranceFailures
+  <meta name="description" content="Replication -&amp;gt; Fault Tolerance
+Failures
+
 Fail-stop faults
 更通用称呼， 他并不会计算出错误的答案，Just Stop（可能原因太多了，踢到机子，网络拥塞，CPU 过热）。备份设计对于 Bugs 没有帮助，更多情况下我们只能应对 Fail Stop。
-需要保证物理机器的独立性，否则再大数量的机群和备份策略都不能帮助我们，因为一旦出现相关性（">
+需要保证物理机器的独立性，否则再大数量的机群和备份策略都不能帮助我们，因为一">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
   
@@ -63,11 +65,12 @@ Fail-stop faults
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
 
 <body>
@@ -119,7 +122,7 @@ Fail-stop faults
               <a class="nav-link dropdown-toggle" target="_self" role="button"
                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -190,7 +193,7 @@ Fail-stop faults
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -300,19 +303,21 @@ Fail-stop faults
             <h1 style="display: none">分布式系统学习——MIT6.824-Lecture4课程笔记</h1>
             
             <div class="markdown-body">
-              <h1 id="Replication-gt-Fault-Tolerance"><a href="#Replication-gt-Fault-Tolerance" class="headerlink" title="Replication -&gt; Fault Tolerance"></a>Replication -&gt; Fault Tolerance</h1><h2 id="Failures"><a href="#Failures" class="headerlink" title="Failures"></a>Failures</h2><ul>
+              <h1 id="replication---fault-tolerance">Replication -&gt; Fault Tolerance</h1>
+<h2 id="failures">Failures</h2>
+<ul>
 <li><p>Fail-stop faults</p>
 <p>更通用称呼， 他并不会计算出错误的答案，Just Stop（可能原因太多了，踢到机子，网络拥塞，CPU 过热）。备份设计对于 Bugs 没有帮助，更多情况下我们只能应对 Fail Stop。</p>
-<p>需要保证物理机器的独立性，否则再大数量的机群和备份策略都不能帮助我们，因为一旦出现相关性（co-related）错误，机器会一同挂掉。</p>
-</li>
+<p>需要保证物理机器的独立性，否则再大数量的机群和备份策略都不能帮助我们，因为一旦出现相关性（co-related）错误，机器会一同挂掉。</p></li>
 </ul>
-<h2 id="Worth-it"><a href="#Worth-it" class="headerlink" title="Worth it"></a>Worth it</h2><p>在 GFS 的设计中，需要三倍资源（三份 Replication），是否值得？严格意义上说，我们不能从技术上解释这个问题，它同时也是个经济问题，关系很多其他因素，比如备份策略所应用的 service 价值如何？</p>
-<h2 id="Approaches-to-Replication-（Replication-Scheme）"><a href="#Approaches-to-Replication-（Replication-Scheme）" class="headerlink" title="Approaches to Replication （Replication Scheme）"></a>Approaches to Replication （Replication Scheme）</h2><p>达成备份的方法。</p>
+<h2 id="worth-it">Worth it</h2>
+<p>在 GFS 的设计中，需要三倍资源（三份 Replication），是否值得？严格意义上说，我们不能从技术上解释这个问题，它同时也是个经济问题，关系很多其他因素，比如备份策略所应用的 service 价值如何？</p>
+<h2 id="approaches-to-replication-replication-scheme">Approaches to Replication （Replication Scheme）</h2>
+<p>达成备份的方法。</p>
 <ul>
 <li><p>State transfer</p>
 <p>-&gt; send memory</p>
-<p>primary 传递它的状态（比如全部 RAM 内容）给备份，备份储存状态。考虑到效率，更想传递改变的那部分。</p>
-</li>
+<p>primary 传递它的状态（比如全部 RAM 内容）给备份，备份储存状态。考虑到效率，更想传递改变的那部分。</p></li>
 <li><p>State machine replication</p>
 <p>-&gt; send operations</p>
 <p>我们主要讨论的 scheme。</p>
@@ -320,40 +325,40 @@ Fail-stop faults
 <p>状态机复制策略，不复制完整状态，而仅发送那些状态机会被影响的外部事件（external events）。</p>
 <p>所以状态机从同一状态起始，各自进行状态运转，和消息传递，仍能保持状态的一致性，这就达成了备份。</p>
 <p>想起来之前学习的那篇论文：<a href="https://www.edwardzcn98yx.com/post/86b562df.html">状态机容错模型</a></p>
-<p>人们喜欢 State machine 的原因，small，状态整体太大了，而操作往往很小。</p>
-</li>
+<p>人们喜欢 State machine 的原因，small，状态整体太大了，而操作往往很小。</p></li>
 </ul>
-<h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><p>Q：如果 backup 和 primary 没有做到 identical，scheme 出错了，怎么办？</p>
+<h2 id="qa">Q&amp;A</h2>
+<p>Q：如果 backup 和 primary 没有做到 identical，scheme 出错了，怎么办？</p>
 <p>A：以 GFS master 给两个 chunk 发 primary lease 为例。</p>
 <p>Q：如何保证状态机复制 Scheme 中，内部状态的运行结果的确是一致的。</p>
 <p>A：很多 internal instruction 看起来是确定的，不过也存在你指出的那一小部分，比如获取当前本地时间、获取 PID 等。一个标准答案（参考答案）是，根据指令，backup 并不是完全独立运行？还在听 primary 的指令（正确答案）？</p>
 <a id="more"></a>
-<h1 id="VMware-Shceme"><a href="#VMware-Shceme" class="headerlink" title="VMware Shceme"></a>VMware Shceme</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>我们注意到刚刚所提的状态机复制斌没有考虑到多核机器形式，状态机复制可以被推广到多核机器，不同核的内核指令交互是不确定的，so 不能简单的分发 primary 并在后台执行任务。</p>
+<h1 id="vmware-shceme">VMware Shceme</h1>
+<h2 id="introduction">Introduction</h2>
+<p>我们注意到刚刚所提的状态机复制斌没有考虑到多核机器形式，状态机复制可以被推广到多核机器，不同核的内核指令交互是不确定的，so 不能简单的分发 primary 并在后台执行任务。</p>
 <p>VMware 设计一种可以跑在多核机器上的状态机复制模型。</p>
 <p>要解决的一系列问题</p>
 <ul>
-<li><p>What State</p>
-</li>
+<li><p>What State</p></li>
 <li><p>P/B Sync</p>
-<p>primary 和备份需要多接近（为实现一致性最大能容纳的差别？），一步一锁保证 backup 和 primary 始终同步的代价是昂贵的。</p>
-</li>
-<li><p>Cut over (switch over?)</p>
-</li>
+<p>primary 和备份需要多接近（为实现一致性最大能容纳的差别？），一步一锁保证 backup 和 primary 始终同步的代价是昂贵的。</p></li>
+<li><p>Cut over (switch over?)</p></li>
 <li><p>Anomalies</p>
-<p>异常现象</p>
-</li>
-<li><p>New replicas</p>
-</li>
+<p>异常现象</p></li>
+<li><p>New replicas</p></li>
 </ul>
 <p>逐个解决问题</p>
-<h2 id="What-State"><a href="#What-State" class="headerlink" title="What State"></a>What State</h2><p>所有的内存和所有的寄存器。Replication schema 很少会 replica 特别底层，比如 GFS 的 Replica 是 chunk，属于应用级，考虑 chunk identifiers，机器的其他状态都不储存。</p>
+<h2 id="what-state">What State</h2>
+<p>所有的内存和所有的寄存器。Replication schema 很少会 replica 特别底层，比如 GFS 的 Replica 是 chunk，属于应用级，考虑 chunk identifiers，机器的其他状态都不储存。</p>
 <p>大部分 Replication 走的路线都是 GFS 这样的，今天这篇文章不使用应用级别的 replication，更底层，更效率。并且不用保证应用 interrupt 在特定点。本文不考虑上面跑的什么软件，在 VMware 虚拟中运行任何类型的小程序，都能达到 Fault Tolerance。</p>
-<h3 id="VMware-FT"><a href="#VMware-FT" class="headerlink" title="VMware FT"></a>VMware FT</h3><p>两台物理机中运行 VMM，建立多个虚拟机（OS+APP），网络连接（LAN）。</p>
+<h3 id="vmware-ft">VMware FT</h3>
+<p>两台物理机中运行 VMM，建立多个虚拟机（OS+APP），网络连接（LAN）。</p>
 <p>网络同时连接多个 Client 和 Server，在这个 Scheme 中，数据储存在网络上 Disk Server 中。</p>
 <p>过程简述：当 Client 向一台物理机发送包请求时，该物理机会将 hot package 传递给另一台物理机（另一台伪造一个包请求）。处理完成后，primary 物理机将 reply 包传递给 VMM 中的模拟 NIC（网卡），并发送回给 client，那 backup 的包也会相同的传递到模拟 NIC 中，但 VMM 会意识到这个是 backup 产生的 reply 包，丢弃掉。</p>
 <p>这就保证了只有 Primary 生成回复包。</p>
 <p>Paer 管上述过程的数据流称为 logging Channel（log events）。在 primary 和 backup 会发生频繁交流，如果备份发现不再接收到 primary 的 logging 后，一段时间后，便不再听候先前 primary 的 inputs，自由行动，且 VMM 不再限制其回复包。</p>
-<h3 id="Non-deterministic"><a href="#Non-deterministic" class="headerlink" title="Non-deterministic"></a>Non-deterministic</h3><p>存在着许多 non-deterministic events，在计算机运行过程中。设计者着重解决这些问题。</p>
+<h3 id="non-deterministic">Non-deterministic</h3>
+<p>存在着许多 non-deterministic events，在计算机运行过程中。设计者着重解决这些问题。</p>
 <p>Inputs-packet-data + interrupt</p>
 <p>Weired instructions</p>
 <p>multic-core parallelism（文章着重考虑，因为它允许多核机器的并行计算，并行的情况是不可确定的）</p>
@@ -363,7 +368,8 @@ Fail-stop faults
 <p>A：硬件部分的知识，15 年前 Intel 就已经实现了相关内容。（好吧是真的听不懂了）</p>
 <p>Q：如果 Backup 跑在了 Primary 前面怎么办？</p>
 <p>A：Primary millionth 指令中断一次，Backup 多进行了一点指令，如果我们这种情况发生，那 backup 就太迟了！不能进行中断（在相同的位置）。我们不能让这种情况发生，所以 VMWare 处理了这种情况。他们的处理方式是，在备份机的 VMM 中设置一个 buffer，来储存所有来自于 Primary 的 inputs（events）。buffer 不为空才执行，这样就保证了 backup 至少慢 primary 一个 event，</p>
-<h3 id="Output-Rule"><a href="#Output-Rule" class="headerlink" title="Output Rule"></a>Output Rule</h3><p>假设架设的服务是一个 database，然后 client 希望进行 ADD 操作。</p>
+<h3 id="output-rule">Output Rule</h3>
+<p>假设架设的服务是一个 database，然后 client 希望进行 ADD 操作。</p>
 <p>问问自己，什么时候挂掉是最悲惨的：Primary 进行了 ADD 操作，没有返回给 Client，同时，也未能将该事件通知到 Backup，似乎这样导致了 Primary 和 Backup 上数据库的值不相等（差一次 ADD 操作）</p>
 <p>VMWare 的解决办法就是 Output Rule：Primary 不会讲 output 返回给 client （被 VMM 控制着）直至 backup 确认了它接收到了 all log records。</p>
 <p>不过这个机制导致了一个问题：相邻机架连接的机器，RTT 时间短，影响不大，而如果跨地区的数据中心的不同机器，RTT 时间长，又碰上了低延迟需求的应用，就不行了。</p>
@@ -605,10 +611,6 @@ Fail-stop faults
 
 
 
-  <script  src="/js/local-search.js" ></script>
-
-
-
 
 
 
@@ -621,6 +623,21 @@ Fail-stop faults
       typing(title)
       
     })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
   </script>
 
 

@@ -44,11 +44,12 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
 
 <body>
@@ -100,7 +101,7 @@
               <a class="nav-link dropdown-toggle" target="_self" role="button"
                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -171,7 +172,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -257,9 +258,11 @@
           
             
           
-          频率域滤波图像复原在频率域滤波进行图像复原主要在两个方面效果较好，其一是利用频率域滤波消除周期噪声，另一个是利用频率域做退化函数的逆滤波，周期噪声还没有细致研究，这篇文章主要关注其逆滤波相关的问题。
+          频率域滤波图像复原
+在频率域滤波进行图像复原主要在两个方面效果较好，其一是利用频率域滤波消除周期噪声，另一个是利用频率域做退化函数的逆滤波，周期噪声还没有细致研究，这篇文章主要关注其逆滤波相关的问题。
 为什么要在频率域做逆滤波？观察之前退化模型的两个式子，我们不难发现：
-g(x,y) = h(x,y) \star f(x,y) + \eta(x,y) \tag 1g(u,v) = H(u,v) F(
+\[g(x,y) = h(x,y) \star f(x,y) + \eta(x,y) \tag 1\]
+\[g(u,v)
         </a>
       </p>
 
@@ -311,9 +314,11 @@ g(x,y) = h(x,y) \star f(x,y) + \eta(x,y) \tag 1g(u,v) = H(u,v) F(
           
             
           
-          空间域滤波图像复原在5_1 图像复原与重建初步中，我们研究了图像的噪声退化模型，以及常见的噪声模型及其实现，实际上这些噪声模型帮我们解决了前一篇文章(1)式中$\eta(x,y)$的取值问题，同时再观察(1)式我们也能发现，当一幅图像中唯一存在的退化是噪声时，式(1)和式(2)会变成（简化）如下：
-g(x,y) = f(x,y) + \eta (x,y)和
-G(u,v) = F(u,v) + N(
+          空间域滤波图像复原
+在5_1 图像复原与重建初步中，我们研究了图像的噪声退化模型，以及常见的噪声模型及其实现，实际上这些噪声模型帮我们解决了前一篇文章(1)式中\(\eta(x,y)\)的取值问题，同时再观察(1)式我们也能发现，当一幅图像中唯一存在的退化是噪声时，式(1)和式(2)会变成（简化）如下：
+\[g(x,y) = f(x,y) + \eta (x,y)\]
+和
+\[G(u,v)
         </a>
       </p>
 
@@ -365,8 +370,10 @@ G(u,v) = F(u,v) + N(
           
             
           
-          图像复原与重建初步梳理所学重点知识
-引言前面所接触的图像增强是一个，已知原图像，经处理后，得到增强图像的一个过程，而这一章将要深入的图像复原（重建），则是希望从（被污染）过的图像，经处理后，得到原图像的过程，是以预先确定的目标来改善图像。图像复原试图利用退化现象的某种先验知识来复原被退化的图像。因而，复原技术时面向退化模型的，并且采用相反的过程进行处理，以便恢复出原图像。虽然图像增强和图像复原两者
+          图像复原与重建初步
+梳理所学重点知识
+引言
+前面所接触的图像增强是一个，已知原图像，经处理后，得到增强图像的一个过程，而这一章将要深入的图像复原（重建），则是希望从（被污染）过的图像，经处理后，得到原图像的过程，是以预先确定的目标来改善图像。图像复原试图利用退化现象的某种先验知识来复原被退化的图像。因而，复原技术时面向退化模型的，并且采用相反的过程进行处理，以便恢复出原图像。虽然图像增强和图
         </a>
       </p>
 
@@ -418,15 +425,15 @@ G(u,v) = F(u,v) + N(
           
             
           
-          偏序格角度看决策系统代数约简基本知识：
+          偏序格角度看决策系统代数约简
+基本知识：
 
 一个集合的所有划分构成一个细分偏序格。
 决策系统约简始终保持决策系统的一致性（不存在条件相同，决策不同）。
-对于一个决策系统来说，约简是条件分类$U/C → U/A$的过程，而条件分类$U/C$细分$U/A$。
+对于一个决策系统来说，约简是条件分类\(U/C → U/A\)的过程，而条件分类\(U/C\)细分\(U/A\)。
 
 引发思考：
-课程的结尾老师提到我们的决策系统约见过程，其条件分类可以看作是在一个论语元素的全部划分构成的细分偏序格上寻优的过程。
-直观上给人的感
+课程的结尾老师提到我们的决策系统约见过程，其条件分类可以看作是在一个论语元素的全部划分构成的细分偏序格
         </a>
       </p>
 
@@ -478,12 +485,18 @@ G(u,v) = F(u,v) + N(
           
             
           
-          全局说明权限说明访问权限由指定 URL 均可访问本网站。
+          全局说明
+权限说明
+访问权限
+由指定 URL 均可访问本网站。
 访问者均以游客身份访问，主页上没有“登录”或注册等功能引导，主要以学院内容展示为主。
-交互说明键盘交互针对 PC 端和 iPad（平板电脑）设备端，进行内容搜索时不上浮出底部的字母键盘，而是直接交由键盘进行交互。
+交互说明
+键盘交互
+针对 PC 端和 iPad（平板电脑）设备端，进行内容搜索时不上浮出底部的字母键盘，而是直接交由键盘进行交互。
 页面交互
+
 图标：通过点击指定图标显示下拉菜单、唤醒弹窗或实现页面跳转。
-图片：概览界面图片点击会进入对应的详情界面，详情界面图片
+图片：概览界面图片点击
         </a>
       </p>
 
@@ -649,10 +662,6 @@ G(u,v) = F(u,v) + N(
 
 
 
-  <script  src="/js/local-search.js" ></script>
-
-
-
 
 
 
@@ -665,6 +674,21 @@ G(u,v) = F(u,v) + N(
       typing(title)
       
     })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
   </script>
 
 

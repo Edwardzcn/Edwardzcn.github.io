@@ -14,8 +14,10 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="第3章 对称密码（共享密钥密码）——用相同的密钥进行加密和解密一次性密码本——绝对不会被破译的密码原理： 将明文与一串随机的比特序列进行XOR运算。
-完全随机，密钥空间是所有可能的01组合，所以就算破译成功了，我们也无法判断它是正确的明文。比如正确明文是code，但破译会出现从aaaa到zzzz，其中不乏有意义的book，cook等“疑似明文”，由于是完全随机带来的密钥空间有全部可能，我们无法判断">
+  <meta name="description" content="第3章 对称密码（共享密钥密码）——用相同的密钥进行加密和解密
+一次性密码本——绝对不会被破译的密码
+原理： 将明文与一串随机的比特序列进行XOR运算。
+完全随机，密钥空间是所有可能的01组合，所以就算破译成功了，我们也无法判断它是正确的明文。比如正确明文是code，但破译会出现从aaaa到zzzz，其中不乏有意义的book，cook等“疑似明文”，由于是完全随机带来的密钥空间有全部可能，我">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
   
@@ -61,11 +63,12 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
 
 <body>
@@ -117,7 +120,7 @@
               <a class="nav-link dropdown-toggle" target="_self" role="button"
                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -188,7 +191,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -298,61 +301,245 @@
             <h1 style="display: none">密码技术学习——《图解密码技术》笔记（一）</h1>
             
             <div class="markdown-body">
-              <h1 id="第3章-对称密码（共享密钥密码）——用相同的密钥进行加密和解密"><a href="#第3章-对称密码（共享密钥密码）——用相同的密钥进行加密和解密" class="headerlink" title="第3章 对称密码（共享密钥密码）——用相同的密钥进行加密和解密"></a>第3章 对称密码（共享密钥密码）——用相同的密钥进行加密和解密</h1><h2 id="一次性密码本——绝对不会被破译的密码"><a href="#一次性密码本——绝对不会被破译的密码" class="headerlink" title="一次性密码本——绝对不会被破译的密码"></a>一次性密码本——绝对不会被破译的密码</h2><p>原理： 将明文与一串随机的比特序列进行XOR运算。</p>
+              <h1 id="第3章-对称密码共享密钥密码用相同的密钥进行加密和解密">第3章 对称密码（共享密钥密码）——用相同的密钥进行加密和解密</h1>
+<h2 id="一次性密码本绝对不会被破译的密码">一次性密码本——绝对不会被破译的密码</h2>
+<p>原理： 将明文与一串随机的比特序列进行XOR运算。</p>
 <p>完全随机，密钥空间是所有可能的01组合，所以就算破译成功了，我们也<strong>无法判断它是正确的明文</strong>。比如正确明文是code，但破译会出现从aaaa到zzzz，其中不乏有意义的book，cook等“疑似明文”，由于是完全随机带来的密钥空间有全部可能，我们无法判断真正的明文是什么。</p>
 <p>理论上无法破译</p>
 <p>不过这样密钥的传送也成了问题，假设我们能够安全的传送密钥，那本身这个方法可以用来安全传递我们的消息了，所以现实中除了特工配送密钥完成元首热线通话以外，一次性密码本没有很高的应用价值。</p>
-<h2 id="DES"><a href="#DES" class="headerlink" title="DES"></a>DES</h2><p>Feistel网络的一轮，右侧直接向下变为输出，右侧与轮密钥XOR生成左侧。</p>
+<h2 id="des">DES</h2>
+<p>Feistel网络的一轮，右侧直接向下变为输出，右侧与轮密钥XOR生成左侧。</p>
 <p>多轮操作，每轮反转左右。</p>
 <p>解密就是重复过程（两次XOR抵消从而得到这一轮前的输入）。</p>
-<h2 id="三重DES"><a href="#三重DES" class="headerlink" title="三重DES"></a>三重DES</h2><p>如名，不过是DES加密-&gt;DES解密-&gt;DES加密（由IBM公司提出，用来兼容普通DES，比如三层都是同样的DES密钥，就是普通DES了）</p>
+<h2 id="三重des">三重DES</h2>
+<p>如名，不过是DES加密-&gt;DES解密-&gt;DES加密（由IBM公司提出，用来兼容普通DES，比如三层都是同样的DES密钥，就是普通DES了）</p>
 <p>解密过程为DES解密-&gt;DES加密-&gt;DES解密</p>
 <p>目前在银行等机构还在使用，但处理速度不高，除了特别重视向下兼容性的情况以外，很少被用于新的用途。</p>
-<h2 id="AES"><a href="#AES" class="headerlink" title="AES"></a>AES</h2><p>取代DES在2000成为新的标准，选定的算法名为Rijndael</p>
-<h3 id="Rijndael"><a href="#Rijndael" class="headerlink" title="Rijndael"></a>Rijndael</h3><p>Rijndael算法也是由多个轮构成的，其中每一轮分为SubBytes（逐字节替换）、ShiftRows（平移行）、MixColumns（混合列）、AddRoundKey（与轮密钥进行XOR）<br>共四个不中。DES使用Feistel网络作为基本结构，而Rijndael使用SPN结构。</p>
+<h2 id="aes">AES</h2>
+<p>取代DES在2000成为新的标准，选定的算法名为Rijndael ### Rijndael Rijndael算法也是由多个轮构成的，其中每一轮分为SubBytes（逐字节替换）、ShiftRows（平移行）、MixColumns（混合列）、AddRoundKey（与轮密钥进行XOR） 共四个不中。DES使用Feistel网络作为基本结构，而Rijndael使用SPN结构。</p>
 <ul>
 <li>加密：SubBytes -&gt; ShiftRows -&gt; MixColumns -&gt; AddRoundKey</li>
-<li><p>解密：AddRoundKey -&gt; InvMixColumns -&gt; InvShiftRows -&gt; InvSubBytes</p>
-</li>
-<li><p>破译：由于其过程可以由数学公式来表达，那么理论上可以通过数学运算来求解，意味着Rigndael能够通过数学方法进行破译。不过现在为止还没有出现针对Rigndael的有效攻击。</p>
-</li>
+<li><p>解密：AddRoundKey -&gt; InvMixColumns -&gt; InvShiftRows -&gt; InvSubBytes</p></li>
+<li><p>破译：由于其过程可以由数学公式来表达，那么理论上可以通过数学运算来求解，意味着Rigndael能够通过数学方法进行破译。不过现在为止还没有出现针对Rigndael的有效攻击。</p></li>
 </ul>
 <a id="more"></a>
-<h1 id="第4章-分组密码的模式——分组密码是如何迭代的"><a href="#第4章-分组密码的模式——分组密码是如何迭代的" class="headerlink" title="第4章 分组密码的模式——分组密码是如何迭代的"></a>第4章 分组密码的模式——分组密码是如何迭代的</h1><ul>
-<li>模式总结表格<table>
-<tr><th>模式</th><th>名称</th><th>优点</th><th>缺点</th><th>备注</th></tr>
-<tr><td>ECB模式</td><td>Electronic CodeBook 电子密码本模式</td><td><ul><li>简单</li><li>快速</li><li>支持并行计算（加密、解密）</li></ul></td><td><ul><li>明文中的重复排列会反映在密文中</li><li>通过删除、替换密文分组可以对明文进行操作</li><li>对包含某些比特错误的密文进行解密时，对应的分组会出错</li><li>不能抵御重放攻击</li></ul></td><td> 不应使用</td>
-<tr><td>CBC模式</td><td>Cipher Block Chaining 密文分组链接模式</td><td><ul><li>明文的重复排列不会反映在密文中</li><li>支持并行计算（仅解密）</li><li>能够解密任意密文分组</li></ul></td><td><ul><li>对包含某些错误比特的密文进行解密时，第一个分组的全部比特以及后一个分组的相应比特会出错</li><li>加密不支持并行计算</li></ul></td><td>CRYPTREC推荐<br>《实用密码学》推荐</td>
-<tr><td>CFB模式</td><td>Cipher-FeedBack 密文反馈模式</td><td><ul><li>不需要填充（padding）</li><li>支持并行计算（仅解密）</li><li>能够解密任意密文分组</li></ul></td><td><ul><li>对包含某些错误比特的密文进行解密时，第一个分组的相应比特以及后一个分组的全部比特会出错</li><li>加密不支持并行计算</li><li>不能抵御重放攻击</li></ul></td><td>CRYPTREC推荐</td>
-<tr><td>OFB模式</td><td>Output-FeedBack 输出反馈模式</td><td><ul><li>不需要填充（padding）</li><li>可事先进行加密、解密的准备</li><li>加密、解密使用相同结构</li><li>对包含某些错误比特的密文进行解密时，只有明文中相应的比特会出错</li></ul></td><td><ul><li>不支持并行计算</li><li>主动攻击者反转密文分组中的某些比特时，明文分组中相对应的比特也会被反转</li></ul></td><td>CRYPTREC推荐</td>
-<tr><td>CTR模式</td><td>CounTeR 计数器模式</td><td><ul><li>不需要填充（padding）</li><li>可实现进行加密、解密的准备</li><li>加密、解密使用相同的结构</li><li>对包含某些错误比特的密文进行解密时，只有明文中相对应的比特会出错</li><li>支持并行计算（加密、解密）</li></ul></td><td>主动攻击者反转密文分组中的某些比特时，明文分组中相对应的比特也会被反转</td><td>CRYPTREC推荐<br>《实用密码学》推荐</td>
-</table>
-
+<h1 id="第4章-分组密码的模式分组密码是如何迭代的">第4章 分组密码的模式——分组密码是如何迭代的</h1>
+<ul>
+<li>模式总结表格
+<table>
+<tr>
+<th>
+模式
+</th>
+<th>
+名称
+</th>
+<th>
+优点
+</th>
+<th>
+缺点
+</th>
+<th>
+备注
+</th>
+</tr>
+<tr>
+<td>
+ECB模式
+</td>
+<td>
+Electronic CodeBook 电子密码本模式
+</td>
+<td>
+<ul>
+<li>
+简单
+</li>
+<li>
+快速
+</li>
+<li>
+支持并行计算（加密、解密）
 </li>
 </ul>
-<h1 id="第5章-公钥密码——用公钥加密，用私钥解密"><a href="#第5章-公钥密码——用公钥加密，用私钥解密" class="headerlink" title="第5章 公钥密码——用公钥加密，用私钥解密"></a>第5章 公钥密码——用公钥加密，用私钥解密</h1><h2 id="密钥配送问题"><a href="#密钥配送问题" class="headerlink" title="密钥配送问题"></a>密钥配送问题</h2><ul>
+</td>
+<td>
+<ul>
+<li>
+明文中的重复排列会反映在密文中
+</li>
+<li>
+通过删除、替换密文分组可以对明文进行操作
+</li>
+<li>
+对包含某些比特错误的密文进行解密时，对应的分组会出错
+</li>
+<li>
+不能抵御重放攻击
+</li>
+</ul>
+</td>
+<td>
+不应使用
+</td>
+<tr>
+<td>
+CBC模式
+</td>
+<td>
+Cipher Block Chaining 密文分组链接模式
+</td>
+<td>
+<ul>
+<li>
+明文的重复排列不会反映在密文中
+</li>
+<li>
+支持并行计算（仅解密）
+</li>
+<li>
+能够解密任意密文分组
+</li>
+</ul>
+</td>
+<td>
+<ul>
+<li>
+对包含某些错误比特的密文进行解密时，第一个分组的全部比特以及后一个分组的相应比特会出错
+</li>
+<li>
+加密不支持并行计算
+</li>
+</ul>
+</td>
+<td>
+CRYPTREC推荐<br>《实用密码学》推荐
+</td>
+<tr>
+<td>
+CFB模式
+</td>
+<td>
+Cipher-FeedBack 密文反馈模式
+</td>
+<td>
+<ul>
+<li>
+不需要填充（padding）
+</li>
+<li>
+支持并行计算（仅解密）
+</li>
+<li>
+能够解密任意密文分组
+</li>
+</ul>
+</td>
+<td>
+<ul>
+<li>
+对包含某些错误比特的密文进行解密时，第一个分组的相应比特以及后一个分组的全部比特会出错
+</li>
+<li>
+加密不支持并行计算
+</li>
+<li>
+不能抵御重放攻击
+</li>
+</ul>
+</td>
+<td>
+CRYPTREC推荐
+</td>
+<tr>
+<td>
+OFB模式
+</td>
+<td>
+Output-FeedBack 输出反馈模式
+</td>
+<td>
+<ul>
+<li>
+不需要填充（padding）
+</li>
+<li>
+可事先进行加密、解密的准备
+</li>
+<li>
+加密、解密使用相同结构
+</li>
+<li>
+对包含某些错误比特的密文进行解密时，只有明文中相应的比特会出错
+</li>
+</ul>
+</td>
+<td>
+<ul>
+<li>
+不支持并行计算
+</li>
+<li>
+主动攻击者反转密文分组中的某些比特时，明文分组中相对应的比特也会被反转
+</li>
+</ul>
+</td>
+<td>
+CRYPTREC推荐
+</td>
+<tr>
+<td>
+CTR模式
+</td>
+<td>
+CounTeR 计数器模式
+</td>
+<td>
+<ul>
+<li>
+不需要填充（padding）
+</li>
+<li>
+可实现进行加密、解密的准备
+</li>
+<li>
+加密、解密使用相同的结构
+</li>
+<li>
+对包含某些错误比特的密文进行解密时，只有明文中相对应的比特会出错
+</li>
+<li>
+支持并行计算（加密、解密）
+</li>
+</ul>
+</td>
+<td>
+主动攻击者反转密文分组中的某些比特时，明文分组中相对应的比特也会被反转
+</td>
+<td>
+CRYPTREC推荐<br>《实用密码学》推荐
+</td>
+</table></li>
+</ul>
+<h1 id="第5章-公钥密码用公钥加密用私钥解密">第5章 公钥密码——用公钥加密，用私钥解密</h1>
+<h2 id="密钥配送问题">密钥配送问题</h2>
+<ul>
 <li>通过事先共享密钥来解决（部分场景不现实）</li>
 <li>通过密钥分配中心来解决（中心负担大，被破坏代价大风险高）</li>
 <li>通过Diffie-Hellman密钥交换来解决（第11章）</li>
 <li>通过公钥密码来解决（本章后续）</li>
 </ul>
-<h2 id="公钥密码"><a href="#公钥密码" class="headerlink" title="公钥密码"></a>公钥密码</h2><p>一些特征</p>
-<ul>
-<li>发送者只需要加密密钥</li>
-<li>接收者只需要解密密钥</li>
-<li>解密密钥不可以被窃听者获取</li>
-<li>加密密钥被窃听者获取也没问题</li>
-</ul>
-<p>无法解决的问题</p>
-<ul>
-<li>解决了密钥配送问题，但是无门需要判断所得到的公钥是否正确合法，这个问题被称为公钥认证问题（后面章节）。</li>
-<li>速度是对称密的几百分之一，解决方法后面会讲到。</li>
-</ul>
-<h3 id="时钟运算"><a href="#时钟运算" class="headerlink" title="时钟运算"></a>时钟运算</h3><p>补充一些数论知识</p>
+<h2 id="公钥密码">公钥密码</h2>
+<p>一些特征 - 发送者只需要加密密钥 - 接收者只需要解密密钥 - 解密密钥不可以被窃听者获取 - 加密密钥被窃听者获取也没问题</p>
+<p>无法解决的问题 - 解决了密钥配送问题，但是无门需要判断所得到的公钥是否正确合法，这个问题被称为公钥认证问题（后面章节）。 - 速度是对称密的几百分之一，解决方法后面会讲到。</p>
+<h3 id="时钟运算">时钟运算</h3>
+<p>补充一些数论知识</p>
 <p>除法：在模12的条件下两个数相乘为1，“类倒数”。可以发现规律，和12的最大公约数为1的数（5，7，11），即于12互质的数，存在倒数。</p>
 <p>乘方：可以先模再乘，应用同余的性质。</p>
-<p>对数：时钟运算中对数成为离散对数。能快速求出离散对数的算法到现在还没有被发现，Diffie-Hellman密钥交换协议以及ElGamal公钥算法中<br>就运用了离散对数。</p>
-<h2 id="RSA"><a href="#RSA" class="headerlink" title="RSA"></a>RSA</h2>
+<p>对数：时钟运算中对数成为离散对数。能快速求出离散对数的算法到现在还没有被发现，Diffie-Hellman密钥交换协议以及ElGamal公钥算法中 就运用了离散对数。</p>
+<h2 id="rsa">RSA</h2>
+
             </div>
             <hr>
             <div>
@@ -588,10 +775,6 @@
 
 
 
-  <script  src="/js/local-search.js" ></script>
-
-
-
 
 
 
@@ -604,6 +787,21 @@
       typing(title)
       
     })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
   </script>
 
 

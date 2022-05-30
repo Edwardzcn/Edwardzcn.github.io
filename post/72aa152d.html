@@ -60,11 +60,12 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
 
 <body>
@@ -116,7 +117,7 @@
               <a class="nav-link dropdown-toggle" target="_self" role="button"
                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -187,7 +188,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -264,7 +265,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      27
+      28
        分钟
     </span>
   
@@ -297,12 +298,15 @@
             <h1 style="display: none">分布式系统学习——阶段性总结2</h1>
             
             <div class="markdown-body">
-              <h1 id="感受"><a href="#感受" class="headerlink" title="感受"></a>感受</h1><p>这篇阶段性总结写于乘高铁从长沙前往北京参加讲习会议的路途中，主要目的是回顾一下已经阅读完成的四篇分布式系统（Distributed System）相关论文的重点概念，相关实践（虽然很小），以及自我感受和后面的想法。</p>
-<h1 id="Paper3——The-Google-File-System"><a href="#Paper3——The-Google-File-System" class="headerlink" title="Paper3——The Google File System"></a>Paper3——The Google File System</h1><p>关键词：<strong>集群存储</strong>、<strong>分布式存储</strong>、<strong>高可用性</strong>、<strong>一致性原则</strong></p>
+              <h1 id="感受">感受</h1>
+<p>这篇阶段性总结写于乘高铁从长沙前往北京参加讲习会议的路途中，主要目的是回顾一下已经阅读完成的四篇分布式系统（Distributed System）相关论文的重点概念，相关实践（虽然很小），以及自我感受和后面的想法。</p>
+<h1 id="paper3the-google-file-system">Paper3——The Google File System</h1>
+<p>关键词：<strong>集群存储</strong>、<strong>分布式存储</strong>、<strong>高可用性</strong>、<strong>一致性原则</strong></p>
 <p>回忆梳理重点词：<strong>单 master</strong>、<strong>chunk 和 chunkserver</strong>、<strong>追加 append</strong>、</p>
 <p>坦白讲这篇文章是四篇中读的时间最长的一篇文章，概念性比较强导致我不能通过代码或者公式的方式去直观的理解。</p>
 <p>这篇总结主要写我印象深刻的点，更多的细节还要回去翻自己的翻译修改版本。</p>
-<h2 id="Design-Motivation"><a href="#Design-Motivation" class="headerlink" title="Design Motivation"></a>Design Motivation</h2><p>应用需求/系统发展带来的一些对应的设计模式观念上的转变。</p>
+<h2 id="design-motivation">Design Motivation</h2>
+<p>应用需求/系统发展带来的一些对应的设计模式观念上的转变。</p>
 <ul>
 <li>对于计算机集群，<strong>故障是常态</strong></li>
 <li>存储超大量</li>
@@ -310,13 +314,21 @@
 <li>尽可能并行化操作</li>
 <li>带宽重要性大于时延，要考虑网络带宽和负载</li>
 </ul>
-<h2 id="Architecture"><a href="#Architecture" class="headerlink" title="Architecture"></a>Architecture</h2><h3 id="GFS-chunkserver"><a href="#GFS-chunkserver" class="headerlink" title="GFS chunkserver"></a>GFS chunkserver</h3><p>在 GFS chunkserver 中，文件都是分成固定大小的 chunk（64MB）来存储的，每个 chunk 通过全局唯一的 64 位的 chunk handle 来标识。handle 由 master 分配。多台备份（GFS 中默认是 3 台）。</p>
-<h3 id="GFS-master"><a href="#GFS-master" class="headerlink" title="GFS master"></a>GFS master</h3><p>GFS master 管理所有的元数据信息（metadata），包括 namespaces，访问控制信息，文件到 chunk 的映射信息，以及 chunk 的地址信息（即 chunk 存放在哪台 GFS chunkserver 上）。</p>
-<h3 id="GFS-client"><a href="#GFS-client" class="headerlink" title="GFS client"></a>GFS client</h3><p>GFS client 是 GFS 应用端使用的 API 接口，client 和 GFS master 交互来获取元数据信息，但是所有和数据相关的信息都是直接和 GFS chunkserver 来交互的。</p>
-<h3 id="Application"><a href="#Application" class="headerlink" title="Application"></a>Application</h3><p>Application 为使用 gfs 的应用，应用通过 GFS client 与 GFS 系统打交道，系统有一些必要的性质（以适应在 GFS 上的高效利用）。</p>
-<h2 id="Strategies"><a href="#Strategies" class="headerlink" title="Strategies"></a>Strategies</h2><h3 id="Single-Master"><a href="#Single-Master" class="headerlink" title="Single Master"></a>Single Master</h3><p>单 Master 很容易导致 Master 成为性能瓶颈和单点故障。对于前者，GFS 的解决策略是 client 对 master 返回的请求 chunk 位置具备短暂记忆性（60s），下放部分职能给 chunkserver（包括指派 private 来保证数据的一致性）。</p>
+<h2 id="architecture">Architecture</h2>
+<h3 id="gfs-chunkserver">GFS chunkserver</h3>
+<p>在 GFS chunkserver 中，文件都是分成固定大小的 chunk（64MB）来存储的，每个 chunk 通过全局唯一的 64 位的 chunk handle 来标识。handle 由 master 分配。多台备份（GFS 中默认是 3 台）。</p>
+<h3 id="gfs-master">GFS master</h3>
+<p>GFS master 管理所有的元数据信息（metadata），包括 namespaces，访问控制信息，文件到 chunk 的映射信息，以及 chunk 的地址信息（即 chunk 存放在哪台 GFS chunkserver 上）。</p>
+<h3 id="gfs-client">GFS client</h3>
+<p>GFS client 是 GFS 应用端使用的 API 接口，client 和 GFS master 交互来获取元数据信息，但是所有和数据相关的信息都是直接和 GFS chunkserver 来交互的。</p>
+<h3 id="application">Application</h3>
+<p>Application 为使用 gfs 的应用，应用通过 GFS client 与 GFS 系统打交道，系统有一些必要的性质（以适应在 GFS 上的高效利用）。</p>
+<h2 id="strategies">Strategies</h2>
+<h3 id="single-master">Single Master</h3>
+<p>单 Master 很容易导致 Master 成为性能瓶颈和单点故障。对于前者，GFS 的解决策略是 client 对 master 返回的请求 chunk 位置具备短暂记忆性（60s），下放部分职能给 chunkserver（包括指派 private 来保证数据的一致性）。</p>
 <p>对于后者，才有心跳线备份 Master 是可行的。</p>
-<h3 id="Consistency-Model"><a href="#Consistency-Model" class="headerlink" title="Consistency Model"></a>Consistency Model</h3><p>GFS 论文介绍中写明了：采用了一种简化的一致性模型，可以高效服务于所需应用。</p>
+<h3 id="consistency-model">Consistency Model</h3>
+<p>GFS 论文介绍中写明了：采用了一种简化的一致性模型，可以高效服务于所需应用。</p>
 <p>模型中的一致的（consistent）和定义的（defined）概念如下：</p>
 <ul>
 <li>consistent：所有的客户端都能看到一样的数据，不管它们从哪个副本读取。</li>
@@ -324,12 +336,14 @@
 </ul>
 <p>可以确定 defined 要求更强，在实际应用中会有不同情况出现，在原论文中用表格的形式直观化了。</p>
 <p>我的感受：<strong>GFS 的保证是成功操作一次</strong>，由于所适应的应用以追加（append）为主。这样的策略和一致性模型保证操作会出现但是非幂等的冗余操作会导致结果错误，GFS 通过要求在应用层面上加过滤（filter）或者唯一话来解决这一问题。一言以蔽之：“宁滥勿缺”。</p>
-<h3 id="Master-Operation-Namespace-Management-and-Locking"><a href="#Master-Operation-Namespace-Management-and-Locking" class="headerlink" title="Master Operation-Namespace Management and Locking"></a>Master Operation-Namespace Management and Locking</h3><ul>
+<h3 id="master-operation-namespace-management-and-locking">Master Operation-Namespace Management and Locking</h3>
+<ul>
 <li>快照对本层和对应的快照层都加写锁。</li>
 <li>写操作对所写文件加写锁而对文件所在目录加读锁。</li>
 </ul>
 <p>这样的分配策略既保证了一定程度上的并发许可（比如同一目录下的多个文件写），也保证了快照操作和写文件操作在相同目录下的串行化从而避免冲突。</p>
-<h3 id="Master-Operation-Replica-Placement"><a href="#Master-Operation-Replica-Placement" class="headerlink" title="Master Operation-Replica Placement"></a>Master Operation-Replica Placement</h3><p>对于 Creation , Rebalancing 策略都是相近的。</p>
+<h3 id="master-operation-replica-placement">Master Operation-Replica Placement</h3>
+<p>对于 Creation , Rebalancing 策略都是相近的。</p>
 <ul>
 <li>利用率低于平均水平的磁盘优先，平均化磁盘利用。</li>
 <li>低频读写的 chunkserver 优先，平均化网络带宽利用，避免单点拥塞。</li>
@@ -342,29 +356,36 @@
 <li>阻塞了 client 进程的 chunk 的优先级高</li>
 </ul>
 <p>但是实现中如何让 master 高效查询 client 阻塞进程，以及副本数量（涉及到计数），我觉得也是个算法上可以研究的地方。</p>
-<h2 id="读后感受"><a href="#读后感受" class="headerlink" title="读后感受"></a>读后感受</h2><p>GFS 的介绍应该是四篇文章中目前读的最慢的一篇了，太多概念都是通过文字方式讲述的，需要一点点在大脑里构建 GFS 中 Master，chunk，chunkserver 的关系。而且并列的概念关系我也没抓住重点（可能这也是我读论文的不足之处），所以这篇总结主要写了一些几个构成和我理解整理以后他们的工作策略，还请老师能指点我以后该怎样读这种文字多，新概念多的论文。</p>
-<h1 id="Paper4——MapReduce-Simplified-Data-Processing-on-Large-Clusters"><a href="#Paper4——MapReduce-Simplified-Data-Processing-on-Large-Clusters" class="headerlink" title="Paper4——MapReduce: Simplified Data Processing on Large Clusters"></a>Paper4——MapReduce: Simplified Data Processing on Large Clusters</h1><p>关键词：<strong>Map 函数</strong>、<strong>Reduce 函数</strong></p>
+<h2 id="读后感受">读后感受</h2>
+<p>GFS 的介绍应该是四篇文章中目前读的最慢的一篇了，太多概念都是通过文字方式讲述的，需要一点点在大脑里构建 GFS 中 Master，chunk，chunkserver 的关系。而且并列的概念关系我也没抓住重点（可能这也是我读论文的不足之处），所以这篇总结主要写了一些几个构成和我理解整理以后他们的工作策略，还请老师能指点我以后该怎样读这种文字多，新概念多的论文。</p>
+<h1 id="paper4mapreduce-simplified-data-processing-on-large-clusters">Paper4——MapReduce: Simplified Data Processing on Large Clusters</h1>
+<p>关键词：<strong>Map 函数</strong>、<strong>Reduce 函数</strong></p>
 <p>啥是 MapReduce？——一种编程模型，适于处理大规模数据集</p>
 <p>为啥叫 MapReduce？——核心就是两个函数，分别叫 Map、Reduce</p>
 <p>如果前述 GFS 系统实现了文件，那 MapReduce 则是利用了这个文件系统和其他底层实现，规划出一种编程范型，提供了对外便捷的接口，可以让程序员忽略分布式算法/并行/容错/数据分发的细节，而达到分布式计算的目的。</p>
 <p>下面回顾一下核心 Model：</p>
-<h2 id="Model"><a href="#Model" class="headerlink" title="Model"></a>Model</h2><p><strong>Map</strong>，是由用户编写的，取一个输入对，并且产生一系列中间的键值对。MapReduce 库将那些具有相同的中间键 I 的中间值聚集在一起，然后将它们传递给 Reduce 函数。</p>
+<h2 id="model">Model</h2>
+<p><strong>Map</strong>，是由用户编写的，取一个输入对，并且产生一系列中间的键值对。MapReduce 库将那些具有相同的中间键 I 的中间值聚集在一起，然后将它们传递给 Reduce 函数。</p>
 <p><strong>Reduce</strong>，同样是由用户编写的，接收一个中间键 I 和该键对应的一系列的中间值。Reduce 函数通过将这些值合并来组成一个可能更小的集合（值的集合）。通常每个 Reduce 函数只产生 0 个或 1 个输出值。Reduce 函数一般通过一个迭代器（via an iterator）来获取中间值，从而在中间值的数目远远大于内存容量时，我们也能够处理。</p>
-<h3 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h3><ul>
+<h3 id="example">Example</h3>
+<ul>
 <li>Distributed Grep（分布式查找）：Map 函数获取匹配提供的模式的行，Reduce 函数只是简单地将这些中间数据拷贝到输出。</li>
-<li>Count of URL Access Frequency（计算 URL 访问频率）：Map 函数处理 web 请求的日志，并且输出<URL, 1>。Reduce 函数将拥有相同 URL 的 value 相加，得到<URL, total count>对</li>
-<li>Reverse Web-Link Graph：Map 函数输出<target, source>对，其中 source 所在的 page 都有连向 target 这个 URL 的链接。Reduce 函数将给定 target 的所有的 source URL 连接起来，输出<target, list(source)>对</li>
-<li>Term-Vector per Host：一个 term vector 表示一系列<word, frequency>的键值对，word 表示一篇或者一系列文章中出现的比较重要的单词，frequency 表示它们出现的次数。Map 函数对于每篇输入的文章输出<hostname, term vector>键值对（其中 hostname 是从文章所在的 URL 中抽取出来的）Reduce 函数获取给定 host 的 term vectors。它将这些 term vectors 累加起来，丢弃非频繁出现的 term，并产生一个最终的<hostname, term vector>对。</li>
-<li>Inverted Index：Map 函数对每篇文章进行处理，并输出一系列的<word, document ID>对。Reduce 函数接收给定 word 的所有键值对，对相应的 document ID 进行排序并且输出<word, list>对。所有输出对的集合构成了一个简单的倒排索引。用了 MapReduce 模型，对单词位置的追踪就变得非常简单了。</li>
-<li>Distributed Sort：Map 函数从每个 record 中抽取出 key，产生<key, record>键值对。Reduce 函数只是简单地将所有对输出。这个计算模型依赖于 Section 4.1 中描述的划分技巧以及 Section 4.2 中描述的排序特性。</li>
+<li>Count of URL Access Frequency（计算 URL 访问频率）：Map 函数处理 web 请求的日志，并且输出&lt;URL, 1&gt;。Reduce 函数将拥有相同 URL 的 value 相加，得到&lt;URL, total count&gt;对</li>
+<li>Reverse Web-Link Graph：Map 函数输出&lt;target, source&gt;对，其中 source 所在的 page 都有连向 target 这个 URL 的链接。Reduce 函数将给定 target 的所有的 source URL 连接起来，输出&lt;target, list(source)&gt;对</li>
+<li>Term-Vector per Host：一个 term vector 表示一系列&lt;word, frequency&gt;的键值对，word 表示一篇或者一系列文章中出现的比较重要的单词，frequency 表示它们出现的次数。Map 函数对于每篇输入的文章输出&lt;hostname, term vector&gt;键值对（其中 hostname 是从文章所在的 URL 中抽取出来的）Reduce 函数获取给定 host 的 term vectors。它将这些 term vectors 累加起来，丢弃非频繁出现的 term，并产生一个最终的&lt;hostname, term vector&gt;对。</li>
+<li>Inverted Index：Map 函数对每篇文章进行处理，并输出一系列的&lt;word, document ID&gt;对。Reduce 函数接收给定 word 的所有键值对，对相应的 document ID 进行排序并且输出&lt;word, list&gt;对。所有输出对的集合构成了一个简单的倒排索引。用了 MapReduce 模型，对单词位置的追踪就变得非常简单了。</li>
+<li>Distributed Sort：Map 函数从每个 record 中抽取出 key，产生&lt;key, record&gt;键值对。Reduce 函数只是简单地将所有对输出。这个计算模型依赖于 Section 4.1 中描述的划分技巧以及 Section 4.2 中描述的排序特性。</li>
 </ul>
-<h2 id="Implement"><a href="#Implement" class="headerlink" title="Implement"></a>Implement</h2><p>实现的细节不再赘述，在翻译文档中翻译过切理解了，M 份 Map 操作的 Worker 和 R 份 Reduce 操作的 Worker。</p>
-<h3 id="Fault-Tolerance"><a href="#Fault-Tolerance" class="headerlink" title="Fault Tolerance"></a>Fault Tolerance</h3><ul>
+<h2 id="implement">Implement</h2>
+<p>实现的细节不再赘述，在翻译文档中翻译过切理解了，M 份 Map 操作的 Worker 和 R 份 Reduce 操作的 Worker。</p>
+<h3 id="fault-tolerance">Fault Tolerance</h3>
+<ul>
 <li>Worker Failure：不在响应 master 而被 master 标记为 failure 状态后，其任务会被分摊至其他 wordker。对于 M 任务，需要重做前面已经完成的（因为 Map 产生的中间结果本地存储，而此时“本地”是 failure 的），而对于 R 任务，继续完成即可。</li>
 <li>Master Failure：我们可以很快地根据最新的快照来重新启动一个 master task。但是，因为我们只有一个 master，因此故障的概率比较低。所以，在我们的实现中如果 master 出现了故障就只是简单地停止 MapReduce 操作。用户可以检测到这种情况，并且如果他们需要的话可以重新开始一次 MapReduce 操作。</li>
 <li>Semantics in the Presence of Failures：针对非确定性执行，是解集空间中的一个。</li>
 </ul>
-<h2 id="Refinements"><a href="#Refinements" class="headerlink" title="Refinements"></a>Refinements</h2><p>此外还有一些有用的扩展：</p>
+<h2 id="refinements">Refinements</h2>
+<p>此外还有一些有用的扩展：</p>
 <ul>
 <li>Hash 之前的划分操作</li>
 <li>划分产生文件的顺序性</li>
@@ -372,7 +393,8 @@
 <li>跳过故障点</li>
 <li>Status 动态显示</li>
 </ul>
-<h2 id="读后感受-1"><a href="#读后感受-1" class="headerlink" title="读后感受"></a>读后感受</h2><p>很神奇的一种编程范式，相当于做了一个介于应用和分布式环境中间的接口，按照这种编程范式去编程便可以充分利用下面的分布式资源而忽略其具体实现细节。</p>
+<h2 id="读后感受-1">读后感受</h2>
+<p>很神奇的一种编程范式，相当于做了一个介于应用和分布式环境中间的接口，按照这种编程范式去编程便可以充分利用下面的分布式资源而忽略其具体实现细节。</p>
 <p>实现方案理解起来也是非常巧妙，给人的感觉更像是从大的集合中抽出键值相同的小集合，再做合并。</p>
 <p>希望后续可以读到更多关于分布式有趣的想法！</p>
 
@@ -611,10 +633,6 @@
 
 
 
-  <script  src="/js/local-search.js" ></script>
-
-
-
 
 
 
@@ -627,6 +645,21 @@
       typing(title)
       
     })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
   </script>
 
 

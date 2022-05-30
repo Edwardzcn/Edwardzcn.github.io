@@ -14,8 +14,9 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="Using Structs to Structure Related DataStructs and enums are the building blocks for ccrating new types in your program’s domain to take full advantage of Rust’s compile time type checking.
-Defining a">
+  <meta name="description" content="Using Structs to Structure Related Data
+Structs and enums are the building blocks for ccrating new types in your program&#39;s domain to take full advantage of Rust&#39;s compile time type checking.
+Definin">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
   
@@ -61,11 +62,12 @@ Defining a">
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
 
 <body>
@@ -117,7 +119,7 @@ Defining a">
               <a class="nav-link dropdown-toggle" target="_self" role="button"
                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -188,7 +190,7 @@ Defining a">
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -255,7 +257,7 @@ Defining a">
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      738 字
+      745 字
     </span>
   
 
@@ -298,36 +300,45 @@ Defining a">
             <h1 style="display: none">Rust学习——TRPL-Part6</h1>
             
             <div class="markdown-body">
-              <h1 id="Using-Structs-to-Structure-Related-Data"><a href="#Using-Structs-to-Structure-Related-Data" class="headerlink" title="Using Structs to Structure Related Data"></a>Using Structs to Structure Related Data</h1><p>Structs and enums are the building blocks for ccrating new types in your program’s domain to take full advantage of <strong>Rust’s compile time type checking</strong>.</p>
-<h2 id="Defining-and-Instantiating-Structs"><a href="#Defining-and-Instantiating-Structs" class="headerlink" title="Defining and Instantiating Structs"></a>Defining and Instantiating Structs</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">User</span></span> &#123;<br>    username: <span class="hljs-built_in">String</span>,<br>    email: <span class="hljs-built_in">String</span>,<br>    sign_in_count: <span class="hljs-built_in">u64</span>,<br>    active: <span class="hljs-built_in">bool</span>,<br>&#125;<br></code></pre></td></tr></table></figure>
-<h3 id="Creating-Instances-From-Other-Instances-With-Struct-Update-Syntax"><a href="#Creating-Instances-From-Other-Instances-With-Struct-Update-Syntax" class="headerlink" title="Creating Instances From Other Instances With Struct Update Syntax"></a>Creating Instances From Other Instances With Struct Update Syntax</h3><p>使用旧实例的大部分值但改变其部分值来创建一个新的结构体实例通常是很有用的。这可以通过<strong>结构体更新</strong>语法（<em>struct update syntax</em>）实现。</p>
+              <h1 id="using-structs-to-structure-related-data">Using Structs to Structure Related Data</h1>
+<p>Structs and enums are the building blocks for ccrating new types in your program's domain to take full advantage of <strong>Rust's compile time type checking</strong>.</p>
+<h2 id="defining-and-instantiating-structs">Defining and Instantiating Structs</h2>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">User</span></span> &#123;<br>    username: <span class="hljs-built_in">String</span>,<br>    email: <span class="hljs-built_in">String</span>,<br>    sign_in_count: <span class="hljs-built_in">u64</span>,<br>    active: <span class="hljs-built_in">bool</span>,<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="creating-instances-from-other-instances-with-struct-update-syntax">Creating Instances From Other Instances With Struct Update Syntax</h3>
+<p>使用旧实例的大部分值但改变其部分值来创建一个新的结构体实例通常是很有用的。这可以通过<strong>结构体更新</strong>语法（<em>struct update syntax</em>）实现。</p>
 <figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-meta">#![allow(unused)]</span><br><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">User</span></span> &#123;<br>    username: <span class="hljs-built_in">String</span>,<br>    email: <span class="hljs-built_in">String</span>,<br>    sign_in_count: <span class="hljs-built_in">u64</span>,<br>    active: <span class="hljs-built_in">bool</span>,<br>&#125;<br><br><span class="hljs-keyword">let</span> user1 = User &#123;<br>    email: <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;someone@example.com&quot;</span>),<br>    username: <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;someusername123&quot;</span>),<br>    active: <span class="hljs-literal">true</span>,<br>    sign_in_count: <span class="hljs-number">1</span>,<br>&#125;;<br><br><span class="hljs-keyword">let</span> user2 = User &#123;<br>    email: <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;another@example.com&quot;</span>),<br>    ..user1<br>&#125;;<br>&#125;<br></code></pre></td></tr></table></figure>
-<p>请注意，结构更新语法就像带有 <code>=</code> 的赋值，因为它移动了数据，就像我们在所有权中Move情况讲到的一样。在这个例子中<br>我们在创建<code>user2</code>后不能再使用<code>user1</code>，因为<code>user1</code>的<code>username</code>字段中的<code>String</code> 被移到<code>user2</code>中。如果我们给<code>user2</code>的<code>email</code>和<code>username</code>都赋予新的<code>String</code>值，从而只使用<code>user1</code>的<code>active</code>和<code>sign_in_count</code>（<code>active</code>和<code>sign_in_count</code>的类型是实现<code>Copy</code> trait的类型，分配在栈上？），那么<code>user1</code>在创建<code>user2</code>后仍然有效，所以我们在所有权中Clone部分讨论同样适用。</p>
+<p>请注意，结构更新语法就像带有 <code>=</code> 的赋值，因为它移动了数据，就像我们在所有权中Move情况讲到的一样。在这个例子中 我们在创建<code>user2</code>后不能再使用<code>user1</code>，因为<code>user1</code>的<code>username</code>字段中的<code>String</code> 被移到<code>user2</code>中。如果我们给<code>user2</code>的<code>email</code>和<code>username</code>都赋予新的<code>String</code>值，从而只使用<code>user1</code>的<code>active</code>和<code>sign_in_count</code>（<code>active</code>和<code>sign_in_count</code>的类型是实现<code>Copy</code> trait的类型，分配在栈上？），那么<code>user1</code>在创建<code>user2</code>后仍然有效，所以我们在所有权中Clone部分讨论同样适用。</p>
 <p>Note that the entire instance must be mutable.</p>
-<h3 id="Using-the-Field-Init-Shorthand"><a href="#Using-the-Field-Init-Shorthand" class="headerlink" title="Using the Field Init Shorthand"></a>Using the Field Init Shorthand</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">build_user</span></span>(email: <span class="hljs-built_in">String</span>, username: <span class="hljs-built_in">String</span>) -&gt; User &#123;<br>    User &#123;<br>        email,<br>        username,<br>        active: <span class="hljs-literal">true</span>,<br>        sign_in_count: <span class="hljs-number">1</span>,<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="using-the-field-init-shorthand">Using the Field Init Shorthand</h3>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">build_user</span></span>(email: <span class="hljs-built_in">String</span>, username: <span class="hljs-built_in">String</span>) -&gt; User &#123;<br>    User &#123;<br>        email,<br>        username,<br>        active: <span class="hljs-literal">true</span>,<br>        sign_in_count: <span class="hljs-number">1</span>,<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <a id="more"></a>
-<h3 id="Using-Tuple-Structs-without-Named-Fields-to-Create-Different-Types"><a href="#Using-Tuple-Structs-without-Named-Fields-to-Create-Different-Types" class="headerlink" title="Using Tuple Structs without Named Fields to Create Different Types"></a>Using Tuple Structs without Named Fields to Create Different Types</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Color</span></span>(<span class="hljs-built_in">i32</span>, <span class="hljs-built_in">i32</span>, <span class="hljs-built_in">i32</span>);<br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Point</span></span>(<span class="hljs-built_in">i32</span>, <span class="hljs-built_in">i32</span>, <span class="hljs-built_in">i32</span>);<br><br><span class="hljs-keyword">let</span> black = Color(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>);<br><span class="hljs-keyword">let</span> origin = Point(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>);<br></code></pre></td></tr></table></figure>
-<h3 id="Unit-Like-Structs-Without-Any-Fields"><a href="#Unit-Like-Structs-Without-Any-Fields" class="headerlink" title="Unit-Like Structs Without Any Fields"></a>Unit-Like Structs Without Any Fields</h3><p><em>unit-like</em> structs — similar to <code>()</code>.</p>
+<h3 id="using-tuple-structs-without-named-fields-to-create-different-types">Using Tuple Structs without Named Fields to Create Different Types</h3>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Color</span></span>(<span class="hljs-built_in">i32</span>, <span class="hljs-built_in">i32</span>, <span class="hljs-built_in">i32</span>);<br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Point</span></span>(<span class="hljs-built_in">i32</span>, <span class="hljs-built_in">i32</span>, <span class="hljs-built_in">i32</span>);<br><br><span class="hljs-keyword">let</span> black = Color(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>);<br><span class="hljs-keyword">let</span> origin = Point(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>);<br></code></pre></td></tr></table></figure>
+<h3 id="unit-like-structs-without-any-fields">Unit-Like Structs Without Any Fields</h3>
+<p><em>unit-like</em> structs -- similar to <code>()</code>.</p>
 <p>Unit-like structs can be useful in situations in which you need to implement a trait on some type but don’t have any data that you want to store in the type itself.</p>
 <blockquote>
 <p>Ownership of Struct Data</p>
-<p>Lifetime, can’t store <code>&amp;str</code>(slice), only <code>String</code>.</p>
+<p>Lifetime, can't store <code>&amp;str</code>(slice), only <code>String</code>.</p>
 <p>In Chapter 10, we’ll discuss how to fix these errors so you can store references in structs, but for now, we’ll fix errors like these using owned types like <code>String</code> instead of references like <code>&amp;str</code>.</p>
 </blockquote>
-<h2 id="Method-Syntax"><a href="#Method-Syntax" class="headerlink" title="Method Syntax"></a>Method Syntax</h2><p><em>Methods</em>与functions异同：</p>
+<h2 id="method-syntax">Method Syntax</h2>
+<p><em>Methods</em>与functions异同：</p>
 <p>相同点：都有<code>fn</code>关键字声明以及他们的名字，他们拥有参数和一个返回值，并包含在其他地方被调用时运行的代码。</p>
 <p>不同点：methods被定义在struct（或者 enum 或者 trait object）的上下文中。</p>
 <p>To define the function within the context of <code>Rectangle</code>, we start an <code>impl</code> (implementation) block.</p>
 <blockquote>
-<p>Where’s the -&gt; Operator?</p>
+<p>Where's the -&gt; Operator?</p>
 <p>Rust doesn’t have an equivalent to the <code>-&gt;</code> operator; instead, Rust has a feature called <em>automatic referencing and dereferencing</em>. Calling methods is one of the few places in Rust that has this behavior.</p>
 <p>Here’s how it works: when you call a method with <code>object.something()</code>, Rust automatically adds in <code>&amp;</code>, <code>&amp;mut</code>, or <code>*</code> so <code>object</code> matches the signature of the method. In other words, the following are the same:</p>
 <figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs Rust">p1.distance(&amp;p2);<br>(&amp;p1).distance(&amp;p2);<br></code></pre></td></tr></table></figure>
 </blockquote>
-<h3 id="Associated-Functions"><a href="#Associated-Functions" class="headerlink" title="Associated Functions"></a>Associated Functions</h3><p>Another useful feature of <code>impl</code> blocks is that we’re allowed to define functions within <code>impl</code> blocks that <em>don’t</em> take <code>self</code> as a parameter. These are called associated functions because they’re associated with the struct. They’re still functions, not methods, because they don’t have an instance of the struct to work with. You’ve already used the <code>String::from</code> associated function.</p>
+<h3 id="associated-functions">Associated Functions</h3>
+<p>Another useful feature of <code>impl</code> blocks is that we’re allowed to define functions within <code>impl</code> blocks that <em>don’t</em> take <code>self</code> as a parameter. These are called associated functions because they’re associated with the struct. They’re still functions, not methods, because they don’t have an instance of the struct to work with. You’ve already used the <code>String::from</code> associated function.</p>
 <p>不是methods，因为没有关联的实例。</p>
 <p>Associated functions are often used for constructors.</p>
 <figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-keyword">impl</span> Rectangle &#123;<br>    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">square</span></span>(size: <span class="hljs-built_in">u32</span>) -&gt; Rectangle &#123;<br>        Rectangle &#123;<br>            width: size,<br>            height: size,<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
             </div>
             <hr>
             <div>
@@ -563,10 +574,6 @@ Defining a">
 
 
 
-  <script  src="/js/local-search.js" ></script>
-
-
-
 
 
 
@@ -579,6 +586,21 @@ Defining a">
       typing(title)
       
     })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
   </script>
 
 

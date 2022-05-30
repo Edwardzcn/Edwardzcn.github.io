@@ -14,8 +14,11 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="CHAPTER 3 Data AbstractionAlgebraic Interfaces for Abstract Data Types举队列为例，在一般编程中，我们构造出数据结构就 ok 了。但是如果我们要遵照形式化正确证明，我们还要补充一个规则集合，并用 data type 的操作量化。还是讲队列，需要满足两条：
-dequeue(empty) = \cdot\forall q.dequeu">
+  <meta name="description" content="CHAPTER 3 Data Abstraction
+Algebraic Interfaces for Abstract Data Types
+举队列为例，在一般编程中，我们构造出数据结构就 ok 了。但是如果我们要遵照形式化正确证明，我们还要补充一个规则集合，并用 data type 的操作量化。还是讲队列，需要满足两条：
+\[dequeue(empty) = \cdot\]
+\[\fo">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
   
@@ -61,11 +64,12 @@ dequeue(empty) = \cdot\forall q.dequeu">
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
 
 <body>
@@ -117,7 +121,7 @@ dequeue(empty) = \cdot\forall q.dequeu">
               <a class="nav-link dropdown-toggle" target="_self" role="button"
                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -188,7 +192,7 @@ dequeue(empty) = \cdot\forall q.dequeu">
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -255,7 +259,7 @@ dequeue(empty) = \cdot\forall q.dequeu">
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      629 字
+      635 字
     </span>
   
 
@@ -298,31 +302,42 @@ dequeue(empty) = \cdot\forall q.dequeu">
             <h1 style="display: none">Coq学习——FRAP阅读笔记Chap3</h1>
             
             <div class="markdown-body">
-              <h1 id="CHAPTER-3-Data-Abstraction"><a href="#CHAPTER-3-Data-Abstraction" class="headerlink" title="CHAPTER 3 Data Abstraction"></a>CHAPTER 3 Data Abstraction</h1><h2 id="Algebraic-Interfaces-for-Abstract-Data-Types"><a href="#Algebraic-Interfaces-for-Abstract-Data-Types" class="headerlink" title="Algebraic Interfaces for Abstract Data Types"></a>Algebraic Interfaces for Abstract Data Types</h2><p>举队列为例，在一般编程中，我们构造出数据结构就 ok 了。但是如果我们要遵照形式化正确证明，我们还要补充一个<strong>规则集合</strong>，并用 data type 的操作量化。还是讲队列，需要满足两条：</p>
-<script type="math/tex; mode=display">dequeue(empty) = \cdot</script><script type="math/tex; mode=display">\forall q.dequeue(q) = \cdot \Rightarrow q = empty</script><p>给出两个比较明显的实现：</p>
+              <h1 id="chapter-3-data-abstraction">CHAPTER 3 Data Abstraction</h1>
+<h2 id="algebraic-interfaces-for-abstract-data-types">Algebraic Interfaces for Abstract Data Types</h2>
+<p>举队列为例，在一般编程中，我们构造出数据结构就 ok 了。但是如果我们要遵照形式化正确证明，我们还要补充一个<strong>规则集合</strong>，并用 data type 的操作量化。还是讲队列，需要满足两条：</p>
+<p><span class="math display">\[dequeue(empty) = \cdot\]</span></p>
+<p><span class="math display">\[\forall q.dequeue(q) = \cdot \Rightarrow q = empty\]</span></p>
+<p>给出两个比较明显的实现：</p>
 <ul>
 <li>enqueue to list fronts and dequeue from listbacks</li>
 <li>enqueue to list backs and dequeuefrom list fronts</li>
 </ul>
 <p>上述两个实现不够效率，这里有一个著名的，更聪明的实现，它实现了平摊常数时间(线性时间覆盖整个操作序列)，但是我们需要扩展我们的代数风格来适应它。</p>
 <a id="more"></a>
-<h2 id="Algebraic-Interfaces-with-Custom-Equivalence-Relations"><a href="#Algebraic-Interfaces-with-Custom-Equivalence-Relations" class="headerlink" title="Algebraic Interfaces with Custom Equivalence Relations"></a>Algebraic Interfaces with Custom Equivalence Relations</h2><p>我们发现用一个新的数学操作来扩展队列的基本接口是很有用的。</p>
+<h2 id="algebraic-interfaces-with-custom-equivalence-relations">Algebraic Interfaces with Custom Equivalence Relations</h2>
+<p>我们发现用一个新的数学操作来扩展队列的基本接口是很有用的。</p>
 <p>引入等价关系（自反，对称，传递）</p>
 <p>Here is its implementation, relying on list-reversal function <code>rev</code>？？</p>
 <p>双 list 实现队列，不够时反转添加至弹出 stack，形式化等价的证明。</p>
-<script type="math/tex; mode=display">rep((l_1,l_2)) = l_1 \bowtie rev(l_2)</script><script type="math/tex; mode=display">q_1 \approx q_1 = rep(q_1) = rep(q_2)</script><p>为什么我们需要经历引入自定义等价语句的麻烦呢？思考后面的等价问题。一个为$([],[2])$一个为$([2],[])$。这个数据结构是不规范的，因为相同的逻辑值可能有多个物理表示。等价关系让我们指出哪些物理表示是等价的。</p>
-<h2 id="Representation-Functions"><a href="#Representation-Functions" class="headerlink" title="Representation Functions"></a>Representation Functions</h2><p>基于<code>representation functions</code>风格的表示方法。我们可以强制。只要存在任何兼容的函数就足以显示队列实现的正确性，而且这种方法基本上可以将所有其他数据结构转换为抽象数据类型。</p>
+<p><span class="math display">\[rep((l_1,l_2)) = l_1 \bowtie rev(l_2)\]</span></p>
+<p><span class="math display">\[q_1 \approx q_1 = rep(q_1) = rep(q_2)\]</span></p>
+<p>为什么我们需要经历引入自定义等价语句的麻烦呢？思考后面的等价问题。一个为<span class="math inline">\(([],[2])\)</span>一个为<span class="math inline">\(([2],[])\)</span>。这个数据结构是不规范的，因为相同的逻辑值可能有多个物理表示。等价关系让我们指出哪些物理表示是等价的。</p>
+<h2 id="representation-functions">Representation Functions</h2>
+<p>基于<code>representation functions</code>风格的表示方法。我们可以强制。只要存在任何兼容的函数就足以显示队列实现的正确性，而且这种方法基本上可以将所有其他数据结构转换为抽象数据类型。</p>
 <p>感觉就是把具备的性质用<code>rep()</code>表示出来。</p>
 <p>修正队列的类型定义</p>
 <p>修正的 Axiom（公理）</p>
-<h2 id="Fixing-Parameter-Types-for-Abstract-Data-Types"><a href="#Fixing-Parameter-Types-for-Abstract-Data-Types" class="headerlink" title="Fixing Parameter Types for Abstract Data Types"></a>Fixing Parameter Types for Abstract Data Types</h2><p>这是另一种经典的抽象数据类型：<strong>有限集</strong>（finite sets），我们在这里写<strong>布尔集合</strong>。</p>
-<script type="math/tex; mode=display">
+<h2 id="fixing-parameter-types-for-abstract-data-types">Fixing Parameter Types for Abstract Data Types</h2>
+<p>这是另一种经典的抽象数据类型：<strong>有限集</strong>（finite sets），我们在这里写<strong>布尔集合</strong>。</p>
+<p><span class="math display">\[
 \begin{aligned}
-    t(a) & \quad : \quad  Set \\
-    empty & \quad : \quad  t(a) \\
-    add & \quad : \quad  t(a) \times a \rightarrow t(a) \\
-    member & \quad : \quad t(a) \times a \rightarrow \mathbb{B}
-\end{aligned}</script><p>一种简单的实现方法是使用 data type unsorted lists。</p>
+    t(a) &amp; \quad : \quad  Set \\
+    empty &amp; \quad : \quad  t(a) \\
+    add &amp; \quad : \quad  t(a) \times a \rightarrow t(a) \\
+    member &amp; \quad : \quad t(a) \times a \rightarrow \mathbb{B}
+\end{aligned}
+\]</span></p>
+<p>一种简单的实现方法是使用 data type unsorted lists。</p>
 <p>我们可以为特定的元素类型和使用模式构建专门的有限集。对于仅构建连续数字集的工作负载，此实现可能比基于泛型列表的实现快得多，它将次方转换为线性时间复杂度。！！给了一个 Range。</p>
 
             </div>
@@ -560,10 +575,6 @@ dequeue(empty) = \cdot\forall q.dequeu">
 
 
 
-  <script  src="/js/local-search.js" ></script>
-
-
-
 
 
 
@@ -576,6 +587,21 @@ dequeue(empty) = \cdot\forall q.dequeu">
       typing(title)
       
     })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
   </script>
 
 

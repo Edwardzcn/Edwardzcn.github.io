@@ -14,12 +14,13 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="CHAPTER 12 Hoare Logic: Verifying Imperative Programs从上一章节两个维度前进一步。
+  <meta name="description" content="CHAPTER 12 Hoare Logic: Verifying Imperative Programs
+从上一章节两个维度前进一步。
 
 从函数式转为命令式语言
 回到对深度一致性（deep correctness）性质的证明，而非缺乏类型相关的崩溃
 
-尽管如此，基本的证明结构最终还是一样的，因为我们再一次证明了转移系统的不变量（invariants of transition systems）（跳">
+尽管如此，基本的证明结构最终还是一样的，因为我们再一次证明了转移系统的不变量（invariants of transition sys">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
   
@@ -65,11 +66,12 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
 
 <body>
@@ -121,7 +123,7 @@
               <a class="nav-link dropdown-toggle" target="_self" role="button"
                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -192,7 +194,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -259,7 +261,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      966 字
+      975 字
     </span>
   
 
@@ -269,7 +271,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      11
+      12
        分钟
     </span>
   
@@ -302,56 +304,62 @@
             <h1 style="display: none">Coq学习——FRAP阅读笔记Chap12</h1>
             
             <div class="markdown-body">
-              <h1 id="CHAPTER-12-Hoare-Logic-Verifying-Imperative-Programs"><a href="#CHAPTER-12-Hoare-Logic-Verifying-Imperative-Programs" class="headerlink" title="CHAPTER 12 Hoare Logic: Verifying Imperative Programs"></a>CHAPTER 12 Hoare Logic: Verifying Imperative Programs</h1><p>从上一章节两个维度前进一步。</p>
+              <h1 id="chapter-12-hoare-logic-verifying-imperative-programs">CHAPTER 12 Hoare Logic: Verifying Imperative Programs</h1>
+<p>从上一章节两个维度前进一步。</p>
 <ul>
 <li>从函数式转为命令式语言</li>
 <li>回到对深度一致性（deep correctness）性质的证明，而非缺乏类型相关的崩溃</li>
 </ul>
 <p>尽管如此，基本的证明结构最终还是一样的，因为我们再一次证明了转移系统的不变量（invariants of transition systems）（跳跃读，需要补 Chap4 5）。</p>
 <a id="more"></a>
-<h2 id="An-Imperative-Language-with-Memory"><a href="#An-Imperative-Language-with-Memory" class="headerlink" title="An Imperative Language with Memory"></a>An Imperative Language with Memory</h2><p>从定义具有无限可变堆（infinite mutable heap）的命令行语言开始。出于一些原因，mix 了语法和语义。在程序的特定部分，我们包含了表达程序状态（program state）的断言（assertion），用 heap $h$ 和 variable valuation $v$ 表示。</p>
-<script type="math/tex; mode=display">
+<h2 id="an-imperative-language-with-memory">An Imperative Language with Memory</h2>
+<p>从定义具有无限可变堆（infinite mutable heap）的命令行语言开始。出于一些原因，mix 了语法和语义。在程序的特定部分，我们包含了表达程序状态（program state）的断言（assertion），用 heap <span class="math inline">\(h\)</span> 和 variable valuation <span class="math inline">\(v\)</span> 表示。</p>
+<p><span class="math display">\[
 \begin{aligned}
-    \mathbf{Numbers} \quad & n \in \mathbb{N} \\
-    \mathbf{Variables}  \quad & x  \in \mathbf{Strings} \\
-    \mathbf{Expressions} \quad & e ::= n|x|e+e|e-e|e \times e | *[e] \\
-    \mathbf{Boolean} \quad \mathbf{expressions} \quad & b ::= e=e | e < e \\
-    \mathbf{Commands} \quad  & c ::= \mathbf{skip} | x \leftarrow e |*[e] \leftarrow e | c;c  \\
-    & \qquad   | \ \mathbf{if}  \ b \ \mathbf{then} \ c \ \mathbf{else} \ c \\
-    & \qquad | \ \{ a \}  \ \mathbf{while} \ b \ \mathbf{do} \ c  \ | \ \mathbf{assert}(a)
-\end{aligned}</script><p>循环在其语法中产生了一个额外的断言，实际上我们将在语言语义中忽略它，但它将成为我们将要学习的证明技术的重要部分，特别是在自动化它的过程中。表达式具有标准的递归语义，这里应该说的是$\{ a  \} \ \mathbf{while} \ b  \ \mathbf{do} \ c \ | \ \mathbf{assert}(a)$这部分。</p>
+    \mathbf{Numbers} \quad &amp; n \in \mathbb{N} \\
+    \mathbf{Variables}  \quad &amp; x  \in \mathbf{Strings} \\
+    \mathbf{Expressions} \quad &amp; e ::= n|x|e+e|e-e|e \times e | *[e] \\
+    \mathbf{Boolean} \quad \mathbf{expressions} \quad &amp; b ::= e=e | e &lt; e \\
+    \mathbf{Commands} \quad  &amp; c ::= \mathbf{skip} | x \leftarrow e |*[e] \leftarrow e | c;c  \\
+    &amp; \qquad   | \ \mathbf{if}  \ b \ \mathbf{then} \ c \ \mathbf{else} \ c \\
+    &amp; \qquad | \ \{ a \}  \ \mathbf{while} \ b \ \mathbf{do} \ c  \ | \ \mathbf{assert}(a)
+\end{aligned}
+\]</span></p>
+<p>循环在其语法中产生了一个额外的断言，实际上我们将在语言语义中忽略它，但它将成为我们将要学习的证明技术的重要部分，特别是在自动化它的过程中。表达式具有标准的递归语义，这里应该说的是<span class="math inline">\(\{ a \} \ \mathbf{while} \ b \ \mathbf{do} \ c \ | \ \mathbf{assert}(a)\)</span>这部分。</p>
 <p>语义部分描述：（待添加公式）</p>
 <p>通过增加线程堆复杂性，完成了大步骤的语义（big——step semantics）。</p>
 <p>先尝试 Pass 这一部分。直接推理操作语义可能会很乏味，所以开发一些自动证明程序正确性的机制。</p>
-<h2 id="Hoare-Triples"><a href="#Hoare-Triples" class="headerlink" title="Hoare Triples"></a>Hoare Triples</h2><p>如同其他系统一样（有待研究前面的内容？），定义一个语法谓词（syntactic predicate）并一劳永逸地证明它。谓词被写成$\{P\}c\{Q\}$地的形式，该形式被称为<code>Hoare triple</code>，按这种谓词的实现称为<code>Hoare logic</code>。</p>
+<h2 id="hoare-triples">Hoare Triples</h2>
+<p>如同其他系统一样（有待研究前面的内容？），定义一个语法谓词（syntactic predicate）并一劳永逸地证明它。谓词被写成<span class="math inline">\(\{P\}c\{Q\}\)</span>地的形式，该形式被称为<code>Hoare triple</code>，按这种谓词的实现称为<code>Hoare logic</code>。</p>
 <ul>
-<li>$c$，形式化的命令 command</li>
-<li>$P$，前状态 precondition（执行$c$之前计算机的状态）。</li>
-<li>$Q$，后状态 postcondition （执行之后的状态）。</li>
+<li><span class="math inline">\(c\)</span>，形式化的命令 command</li>
+<li><span class="math inline">\(P\)</span>，前状态 precondition（执行<span class="math inline">\(c\)</span>之前计算机的状态）。</li>
+<li><span class="math inline">\(Q\)</span>，后状态 postcondition （执行之后的状态）。</li>
 </ul>
-<h3 id="规则解释"><a href="#规则解释" class="headerlink" title="规则解释"></a>规则解释</h3><ul>
+<h3 id="规则解释">规则解释</h3>
+<ul>
 <li>skip rule. 跳过规则</li>
-<li>assignment rule. 赋值规则<ul>
-<li>前状态：$\{P\}$</li>
-<li>过程为：$x \leftarrow e$</li>
-<li>后状态（这个不大能理解）： $\{ \lambda(h,v). \ \exists v’. P(h,v’) \land v = v’[x \mapsto [e] (h.v’) ]\}$</li>
-</ul>
-</li>
+<li>assignment rule. 赋值规则
+<ul>
+<li>前状态：<span class="math inline">\(\{P\}\)</span></li>
+<li>过程为：<span class="math inline">\(x \leftarrow e\)</span></li>
+<li>后状态（这个不大能理解）： <span class="math inline">\(\{ \lambda(h,v). \ \exists v’. P(h,v’) \land v = v’[x \mapsto [e] (h.v’) ]\}\)</span></li>
+</ul></li>
 <li>memory-write rule. 内存写规则</li>
 <li><p>model sequence rule. 顺序执行规则（这个用来表示非常的方便）</p>
-<script type="math/tex; mode=display">\dfrac{\{P\}c_1\{Q\} \quad \{Q\}c_2\{R\}}{ \{P\}c_1;c_2\{R\} }</script></li>
+<p><span class="math display">\[\dfrac{\{P\}c_1\{Q\} \quad \{Q\}c_2\{R\}}{ \{P\}c_1;c_2\{R\} }\]</span></p></li>
 <li><p>condition rule. 排序规则</p>
-<p>从基本的 sequence 方法开始，变动两个地方。其一是由于子命令再测试表达式不同结果后运行，要扩展 precondition。另一方面，由于可能执行任一段子代码，我们不考虑他们的后置条件（看代码稍微能理解些了）。</p>
-</li>
-<li><p>循环规则</p>
-</li>
+<p>从基本的 sequence 方法开始，变动两个地方。其一是由于子命令再测试表达式不同结果后运行，要扩展 precondition。另一方面，由于可能执行任一段子代码，我们不考虑他们的后置条件（看代码稍微能理解些了）。</p></li>
+<li>循环规则</li>
 <li>command——specific 规则</li>
-<li>One more essential rule 跟前后条件强弱相关。</li>
+<li><p>One more essential rule 跟前后条件强弱相关。</p></li>
 </ul>
 <p>上述这些规则（个人理解，这些就是 Axiom 公理）结合在一起是完整的（完备的？complete），任何关于 pre-post 条件对的 command 都是可证的（这里又回到了命令表示？）。完整证明是通过 Coq 完成的。</p>
 <p>（机翻）自动证明过程基本思路：首先尝试应用丁聪语法树构造函数（比如 assignment 或 loop rule）。如果规则和目标一致，则递归下去。否则，应用后果规则将后置条件替换为匹配规则中的后置条件； 请注意，所有规则都接受任意形状的前提条件，因此我们实际上不需要做任何工作来按摩前提条件。经过这样的步骤之后，可以确保现在适用“基本”规则。</p>
 <p>介绍 Hoare logic 的结尾部分，思考<strong>how it brings to bear some more of the general principles that we have met before.</strong></p>
-<h2 id="Small-Step-Semantics"><a href="#Small-Step-Semantics" class="headerlink" title="Small-Step Semantics"></a>Small-Step Semantics</h2><h2 id="Transition-System-Invariants-from-Hoare-Triples"><a href="#Transition-System-Invariants-from-Hoare-Triples" class="headerlink" title="Transition-System Invariants from Hoare Triples"></a>Transition-System Invariants from Hoare Triples</h2>
+<h2 id="small-step-semantics">Small-Step Semantics</h2>
+<h2 id="transition-system-invariants-from-hoare-triples">Transition-System Invariants from Hoare Triples</h2>
+
             </div>
             <hr>
             <div>
@@ -587,10 +595,6 @@
 
 
 
-  <script  src="/js/local-search.js" ></script>
-
-
-
 
 
 
@@ -603,6 +607,21 @@
       typing(title)
       
     })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
   </script>
 
 

@@ -60,11 +60,12 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
 
 <body>
@@ -116,7 +117,7 @@
               <a class="nav-link dropdown-toggle" target="_self" role="button"
                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -187,7 +188,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -297,11 +298,17 @@
             <h1 style="display: none">数字图像处理——图像复原（空间域）</h1>
             
             <div class="markdown-body">
-              <h1 id="空间域滤波图像复原"><a href="#空间域滤波图像复原" class="headerlink" title="空间域滤波图像复原"></a>空间域滤波图像复原</h1><p>在<a href="https://www.edwardzcn98yx.com/post/199b3bb2.html">5_1 图像复原与重建初步</a>中，我们研究了图像的噪声退化模型，以及常见的噪声模型及其实现，实际上这些噪声模型帮我们解决了前一篇文章(1)式中$\eta(x,y)$的取值问题，同时再观察(1)式我们也能发现，当一幅图像中唯一存在的退化是噪声时，式(1)和式(2)会变成（简化）如下：</p>
-<script type="math/tex; mode=display">g(x,y) = f(x,y) + \eta (x,y)</script><p>和</p>
-<script type="math/tex; mode=display">G(u,v) = F(u,v) + N(u,v)</script><p>我们发现没了“退化函数”，复原在空间域和频率域都是一个可加形式，估计噪声情况后，便可得到原图像的一个估计，故在仅存在加性噪声的情况下，可以选择空间滤波方法。</p>
+              <h1 id="空间域滤波图像复原">空间域滤波图像复原</h1>
+<p>在<a href="https://www.edwardzcn98yx.com/post/199b3bb2.html">5_1 图像复原与重建初步</a>中，我们研究了图像的噪声退化模型，以及常见的噪声模型及其实现，实际上这些噪声模型帮我们解决了前一篇文章(1)式中<span class="math inline">\(\eta(x,y)\)</span>的取值问题，同时再观察(1)式我们也能发现，当一幅图像中唯一存在的退化是噪声时，式(1)和式(2)会变成（简化）如下：</p>
+<p><span class="math display">\[g(x,y) = f(x,y) + \eta (x,y)\]</span></p>
+<p>和</p>
+<p><span class="math display">\[G(u,v) = F(u,v) + N(u,v)\]</span></p>
+<p>我们发现没了“退化函数”，复原在空间域和频率域都是一个可加形式，估计噪声情况后，便可得到原图像的一个估计，故在仅存在加性噪声的情况下，可以选择空间滤波方法。</p>
 <p>一些简单实现在前面第三章已经讨论过，比如算数均值滤波器，这一章节主要是做更深入的研究。</p>
-<h2 id="均值滤波器"><a href="#均值滤波器" class="headerlink" title="均值滤波器"></a>均值滤波器</h2><h2 id="统计排序滤波器"><a href="#统计排序滤波器" class="headerlink" title="统计排序滤波器"></a>统计排序滤波器</h2><h2 id="自适应滤波器"><a href="#自适应滤波器" class="headerlink" title="自适应滤波器"></a>自适应滤波器</h2><p>有待后续学习补充。</p>
+<h2 id="均值滤波器">均值滤波器</h2>
+<h2 id="统计排序滤波器">统计排序滤波器</h2>
+<h2 id="自适应滤波器">自适应滤波器</h2>
+<p>有待后续学习补充。</p>
 
             </div>
             <hr>
@@ -538,10 +545,6 @@
 
 
 
-  <script  src="/js/local-search.js" ></script>
-
-
-
 
 
 
@@ -554,6 +557,21 @@
       typing(title)
       
     })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
   </script>
 
 

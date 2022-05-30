@@ -60,11 +60,12 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
 
 <body>
@@ -116,7 +117,7 @@
               <a class="nav-link dropdown-toggle" target="_self" role="button"
                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -187,7 +188,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -264,7 +265,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      21
+      22
        分钟
     </span>
   
@@ -297,62 +298,87 @@
             <h1 style="display: none">密码技术学习——Keccak攻击进度工作文档</h1>
             
             <div class="markdown-body">
-              <h1 id="性质发现"><a href="#性质发现" class="headerlink" title="性质发现"></a>性质发现</h1><h2 id="theta-运算性质"><a href="#theta-运算性质" class="headerlink" title="$\theta$ 运算性质"></a>$\theta$ 运算性质</h2><p>$\theta$运算结果受每个位置原有值与其两侧两个 column parity 的影响，即$CP[x-1][z]$与$CP[x+1][z-1]$。</p>
-<p>通常情况，$\theta$具有扩散性，变量经$\theta$运算后会影响临近列，使区域由原本的定值状态变为代数一次的变量状态，或增加原有变量状态的变量元数。</p>
-<p>我们在研究过程中希望尽量降低$\theta$带来的这类影响，故先分析该运算的一些特殊性质（与《新的低轮 Keccak 线性结构设计》中描述类似）。</p>
-<p><strong>性质 1</strong> 若进行$\theta$前，输入状态$A$的各$CP$核为定值$c$，$c$为$0$或$1$，则经过$\theta$运算的状态$A’$一定线性，且变量不扩散。</p>
-<p><strong>推论 1</strong> 若输入状态$A$的$CP$核均为$0$，则$\theta$为恒等运算（identity）。输出状态$A’=A$。</p>
-<h2 id="chi-运算性质"><a href="#chi-运算性质" class="headerlink" title="$\chi$ 运算性质"></a>$\chi$ 运算性质</h2><p>$\chi$运算是 Keccak 轮函数五个运算中唯一的非线性运算，为代数二次。=，可以看作一个小型 S 盒。其运算每次在一个横行（row）进行。非线性运算是保证哈希函数不可逆性的关键，因而在破解低轮 Keccak 中，我们也特别研究了$\chi$运算的性质。（混编一轮、二轮 Keccak 攻击文献中的性质描述）</p>
-<p><strong>性质 2</strong> 考虑$\chi$运算与其逆运算$\chi^{-1}$，对于全部已知的输出序列$b_0,b_1,b_2,b_3,b_4$，我们可以直接逆运算得到输入序列。</p>
-<script type="math/tex; mode=display">a_i = b_i \oplus (b_{i+1} \oplus 1) \cdot (b_{i+2} \oplus (b_{i+3} \oplus 1) \cdot b_{i+4})</script><p>逆运算$\chi^{-1}$代数次数为 3。</p>
-<p><strong>性质 3</strong> 在$\chi$运算中，任意<strong>非相邻</strong>三位的值已知，所有输出可以写成输入的线性组合形式。</p>
-<p><strong>性质 4</strong> 对于$a_{i+3}=1$，可给出$a_i,a_{i+1},a_{i+2}$的线性构造式。</p>
-<script type="math/tex; mode=display">a_{n+2} = b_{n+2}</script><script type="math/tex; mode=display">a_{n+1} = b_{n+1} \oplus (b_{n+2} \oplus 1)</script><script type="math/tex; mode=display">a_n = b_n \oplus (b_{b+1} \oplus b_{n+2} ) \cdot b_{n+2}</script><h1 id="一轮攻击"><a href="#一轮攻击" class="headerlink" title="一轮攻击"></a>一轮攻击</h1><h2 id="单消息块构造法"><a href="#单消息块构造法" class="headerlink" title="单消息块构造法"></a>单消息块构造法</h2><h3 id="计算平台"><a href="#计算平台" class="headerlink" title="计算平台"></a>计算平台</h3><ul>
+              <h1 id="性质发现">性质发现</h1>
+<h2 id="theta-运算性质"><span class="math inline">\(\theta\)</span> 运算性质</h2>
+<p><span class="math inline">\(\theta\)</span>运算结果受每个位置原有值与其两侧两个 column parity 的影响，即<span class="math inline">\(CP[x-1][z]\)</span>与<span class="math inline">\(CP[x+1][z-1]\)</span>。</p>
+<p>通常情况，<span class="math inline">\(\theta\)</span>具有扩散性，变量经<span class="math inline">\(\theta\)</span>运算后会影响临近列，使区域由原本的定值状态变为代数一次的变量状态，或增加原有变量状态的变量元数。</p>
+<p>我们在研究过程中希望尽量降低<span class="math inline">\(\theta\)</span>带来的这类影响，故先分析该运算的一些特殊性质（与《新的低轮 Keccak 线性结构设计》中描述类似）。</p>
+<p><strong>性质 1</strong> 若进行<span class="math inline">\(\theta\)</span>前，输入状态<span class="math inline">\(A\)</span>的各<span class="math inline">\(CP\)</span>核为定值<span class="math inline">\(c\)</span>，<span class="math inline">\(c\)</span>为<span class="math inline">\(0\)</span>或<span class="math inline">\(1\)</span>，则经过<span class="math inline">\(\theta\)</span>运算的状态<span class="math inline">\(A&#39;\)</span>一定线性，且变量不扩散。</p>
+<p><strong>推论 1</strong> 若输入状态<span class="math inline">\(A\)</span>的<span class="math inline">\(CP\)</span>核均为<span class="math inline">\(0\)</span>，则<span class="math inline">\(\theta\)</span>为恒等运算（identity）。输出状态<span class="math inline">\(A&#39;=A\)</span>。</p>
+<h2 id="chi-运算性质"><span class="math inline">\(\chi\)</span> 运算性质</h2>
+<p><span class="math inline">\(\chi\)</span>运算是 Keccak 轮函数五个运算中唯一的非线性运算，为代数二次。=，可以看作一个小型 S 盒。其运算每次在一个横行（row）进行。非线性运算是保证哈希函数不可逆性的关键，因而在破解低轮 Keccak 中，我们也特别研究了<span class="math inline">\(\chi\)</span>运算的性质。（混编一轮、二轮 Keccak 攻击文献中的性质描述）</p>
+<p><strong>性质 2</strong> 考虑<span class="math inline">\(\chi\)</span>运算与其逆运算<span class="math inline">\(\chi^{-1}\)</span>，对于全部已知的输出序列<span class="math inline">\(b_0,b_1,b_2,b_3,b_4\)</span>，我们可以直接逆运算得到输入序列。</p>
+<p><span class="math display">\[a_i = b_i \oplus (b_{i+1} \oplus 1) \cdot (b_{i+2} \oplus (b_{i+3} \oplus 1) \cdot b_{i+4})\]</span></p>
+<p>逆运算<span class="math inline">\(\chi^{-1}\)</span>代数次数为 3。</p>
+<p><strong>性质 3</strong> 在<span class="math inline">\(\chi\)</span>运算中，任意<strong>非相邻</strong>三位的值已知，所有输出可以写成输入的线性组合形式。</p>
+<p><strong>性质 4</strong> 对于<span class="math inline">\(a_{i+3}=1\)</span>，可给出<span class="math inline">\(a_i,a_{i+1},a_{i+2}\)</span>的线性构造式。</p>
+<p><span class="math display">\[a_{n+2} = b_{n+2}\]</span></p>
+<p><span class="math display">\[a_{n+1} = b_{n+1} \oplus (b_{n+2} \oplus 1)\]</span></p>
+<p><span class="math display">\[a_n = b_n \oplus (b_{b+1} \oplus b_{n+2} ) \cdot b_{n+2}\]</span></p>
+<h1 id="一轮攻击">一轮攻击</h1>
+<h2 id="单消息块构造法">单消息块构造法</h2>
+<h3 id="计算平台">计算平台</h3>
+<ul>
 <li>Dell</li>
 <li>4-core 3.40 GHz Intel Core i7 CPU</li>
 <li>500GB, 7200 RPM SATA disk</li>
 <li>4096-byte block size</li>
 <li>64-bit Windows</li>
 </ul>
-<h3 id="计算结果"><a href="#计算结果" class="headerlink" title="计算结果"></a>计算结果</h3><p>原像值：</p>
+<h3 id="计算结果">计算结果</h3>
+<p>原像值：</p>
 <p>哈希值：</p>
 <p>位数与得分：</p>
 <p>证明截图：</p>
-<h3 id="攻击思路"><a href="#攻击思路" class="headerlink" title="攻击思路"></a>攻击思路</h3><p>根据$\chi^{-1}$与$\iota^{-1}$运算性质，我们知道$h’$可由$h$得到，且结果唯一。$h_0’,h_1’,h_2’,h_3’$经$\pi^{-1}$的换道与$\rho ^{-1}$的 z 轴移动，我们发现道排布在$y=x$对角线上，对应输入的位置得到。</p>
-<script type="math/tex; mode=display">h'[0] = e[0]</script><script type="math/tex; mode=display">h'[1] = e[6]</script><script type="math/tex; mode=display">h'[2] = e[12]</script><script type="math/tex; mode=display">h'[3] = 0</script><p>由于$h’[3]$的限制下（其位置超过了与输入消息块的长度，处于容量 c 中），构造输入串满足$\theta$运算恒等，图 3 图 4 对应位置元素相等，从而可以得到如下 5 个方程。（$h_0’-h_2’$确定 $e_0’,e_6’$ 和 $e_{12}’$），可以构造信息值；由 $h_3’=h_4’=0$，$h_0=h_3+RC$，且希望前置 0 串最长，我们让 $h_0=0,h_3=RC=1$，即在一个消息块的情况下，最多满足输出前置 0 串 192 位。</p>
-<h3 id="攻击过程描述"><a href="#攻击过程描述" class="headerlink" title="攻击过程描述"></a>攻击过程描述</h3><p><strong>Step 1 构造合适的 Hash 值所在行</strong>：</p>
-<p>由 Hash 值出发，如果要进行$\chi^{-1}$逆变换的话必须要满足一个横行（row）五小块，，所以补一个块 $h_4$得到 $h_0,h_1,h_2,h_3,h_4$，再根据攻击思路中的分析，构造合适摘要值如图 1 所示，图 3 为初始信息值。</p>
-<p><strong>Step 2 执行$\chi^{-1}  \circ  \iota^{-1}$逆运算</strong></p>
-<p>计算$h’$值</p>
-<p><strong>Step 3 构造输入消息满足$\theta$恒等</strong> Step2 得到的对角线的值（转换位置）后，依据推论 1 要求，构造剩余每列的输入值，使输入的$CP$核均为 0，保证$\theta$恒等。</p>
-<h2 id="双消息块构造法"><a href="#双消息块构造法" class="headerlink" title="双消息块构造法"></a>双消息块构造法</h2><h3 id="计算平台-1"><a href="#计算平台-1" class="headerlink" title="计算平台"></a>计算平台</h3><h3 id="计算结果-1"><a href="#计算结果-1" class="headerlink" title="计算结果"></a>计算结果</h3><p>原像值：</p>
+<h3 id="攻击思路">攻击思路</h3>
+<p>根据<span class="math inline">\(\chi^{-1}\)</span>与<span class="math inline">\(\iota^{-1}\)</span>运算性质，我们知道<span class="math inline">\(h&#39;\)</span>可由<span class="math inline">\(h\)</span>得到，且结果唯一。<span class="math inline">\(h_0&#39;,h_1&#39;,h_2&#39;,h_3&#39;\)</span>经<span class="math inline">\(\pi^{-1}\)</span>的换道与<span class="math inline">\(\rho ^{-1}\)</span>的 z 轴移动，我们发现道排布在<span class="math inline">\(y=x\)</span>对角线上，对应输入的位置得到。</p>
+<p><span class="math display">\[h&#39;[0] = e[0]\]</span> <span class="math display">\[h&#39;[1] = e[6]\]</span> <span class="math display">\[h&#39;[2] = e[12]\]</span> <span class="math display">\[h&#39;[3] = 0\]</span></p>
+<p>由于<span class="math inline">\(h&#39;[3]\)</span>的限制下（其位置超过了与输入消息块的长度，处于容量 c 中），构造输入串满足<span class="math inline">\(\theta\)</span>运算恒等，图 3 图 4 对应位置元素相等，从而可以得到如下 5 个方程。（<span class="math inline">\(h_0&#39;-h_2&#39;\)</span>确定 <span class="math inline">\(e_0&#39;,e_6&#39;\)</span> 和 <span class="math inline">\(e_{12}&#39;\)</span>），可以构造信息值；由 <span class="math inline">\(h_3&#39;=h_4&#39;=0\)</span>，<span class="math inline">\(h_0=h_3+RC\)</span>，且希望前置 0 串最长，我们让 <span class="math inline">\(h_0=0,h_3=RC=1\)</span>，即在一个消息块的情况下，最多满足输出前置 0 串 192 位。</p>
+<h3 id="攻击过程描述">攻击过程描述</h3>
+<p><strong>Step 1 构造合适的 Hash 值所在行</strong>：</p>
+<p>由 Hash 值出发，如果要进行<span class="math inline">\(\chi^{-1}\)</span>逆变换的话必须要满足一个横行（row）五小块，，所以补一个块 <span class="math inline">\(h_4\)</span>得到 <span class="math inline">\(h_0,h_1,h_2,h_3,h_4\)</span>，再根据攻击思路中的分析，构造合适摘要值如图 1 所示，图 3 为初始信息值。</p>
+<p><strong>Step 2 执行<span class="math inline">\(\chi^{-1} \circ \iota^{-1}\)</span>逆运算</strong></p>
+<p>计算<span class="math inline">\(h&#39;\)</span>值</p>
+<p><strong>Step 3 构造输入消息满足<span class="math inline">\(\theta\)</span>恒等</strong> Step2 得到的对角线的值（转换位置）后，依据推论 1 要求，构造剩余每列的输入值，使输入的<span class="math inline">\(CP\)</span>核均为 0，保证<span class="math inline">\(\theta\)</span>恒等。</p>
+<h2 id="双消息块构造法">双消息块构造法</h2>
+<h3 id="计算平台-1">计算平台</h3>
+<h3 id="计算结果-1">计算结果</h3>
+<p>原像值：</p>
 <p>哈希值：</p>
 <p>位数与得分：</p>
 <p>证明截图：</p>
-<h3 id="攻击思路-1"><a href="#攻击思路-1" class="headerlink" title="攻击思路"></a>攻击思路</h3><p>完成单 Message block 的情况下，我们思考是什么导致了$h_3$的限制，实际上是由于初始 State，除 r 长度内可通过输入长度，其他位置均为 0，因此倒推过程中我们必须满足$h’_3=0$。</p>
-<p>不过经过一个 Message 的轮转后，其他位置不再是固定的 0 值了，我们的想法：通过构造第一个 Message D 使$h_0’h_1’,h_2’h_3’$达到一个合适状态$F’$（使得经最后两运算子后$F = (\iota \circ \chi) F$），$F$全为 0，即$h_0h_1h_2h_3$均为 0。</p>
-<h3 id="攻击过程描述-1"><a href="#攻击过程描述-1" class="headerlink" title="攻击过程描述"></a>攻击过程描述</h3><h1 id="二轮攻击"><a href="#二轮攻击" class="headerlink" title="二轮攻击"></a>二轮攻击</h1><p><strong>Step 1 构造第一个消息块，满足$\theta$恒等，进行轮转</strong>：</p>
+<h3 id="攻击思路-1">攻击思路</h3>
+<p>完成单 Message block 的情况下，我们思考是什么导致了<span class="math inline">\(h_3\)</span>的限制，实际上是由于初始 State，除 r 长度内可通过输入长度，其他位置均为 0，因此倒推过程中我们必须满足<span class="math inline">\(h&#39;_3=0\)</span>。</p>
+<p>不过经过一个 Message 的轮转后，其他位置不再是固定的 0 值了，我们的想法：通过构造第一个 Message D 使<span class="math inline">\(h_0&#39;h_1&#39;,h_2&#39;h_3&#39;\)</span>达到一个合适状态<span class="math inline">\(F&#39;\)</span>（使得经最后两运算子后<span class="math inline">\(F = (\iota \circ \chi) F\)</span>），<span class="math inline">\(F\)</span>全为 0，即<span class="math inline">\(h_0h_1h_2h_3\)</span>均为 0。</p>
+<h3 id="攻击过程描述-1">攻击过程描述</h3>
+<h1 id="二轮攻击">二轮攻击</h1>
+<p><strong>Step 1 构造第一个消息块，满足<span class="math inline">\(\theta\)</span>恒等，进行轮转</strong>：</p>
 <p>需要保证状态尽量简单，两横行相等，其他七小块全为 0，执行第一轮轮转。</p>
 <p><strong>Step 2 构造全 0 哈希值，并进行逆运算</strong>：</p>
-<p>得到的对角线需要符合 Step 1 轮转后结果异或第二消息块后的结果，由于构造第二消息块会满足$\theta$的恒等性质，所以这里不需要考虑$\theta$函数的影响。</p>
+<p>得到的对角线需要符合 Step 1 轮转后结果异或第二消息块后的结果，由于构造第二消息块会满足<span class="math inline">\(\theta\)</span>的恒等性质，所以这里不需要考虑<span class="math inline">\(\theta\)</span>函数的影响。</p>
 <p><strong>Step 3 构造第二个消息块</strong>：</p>
 <p>进行第二消息 Message E 的构造，目标有三个：</p>
 <ul>
-<li>保持第二轮$h_3’$位置的状态位置</li>
-<li>斜线（影响 hash 值）异或指定值达到$F’$</li>
-<li>其他地方补 1 达到纵列$CP$值为 0，使$\theta$恒等</li>
+<li>保持第二轮<span class="math inline">\(h_3&#39;\)</span>位置的状态位置</li>
+<li>斜线（影响 hash 值）异或指定值达到<span class="math inline">\(F&#39;\)</span></li>
+<li>其他地方补 1 达到纵列<span class="math inline">\(CP\)</span>值为 0，使<span class="math inline">\(\theta\)</span>恒等</li>
 </ul>
-<h2 id="单消息块构建线性系统"><a href="#单消息块构建线性系统" class="headerlink" title="单消息块构建线性系统"></a>单消息块构建线性系统</h2><h3 id="计算平台-2"><a href="#计算平台-2" class="headerlink" title="计算平台"></a>计算平台</h3><h3 id="计算结果-2"><a href="#计算结果-2" class="headerlink" title="计算结果"></a>计算结果</h3><p>原像值：</p>
+<h2 id="单消息块构建线性系统">单消息块构建线性系统</h2>
+<h3 id="计算平台-2">计算平台</h3>
+<h3 id="计算结果-2">计算结果</h3>
+<p>原像值：</p>
 <p>哈希值：</p>
 <p>位数与得分：</p>
 <p>证明截图：</p>
-<h3 id="攻击思路-2"><a href="#攻击思路-2" class="headerlink" title="攻击思路"></a>攻击思路</h3><p>利用线性结构（加引用，提出者），（提出者）给出一种在时间复杂度为$O(1)$的针对 Keccak256 的原像攻击方法。</p>
+<h3 id="攻击思路-2">攻击思路</h3>
+<p>利用线性结构（加引用，提出者），（提出者）给出一种在时间复杂度为<span class="math inline">\(O(1)\)</span>的针对 Keccak256 的原像攻击方法。</p>
 <p>我们构造了作者提出的 2 轮线性结构，利用该方法对全部 256 位为 0 的哈希值进行原像攻击，得到了符合要求的消息值。</p>
-<h3 id="攻击过程描述-2"><a href="#攻击过程描述-2" class="headerlink" title="攻击过程描述"></a>攻击过程描述</h3><p>（lemma：中间只要隔一列设置变量 即可以保证 X 变换之后 变量仍然线性）</p>
+<h3 id="攻击过程描述-2">攻击过程描述</h3>
+<p>（lemma：中间只要隔一列设置变量 即可以保证 X 变换之后 变量仍然线性）</p>
 <p><strong>Step 1 构造 2 轮线性结构的输入</strong>：</p>
 <p>按照论文给出的构造方法构造原像值（只用一个信息块）。在该构造方法中，因为我们的输入值是 17（1088）个 line 且为了考虑 padding 规则最后一个 line 的最后一位应为 1; 为了满足 Lemma1，我们的未知数最多只有 7 个，即 x0-6; 为了满足 θ 变换 as identity，我们可以得到两个方程和第二列的前三个位置必有一个 1。如下图 10 所示</p>
 <p><strong>Step 2 变换后求解线性方程</strong>：</p>
-<p>对该信息块进行一轮置换得到图 12，此时状态既不满足$\theta$是恒等的的（推论 1） 也不满足 Lemma1，如果我们继续进行第二轮变换无法保证线性。为了构造线性方程组解得原像，我们利用中间状态相等的原则，一轮变换后的图 12 进行 $\theta$ 变换（结果可用变量线性表示）和将期望的最终结果（即 256 位全为 0）进行除了 θ 变换外其他四种变换的逆变换（结果已知）的对角线元素相等。从而可以列出 $5<em>64+2</em>64$ 个满秩方程（$7*64$ 个未知数），解得唯一解。</p>
+<p>对该信息块进行一轮置换得到图 12，此时状态既不满足<span class="math inline">\(\theta\)</span>是恒等的的（推论 1） 也不满足 Lemma1，如果我们继续进行第二轮变换无法保证线性。为了构造线性方程组解得原像，我们利用中间状态相等的原则，一轮变换后的图 12 进行 <span class="math inline">\(\theta\)</span> 变换（结果可用变量线性表示）和将期望的最终结果（即 256 位全为 0）进行除了 θ 变换外其他四种变换的逆变换（结果已知）的对角线元素相等。从而可以列出 <span class="math inline">\(5*64+2*64\)</span> 个满秩方程（<span class="math inline">\(7*64\)</span> 个未知数），解得唯一解。</p>
 
             </div>
             <hr>
@@ -591,10 +617,6 @@
 
 
 
-  <script  src="/js/local-search.js" ></script>
-
-
-
 
 
 
@@ -607,6 +629,21 @@
       typing(title)
       
     })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
   </script>
 
 

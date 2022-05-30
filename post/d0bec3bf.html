@@ -14,8 +14,11 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="前言这一阵子主要工作集中在 MIT6.824 分布式系统理论方面的学习，集中用 go 语言做了两个大实验，本着一学多用的态度，这次测试工具的学习是 go 语言相关（后续学习 C++测试框架 googleTest）。
-golang race 检测工具什么是 race多线程（Threads、Goroutine）程序对共享变量变量的修改是复杂的，以n=n+1指令的并行执行为例，如果 t1 和 t2 线程">
+  <meta name="description" content="前言
+这一阵子主要工作集中在 MIT6.824 分布式系统理论方面的学习，集中用 go 语言做了两个大实验，本着一学多用的态度，这次测试工具的学习是 go 语言相关（后续学习 C++测试框架 googleTest）。
+golang race 检测工具
+什么是 race
+多线程（Threads、Goroutine）程序对共享变量变量的修改是复杂的，以n=n+1指令的并行执行为例，如果 t1 ">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
   
@@ -61,11 +64,12 @@ golang race 检测工具什么是 race多线程（Threads、Goroutine）程序�
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
 
 <body>
@@ -117,7 +121,7 @@ golang race 检测工具什么是 race多线程（Threads、Goroutine）程序�
               <a class="nav-link dropdown-toggle" target="_self" role="button"
                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -188,7 +192,7 @@ golang race 检测工具什么是 race多线程（Threads、Goroutine）程序�
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -298,32 +302,45 @@ golang race 检测工具什么是 race多线程（Threads、Goroutine）程序�
             <h1 style="display: none">软件测试学习——测试工具学习</h1>
             
             <div class="markdown-body">
-              <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这一阵子主要工作集中在 MIT6.824 分布式系统理论方面的学习，集中用 go 语言做了两个大实验，本着一学多用的态度，这次测试工具的学习是 go 语言相关（后续学习 C++测试框架 googleTest）。</p>
-<h1 id="golang-race-检测工具"><a href="#golang-race-检测工具" class="headerlink" title="golang race 检测工具"></a>golang race 检测工具</h1><h2 id="什么是-race"><a href="#什么是-race" class="headerlink" title="什么是 race"></a>什么是 race</h2><p>多线程（Threads、Goroutine）程序对共享变量变量的修改是复杂的，以<code>n=n+1</code>指令的并行执行为例，如果 t1 和 t2 线程几乎同时取出原始 n 值，在各自线程中完成+1 操作然后储存进变量 n，得到的答案可能并非编程人员想要看到的。</p>
+              <h1 id="前言">前言</h1>
+<p>这一阵子主要工作集中在 MIT6.824 分布式系统理论方面的学习，集中用 go 语言做了两个大实验，本着一学多用的态度，这次测试工具的学习是 go 语言相关（后续学习 C++测试框架 googleTest）。</p>
+<h1 id="golang-race-检测工具">golang race 检测工具</h1>
+<h2 id="什么是-race">什么是 race</h2>
+<p>多线程（Threads、Goroutine）程序对共享变量变量的修改是复杂的，以<code>n=n+1</code>指令的并行执行为例，如果 t1 和 t2 线程几乎同时取出原始 n 值，在各自线程中完成+1 操作然后储存进变量 n，得到的答案可能并非编程人员想要看到的。</p>
 <p>事实上，在上述例子中，我们希望每个线程对共享变量 n 的操作都是有效的，但由于 t1 和 t2 线程几乎同时“看到”n 变量，读取值相同，两次累加从结果看变成了一次累加。</p>
 <p>race 的名字变源自于此，这种对共享变量不恰当的操作看起来像像线程间的“赛跑”。 结果是否正确取决于晚些执行到该指令的线程 t2 能否“看到” 先行抵达的线程 t1 的修改（t1 线程执行累加后的变量值）。</p>
 <a id="more"></a>
-<h2 id="race-预防与检测"><a href="#race-预防与检测" class="headerlink" title="race 预防与检测"></a>race 预防与检测</h2><p>Go 语言提供的锁机制（mu.lock() mu.unlock()）可以帮助我们“锁住”赛跑中的线程，对共享变量加锁是预防 race 出现的常用方式，但是这需要编程人员进行准确细致的编程。不过往往人也有疏忽的时候，可喜的是，golang 在 1.1 之后引入了竞争检测的概念。我们可以使用 <code>go run -race</code> 或者 <code>go build -race</code> 来进行竞争检测。</p>
+<h2 id="race-预防与检测">race 预防与检测</h2>
+<p>Go 语言提供的锁机制（mu.lock() mu.unlock()）可以帮助我们“锁住”赛跑中的线程，对共享变量加锁是预防 race 出现的常用方式，但是这需要编程人员进行准确细致的编程。不过往往人也有疏忽的时候，可喜的是，golang 在 1.1 之后引入了竞争检测的概念。我们可以使用 <code>go run -race</code> 或者 <code>go build -race</code> 来进行竞争检测。</p>
 <!--more-->
 <p>测试代码 1</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>    <span class="hljs-string">&quot;fmt&quot;</span><br>)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>    n := <span class="hljs-number">1</span><br><br>    circle := <span class="hljs-number">10</span><br><br>    <span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; circle; i++ &#123;<br>        <span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;<br>            temp := n<br>            <span class="hljs-comment">// time.Sleep(1 * time.Second)</span><br>            temp *= <span class="hljs-number">10</span><br>            n = temp<br>            fmt.Println(<span class="hljs-string">&quot;n is &quot;</span>, n)<br>        &#125;()<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>运行指令<code>go run -race</code>，进行 race 检测，如下图</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/SoftwareTesting/Lab5_1.png" srcset="/img/loading.gif" lazyload alt="Lab5_1"></p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/SoftwareTesting/Lab5_1.png" srcset="/img/loading.gif" lazyload alt="Lab5_1" /><figcaption>Lab5_1</figcaption>
+</figure>
 <p>发现了 race，但是由于写回操作较快，没有影响最终结果。</p>
 <p>取消<code>time.Sleep</code>所在行的注释，再次运行指令<code>go run -race</code>，运行结果如下图</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/SoftwareTesting/Lab5_2.png" srcset="/img/loading.gif" lazyload alt="Lab5_2"></p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/SoftwareTesting/Lab5_2.png" srcset="/img/loading.gif" lazyload alt="Lab5_2" /><figcaption>Lab5_2</figcaption>
+</figure>
 <p>发现了 race，且这次由于线程写回前休眠，所有线程都在其余线程写回前读，所以最终结果被影响。</p>
-<h1 id="golang-goconvey-测试框架"><a href="#golang-goconvey-测试框架" class="headerlink" title="golang goconvey 测试框架"></a>golang goconvey 测试框架</h1><p>GoConvey 是一个开源的 go 语言测试工具，实际上 go 本身提供了<code>go test</code>测试指令供开发者使用，在目录下使用该指令会对该目录中所有后缀为<code>*_test.go</code>进行测试编译，并对前缀为<code>Test*</code>的函数进行单元检测。</p>
+<h1 id="golang-goconvey-测试框架">golang goconvey 测试框架</h1>
+<p>GoConvey 是一个开源的 go 语言测试工具，实际上 go 本身提供了<code>go test</code>测试指令供开发者使用，在目录下使用该指令会对该目录中所有后缀为<code>*_test.go</code>进行测试编译，并对前缀为<code>Test*</code>的函数进行单元检测。</p>
 <p>GoConvey 主要是编写并集成好了一些常用的测试语句（如形式、数值断言等），并提供了一个优秀的可视化界面。</p>
 <p><a target="_blank" rel="noopener" href="https://github.com/smartystreets/goconvey">GoConvey 的代码仓库</a></p>
-<h2 id="框架安装"><a href="#框架安装" class="headerlink" title="框架安装"></a>框架安装</h2><p>由于大陆内部使用 go 语言存在一些限制，而且如果启用<code>GO111MODULE</code>，我需要大幅度调整我的项目格式，所以我没有采用 mod，也没有按照官方建议的<code>go get</code>安装方式。</p>
+<h2 id="框架安装">框架安装</h2>
+<p>由于大陆内部使用 go 语言存在一些限制，而且如果启用<code>GO111MODULE</code>，我需要大幅度调整我的项目格式，所以我没有采用 mod，也没有按照官方建议的<code>go get</code>安装方式。</p>
 <p>安装好二进制后，我手动检查了依赖项，并在项目源码<code>\src\github.com</code>分别 clone 几个代码仓库</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> <span class="hljs-variable">$GOPATH</span>/src<br>git <span class="hljs-built_in">clone</span> https://github.com/smartystreets/goconvey.git ./smartystreets/goconvey<br>git <span class="hljs-built_in">clone</span> https://github.com/smartystreets/assertions.git ./smartystreets/assertions<br>git <span class="hljs-built_in">clone</span> https://github.com/jtolds/gls.git ./jtolds/gls<br></code></pre></td></tr></table></figure>
 <p>启动 Web 服务</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> <span class="hljs-variable">$GOPATH</span>/bin<br>./goconvey<br></code></pre></td></tr></table></figure>
 <p>显示界面如下图，成功。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/SoftwareTesting/Lab5_3.png" srcset="/img/loading.gif" lazyload alt="Lab5_3"></p>
-<h2 id="编写测试代码"><a href="#编写测试代码" class="headerlink" title="编写测试代码"></a>编写测试代码</h2><ul>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/SoftwareTesting/Lab5_3.png" srcset="/img/loading.gif" lazyload alt="Lab5_3" /><figcaption>Lab5_3</figcaption>
+</figure>
+<h2 id="编写测试代码">编写测试代码</h2>
+<ul>
 <li>待检测程序 student.go</li>
 </ul>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span><br><br><span class="hljs-keyword">type</span> Student <span class="hljs-keyword">struct</span> &#123;<br>	Num  <span class="hljs-keyword">int</span><br>	Name <span class="hljs-keyword">string</span><br><br>	Chinaese <span class="hljs-keyword">int</span><br>	English  <span class="hljs-keyword">int</span><br>	Math     <span class="hljs-keyword">int</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">NewStudent</span><span class="hljs-params">(num <span class="hljs-keyword">int</span>, name <span class="hljs-keyword">string</span>)</span> <span class="hljs-params">(*Student, error)</span></span> &#123;<br>	<span class="hljs-keyword">if</span> num &lt; <span class="hljs-number">1</span> || <span class="hljs-built_in">len</span>(name) &lt; <span class="hljs-number">1</span> &#123;<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span>, fmt.Errorf(<span class="hljs-string">&quot;num name empty&quot;</span>)<br>	&#125;<br>	stu := <span class="hljs-built_in">new</span>(Student)<br>	stu.Num = num<br>	stu.Name = name<br>	<span class="hljs-keyword">return</span> stu, <span class="hljs-literal">nil</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(this *Student)</span> <span class="hljs-title">GetAve</span><span class="hljs-params">()</span> <span class="hljs-params">(<span class="hljs-keyword">int</span>, error)</span></span> &#123;<br>	score := this.Chinaese + this.English + this.Math<br>	<span class="hljs-keyword">if</span> score == <span class="hljs-number">0</span> &#123;<br>		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>, fmt.Errorf(<span class="hljs-string">&quot;score is 0&quot;</span>)<br>	&#125;<br>	<span class="hljs-keyword">return</span> score / <span class="hljs-number">3</span>, <span class="hljs-literal">nil</span><br>&#125;<br><br></code></pre></td></tr></table></figure>
@@ -331,18 +348,24 @@ golang race 检测工具什么是 race多线程（Threads、Goroutine）程序�
 <li>测试程序 student_test.go</li>
 </ul>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;testing&quot;</span><br><br>	. <span class="hljs-string">&quot;github.com/smartystreets/goconvey/convey&quot;</span><br>)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">TestNew</span><span class="hljs-params">(t *testing.T)</span></span> &#123;<br>	Convey(<span class="hljs-string">&quot;start test new&quot;</span>, t, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;<br>		stu, err := NewStudent(<span class="hljs-number">0</span>, <span class="hljs-string">&quot;&quot;</span>)<br>		Convey(<span class="hljs-string">&quot;have error&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;<br>			So(err, ShouldBeError)<br>		&#125;)<br>		Convey(<span class="hljs-string">&quot;stu is nil&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;<br>			So(stu, ShouldBeNil)<br>		&#125;)<br>	&#125;)<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">TestScore</span><span class="hljs-params">(t *testing.T)</span></span> &#123;<br>	stu, _ := NewStudent(<span class="hljs-number">1</span>, <span class="hljs-string">&quot;test&quot;</span>)<br>	Convey(<span class="hljs-string">&quot;if error&quot;</span>, t, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;<br>		_, err := stu.GetAve()<br>		Convey(<span class="hljs-string">&quot;have error&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;<br>			So(err, ShouldBeError)<br>		&#125;)<br>	&#125;)<br><br>	Convey(<span class="hljs-string">&quot;normal&quot;</span>, t, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;<br>		stu.Math = <span class="hljs-number">60</span><br>		stu.Chinaese = <span class="hljs-number">70</span><br>		stu.English = <span class="hljs-number">80</span><br>		score, err := stu.GetAve()<br>		Convey(<span class="hljs-string">&quot;have error&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;<br>			So(err, ShouldBeError)<br>		&#125;)<br>		Convey(<span class="hljs-string">&quot;score &gt; 60&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;<br>			So(score, ShouldBeGreaterThan, <span class="hljs-number">60</span>)<br>		&#125;)<br>	&#125;)<br>&#125;<br><br></code></pre></td></tr></table></figure>
-<h2 id="执行测试"><a href="#执行测试" class="headerlink" title="执行测试"></a>执行测试</h2><ul>
+<h2 id="执行测试">执行测试</h2>
+<ul>
 <li><p>VSCode 单元测试结果（go test 命令行）</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/SoftwareTesting/Lab5_4.png" srcset="/img/loading.gif" lazyload alt="Lab5_4"></p>
-<p>由于有一个 Error 预期和 nil 实际类型不符合，测试不通过。</p>
-</li>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/SoftwareTesting/Lab5_4.png" srcset="/img/loading.gif" lazyload alt="Lab5_4" /><figcaption>Lab5_4</figcaption>
+</figure>
+<p>由于有一个 Error 预期和 nil 实际类型不符合，测试不通过。</p></li>
 <li><p>Web UI</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/SoftwareTesting/Lab5_5.png" srcset="/img/loading.gif" lazyload alt="Lab5_5"></p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/SoftwareTesting/Lab5_5.png" srcset="/img/loading.gif" lazyload alt="Lab5_5" /><figcaption>Lab5_5</figcaption>
+</figure>
 <p>同样显示有一个 Error 预期和 nil 实际类型不符合，测试不通过。从结构看，5 个断言，通过 4 个，断言处在哪个测试函数中也清晰明了。极大方便了我们排查缺陷所在。另一个简单程序的测试通过情况如下。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/SoftwareTesting/Lab5_6.png" srcset="/img/loading.gif" lazyload alt="Lab5_6"></p>
-</li>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/SoftwareTesting/Lab5_6.png" srcset="/img/loading.gif" lazyload alt="Lab5_6" /><figcaption>Lab5_6</figcaption>
+</figure></li>
 </ul>
-<h1 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h1><p>通过本次阶段性学习，我发现了解、熟悉、熟练使用测试工具是三个层次，过去我只停留在了解层面，将测试部分和业务逻辑部分混在一起编写，排错难，测试烦。</p>
+<h1 id="结语">结语</h1>
+<p>通过本次阶段性学习，我发现了解、熟悉、熟练使用测试工具是三个层次，过去我只停留在了解层面，将测试部分和业务逻辑部分混在一起编写，排错难，测试烦。</p>
 <p>进行了<code>go run -race</code>检测和<code>GoConvey</code>工具的学习后，我才知道原来语言开发者、开源社区还存在着如此高效的工具，不仅减少了 bug 产生的概率，也减少了 bug 发现后修复，回归的时间，可谓一举多得，感谢老师给了我们这个主动学习领域内各种实用知识的机会。</p>
 
             </div>
@@ -580,10 +603,6 @@ golang race 检测工具什么是 race多线程（Threads、Goroutine）程序�
 
 
 
-  <script  src="/js/local-search.js" ></script>
-
-
-
 
 
 
@@ -596,6 +615,21 @@ golang race 检测工具什么是 race多线程（Threads、Goroutine）程序�
       typing(title)
       
     })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
   </script>
 
 

@@ -15,8 +15,10 @@
   
   <meta name="theme-color" content="#2f4154">
   <meta name="description" content="有关内网穿透的第二篇文章，上一篇参见VScode 使用跳板机访问
-SSH 反向代理配合 Nginx 实现内网网址域名访问个人需求是在外网访问实验室内部搭建（使用校园网）的课程主页，作者本人并不是网络安全相关的，仅做一次 SSH 反代的学习记录。
-有关 SSH 的三种代理功能（-L/-R/-D）详细可以参考知乎上这篇文章SSH 命令的三种代理功能，之前只熟悉-D参数做 SOCKS 通道，并不十分理解">
+SSH 反向代理配合 Nginx 实现内网网址域名访问
+个人需求是在外网访问实验室内部搭建（使用校园网）的课程主页，作者本人并不是网络安全相关的，仅做一次 SSH 反代的学习记录。
+有关 SSH 的三种代理功能（-L/-R/-D）
+详细可以参考知乎上这篇文章SSH 命令的三种代理功能，之前只熟悉-D参数做 SOCKS 通道，">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
   
@@ -62,11 +64,12 @@ SSH 反向代理配合 Nginx 实现内网网址域名访问个人需求是在外
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
 
 <body>
@@ -118,7 +121,7 @@ SSH 反向代理配合 Nginx 实现内网网址域名访问个人需求是在外
               <a class="nav-link dropdown-toggle" target="_self" role="button"
                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -189,7 +192,7 @@ SSH 反向代理配合 Nginx 实现内网网址域名访问个人需求是在外
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -300,24 +303,26 @@ SSH 反向代理配合 Nginx 实现内网网址域名访问个人需求是在外
             
             <div class="markdown-body">
               <p>有关内网穿透的第二篇文章，上一篇参见<a href="VSCode%E4%BD%BF%E7%94%A8%E8%B7%B3%E6%9D%BF%E6%9C%BA%E8%BF%9C%E7%A8%8B%E7%99%BB%E9%99%86%E5%85%B1%E4%BA%AB%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F.md">VScode 使用跳板机访问</a></p>
-<h1 id="SSH-反向代理配合-Nginx-实现内网网址域名访问"><a href="#SSH-反向代理配合-Nginx-实现内网网址域名访问" class="headerlink" title="SSH 反向代理配合 Nginx 实现内网网址域名访问"></a>SSH 反向代理配合 Nginx 实现内网网址域名访问</h1><p>个人需求是在外网访问实验室内部搭建（使用校园网）的课程主页，作者本人并不是网络安全相关的，仅做一次 SSH 反代的学习记录。</p>
-<h2 id="有关-SSH-的三种代理功能（-L-R-D）"><a href="#有关-SSH-的三种代理功能（-L-R-D）" class="headerlink" title="有关 SSH 的三种代理功能（-L/-R/-D）"></a>有关 SSH 的三种代理功能（-L/-R/-D）</h2><p>详细可以参考知乎上这篇文章<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/57630633">SSH 命令的三种代理功能</a>，之前只熟悉<code>-D</code>参数做 SOCKS 通道，并不十分理解正向、反向代理的区别，这次算是补补课。</p>
-<h3 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h3><p><code>ssh -L</code>，又被称为本地代理，实际上是在本地启动端口，把本地端口的数据转发至远端。ssh client 在本地。常用来做端口映射（到已知 ip 的其他机器）或是跳板机映射到其他机器。</p>
-<ol>
+<h1 id="ssh-反向代理配合-nginx-实现内网网址域名访问">SSH 反向代理配合 Nginx 实现内网网址域名访问</h1>
+<p>个人需求是在外网访问实验室内部搭建（使用校园网）的课程主页，作者本人并不是网络安全相关的，仅做一次 SSH 反代的学习记录。</p>
+<h2 id="有关-ssh-的三种代理功能-l-r-d">有关 SSH 的三种代理功能（-L/-R/-D）</h2>
+<p>详细可以参考知乎上这篇文章<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/57630633">SSH 命令的三种代理功能</a>，之前只熟悉<code>-D</code>参数做 SOCKS 通道，并不十分理解正向、反向代理的区别，这次算是补补课。</p>
+<h3 id="正向代理">正向代理</h3>
+<p><code>ssh -L</code>，又被称为本地代理，实际上是在本地启动端口，把本地端口的数据转发至远端。ssh client 在本地。常用来做端口映射（到已知 ip 的其他机器）或是跳板机映射到其他机器。</p>
+<ol type="1">
 <li><p>端口映射</p>
 <p>HostB 上启动一个 PortB 端口，映射到 HostC:PortC 上，在 HostB 上运行下面指令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ssh -L 0.0.0.0:PortB:HostC:PortC user@HostC<br></code></pre></td></tr></table></figure>
-<p>此时访问 HostB:PortB 相当于访问 HostC:PortC（和 iptable 的 port-forwarding 类似），这里 0.0.0.0 表示任意 ip 地址都可以访问，而如果配置 127.0.0.1 则只转发本地。</p>
-</li>
+<p>此时访问 HostB:PortB 相当于访问 HostC:PortC（和 iptable 的 port-forwarding 类似），这里 0.0.0.0 表示任意 ip 地址都可以访问，而如果配置 127.0.0.1 则只转发本地。</p></li>
 <li><p>跳板访问</p>
 <p>HostA 上启动一个 PortA 端口，通过 HostB 转发到 HostC:PortC 上，在 HostA 上运行：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ssh -L 0.0.0:PortA:HostC:PortC user@HostB<br></code></pre></td></tr></table></figure>
 <p>这时访问 HostA:PortA 相当于访问 HostC:PortC</p>
-<p>两种用法的区别是，第一种用法本地到跳板机 HostB 的数据是明文的，而第二种用法一般本地就是 HostA，访问本地的 PortA，数据被 ssh 加密传输给 HostB 又转发给 HostC:PortC</p>
-</li>
+<p>两种用法的区别是，第一种用法本地到跳板机 HostB 的数据是明文的，而第二种用法一般本地就是 HostA，访问本地的 PortA，数据被 ssh 加密传输给 HostB 又转发给 HostC:PortC</p></li>
 </ol>
 <a id="more"></a>
-<h3 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h3><p>反向代理，就是让远端启动端口，对远端该端口的数据都转发到本地。</p>
+<h3 id="反向代理">反向代理</h3>
+<p>反向代理，就是让远端启动端口，对远端该端口的数据都转发到本地。</p>
 <p>反向代理对于所在机器位于内网且无固定公网 ip 的时候很有用。</p>
 <p>HostA 将自己可以访问的 HostB:PortB 暴露给外网服务器 HostC:PortC，在 HostA 上运行：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ssh -R HostC:PortC:HostB:PortB user@HostC<br></code></pre></td></tr></table></figure>
@@ -327,7 +332,8 @@ SSH 反向代理配合 Nginx 实现内网网址域名访问个人需求是在外
 <p>那么通过在内网 HostA 上运行<code>ssh -R</code>就是告诉 HostC：“<strong>创建 PortC 端口监听，把该端口数据都转发给我（HostA），我会在转发给同一内网下的 HostB:PortB。</strong>”同内网下的 HostA/HostB 也可以是同一台机器，换句话说就是“<strong>内网 HostA 把自己可以访问的端口暴露给了外网 HostC</strong>”</p>
 <p>一直没有理清反向代理与正向代理区别在哪里。我的理解，首先是代理对象不同，本地代理与请求方在一侧，转发至代理的端口。而反向代理，代理的是服务器，可以将提供服务的机器的实际 ip 隐藏起来。因为与远程服务器在一侧，将“远处”（此时对应的是请求方）访问端口的请求都转发到本地。</p>
 <!-- TODO 还是应该补充一些正向代理与反向代理的示意图 -->
-<h3 id="动态转发"><a href="#动态转发" class="headerlink" title="动态转发"></a>动态转发</h3><p>使用<code>ssh -D</code>会在本地启动一个 SOCKS5 代理服务器，构建的 SOCKS5 隧道可以让很多服务使用，本地 SOCKS5 代理的数据会通过 ssh 链接先发给 HostB，然后再从 HostB 转发给远程主机。</p>
+<h3 id="动态转发">动态转发</h3>
+<p>使用<code>ssh -D</code>会在本地启动一个 SOCKS5 代理服务器，构建的 SOCKS5 隧道可以让很多服务使用，本地 SOCKS5 代理的数据会通过 ssh 链接先发给 HostB，然后再从 HostB 转发给远程主机。</p>
 <p>比如在 HostA 上启动：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ssh -D 1080 user@HostB<br></code></pre></td></tr></table></figure>
 <p>这时候 A 可以利用这个 SOCKS5 代理服务器访问一些原本不能被访问的地址，比如：</p>
@@ -335,13 +341,19 @@ SSH 反向代理配合 Nginx 实现内网网址域名访问个人需求是在外
 <p>或者</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl --socks5-hostname 127.0.0.1:1080 www.google.com<br></code></pre></td></tr></table></figure>
 <p>我在后面的实验中也想使用，不过 nginx 里面配置的 proxy 仅支持 http 协议，用 privoxy 过滤得到 http 代理的端口，但似乎方向还是反了。又去重新温习了反向代理的含义。</p>
-<h2 id="使用优化"><a href="#使用优化" class="headerlink" title="使用优化"></a>使用优化</h2><h3 id="附加参数"><a href="#附加参数" class="headerlink" title="附加参数"></a>附加参数</h3><p>使用时建议加上<code>-fCqTnN</code>参数，各参数含义如下：</p>
+<h2 id="使用优化">使用优化</h2>
+<h3 id="附加参数">附加参数</h3>
+<p>使用时建议加上<code>-fCqTnN</code>参数，各参数含义如下：</p>
 <p><code>-f</code>后台执行，<code>-C</code>压缩所有数据，<code>-q</code>静默模式，<code>-T</code>禁止分配伪终端，<code>-n</code>关闭标准输入，<code>-N</code>不执行 ssh 命令。</p>
-<h3 id="链接稳定性"><a href="#链接稳定性" class="headerlink" title="链接稳定性"></a>链接稳定性</h3><!-- TODO -->
-<h2 id="实际案例"><a href="#实际案例" class="headerlink" title="实际案例"></a>实际案例</h2><p>HostA：放在阿里云上的公网服务器<br>HostB：内网个人服务器（有控制权限）<br>HostC：内网实验室服务器（只可访问资源）</p>
+<h3 id="链接稳定性">链接稳定性</h3>
+<!-- TODO -->
+<h2 id="实际案例">实际案例</h2>
+<p>HostA：放在阿里云上的公网服务器 HostB：内网个人服务器（有控制权限） HostC：内网实验室服务器（只可访问资源）</p>
 <p>现在我希望能通过<strong>外界</strong>（公网上的各个终端）通过一<strong>指定域名</strong>，访问 HostC 上指定资源，示意图如下：</p>
 <!-- TODO 补充示意图 -->
-<h3 id="SSH-反代配置"><a href="#SSH-反代配置" class="headerlink" title="SSH 反代配置"></a>SSH 反代配置</h3><h3 id="Nginx-配置"><a href="#Nginx-配置" class="headerlink" title="Nginx 配置"></a>Nginx 配置</h3><p>在阿里云的HostA本来维护有个人博客，在Nginx配置目录<code>/etc/nginx/conf.d/</code>下编写新的<code>proxy.conf</code>：</p>
+<h3 id="ssh-反代配置">SSH 反代配置</h3>
+<h3 id="nginx-配置">Nginx 配置</h3>
+<p>在阿里云的HostA本来维护有个人博客，在Nginx配置目录<code>/etc/nginx/conf.d/</code>下编写新的<code>proxy.conf</code>：</p>
 
             </div>
             <hr>
@@ -562,10 +574,6 @@ SSH 反向代理配合 Nginx 实现内网网址域名访问个人需求是在外
 
 
 
-  <script  src="/js/local-search.js" ></script>
-
-
-
 
 
 
@@ -578,6 +586,21 @@ SSH 反向代理配合 Nginx 实现内网网址域名访问个人需求是在外
       typing(title)
       
     })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
   </script>
 
 

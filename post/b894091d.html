@@ -15,7 +15,9 @@
   
   <meta name="theme-color" content="#2f4154">
   <meta name="description" content="系列文章主要记录自己在阿里云 ECS 配置安装 Hadoop，搭建伪分布式环境，学习 Hadoop、HDFS、Hbase 相关内容的过程。
-系统安装采取什么方式安装 Hadoop实际上我们有很多方式来安装 Hadoop，比如通过 Cloudera 图形化界面（就像 Anaconda Navigator 那样），不过网上许多教程都是通过命令行形式进行安装的（包括 Apache 官方网站），鉴于以后要">
+系统安装
+采取什么方式安装 Hadoop
+实际上我们有很多方式来安装 Hadoop，比如通过 Cloudera 图形化界面（就像 Anaconda Navigator 那样），不过网上许多教程都是通过命令行形式进行安装的（包括 Apache 官方网站），">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
   
@@ -61,11 +63,12 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
 
 <body>
@@ -117,7 +120,7 @@
               <a class="nav-link dropdown-toggle" target="_self" role="button"
                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -188,7 +191,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -299,101 +302,116 @@
             
             <div class="markdown-body">
               <p>系列文章主要记录自己在阿里云 ECS 配置安装 Hadoop，搭建伪分布式环境，学习 Hadoop、HDFS、Hbase 相关内容的过程。</p>
-<h1 id="系统安装"><a href="#系统安装" class="headerlink" title="系统安装"></a>系统安装</h1><h2 id="采取什么方式安装-Hadoop"><a href="#采取什么方式安装-Hadoop" class="headerlink" title="采取什么方式安装 Hadoop"></a>采取什么方式安装 Hadoop</h2><p>实际上我们有很多方式来安装 Hadoop，比如通过 Cloudera 图形化界面（就像 Anaconda Navigator 那样），不过网上许多教程都是通过命令行形式进行安装的（包括 Apache 官方网站），鉴于以后要进行服务器管理，分布式搭建，我们也按照官网推荐的方式通过命令行安装 Hadoop。</p>
-<h2 id="建立-Hadoop-用户并配置免密钥-SSH-登录"><a href="#建立-Hadoop-用户并配置免密钥-SSH-登录" class="headerlink" title="建立 Hadoop 用户并配置免密钥 SSH 登录"></a>建立 Hadoop 用户并配置免密钥 SSH 登录</h2><p>从安全角度触发，不要始终用 root 用户进行操作，我们一般会建立<code>hadoop</code>或者<code>hduser</code>等用户（日后很多时候网管也不会给你 root 权限）。</p>
+<h1 id="系统安装">系统安装</h1>
+<h2 id="采取什么方式安装-hadoop">采取什么方式安装 Hadoop</h2>
+<p>实际上我们有很多方式来安装 Hadoop，比如通过 Cloudera 图形化界面（就像 Anaconda Navigator 那样），不过网上许多教程都是通过命令行形式进行安装的（包括 Apache 官方网站），鉴于以后要进行服务器管理，分布式搭建，我们也按照官网推荐的方式通过命令行安装 Hadoop。</p>
+<h2 id="建立-hadoop-用户并配置免密钥-ssh-登录">建立 Hadoop 用户并配置免密钥 SSH 登录</h2>
+<p>从安全角度触发，不要始终用 root 用户进行操作，我们一般会建立<code>hadoop</code>或者<code>hduser</code>等用户（日后很多时候网管也不会给你 root 权限）。</p>
 <p>建立用户过程简述</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs Bash">$ user add -m hadoop<br><span class="hljs-comment"># -m参数添加用户根目录</span><br>$ passwd hadoop<br><span class="hljs-comment"># 为hadoop用户设置密码</span><br>$ chsh -s /bin/zsh hadoop<br><span class="hljs-comment"># zsh为本人常使用shell 所以做一下更换</span><br><br><span class="hljs-comment"># 接下来进行的是把hadoop添加到sudoers</span><br>$ chmod u+w /etc/sudoers<br>$ vim /etc/sudoers<br><span class="hljs-comment"># 在里面增添 hadoop ALL=NOPASSWD:ALL</span><br>$ chmod u-w /etc/sudoers<br><span class="hljs-comment"># 测试</span><br>$ su hadoop<br>$ sudo whoami<br><span class="hljs-comment"># 出现Root即ok</span><br></code></pre></td></tr></table></figure>
 <p>配置免密登录，检查/home/hadoop/.ssh 文件查看是否有公钥，没有的话通过<code>ssh-gen</code>进行生成。若可以直接<strong>免密</strong>登录本机<code>ssh localhost</code>则可以直接跳过本过程。</p>
 <p>如果不行的话需要将公钥加入授权</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Bash">cat id_rsa.pub &gt;&gt; authorized_keys<br></code></pre></td></tr></table></figure>
 <a id="more"></a>
-<h1 id="Hadoop-节点存储节点为空"><a href="#Hadoop-节点存储节点为空" class="headerlink" title="Hadoop 节点存储节点为空"></a>Hadoop 节点存储节点为空</h1><p>看它的报错信息好像是节点没有启动，但是我的节点都启动起来了，使用 jps 也能查看到节点信息。<br>使用 hadoop dfsadmin -report 命令查看磁盘使用情况，发现出现以下问题：</p>
+<h1 id="hadoop-节点存储节点为空">Hadoop 节点存储节点为空</h1>
+<p>看它的报错信息好像是节点没有启动，但是我的节点都启动起来了，使用 jps 也能查看到节点信息。 使用 hadoop dfsadmin -report 命令查看磁盘使用情况，发现出现以下问题：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs Bash">Configured Capacity: 0 (0 B)<br>Present Capacity: 0 (0 B)<br>DFS Remaining: 0 (0 B)<br>DFS Used: 0 (0 B)<br>DFS Used%: 0.00%<br>Replicated Blocks:<br>        Under replicated blocks: 0<br>        Blocks with corrupt replicas: 0<br>        Missing blocks: 0<br>        Missing blocks (with replication factor 1): 0<br>        Low redundancy blocks with highest priority to recover: 0<br>        Pending deletion blocks: 0<br>Erasure Coded Block Groups:<br>        Low redundancy block groups: 0<br>        Block groups with corrupt internal blocks: 0<br>        Missing block groups: 0<br>        Low redundancy blocks with highest priority to recover: 0<br>        Pending deletion blocks: 0<br></code></pre></td></tr></table></figure>
-<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><ol>
+<h2 id="解决方法">解决方法</h2>
+<ol type="1">
 <li><p>停止集群（切换到/sbin 目录下）</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Bash">$ HADOOP_HOME/sbin/stop-all.sh<br></code></pre></td></tr></table></figure>
-</li>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Bash">$ HADOOP_HOME/sbin/stop-all.sh<br></code></pre></td></tr></table></figure></li>
 <li><p>删除在 hdfs 中配置的 data 目录（即在 core-site.xml 中配置的 hadoop.tmp.dir 对应文件件）下面的所有数据</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Bash">$ rm -rf /home/hadoop/hdpdata/<br></code></pre></td></tr></table></figure>
-<p>参考<a target="_blank" rel="noopener" href="https://www.cnblogs.com/lyr999736/p/9228752.html">hdfs 默认数据存放路径</a>，在 core-site.xml 没有编辑 data 存放路径时，默认存放到<code>&#123;hadoop.tmp.dir&#125;:/tmp/hadoop-&#123;user.name&#125;</code>。删除以后更换 tmp 数据存储位置。</p>
-</li>
+<p>参考<a target="_blank" rel="noopener" href="https://www.cnblogs.com/lyr999736/p/9228752.html">hdfs 默认数据存放路径</a>，在 core-site.xml 没有编辑 data 存放路径时，默认存放到<code>&#123;hadoop.tmp.dir&#125;:/tmp/hadoop-&#123;user.name&#125;</code>。删除以后更换 tmp 数据存储位置。</p></li>
 </ol>
 <p>3、重新格式化 namenode(切换到 hadoop 目录下的 bin 目录下)<code>hadoop namenode -format</code></p>
 <p>4、重新启动 hadoop 集群（切换到 hadoop 目录下的 sbin 目录下）<code>$HADOOP_HOME/sbin/start-all.sh</code></p>
-<h1 id="单机测试流程"><a href="#单机测试流程" class="headerlink" title="单机测试流程"></a>单机测试流程</h1><ol>
+<h1 id="单机测试流程">单机测试流程</h1>
+<ol type="1">
 <li><p>格式化 namenode</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Bash">$ hdfs namenode -format<br></code></pre></td></tr></table></figure>
-</li>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Bash">$ hdfs namenode -format<br></code></pre></td></tr></table></figure></li>
 <li><p>启动 NameNode 的守护进程和 DataNode 的守护进程</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Bash">$ <span class="hljs-variable">$HADOOP_HOME</span>/sbin/start-dfs.sh<br></code></pre></td></tr></table></figure>
-</li>
-<li><p>通过 Web 浏览，若配置不出问题，应为 <code>https://ip地址:50070</code></p>
-</li>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Bash">$ <span class="hljs-variable">$HADOOP_HOME</span>/sbin/start-dfs.sh<br></code></pre></td></tr></table></figure></li>
+<li><p>通过 Web 浏览，若配置不出问题，应为 <code>https://ip地址:50070</code></p></li>
 <li><p>建立 HDFS 的文件目录并启动 MapReduce 任务</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs Bash">hdfs dfs -mkdir /user<br>hdfs dfs -mkdir /user/&lt;username&gt;<br></code></pre></td></tr></table></figure>
-<p>根据自己的用户名填充，我的是<code>user/hadoop</code></p>
-</li>
+<p>根据自己的用户名填充，我的是<code>user/hadoop</code></p></li>
 <li><p>拷贝文件到分布式文件系统的 input 目录</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs Bash">hdfs dfs -mkdir input<br>hdfs dfs -put etc/hadoop/*.xml input<br></code></pre></td></tr></table></figure>
-<p>如果出现节点未启动但是 jps 中进程存在的故障，注意查一下是不是上一点，然后再进行修复。</p>
-</li>
+<p>如果出现节点未启动但是 jps 中进程存在的故障，注意查一下是不是上一点，然后再进行修复。</p></li>
 <li><p>用一些样例程序进行测试</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs Bash"><span class="hljs-comment"># 正则</span><br>$ hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.2.1.jar grep input output_regex <span class="hljs-string">&#x27;dfs[a-z.]+&#x27;</span><br><span class="hljs-comment"># 或者 wordcount</span><br>$ hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.2.1.jar wordcount input output_wordcount<br></code></pre></td></tr></table></figure>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Hadoop/hadoop1.png" srcset="/img/loading.gif" lazyload alt="Hadoop_1"></p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Hadoop/hadoop1.png" srcset="/img/loading.gif" lazyload alt="Hadoop_1" /><figcaption>Hadoop_1</figcaption>
+</figure>
 <p>计算完成后还需要通过 <code>-get</code>指令把文件从 HDFS 下载到本地。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Hadoop/hadoop2.png" srcset="/img/loading.gif" lazyload alt="Hadoop_2"></p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Hadoop/hadoop2.png" srcset="/img/loading.gif" lazyload alt="Hadoop_2" /><figcaption>Hadoop_2</figcaption>
+</figure>
 <p>最终结果见下图，证明测试成功。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Hadoop/hadoop4.png" srcset="/img/loading.gif" lazyload alt="Hadoop_3"></p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Hadoop/hadoop3.png" srcset="/img/loading.gif" lazyload alt="Hadoop_4"></p>
-</li>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Hadoop/hadoop4.png" srcset="/img/loading.gif" lazyload alt="Hadoop_3" /><figcaption>Hadoop_3</figcaption>
+</figure>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Hadoop/hadoop3.png" srcset="/img/loading.gif" lazyload alt="Hadoop_4" /><figcaption>Hadoop_4</figcaption>
+</figure></li>
 <li><p>完成全部任务后，停止进程</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Bash">$ <span class="hljs-variable">$HADOOP_HOME</span>/sbin/stop-dfs.sh<br></code></pre></td></tr></table></figure>
-</li>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Bash">$ <span class="hljs-variable">$HADOOP_HOME</span>/sbin/stop-dfs.sh<br></code></pre></td></tr></table></figure></li>
 </ol>
-<h1 id="Hadoop-Web-配置-bug"><a href="#Hadoop-Web-配置-bug" class="headerlink" title="Hadoop Web 配置 bug"></a>Hadoop Web 配置 bug</h1><h2 id="启动后无法-list-文件系统"><a href="#启动后无法-list-文件系统" class="headerlink" title="启动后无法 list 文件系统"></a>启动后无法 list 文件系统</h2><p>原因是 WebHDFS 没有完全启动，由于 Aliyun 防火墙的原因，需要自己开放 50070 与 50075 端口。</p>
+<h1 id="hadoop-web-配置-bug">Hadoop Web 配置 bug</h1>
+<h2 id="启动后无法-list-文件系统">启动后无法 list 文件系统</h2>
+<p>原因是 WebHDFS 没有完全启动，由于 Aliyun 防火墙的原因，需要自己开放 50070 与 50075 端口。</p>
 <p>访问 namenode 的 hdfs 使用 50070 端口，访问 datanode 的 webhdfs 使用 50075 端口。访问文件、文件夹信息使用 namenode 的 IP 和 50070 端口，访问文件内容或者进行打开、上传、修改、下载等操作使用 datanode 的 IP 和 50075 端口。要想不区分端口，直接使用 namenode 的 IP 和端口进行所有的 webhdfs 操作，就需要在所有的 datanode 上都设置 hefs-site.xml 中的 dfs.webhdfs.enabled 为 true。</p>
 <p>装了 jdk11 的锅</p>
-<p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/53562981/hadoop-hdfs-3-1-1-on-java-11-web-ui-crash-when-loading-the-file-explorer">Hadoop/HDFS 3.1.1 (on Java 11) Web UI crash when loading the file explorer? [duplicate]
-</a></p>
+<p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/53562981/hadoop-hdfs-3-1-1-on-java-11-web-ui-crash-when-loading-the-file-explorer">Hadoop/HDFS 3.1.1 (on Java 11) Web UI crash when loading the file explorer? [duplicate]</a></p>
 <blockquote>
 <p>Java 9 deprecated the java.activation module. Java 11 removed it completely.</p>
-<p>Java 9 and Java 10 users could add the module back on Hadoop’s classpath. Put this in $HADOOP_CONF_DIR/hadoop-env.sh(not tested):</p>
-<p>export HADOOP_OPTS=”${HADOOP_OPTS} —add-modules java.activation “<br>Java 11 users must first download the jar dependency and make it available on the classpath. But were does it go?</p>
+<p>Java 9 and Java 10 users could add the module back on Hadoop's classpath. Put this in $HADOOP_CONF_DIR/hadoop-env.sh(not tested):</p>
+<p>export HADOOP_OPTS=&quot;${HADOOP_OPTS} --add-modules java.activation &quot; Java 11 users must first download the jar dependency and make it available on the classpath. But were does it go?</p>
 <p>I found that putting the jar in any one of these locations will make Hadoop automagically pick it up with the effect that the online file explorer start working:</p>
 </blockquote>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs Bash"><span class="hljs-variable">$HADOOP_HOME</span>/share/hadoop/common<br><span class="hljs-variable">$HADOOP_HOME</span>/share/hadoop/common/lib<br><span class="hljs-variable">$HADOOP_HOME</span>/share/hadoop/mapreduce<br><span class="hljs-variable">$HADOOP_HOME</span>/share/hadoop/mapreduce/lib<br></code></pre></td></tr></table></figure>
 <blockquote>
-<p>Not sure what exactly the consequences are putting the file in one or the other folder. But, I like to confine my hacks as much as possible and since I already have a separate configuration directory (i.e., not $HADOOP_HOME/etc/hadoop) I’d like to put it there. Having the jar file in any other location also requires of us to add this path to the HADOOP_CLASSPATH variable.</p>
+<p>Not sure what exactly the consequences are putting the file in one or the other folder. But, I like to confine my hacks as much as possible and since I already have a separate configuration directory (i.e., not $HADOOP_HOME/etc/hadoop) I'd like to put it there. Having the jar file in any other location also requires of us to add this path to the HADOOP_CLASSPATH variable.</p>
 <p>So, copy-paste into your terminal:</p>
 </blockquote>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs Bash">URL=https://jcenter.bintray.com/javax/activation/javax.activation-api/1.2.0/javax.activation-api-1.2.0.jar<br>wget <span class="hljs-variable">$URL</span> -P <span class="hljs-variable">$HADOOP_CONF_DIR</span>/lib<br><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;export HADOOP_CLASSPATH+=&quot; $HADOOP_CONF_DIR/lib/*.jar&quot;&#x27;</span> &gt;&gt; <span class="hljs-variable">$HADOOP_CONF_DIR</span>/hadoop-env.sh<br></code></pre></td></tr></table></figure>
 <blockquote>
-<p>As a final note, I think it’s safe to say that one can not expect Hadoop to work well on anything but really old Java versions. Googling reveals that still open tickets exist for Java 9, 10 and 11. So essentially, this is a Hadoop problem. Having that said, although we solved one problem of getting the online file explorer to work, there will for sure be many other issues down the line.</p>
+<p>As a final note, I think it's safe to say that one can not expect Hadoop to work well on anything but really old Java versions. Googling reveals that still open tickets exist for Java 9, 10 and 11. So essentially, this is a Hadoop problem. Having that said, although we solved one problem of getting the online file explorer to work, there will for sure be many other issues down the line.</p>
 </blockquote>
-<h2 id="Browse-Directory-但是无法上传下载文件"><a href="#Browse-Directory-但是无法上传下载文件" class="headerlink" title="Browse Directory 但是无法上传下载文件"></a>Browse Directory 但是无法上传下载文件</h2><p>上个问题解决完成，尝试上传/下载文件，</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Hadoop/hadoop5.png" srcset="/img/loading.gif" lazyload alt="Hadoop_5"></p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Hadoop/hadoop6.png" srcset="/img/loading.gif" lazyload alt="Hadoop_6"></p>
+<h2 id="browse-directory-但是无法上传下载文件">Browse Directory 但是无法上传下载文件</h2>
+<p>上个问题解决完成，尝试上传/下载文件，</p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Hadoop/hadoop5.png" srcset="/img/loading.gif" lazyload alt="Hadoop_5" /><figcaption>Hadoop_5</figcaption>
+</figure>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Hadoop/hadoop6.png" srcset="/img/loading.gif" lazyload alt="Hadoop_6" /><figcaption>Hadoop_6</figcaption>
+</figure>
 <p>实际上是服务器端与客户端 ip 地址与名称映射的问题</p>
 <p>审查 WebUI，发现数据节点 Datanod 的地址是<code>localhost</code>开头而非以主机名<code>nn01</code>开头。修改服务器端 hosts 文件。</p>
-<p><img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Hadoop/hadoop7.png" srcset="/img/loading.gif" lazyload alt="Hadoop_6"></p>
+<figure>
+<img src="https://eddyblog.oss-cn-shenzhen.aliyuncs.com/Hadoop/hadoop7.png" srcset="/img/loading.gif" lazyload alt="Hadoop_6" /><figcaption>Hadoop_6</figcaption>
+</figure>
 <p>修改主机端 hosts 文件，添加 <code>nn01</code>与其 ip 地址的映射。</p>
 <p>但是修改完成 hosts 文件，50070 端口都不能访问了，哭了。</p>
 <p>查阅资料</p>
 <blockquote>
 <p>这个问题花费了我将近两天的时间，经过多次试错和尝试，现在想分享给大家来解决此问题避免大家入坑，以前都是在局域网上搭建的 hadoop 集群，并且是局域网访问的，没遇见此问题。</p>
-<p>因为阿里云上搭建的 hadoop 集群，需要配置映射集群经过内网访问，也就是局域网的 ip 地址。<br>如果配置为公网 IP 地址，就会出现集群启动不了，namenode 和 secondarynamenode 启动不了，如果将主机的映射文件配置为内网 IP 集群就可以正常启动了。但通过 eclipse 开发工具访问</p>
-<p>会出错，显示了阿里云内网的 ip 地址来访问 datanode，这肯定访问不了啊，这问题真实醉了，就这样想了找了好久一致没有思路。<br>最终发现需要在 hdfs-site.xml 中修改配置项<code>dfs.client.use.datanode.hostname</code>设置为 true，就是说客户端访问 datanode 的时候是通过主机域名访问，就不会出现通过内网 IP 来访问了</p>
+<p>因为阿里云上搭建的 hadoop 集群，需要配置映射集群经过内网访问，也就是局域网的 ip 地址。 如果配置为公网 IP 地址，就会出现集群启动不了，namenode 和 secondarynamenode 启动不了，如果将主机的映射文件配置为内网 IP 集群就可以正常启动了。但通过 eclipse 开发工具访问</p>
+<p>会出错，显示了阿里云内网的 ip 地址来访问 datanode，这肯定访问不了啊，这问题真实醉了，就这样想了找了好久一致没有思路。 最终发现需要在 hdfs-site.xml 中修改配置项<code>dfs.client.use.datanode.hostname</code>设置为 true，就是说客户端访问 datanode 的时候是通过主机域名访问，就不会出现通过内网 IP 来访问了</p>
 </blockquote>
 <p>上面这个也不管用</p>
 <blockquote>
 <p>在 vi /etc/hosts 里面配置公网和内网的 ip</p>
-<p>内网 IP 地址 你的 hostname<br>公网 IP 地址 别的 hostname</p>
+<p>内网 IP 地址 你的 hostname 公网 IP 地址 别的 hostname</p>
 </blockquote>
 <p>但是对于单机/伪分布式 Hadoop 搭建，怎么解决，没有找到方法。</p>
 <p>换用阿里云内网 ip 地址，可以在 WebUI 中浏览 HDFS 文件目录，并下载、预览内容（不能上传）。</p>
 <p><a target="_blank" rel="noopener" href="https://blog.csdn.net/caojianhua2018/article/details/99174958#%EF%BC%885%EF%BC%89Hadoop%E4%BC%AA%E5%88%86%E5%B8%83%E9%85%8D%E7%BD%AE">伪分布式配置</a></p>
-<h2 id="ClusterID-不匹配导致-DataNode-无法启动"><a href="#ClusterID-不匹配导致-DataNode-无法启动" class="headerlink" title="ClusterID 不匹配导致 DataNode 无法启动"></a>ClusterID 不匹配导致 DataNode 无法启动</h2><p>hadoop 的升级功能需要 data-node 在它的版本文件里存储一个永久性的 clusterID，当 datanode 启动时会检查并匹配 namenode 的版本文件里的 clusterID，如果两者不匹配，就会出现”Incompatible clusterIDs”的异常。<br>　　每次格式化 namenode 都会生成一个新的 clusterID, 如果只格式化了 namenode，没有格式化此 datanode， 就会出现”java.io.IOException: Incompatible namespaceIDs“异常。</p>
-<h2 id="伪分布式运行时提示类缺失"><a href="#伪分布式运行时提示类缺失" class="headerlink" title="伪分布式运行时提示类缺失"></a>伪分布式运行时提示类缺失</h2><p>执行<code>hadoop classpath</code>，copy 到<code>yarn-site.xml</code>配置文件<code>yarn.capplication.clathpath</code>字段</p>
+<h2 id="clusterid-不匹配导致-datanode-无法启动">ClusterID 不匹配导致 DataNode 无法启动</h2>
+<p>hadoop 的升级功能需要 data-node 在它的版本文件里存储一个永久性的 clusterID，当 datanode 启动时会检查并匹配 namenode 的版本文件里的 clusterID，如果两者不匹配，就会出现&quot;Incompatible clusterIDs&quot;的异常。 　　每次格式化 namenode 都会生成一个新的 clusterID, 如果只格式化了 namenode，没有格式化此 datanode， 就会出现”java.io.IOException: Incompatible namespaceIDs“异常。</p>
+<h2 id="伪分布式运行时提示类缺失">伪分布式运行时提示类缺失</h2>
+<p>执行<code>hadoop classpath</code>，copy 到<code>yarn-site.xml</code>配置文件<code>yarn.capplication.clathpath</code>字段</p>
 
             </div>
             <hr>
@@ -630,10 +648,6 @@
 
 
 
-  <script  src="/js/local-search.js" ></script>
-
-
-
 
 
 
@@ -646,6 +660,21 @@
       typing(title)
       
     })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
   </script>
 
 

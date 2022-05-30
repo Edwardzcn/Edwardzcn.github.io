@@ -14,9 +14,12 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="The First Step题目摘要引言Title了解和检测分布式系统中的软件升级失败
-AbstractUpgrade 操作时分布式系统可用性中最具破坏性但又不可避免地主要任务之一。Upgrade失败进一步引发服务中断问题，CI的进一步采用使用更加剧了更新问题的频率和负担。  目前还没有任何工作关注upgrade failure的特征。testing framework，DUPTester
-Int">
+  <meta name="description" content="The First Step
+题目摘要引言
+Title
+了解和检测分布式系统中的软件升级失败
+Abstract
+Upgrade 操作时分布式系统可用性中最具破坏性但又不可避免地主要任务之一。Upgrade失败进一步引发服务中断问题，CI的进一步采用使用更加剧了更新问题的频率和负担。 目前还没有任何工作关注upgrade failure的特征。testing framework，DUPTe">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
   
@@ -62,11 +65,12 @@ Int">
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
 
 <body>
@@ -118,7 +122,7 @@ Int">
               <a class="nav-link dropdown-toggle" target="_self" role="button"
                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -189,7 +193,7 @@ Int">
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -256,7 +260,7 @@ Int">
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      315 字
+      320 字
     </span>
   
 
@@ -299,31 +303,40 @@ Int">
             <h1 style="display: none">SOSP21——Understanding-and-Detecting-Software-Upgrade-Failures-in-Distributed-Systems</h1>
             
             <div class="markdown-body">
-              <h1 id="The-First-Step"><a href="#The-First-Step" class="headerlink" title="The First Step"></a>The First Step</h1><h2 id="题目摘要引言"><a href="#题目摘要引言" class="headerlink" title="题目摘要引言"></a>题目摘要引言</h2><h3 id="Title"><a href="#Title" class="headerlink" title="Title"></a>Title</h3><p>了解和检测分布式系统中的软件升级失败</p>
-<h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h3><p>Upgrade 操作时分布式系统可用性中最具破坏性但又不可避免地主要任务之一。Upgrade失败进一步引发服务中断问题，CI的进一步采用使用更加剧了更新问题的频率和负担。  目前还没有任何工作关注upgrade failure的特征。testing framework，DUPTester</p>
-<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><p>在本文中，我们将软件升级故障 (software-upgrade failures) 定义为仅在软件升级期间  during software upgrade 发生的故障，比如可以由two code versions of the same software<br>or between an upgrade operation and a regular software<br>operation，并且不会在常规操作中出现问题。</p>
-<h2 id="Slides"><a href="#Slides" class="headerlink" title="Slides"></a>Slides</h2><ul>
-<li>upgrade failures are problematic<ul>
+              <h1 id="the-first-step">The First Step</h1>
+<h2 id="题目摘要引言">题目摘要引言</h2>
+<h3 id="title">Title</h3>
+<p>了解和检测分布式系统中的软件升级失败</p>
+<h3 id="abstract">Abstract</h3>
+<p>Upgrade 操作时分布式系统可用性中最具破坏性但又不可避免地主要任务之一。Upgrade失败进一步引发服务中断问题，CI的进一步采用使用更加剧了更新问题的频率和负担。 目前还没有任何工作关注upgrade failure的特征。testing framework，DUPTester</p>
+<h3 id="introduction">Introduction</h3>
+<p>在本文中，我们将软件升级故障 (software-upgrade failures) 定义为仅在软件升级期间 during software upgrade 发生的故障，比如可以由two code versions of the same software or between an upgrade operation and a regular software operation，并且不会在常规操作中出现问题。</p>
+<h2 id="slides">Slides</h2>
+<ul>
+<li>upgrade failures are problematic
+<ul>
 <li>large-scale</li>
-<li>persistent impact (can’t easily roll back)</li>
-</ul>
-</li>
+<li>persistent impact (can't easily roll back)</li>
+</ul></li>
 </ul>
 <p>传统方法 safe upgrade 慢</p>
 <p>fast and safe upgrade</p>
-<h3 id="Focusing-aspects"><a href="#Focusing-aspects" class="headerlink" title="Focusing aspects"></a>Focusing aspects</h3><ul>
+<h3 id="focusing-aspects">Focusing aspects</h3>
+<ul>
 <li>Symptoms of Upgrade Failures 症状</li>
-<li>Root-cause study 深层原因<ul>
+<li>Root-cause study 深层原因
+<ul>
 <li>不兼容的跨版本交互（63%）</li>
 <li>破碎的升级操作（33%）</li>
 <li>错误配置（3%）</li>
 <li>破碎的库依赖（2%）</li>
+</ul></li>
+<li>Triggering-condition study</li>
 </ul>
-</li>
-<li>Triggering-condition study </li>
-</ul>
-<h3 id="Question"><a href="#Question" class="headerlink" title="Question"></a>Question</h3><p>Hi, I’m Chuannan Zhang from USTC. thanks for the talk. in the last 2 pages of your slides, you have mentioned that the  DUPtool chains captures  not only upgrade failure but also downgrade failure, so in your work. do there have any differences or  just the same because of the mismatch version of libs and broken operations.</p>
+<h3 id="question">Question</h3>
+<p>Hi, I'm Chuannan Zhang from USTC. thanks for the talk. in the last 2 pages of your slides, you have mentioned that the DUPtool chains captures not only upgrade failure but also downgrade failure, so in your work. do there have any differences or just the same because of the mismatch version of libs and broken operations.</p>
 <a id="more"></a>
+
             </div>
             <hr>
             <div>
@@ -552,10 +565,6 @@ Int">
 
 
 
-  <script  src="/js/local-search.js" ></script>
-
-
-
 
 
 
@@ -568,6 +577,21 @@ Int">
       typing(title)
       
     })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
   </script>
 
 

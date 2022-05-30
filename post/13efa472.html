@@ -14,10 +14,12 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="Substitution and EvaluationImplementing OCaml in OCaml Part 2.
-EvaluationEvaluation rewrites the abstact syntax of a program step-by-step until it produces a value.
+  <meta name="description" content="Substitution and Evaluation
+Implementing OCaml in OCaml Part 2.
+Evaluation
+Evaluation rewrites the abstact syntax of a program step-by-step until it produces a value.
 Example
-123456789101112131415161718">
+12345678910111213141">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
   
@@ -63,11 +65,12 @@ Example
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
 
 <body>
@@ -119,7 +122,7 @@ Example
               <a class="nav-link dropdown-toggle" target="_self" role="button"
                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -190,7 +193,7 @@ Example
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -257,7 +260,7 @@ Example
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      54 字
+      56 字
     </span>
   
 
@@ -300,8 +303,10 @@ Example
             <h1 style="display: none">OCaml学习——Substitution-and-Evaluation</h1>
             
             <div class="markdown-body">
-              <h1 id="Substitution-and-Evaluation"><a href="#Substitution-and-Evaluation" class="headerlink" title="Substitution and Evaluation"></a>Substitution and Evaluation</h1><p>Implementing OCaml in OCaml Part 2.</p>
-<h2 id="Evaluation"><a href="#Evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h2><p>Evaluation rewrites the abstact syntax of a program step-by-step until it produces a value.</p>
+              <h1 id="substitution-and-evaluation">Substitution and Evaluation</h1>
+<p>Implementing OCaml in OCaml Part 2.</p>
+<h2 id="evaluation">Evaluation</h2>
+<p>Evaluation rewrites the abstact syntax of a program step-by-step until it produces a value.</p>
 <p>Example</p>
 <figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs OCaml"><span class="hljs-comment">(* raw *)</span><br><span class="hljs-keyword">let</span> x = <span class="hljs-number">30</span> <span class="hljs-keyword">in</span><br><span class="hljs-keyword">let</span> y = <span class="hljs-number">20</span> + x <span class="hljs-keyword">in</span><br>x + y <br><br>-&gt;<br><br><span class="hljs-keyword">let</span> y = <span class="hljs-number">20</span> + <span class="hljs-number">30</span> <span class="hljs-keyword">in</span><br><span class="hljs-number">30</span> + y<br><br>-&gt;<br><br><span class="hljs-keyword">let</span> y = <span class="hljs-number">50</span> <span class="hljs-keyword">in</span><br><span class="hljs-number">30</span> + y<br><br>-&gt;<br><br><span class="hljs-number">30</span>+<span class="hljs-number">50</span><br><br>-&gt;<br><br><span class="hljs-number">80</span><br></code></pre></td></tr></table></figure>
 <a id="more"></a>
@@ -541,10 +546,6 @@ Example
 
 
 
-  <script  src="/js/local-search.js" ></script>
-
-
-
 
 
 
@@ -557,6 +558,21 @@ Example
       typing(title)
       
     })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
   </script>
 
 

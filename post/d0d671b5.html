@@ -14,9 +14,10 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="Understanding OwnershipRust中最独特的性质，保证内存使用的安全性（不需要GC）。
+  <meta name="description" content="Understanding Ownership
+Rust中最独特的性质，保证内存使用的安全性（不需要GC）。
 Ownership is Rust’s most unique feature, and it enables Rust to make memory safety guarantees without needing a garbage collector.
-What Is Ownersh">
+What Is Own">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
   
@@ -62,11 +63,12 @@ What Is Ownersh">
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
 
 <body>
@@ -118,7 +120,7 @@ What Is Ownersh">
               <a class="nav-link dropdown-toggle" target="_self" role="button"
                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -189,7 +191,7 @@ What Is Ownersh">
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -299,34 +301,41 @@ What Is Ownersh">
             <h1 style="display: none">Rust学习——TRPL-Part5</h1>
             
             <div class="markdown-body">
-              <h1 id="Understanding-Ownership"><a href="#Understanding-Ownership" class="headerlink" title="Understanding Ownership"></a>Understanding Ownership</h1><p>Rust中最独特的性质，保证内存使用的安全性（不需要GC）。</p>
+              <h1 id="understanding-ownership">Understanding Ownership</h1>
+<p>Rust中最独特的性质，保证内存使用的安全性（不需要GC）。</p>
 <p>Ownership is Rust’s most unique feature, and it enables Rust to make memory safety guarantees without needing a garbage collector.</p>
-<h2 id="What-Is-Ownership"><a href="#What-Is-Ownership" class="headerlink" title="What Is Ownership"></a>What Is Ownership</h2><p>The way to memory management:</p>
-<ol>
+<h2 id="what-is-ownership">What Is Ownership</h2>
+<p>The way to memory management:</p>
+<ol type="1">
 <li>Use Garbage Collection(GC) that constantly looks for no longer used memory as the program runs.</li>
 <li>Programmer must explecitly allocate and free the memory.</li>
-<li>(Rust) <strong>Memroy is managed through a system of ownership with a set fo rules that the compiler checks at compile time</strong>. None of the ownership features slow down your program while it’s running.</li>
+<li>(Rust) <strong>Memroy is managed through a system of ownership with a set fo rules that the compiler checks at compile time</strong>. None of the ownership features slow down your program while it's running.</li>
 </ol>
-<h3 id="Ownership-Rules"><a href="#Ownership-Rules" class="headerlink" title="Ownership Rules"></a>Ownership Rules</h3><p>Keep these rules in mind!</p>
+<h3 id="ownership-rules">Ownership Rules</h3>
+<p>Keep these rules in mind!</p>
 <ul>
-<li>Each value in Rust has a variable that’s called its <em>owner</em>.</li>
+<li>Each value in Rust has a variable that's called its <em>owner</em>.</li>
 <li>There can only be one owner at a time.</li>
 <li>When the owner goes out of scope, the value will be dropped.</li>
 </ul>
 <p>感觉很像Functional编程，总是在一个let 的 scope里。</p>
-<h3 id="Memroy-and-Allocation"><a href="#Memroy-and-Allocation" class="headerlink" title="Memroy and Allocation"></a>Memroy and Allocation</h3><p>从 string literal 到 <code>String</code> 类型，硬编码静态确定不可变的串，到一个可接受runtime值，可以改变的类型。</p>
+<h3 id="memroy-and-allocation">Memroy and Allocation</h3>
+<p>从 string literal 到 <code>String</code> 类型，硬编码静态确定不可变的串，到一个可接受runtime值，可以改变的类型。</p>
 <p>In the case of a string literal, we know the contents at compile time, so the text is hardcoded directly into the final executable. This is why string literals are fast and efficient. But these properties only come from the string literal’s immutability. Unfortunately, we can’t put a blob of memory into the binary for each piece of text whose size is unknown at compile time and whose size might change while running the program.</p>
 <p>With the <code>String</code> type, in order to support a mutable, growable piece of text, we need to allocate an amount of memory on the heap, unknown at compile time, to hold the contents. This means:</p>
 <ul>
 <li>The memory must be requested from the memory allocator at runtime.(Construct function)</li>
 <li>We need a way of returning this memory to the allocator when we’re done with our <code>String</code>.(Out of scope, special function <code>drop</code>)</li>
 </ul>
-<h4 id="Ways-Variables-and-Data-Interact-Move"><a href="#Ways-Variables-and-Data-Interact-Move" class="headerlink" title="Ways Variables and Data Interact: Move"></a>Ways Variables and Data Interact: Move</h4><p>shallow copy? deep copy? Rust prefers <strong>move</strong>.</p>
+<h4 id="ways-variables-and-data-interact-move">Ways Variables and Data Interact: Move</h4>
+<p>shallow copy? deep copy? Rust prefers <strong>move</strong>.</p>
 <p>理解<strong>Move</strong> 叫法，ownership从先前的变量转移到了另一变量。先前的变量<code>s1</code>不再可用，因此Rust也无需在<code>s1</code> out of scope的时候free（从而避免了double free的问题）。</p>
 <p>shallow copy + invalidate</p>
-<h4 id="Ways-Variables-and-Data-Interact-Clone"><a href="#Ways-Variables-and-Data-Interact-Clone" class="headerlink" title="Ways Variables and Data Interact: Clone"></a>Ways Variables and Data Interact: Clone</h4><p>If we do want to deeply copy the heap data of the <code>String</code>, not just the stack data, we can use a common method called <code>clone</code>.</p>
+<h4 id="ways-variables-and-data-interact-clone">Ways Variables and Data Interact: Clone</h4>
+<p>If we do want to deeply copy the heap data of the <code>String</code>, not just the stack data, we can use a common method called <code>clone</code>.</p>
 <figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-keyword">let</span> s1 = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;hello&quot;</span>);<br>    <span class="hljs-keyword">let</span> s2 = s1.clone();<br><br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;s1 = &#123;&#125;, s2 = &#123;&#125;&quot;</span>, s1, s2);<br>&#125;<br></code></pre></td></tr></table></figure>
-<h4 id="Stack-Only-Data-Copy"><a href="#Stack-Only-Data-Copy" class="headerlink" title="Stack-Only Data: Copy"></a>Stack-Only Data: Copy</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-keyword">let</span> x = <span class="hljs-number">5</span>;<br>    <span class="hljs-keyword">let</span> y = x;<br><br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;x = &#123;&#125;, y = &#123;&#125;&quot;</span>, x, y);<br>&#125;<br></code></pre></td></tr></table></figure>
+<h4 id="stack-only-data-copy">Stack-Only Data: Copy</h4>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-keyword">let</span> x = <span class="hljs-number">5</span>;<br>    <span class="hljs-keyword">let</span> y = x;<br><br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;x = &#123;&#125;, y = &#123;&#125;&quot;</span>, x, y);<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>But this code seems to contradict what we just learned: we don’t have a call to <code>clone</code>, but <code>x</code> is still valid and wasn’t moved into <code>y</code>.</p>
 <p>Types that have known size at compile time are stored entirely on the stack.</p>
 <p>Rust 有一个叫做 <code>Copy</code> trait 的特殊注解，可以用在类似整型这样的存储在栈上的类型上（第十章详细讲解 trait）。如果一个类型实现了 <code>Copy</code> trait，那么一个旧的变量在将其赋值给其他变量后仍然可用。Rust 不允许自身或其任何部分实现了 <code>Drop</code> trait 的类型使用 <code>Copy</code> trait。如果我们对其值离开作用域时需要特殊处理的类型使用 <code>Copy</code> 注解，将会出现一个编译时错误。要学习如何为你的类型添加 <code>Copy</code> 注解以实现该 trait，请阅读附录 C 中的 “可派生的 trait”。</p>
@@ -338,21 +347,25 @@ What Is Ownersh">
 <li>字符类型，<code>char</code>。</li>
 <li>元组，当且仅当其包含的类型也都实现 <code>Copy</code> 的时候。比如，<code>(i32, i32)</code> 实现了 <code>Copy</code>，但 <code>(i32, String)</code> 就没有。</li>
 </ul>
-<h3 id="Ownership-and-Functions"><a href="#Ownership-and-Functions" class="headerlink" title="Ownership and Functions"></a>Ownership and Functions</h3><p>Taking ownership and then returning ownership with every function is a bit tedious. What if we want to let a function use a value but not take ownership? </p>
+<h3 id="ownership-and-functions">Ownership and Functions</h3>
+<p>Taking ownership and then returning ownership with every function is a bit tedious. What if we want to let a function use a value but not take ownership?</p>
 <p>可以选择元组（带有额外信息），但仍涉及频繁的ownership转换。但对于一个应该是通用的概念来说，这意味着太多的仪式和大量的工作，好在Rust 还提供了<em>references</em>。</p>
-<h2 id="References-and-Borrowing"><a href="#References-and-Borrowing" class="headerlink" title="References and Borrowing"></a>References and Borrowing</h2><p>一个使用reference 避免移交ownership的简单例子：</p>
+<h2 id="references-and-borrowing">References and Borrowing</h2>
+<p>一个使用reference 避免移交ownership的简单例子：</p>
 <figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-keyword">let</span> s1 = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;hello&quot;</span>);<br><br>    <span class="hljs-keyword">let</span> len = calculate_length(&amp;s1);<br><br>    <span class="hljs-comment">// let len2 = calculate_length2(s1); // then s1 would be invalid</span><br><br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;The length of &#x27;&#123;&#125;&#x27; is &#123;&#125;.&quot;</span>, s1, len);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">calculate_length</span></span>(s: &amp;<span class="hljs-built_in">String</span>) -&gt; <span class="hljs-built_in">usize</span> &#123;<br>    s.len()<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">calculate_length2</span></span>(s: <span class="hljs-built_in">String</span>) -&gt; <span class="hljs-built_in">usize</span> &#123;<br>    s.len()<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>Refer but not own</p>
 <p>The <code>&amp;s1</code> syntax lets us create a reference that <em>refers</em> to the value of <code>s1</code> but does not own it. Because it does not own it, the value it points to will not be dropped when the reference goes out of scope.</p>
 <figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-keyword">let</span> s1 = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;hello&quot;</span>);<br><br>    <span class="hljs-keyword">let</span> len = calculate_length(&amp;s1);<br><br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;The length of &#x27;&#123;&#125;&#x27; is &#123;&#125;.&quot;</span>, s1, len);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">calculate_length</span></span>(s: &amp;<span class="hljs-built_in">String</span>) -&gt; <span class="hljs-built_in">usize</span> &#123; <span class="hljs-comment">// s is a reference to a String</span><br>    s.len()<br>&#125; <span class="hljs-comment">// Here, s goes out of scope. But because it does not have ownership of what</span><br>  <span class="hljs-comment">// it refers to, nothing happens.</span><br></code></pre></td></tr></table></figure>
 <p>When functions have references as parameters instead of the actual values, we won’t need to return the values in order to give back ownership, because we never had ownership. 这样就避免了每次都需要通过元组来取回 ownership。称为<strong>Borrowing</strong>。</p>
-<p>references  同variables，默认也是immutable的。</p>
-<h3 id="Mutable-References"><a href="#Mutable-References" class="headerlink" title="Mutable References"></a>Mutable References</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;hello&quot;</span>);<br><br>    change(&amp;<span class="hljs-keyword">mut</span> s);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">change</span></span>(some_string: &amp;<span class="hljs-keyword">mut</span> <span class="hljs-built_in">String</span>) &#123;<br>    some_string.push_str(<span class="hljs-string">&quot;, world&quot;</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
-<p>First, we had to change <code>s</code> to be <code>mut</code>（否则编译报错 E0596”:cannot borrow <code>s</code> as mutable）. Then we had to create a mutable reference with <code>&amp;mut s</code>（reference 默认也是immutable） and accept a mutable reference with <code>some_string: &amp;mut String</code>.</p>
-<p>One big restriction: <strong>you can have only one mutable reference to a particular piece of data in a particular scope</strong>. </p>
+<p>references 同variables，默认也是immutable的。</p>
+<h3 id="mutable-references">Mutable References</h3>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;hello&quot;</span>);<br><br>    change(&amp;<span class="hljs-keyword">mut</span> s);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">change</span></span>(some_string: &amp;<span class="hljs-keyword">mut</span> <span class="hljs-built_in">String</span>) &#123;<br>    some_string.push_str(<span class="hljs-string">&quot;, world&quot;</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>First, we had to change <code>s</code> to be <code>mut</code>（否则编译报错 E0596&quot;:cannot borrow <code>s</code> as mutable）. Then we had to create a mutable reference with <code>&amp;mut s</code>（reference 默认也是immutable） and accept a mutable reference with <code>some_string: &amp;mut String</code>.</p>
+<p>One big restriction: <strong>you can have only one mutable reference to a particular piece of data in a particular scope</strong>.</p>
 <p>编译层面解决了race问题，不允许两个引用变量。回忆Go 中的机制race 检测工具<code>go run -race</code>，检测不同 routines 先读后写又无锁的情况，而go的检查并非静态检查而是动态测试。</p>
 <p>类似的情况，不允许同时使用mutable和immutable的引用。</p>
-<h3 id="Dangling-References"><a href="#Dangling-References" class="headerlink" title="Dangling References"></a>Dangling References</h3><p>C/C++ 悬挂指针问题</p>
+<h3 id="dangling-references">Dangling References</h3>
+<p>C/C++ 悬挂指针问题</p>
 <p>In Rust, by contrast, the compiler guarantees that references will never be dangling references: if you have a reference to some data, the compiler will ensure that the data will not go out of scope before the reference to the data does.</p>
 <p>传递回一个 Dangling Reference 会指向一个invalid String（因为已经 out of scope），Rust不会允许这样操作。解决方法，ownership move!</p>
 <p>Danger case:</p>
@@ -360,21 +373,26 @@ What Is Ownersh">
 <p>Ownership move:</p>
 <figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-keyword">let</span> string = no_dangle();<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">no_dangle</span></span>() -&gt; <span class="hljs-built_in">String</span> &#123;<br>    <span class="hljs-keyword">let</span> s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;hello&quot;</span>);<br><br>    s<br>&#125;<br></code></pre></td></tr></table></figure>
 <a id="more"></a>
-<h3 id="The-Rules-of-References"><a href="#The-Rules-of-References" class="headerlink" title="The Rules of References"></a>The Rules of References</h3><p>Let’s recap what we’ve discussed about references:</p>
+<h3 id="the-rules-of-references">The Rules of References</h3>
+<p>Let’s recap what we’ve discussed about references:</p>
 <ul>
 <li>At any given time, you can have <em>either</em> one mutable reference <em>or</em> any number of immutable references.</li>
 <li>References must always be valid.</li>
 </ul>
 <p>Next, we’ll look at a different kind of reference: slices.</p>
-<h2 id="The-Slice-Type"><a href="#The-Slice-Type" class="headerlink" title="The Slice Type"></a>The Slice Type</h2><p>Getting starting/ending index from <code>String</code> (not tied to String state)</p>
-<h3 id="String-slices"><a href="#String-slices" class="headerlink" title="String slices"></a>String slices</h3><p>常见用法</p>
+<h2 id="the-slice-type">The Slice Type</h2>
+<p>Getting starting/ending index from <code>String</code> (not tied to String state)</p>
+<h3 id="string-slices">String slices</h3>
+<p>常见用法</p>
 <figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-keyword">let</span> origin_s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;Hello, world!&quot;</span>);<br>    <span class="hljs-keyword">let</span> origin_len = origin_s.len();<br>    <span class="hljs-keyword">let</span> slice_array = [<br>        &amp;origin_s[..],<br>        &amp;origin_s[<span class="hljs-number">0</span>..origin_len],<br>        &amp;origin_s[<span class="hljs-number">1</span>..<span class="hljs-number">5</span>],<br>        &amp;origin_s[<span class="hljs-number">2</span>..<span class="hljs-number">8</span>],<br>    ];<br>    <span class="hljs-keyword">for</span> (i, &amp;item) <span class="hljs-keyword">in</span> slice_array.iter().enumerate() &#123;<br>        <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;Slice &#123;&#125;&#x27;s length &#123;&#125; -- &#123;&#125;&quot;</span>, i,item.len(), item);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>With all this information in mind, let’s rewrite <code>first_word</code> to return a slice. The type that signifies “string slice” is written as <code>&amp;str</code>:</p>
 <p>越界的问题，如果我们试图修改原始String，编译Error。slice作为特殊引用也是immutable，ownership的，修改原始String意味着要创建一个mutable引用，联系上文，我们不能同时对同一变量创建mutable和immutable的引用。</p>
-<h3 id="String-Literals-Are-Slices"><a href="#String-Literals-Are-Slices" class="headerlink" title="String Literals Are Slices"></a>String Literals Are Slices</h3><p>Recall that we talked about string literals being stored inside the binary. Now that we know about slices, we can properly understand string literals:</p>
+<h3 id="string-literals-are-slices">String Literals Are Slices</h3>
+<p>Recall that we talked about string literals being stored inside the binary. Now that we know about slices, we can properly understand string literals:</p>
 <figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-keyword">let</span> s = <span class="hljs-string">&quot;Hello, world!&quot;</span>;<br></code></pre></td></tr></table></figure>
 <p><code>s</code>的类型是<code>&amp;str</code>，这也可以解释为什么string literals都是immutable的，<code>&amp;str</code>是immutable引用。</p>
-<h3 id="String-Slices-as-parameters"><a href="#String-Slices-as-parameters" class="headerlink" title="String Slices as parameters"></a>String Slices as parameters</h3><p>More experienced Rustaceans prefer:</p>
+<h3 id="string-slices-as-parameters">String Slices as parameters</h3>
+<p>More experienced Rustaceans prefer:</p>
 <figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">first_word</span></span>(s: &amp;<span class="hljs-built_in">str</span>) -&gt; &amp;<span class="hljs-built_in">str</span> &#123; <span class="hljs-comment">// instead of s: &amp;String</span><br></code></pre></td></tr></table></figure>
 <p>这样我们可以同时支持<code>&amp;String</code>类型的值和<code>&amp;str</code>的值。</p>
 <p><strong>Deref coericion</strong>强制类型转换。</p>
@@ -614,10 +632,6 @@ What Is Ownersh">
 
 
 
-  <script  src="/js/local-search.js" ></script>
-
-
-
 
 
 
@@ -630,6 +644,21 @@ What Is Ownersh">
       typing(title)
       
     })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
   </script>
 
 

@@ -14,7 +14,8 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="Enums and Pattern MatchingEnums are a feature in many languages, but their capabilities differ in each language. Rust’s enums are most similar to algebraic data types（代数数据类型） in functional languages, ">
+  <meta name="description" content="Enums and Pattern Matching
+Enums are a feature in many languages, but their capabilities differ in each language. Rust’s enums are most similar to algebraic data types（代数数据类型） in functional languages">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
   
@@ -60,11 +61,12 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
 
 <body>
@@ -116,7 +118,7 @@
               <a class="nav-link dropdown-toggle" target="_self" role="button"
                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -187,7 +189,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -264,7 +266,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      13
+      14
        分钟
     </span>
   
@@ -297,21 +299,21 @@
             <h1 style="display: none">Rust学习——TRPL-Part7</h1>
             
             <div class="markdown-body">
-              <h1 id="Enums-and-Pattern-Matching"><a href="#Enums-and-Pattern-Matching" class="headerlink" title="Enums and Pattern Matching"></a>Enums and Pattern Matching</h1><p>Enums are a feature in many languages, but their capabilities differ in each language. Rust’s enums are most similar to <em>algebraic data types</em>（代数数据类型） in functional languages, such as F#, OCaml, and Haskell.</p>
-<h2 id="Defining-an-Enum"><a href="#Defining-an-Enum" class="headerlink" title="Defining an Enum"></a>Defining an Enum</h2><p>We can <em>enumerate</em> all possible variants, which is where enumeration gets its name. 一一列举出</p>
+              <h1 id="enums-and-pattern-matching">Enums and Pattern Matching</h1>
+<p>Enums are a feature in many languages, but their capabilities differ in each language. Rust’s enums are most similar to <em>algebraic data types</em>（代数数据类型） in functional languages, such as F#, OCaml, and Haskell.</p>
+<h2 id="defining-an-enum">Defining an Enum</h2>
+<p>We can <em>enumerate</em> all possible variants, which is where enumeration gets its name. 一一列举出</p>
 <p>We can express this concept in code by defining an <code>IpAddrKind</code> enumeration and listing the possible kinds an IP address can be, <code>V4</code> and <code>V6</code>. These are the variants of the enum:</p>
 <figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-class"><span class="hljs-keyword">enum</span> <span class="hljs-title">IpAddrKind</span></span> &#123;<br>    V4,<br>    V6,<br>&#125;<br></code></pre></td></tr></table></figure>
-<h3 id="Enum-Values"><a href="#Enum-Values" class="headerlink" title="Enum Values"></a>Enum Values</h3><p>Using an enum rather than an enum inside a struct, by putting data directly into each enum variant. （回忆Coq 中Inductive Type中带参）</p>
-<p>以 Ipv4 Ipv6 为例，使用enum的好处：</p>
-<ul>
-<li>我们直接将数据附加到枚举的每个成员上，这样就不需要一个额外的结构体了。</li>
-<li>另外每一个变量可以取不同类型和数量的关联数据，比如你想通过4个 <code>u8</code>数来表示Ipv4 但想通过一个 <code>String</code> 来表示Ipv6。</li>
-</ul>
+<h3 id="enum-values">Enum Values</h3>
+<p>Using an enum rather than an enum inside a struct, by putting data directly into each enum variant. （回忆Coq 中Inductive Type中带参）</p>
+<p>以 Ipv4 Ipv6 为例，使用enum的好处： - 我们直接将数据附加到枚举的每个成员上，这样就不需要一个额外的结构体了。 - 另外每一个变量可以取不同类型和数量的关联数据，比如你想通过4个 <code>u8</code>数来表示Ipv4 但想通过一个 <code>String</code> 来表示Ipv6。</p>
 <figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-class"><span class="hljs-keyword">enum</span> <span class="hljs-title">IpAddr</span></span> &#123;<br>    V4(<span class="hljs-built_in">u8</span>, <span class="hljs-built_in">u8</span>, <span class="hljs-built_in">u8</span>, <span class="hljs-built_in">u8</span>),<br>    V6(<span class="hljs-built_in">String</span>),<br>&#125;<br></code></pre></td></tr></table></figure>
 <a id="more"></a>
 <p><code>IpAddr</code>在标准库的实现方式：使用枚举和变量来描述，任意一个IpAddr可以是 V4 或者 V6，但它以两个不同的struct形式将地址数据嵌入到变量中，每个变量的定义不同。</p>
 <p>可以在枚举变量中嵌入各种类型的数据：字符串、数字类型、struct甚至其他的enum。</p>
-<h2 id="The-Option-Enum-and-Its-Advantages-Over-Null-Values"><a href="#The-Option-Enum-and-Its-Advantages-Over-Null-Values" class="headerlink" title="The Option Enum and Its Advantages Over Null Values"></a>The Option Enum and Its Advantages Over Null Values</h2><p>The <code>Option</code> type is used in many places because it encodes the very common scenario in which a value could be <em>something</em> or it could be <em>nothing</em>.</p>
+<h2 id="the-option-enum-and-its-advantages-over-null-values">The Option Enum and Its Advantages Over Null Values</h2>
+<p>The <code>Option</code> type is used in many places because it encodes the very common scenario in which a value could be <em>something</em> or it could be <em>nothing</em>.</p>
 <blockquote>
 <p>“Null References: The Billion Dollar Mistake,” Tony Hoare, the inventor of null,</p>
 </blockquote>
@@ -323,17 +325,21 @@
 <p>不再担心会错误的假设一个非空值，会让你对代码更加有信心。为了拥有一个可能为空的值，你必须要显式的将其放入对应类型的 <code>Option&lt;T&gt;</code> 中。接着，当使用这个值时，必须明确的处理值为空的情况。只要一个值不是 Option<T> 类型，你就 可以 安全的认定它的值不为空。这是 Rust 的一个经过深思熟虑的设计决策，来限制空值的泛滥以增加 Rust 代码的安全性。</p>
 </blockquote>
 <p>Becoming familiar with the methods on Option<T> will be extremely useful in your journey with Rust.</p>
-<h3 id="The-match-Control-Flow-Operator"><a href="#The-match-Control-Flow-Operator" class="headerlink" title="The match Control Flow Operator"></a>The match Control Flow Operator</h3><p>因为刚刚提到了硬币，让我们用它们来作为一个使用 match 的例子！我们可以编写一个函数来获取一个未知的硬币，并以一种类似验钞机的方式，确定它是何种硬币并返回它的美分值</p>
+<h3 id="the-match-control-flow-operator">The match Control Flow Operator</h3>
+<p>因为刚刚提到了硬币，让我们用它们来作为一个使用 match 的例子！我们可以编写一个函数来获取一个未知的硬币，并以一种类似验钞机的方式，确定它是何种硬币并返回它的美分值</p>
 <figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-meta">#![allow(unused)]</span><br><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;<br>    <span class="hljs-class"><span class="hljs-keyword">enum</span> <span class="hljs-title">Coin</span></span> &#123;<br>        Penny,<br>        Nickel,<br>        Dime,<br>        Quarter,<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">value_in_cents</span></span>(coin: Coin) -&gt; <span class="hljs-built_in">u8</span> &#123;<br>        <span class="hljs-keyword">match</span> coin &#123;<br>            Coin::Penny =&gt; <span class="hljs-number">1</span>,<br>            Coin::Nickel =&gt; <span class="hljs-number">5</span>,<br>            Coin::Dime =&gt; <span class="hljs-number">10</span>,<br>            Coin::Quarter =&gt; <span class="hljs-number">25</span>,<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-<h3 id="match-Option"><a href="#match-Option" class="headerlink" title="match Option"></a>match Option<T></h3><p>我们在之前的部分中使用 <code>Option&lt;T&gt;</code> 时，是为了从 <code>Some</code> 中取出其内部的 <code>T</code> 值；我们还可以像处理 <code>Coin</code> 枚举那样使用 match 处理 <code>Option&lt;T&gt;</code>！只不过这回比较的不再是硬币，而是 <code>Option&lt;T&gt;</code> 的成员，但 <code>match</code> 表达式的工作方式保持不变。</p>
+<h3 id="match-option">match Option<T></h3>
+<p>我们在之前的部分中使用 <code>Option&lt;T&gt;</code> 时，是为了从 <code>Some</code> 中取出其内部的 <code>T</code> 值；我们还可以像处理 <code>Coin</code> 枚举那样使用 match 处理 <code>Option&lt;T&gt;</code>！只不过这回比较的不再是硬币，而是 <code>Option&lt;T&gt;</code> 的成员，但 <code>match</code> 表达式的工作方式保持不变。</p>
 <p><code>Option&lt;T&gt;</code>本身也是枚举类型，这样就好理解了。</p>
 <p>枚举的 exhaustive （穷尽性）以及 <code>_</code>通配符类似ML语言和Coq。</p>
 <p>然而，match 在只关心 <strong>一个</strong> 情况的场景中可能就有点啰嗦了。为此 Rust 提供了<code>if let</code>。</p>
-<h2 id="Concise-Control-Flow-with-if-let"><a href="#Concise-Control-Flow-with-if-let" class="headerlink" title="Concise Control Flow with if let"></a>Concise Control Flow with if let</h2><p><code>if let</code> 语法让我们以一种不那么冗长的方式结合 <code>if</code> 和 <code>let</code>，来处理只匹配一个模式的值而忽略其他模式的情况。</p>
+<h2 id="concise-control-flow-with-if-let">Concise Control Flow with if let</h2>
+<p><code>if let</code> 语法让我们以一种不那么冗长的方式结合 <code>if</code> 和 <code>let</code>，来处理只匹配一个模式的值而忽略其他模式的情况。</p>
 <p>如下两段代码等价：</p>
 <figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-keyword">let</span> coin = Coin::Penny;<br><span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> count = <span class="hljs-number">0</span>;<br><span class="hljs-keyword">match</span> coin &#123;<br>    Coin::Quarter(state) =&gt; <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;State quarter from &#123;:?&#125;!&quot;</span>, state),<br>    _ =&gt; count += <span class="hljs-number">1</span>,<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>采用 <code>if let</code></p>
 <figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs Rust"><span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> count = <span class="hljs-number">0</span>;<br><span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> Coin::Quarter(state) = coin &#123;<br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;State quarter from &#123;:?&#125;!&quot;</span>, state);<br>&#125; <span class="hljs-keyword">else</span> &#123;<br>    count += <span class="hljs-number">1</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
             </div>
             <hr>
             <div>
@@ -569,10 +575,6 @@
 
 
 
-  <script  src="/js/local-search.js" ></script>
-
-
-
 
 
 
@@ -585,6 +587,21 @@
       typing(title)
       
     })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
   </script>
 
 

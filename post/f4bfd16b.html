@@ -14,11 +14,12 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="原始题目下图是个数字三角，请编写一个程序计算从顶部至底部某处一条路径，使得该路径所经过的数字总和最大。
+  <meta name="description" content="原始题目
+下图是个数字三角，请编写一个程序计算从顶部至底部某处一条路径，使得该路径所经过的数字总和最大。
 7
-3  8
-8  1  0
-2  7  4  4">
+3 8
+8 1 0
+2 7 4 4">
   <meta name="author" content="Edwardzcn">
   <meta name="keywords" content="Edward&#39;s blog">
   
@@ -64,11 +65,12 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"www.edwardzcn98yx.com","root":"/","version":"1.8.10","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/rss2.xml" title="Edward's blog" type="application/rss+xml"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
 
 
 <body>
@@ -120,7 +122,7 @@
               <a class="nav-link dropdown-toggle" target="_self" role="button"
                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-bookmark"></i>
-                精选
+                select
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 
@@ -191,7 +193,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/photos">
                 <i class="iconfont icon-image"></i>
-                摄影集
+                gallery
               </a>
             </li>
           
@@ -301,37 +303,42 @@
             <h1 style="display: none">【SCU-1114】解题报告（DP，路径，DFS）</h1>
             
             <div class="markdown-body">
-              <h1 id="原始题目"><a href="#原始题目" class="headerlink" title="原始题目"></a>原始题目</h1><p>下图是个数字三角，请编写一个程序计算从顶部至底部某处一条路径，使得该路径所经过的数字总和最大。</p>
+              <h1 id="原始题目">原始题目</h1>
+<p>下图是个数字三角，请编写一个程序计算从顶部至底部某处一条路径，使得该路径所经过的数字总和最大。</p>
 <p>7</p>
-<p>3  8</p>
-<p>8  1  0</p>
-<p>2  7  4  4</p>
-<a id="more"></a> 
-<ol>
-<li><p>每一步可沿左斜线向下或右斜线向下走；</p>
-</li>
-<li><p>1≤三角形行数≤100</p>
-</li>
-<li><p>三角形中的数字为整数 0，1，……，99。</p>
-</li>
-<li><p>如果有多种情况结果都最大，任意输出一种即可。</p>
-</li>
+<p>3 8</p>
+<p>8 1 0</p>
+<p>2 7 4 4</p>
+<a id="more"></a>
+<ol type="1">
+<li><p>每一步可沿左斜线向下或右斜线向下走；</p></li>
+<li><p>1≤三角形行数≤100</p></li>
+<li><p>三角形中的数字为整数 0，1，……，99。</p></li>
+<li><p>如果有多种情况结果都最大，任意输出一种即可。</p></li>
 </ol>
-<h3 id="输入："><a href="#输入：" class="headerlink" title="输入："></a>输入：</h3><p>第一行一个整数N，代表三角形的行数。</p>
+<h3 id="输入">输入：</h3>
+<p>第一行一个整数N，代表三角形的行数。</p>
 <p>接下来N行，描述了一个数字三角。</p>
-<h3 id="输出："><a href="#输出：" class="headerlink" title="输出："></a>输出：</h3><p>第一行一个整数，代表路径所经过底数字总和。</p>
+<h3 id="输出">输出：</h3>
+<p>第一行一个整数，代表路径所经过底数字总和。</p>
 <p>第二行N个数，代表所经过的数字。</p>
-<h3 id="样例："><a href="#样例：" class="headerlink" title="样例："></a>样例：</h3><h3 id="输入：-1"><a href="#输入：-1" class="headerlink" title="输入："></a>输入：</h3><pre><code>4 
+<h3 id="样例">样例：</h3>
+<h3 id="输入-1">输入：</h3>
+<pre><code>4 
 7
 3 8
 8 1 0
-2 7 4 4
-</code></pre><h3 id="输出：-1"><a href="#输出：-1" class="headerlink" title="输出："></a>输出：</h3><pre><code>25 
-7 3 8 7
-</code></pre><h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><p>入门dp，状态转移方程为dp[i][j]=max(dp[i+1][j],dp[i+1][j+1])+a[i][j]; dp[i][j]表示i行j列（即第i行j个数字到底部的最大和）。根据该状态转移方程递归实现即可。</p>
+2 7 4 4</code></pre>
+<h3 id="输出-1">输出：</h3>
+<pre><code>25 
+7 3 8 7</code></pre>
+<h1 id="解题思路">解题思路</h1>
+<p>入门dp，状态转移方程为dp[i][j]=max(dp[i+1][j],dp[i+1][j+1])+a[i][j]; dp[i][j]表示i行j列（即第i行j个数字到底部的最大和）。根据该状态转移方程递归实现即可。</p>
 <p>本题不仅需要记录最终的和，还需要记录路径，这时候就需要根据dp的表再用dfs走一遍。</p>
-<h1 id="解题代码"><a href="#解题代码" class="headerlink" title="解题代码"></a>解题代码</h1><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cstdio&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cstring&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cstdlib&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cmath&gt;</span></span><br><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> <span class="hljs-built_in">std</span>;<br><span class="hljs-keyword">const</span> <span class="hljs-keyword">int</span> maxn=<span class="hljs-number">1e2</span>+<span class="hljs-number">10</span>; <br><span class="hljs-keyword">int</span> n,m;<span class="hljs-comment">//n行，m列 </span><br><span class="hljs-keyword">int</span> a[maxn][maxn];<br><span class="hljs-keyword">int</span> f[maxn][maxn];<br><span class="hljs-keyword">int</span> ans[maxn];<br><span class="hljs-keyword">int</span> flag;<br><span class="hljs-comment">//f[i,j]=max(f[i+1,j],f[i+1,j+1])+a[i,j]</span><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">max</span><span class="hljs-params">(<span class="hljs-keyword">int</span> a,<span class="hljs-keyword">int</span> b)</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-keyword">return</span> a&gt;b?a:b;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">dp</span><span class="hljs-params">(<span class="hljs-keyword">int</span> i,<span class="hljs-keyword">int</span> j)</span><span class="hljs-comment">//递归实现 </span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-keyword">int</span> t;<br>	<span class="hljs-keyword">if</span>(i==n)<span class="hljs-comment">//到底部</span><br>	&#123;<br>		t=a[i][j];<br>		<span class="hljs-keyword">return</span> f[i][j]=t;<br>	&#125;<br>	<span class="hljs-keyword">else</span><br>	&#123;<br>		t=max(dp(i+<span class="hljs-number">1</span>,j),dp(i+<span class="hljs-number">1</span>,j+<span class="hljs-number">1</span>))+a[i][j];<br>		<span class="hljs-keyword">return</span> f[i][j]=t;<br>	&#125; <br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">dfs</span><span class="hljs-params">(<span class="hljs-keyword">int</span> i,<span class="hljs-keyword">int</span> j,<span class="hljs-keyword">int</span> tot,<span class="hljs-keyword">int</span> n)</span>  </span><br><span class="hljs-function"></span>&#123;  <br>    <span class="hljs-comment">//cout&lt;&lt;i&lt;&lt;&quot; &quot;&lt;&lt;j&lt;&lt;endl;  </span><br>    <span class="hljs-keyword">if</span>(flag)  <br>        <span class="hljs-keyword">return</span>;  <br>    <span class="hljs-keyword">if</span>(i==n)  <br>    &#123;  <br>        <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i=<span class="hljs-number">1</span>;i&lt;n;i++)  <br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d &quot;</span>,ans[i]);  <br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d\n&quot;</span>,ans[n]);  <br>        flag=<span class="hljs-number">1</span>;  <br>    &#125;  <br>    <span class="hljs-keyword">int</span> tmp=tot-a[i][j];  <br>    <span class="hljs-keyword">if</span>(tmp==f[i+<span class="hljs-number">1</span>][j])  <br>    &#123;  <br>        ans[i+<span class="hljs-number">1</span>]=a[i+<span class="hljs-number">1</span>][j];  <br>        dfs(i+<span class="hljs-number">1</span>,j,tmp,n);  <br>    &#125;  <br>    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(tmp==f[i+<span class="hljs-number">1</span>][j+<span class="hljs-number">1</span>])  <br>    &#123;  <br>        ans[i+<span class="hljs-number">1</span>]=a[i+<span class="hljs-number">1</span>][j+<span class="hljs-number">1</span>];  <br>        dfs(i+<span class="hljs-number">1</span>,j+<span class="hljs-number">1</span>,tmp,n);  <br>    &#125;  <br>&#125;  <br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-keyword">while</span>(~<span class="hljs-built_in">scanf</span>(<span class="hljs-string">&quot;%d&quot;</span>,&amp;n))<br>	&#123;<br>		<br><br>	<span class="hljs-built_in">memset</span>(a,<span class="hljs-number">0</span>,<span class="hljs-keyword">sizeof</span>(a));<br>	<span class="hljs-built_in">memset</span>(f,<span class="hljs-number">0</span>,<span class="hljs-keyword">sizeof</span>(f));<br>	<span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i=<span class="hljs-number">1</span>;i&lt;=n;i++)<br>	&#123;<br>		<span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> j=<span class="hljs-number">1</span>;j&lt;=i;j++)<br>		&#123;<br>			<span class="hljs-built_in">scanf</span>(<span class="hljs-string">&quot;%d&quot;</span>,&amp;a[i][j]);<br>		&#125;<br>	&#125;<br>	dp(<span class="hljs-number">1</span>,<span class="hljs-number">1</span>);<br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d\n&quot;</span>,f[<span class="hljs-number">1</span>][<span class="hljs-number">1</span>]);<br>	flag=<span class="hljs-number">0</span>;<br>	dfs(<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,f[<span class="hljs-number">1</span>][<span class="hljs-number">1</span>],n);<br>	&#125;<br>	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
-<h1 id="收获与反思"><a href="#收获与反思" class="headerlink" title="收获与反思"></a>收获与反思</h1><p>开始在怎么寻找路径这里卡住了，学到的东西得反复看啊。。不然真的不会用。</p>
+<h1 id="解题代码">解题代码</h1>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cstdio&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cstring&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cstdlib&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;cmath&gt;</span></span><br><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><span class="hljs-keyword">const</span> <span class="hljs-keyword">int</span> maxn=<span class="hljs-number">1e2</span>+<span class="hljs-number">10</span>; <br><span class="hljs-keyword">int</span> n,m;<span class="hljs-comment">//n行，m列 </span><br><span class="hljs-keyword">int</span> a[maxn][maxn];<br><span class="hljs-keyword">int</span> f[maxn][maxn];<br><span class="hljs-keyword">int</span> ans[maxn];<br><span class="hljs-keyword">int</span> flag;<br><span class="hljs-comment">//f[i,j]=max(f[i+1,j],f[i+1,j+1])+a[i,j]</span><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">max</span><span class="hljs-params">(<span class="hljs-keyword">int</span> a,<span class="hljs-keyword">int</span> b)</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-keyword">return</span> a&gt;b?a:b;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">dp</span><span class="hljs-params">(<span class="hljs-keyword">int</span> i,<span class="hljs-keyword">int</span> j)</span><span class="hljs-comment">//递归实现 </span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-keyword">int</span> t;<br>	<span class="hljs-keyword">if</span>(i==n)<span class="hljs-comment">//到底部</span><br>	&#123;<br>		t=a[i][j];<br>		<span class="hljs-keyword">return</span> f[i][j]=t;<br>	&#125;<br>	<span class="hljs-keyword">else</span><br>	&#123;<br>		t=<span class="hljs-built_in">max</span>(<span class="hljs-built_in">dp</span>(i+<span class="hljs-number">1</span>,j),<span class="hljs-built_in">dp</span>(i+<span class="hljs-number">1</span>,j+<span class="hljs-number">1</span>))+a[i][j];<br>		<span class="hljs-keyword">return</span> f[i][j]=t;<br>	&#125; <br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">dfs</span><span class="hljs-params">(<span class="hljs-keyword">int</span> i,<span class="hljs-keyword">int</span> j,<span class="hljs-keyword">int</span> tot,<span class="hljs-keyword">int</span> n)</span>  </span><br><span class="hljs-function"></span>&#123;  <br>    <span class="hljs-comment">//cout&lt;&lt;i&lt;&lt;&quot; &quot;&lt;&lt;j&lt;&lt;endl;  </span><br>    <span class="hljs-keyword">if</span>(flag)  <br>        <span class="hljs-keyword">return</span>;  <br>    <span class="hljs-keyword">if</span>(i==n)  <br>    &#123;  <br>        <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i=<span class="hljs-number">1</span>;i&lt;n;i++)  <br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d &quot;</span>,ans[i]);  <br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d\n&quot;</span>,ans[n]);  <br>        flag=<span class="hljs-number">1</span>;  <br>    &#125;  <br>    <span class="hljs-keyword">int</span> tmp=tot-a[i][j];  <br>    <span class="hljs-keyword">if</span>(tmp==f[i+<span class="hljs-number">1</span>][j])  <br>    &#123;  <br>        ans[i+<span class="hljs-number">1</span>]=a[i+<span class="hljs-number">1</span>][j];  <br>        <span class="hljs-built_in">dfs</span>(i+<span class="hljs-number">1</span>,j,tmp,n);  <br>    &#125;  <br>    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(tmp==f[i+<span class="hljs-number">1</span>][j+<span class="hljs-number">1</span>])  <br>    &#123;  <br>        ans[i+<span class="hljs-number">1</span>]=a[i+<span class="hljs-number">1</span>][j+<span class="hljs-number">1</span>];  <br>        <span class="hljs-built_in">dfs</span>(i+<span class="hljs-number">1</span>,j+<span class="hljs-number">1</span>,tmp,n);  <br>    &#125;  <br>&#125;  <br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-keyword">while</span>(~<span class="hljs-built_in">scanf</span>(<span class="hljs-string">&quot;%d&quot;</span>,&amp;n))<br>	&#123;<br>		<br><br>	<span class="hljs-built_in">memset</span>(a,<span class="hljs-number">0</span>,<span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(a));<br>	<span class="hljs-built_in">memset</span>(f,<span class="hljs-number">0</span>,<span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(f));<br>	<span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i=<span class="hljs-number">1</span>;i&lt;=n;i++)<br>	&#123;<br>		<span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> j=<span class="hljs-number">1</span>;j&lt;=i;j++)<br>		&#123;<br>			<span class="hljs-built_in">scanf</span>(<span class="hljs-string">&quot;%d&quot;</span>,&amp;a[i][j]);<br>		&#125;<br>	&#125;<br>	<span class="hljs-built_in">dp</span>(<span class="hljs-number">1</span>,<span class="hljs-number">1</span>);<br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d\n&quot;</span>,f[<span class="hljs-number">1</span>][<span class="hljs-number">1</span>]);<br>	flag=<span class="hljs-number">0</span>;<br>	<span class="hljs-built_in">dfs</span>(<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,f[<span class="hljs-number">1</span>][<span class="hljs-number">1</span>],n);<br>	&#125;<br>	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h1 id="收获与反思">收获与反思</h1>
+<p>开始在怎么寻找路径这里卡住了，学到的东西得反复看啊。。不然真的不会用。</p>
 
             </div>
             <hr>
@@ -572,10 +579,6 @@
 
 
 
-  <script  src="/js/local-search.js" ></script>
-
-
-
 
 
 
@@ -588,6 +591,21 @@
       typing(title)
       
     })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      jQuery('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      jQuery('#modalSearch').on('shown.bs.modal', function() {
+        jQuery('#local-search-input').focus();
+      });
+    })()
   </script>
 
 
