@@ -259,7 +259,7 @@ Challenges
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      535 字
+      1.9k 字
     </span>
   
 
@@ -269,7 +269,7 @@ Challenges
       <i class="iconfont icon-clock-fill"></i>
       
       
-      6
+      22
        分钟
     </span>
   
@@ -316,8 +316,75 @@ Challenges
 <li>Ziplog: 解决第三个挑战，不牺牲其他性质的前提下实现低延迟。</li>
 </ul>
 <h2 id="scalog">Scalog</h2>
-<p>Persistence-first architecture。先由clients发送数据给storage servers，然后再分配全序shared log中的位置。</p>
+<p>Persistence-first architecture。先由 clients 发送数据给 storage servers，然后再分配全序 shared log 中的位置。</p>
+<p>对于维护 shard 的 storage servers，每个在 shard 内维护一个 primary log segment 以及针对其他 storage sever 的 backup log segment。</p>
+<p>Scalog 第二个关键点是，<strong>利用每个存储服务器上记录的 FIFO 排序来超越传统排序器的吞吐量限制</strong>。</p>
+<p>阶段性的，每个 storage sever 和 ordering layer 进行通信，报告 log 段，回复哪些记录已经被完全备份。利用 ordering layer 的信息，storage server 可以交错、一致的使用全局序和原始的偏序。</p>
 <h2 id="ziplog">Ziplog</h2>
+<p>传统的 shared log 设计：</p>
+<ul>
+<li>读日志：<span class="math inline">\(Read\)</span>操作和<span class="math inline">\(Subscribe\)</span>操作。</li>
+<li>写日志：<span class="math inline">\(Append\)</span> 操作。</li>
+</ul>
+<p><span class="math inline">\(Append(R)\)</span>操作用于将<span class="math inline">\(R\)</span>记录添加在尾部。为了简化实现，一般要求操作满足 linearizability（见老论文 Linearizability: a correctness condition for concurrent objects）</p>
+<ul>
+<li>拓展只觉得串行顺序正确性以支持并发操作</li>
+<li>提供了组合性质：保证如果系统中的每个部件都是 separately linearizable，那么整体系统也是。</li>
+</ul>
+<p>Ziplog 设计的初衷是发现，当前架构 append-to-then-end-of-the-log API 导致的高延迟。</p>
+<p>鱼与熊掌不可兼得：使用独立的 ordering 服务必然引入额外一轮的信息通信。</p>
+<blockquote>
+<p>But using a separate ordering service must involve an additional roundtrip message delay. In Corfu [26], which uses a sequencer, this additional roundtrip happens before a record is stored, while in Scalog [38], which relies on an ordering layer, it happens after a record is stored. <strong>Ordering and storing cannot be done concurrently because either the sequence number must be stored with the record (as in Corfu), or the record’s position in the storage server must be kept by the ordering layer (as Scalog does through its “cuts”).</strong></p>
+</blockquote>
+<p>由于 ordering service 自身也有故障风险，还需要额外代价（比如 Corfu 在这一层启用了 Paxos）。</p>
+<p>弃用<span class="math inline">\(Append(R)\)</span> 转而使用<span class="math inline">\(InsertAfter(R_2,rid_1)\)</span>，利用 separately linearizable 实现全局的 linearizability。不再使用<span class="math inline">\(Append(R)\)</span>也意味着 log positions 不必按序填充，Ziplog 可以先填后面的位置再填前面的。</p>
+<p>拓展 local pair identifier<span class="math inline">\(\langle sid, lsn\rangle\)</span>至 global<span class="math inline">\(gsn\)</span>: <span class="math inline">\(gsn = N \times lsn + sid\)</span>。如果<span class="math inline">\(rid_1\)</span>中包含<span class="math inline">\(R_1\)</span>的 global index<span class="math inline">\(gsn_1\)</span>，那么我们只需要满足<span class="math inline">\(gsn_2(N \times lsn_2 + sid_2)\)</span>大于<span class="math inline">\(gsn_1\)</span>就可以满足序要求。为了保证 shared logs 不存在空洞，shard 可以放置 no-op 记录。这种分配策略要求 shards 知道<span class="math inline">\(N\)</span>（shards 的总数目），所以在 shards 数目增减的时候不再有效。在某些特定情况下这是必要的，Ziplog 使用 Paxos-based 成员管理服务。</p>
+<p>主要贡献：</p>
+<ul>
+<li>Ziplog 的 InsertAfter 接口和新的备份策略允许记录在 shard 内持久化。2 个消息延迟后 ordered without contention，3 个消息延迟后 with contention。可以无需特定硬件情况下提供近似于 NOPaxos 的延迟。</li>
+<li>Ziplog 的成员管理服务（shards member）在关键写路径之外，仅处理重配置和故障恢复。这类似情况是轻负载（不常发生）使得 Ziplog 可以管理上千 shards 并达到和 Scalog 持平的吞吐量。</li>
+<li>Ziplog 也提供 seamless reconfiguration</li>
+</ul>
+<h2 id="general-techniques">General Techniques</h2>
+<p>讨论几个重要技术及其实现手段</p>
+<h3 id="fault-tolerance">Fault Tolerance</h3>
+<p>分布式计算中重要一环，允许分布式系统在部分组件出现故障时仍可以提供正常服务，常通过 state machine replication 来实现，不同副本运行共识协议（或等价的原子广播）。经半个多世纪的研究，可选用的具体方案有：</p>
+<ul>
+<li>The Primary/Backup approach 主从备份模式</li>
+<li>Paxos and its variants Paxos 家族共识协议</li>
+<li>Chain Replication 链复制
+<ul>
+<li>Clients 向链的头写，并从尾读，可实现高吞吐量</li>
+</ul></li>
+</ul>
+<h3 id="scalability">Scalability</h3>
+<ul>
+<li>Scaling horizontally（scaling out，水平扩展）
+<ul>
+<li>通过添加更多的服务器来增加吞吐量和容量。存储系统如 Cassandra，Corfu，DynamoDB 和 Spanner 都可以扩展到相当大规模的服务器上。</li>
+</ul></li>
+<li>Scaling vertically（scaling up，垂直扩展）
+<ul>
+<li>通过优化软件实现和增加单一服务器中的硬件来增加吞吐量。手段：Batching 优化硬盘和网络通信。DPDK 和 SPDK 优化 I/O 路径来旁路操作系统内核。</li>
+</ul></li>
+</ul>
+<h3 id="total-order">Total Order</h3>
+<p>任意操作对都有序。</p>
+<ul>
+<li>DistributedLog 使用单一写方案，所有请求通过该 server。</li>
+<li>Corfu 和 LogDevice 使用中心化的 sequencer 来排序 records，使之脱离存储的核心组件（视 sequencer 为提供序的外部组件）。</li>
+<li>Mencius，Calvin 和 Derecho 都使用 round-robin 的方式，让 clients 将请求直接送达独立的 shard。</li>
+</ul>
+<h3 id="seamless-reconfiguration">Seamless Reconfiguration</h3>
+<p>Vertical Paxos 支持平滑的重配置，作为共识操作序列的部分，但是不支持 sharding，所以不具备可扩展性。</p>
+<p>水平可扩展的系统希望随时增删 shards，纵向的可扩展系统希望替换部分 servers 但不停止服务。重配置很关键，但难以实现 seamless reconfiguration。</p>
+<p>使用 ZooKeeper 来支持重配置会有典型暂停，比如 Corfu 会用 30ms 来完成一次重配置。</p>
+<h3 id="flexible-data-placement">Flexible Data Placement</h3>
+<p>选择放置数据的 shard。应是是支持的，但是有些系统牺牲灵活性来保证其他性质。</p>
+<h3 id="low-latency">Low Latency</h3>
+<p>Zyzzyva，EPaxos，Speculative Paxos ，以及 NOPaxos 规定系统行为的不同方面，包括领导者的正确性，消息之间的依赖性以及网络中的消息顺序。当猜测成功时，系统将快速进行；否则，他们必须修复推测结果，花费更多时间。</p>
+<p>Mencius</p>
+<p>RDMA，DPDK 和 SPDK 等技术旁路内核允许纵向的扩展同时优化吞吐量。Derecho，一个持久的组同学设施就是依赖 RDMA 设施来降低延迟。</p>
 <a id="more"></a>
 
             </div>
