@@ -259,7 +259,7 @@ Challenges
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.9k 字
+      2.7k 字
     </span>
   
 
@@ -269,7 +269,7 @@ Challenges
       <i class="iconfont icon-clock-fill"></i>
       
       
-      22
+      32
        分钟
     </span>
   
@@ -315,12 +315,12 @@ Challenges
 <li>Scalog: 解决了前两个挑战：提供平滑的重配置，灵活的数据防止以及可扩展的吞吐量。</li>
 <li>Ziplog: 解决第三个挑战，不牺牲其他性质的前提下实现低延迟。</li>
 </ul>
-<h2 id="scalog">Scalog</h2>
+<h3 id="scalog">Scalog</h3>
 <p>Persistence-first architecture。先由 clients 发送数据给 storage servers，然后再分配全序 shared log 中的位置。</p>
 <p>对于维护 shard 的 storage servers，每个在 shard 内维护一个 primary log segment 以及针对其他 storage sever 的 backup log segment。</p>
 <p>Scalog 第二个关键点是，<strong>利用每个存储服务器上记录的 FIFO 排序来超越传统排序器的吞吐量限制</strong>。</p>
 <p>阶段性的，每个 storage sever 和 ordering layer 进行通信，报告 log 段，回复哪些记录已经被完全备份。利用 ordering layer 的信息，storage server 可以交错、一致的使用全局序和原始的偏序。</p>
-<h2 id="ziplog">Ziplog</h2>
+<h3 id="ziplog">Ziplog</h3>
 <p>传统的 shared log 设计：</p>
 <ul>
 <li>读日志：<span class="math inline">\(Read\)</span>操作和<span class="math inline">\(Subscribe\)</span>操作。</li>
@@ -385,6 +385,90 @@ Challenges
 <p>Zyzzyva，EPaxos，Speculative Paxos ，以及 NOPaxos 规定系统行为的不同方面，包括领导者的正确性，消息之间的依赖性以及网络中的消息顺序。当猜测成功时，系统将快速进行；否则，他们必须修复推测结果，花费更多时间。</p>
 <p>Mencius</p>
 <p>RDMA，DPDK 和 SPDK 等技术旁路内核允许纵向的扩展同时优化吞吐量。Derecho，一个持久的组同学设施就是依赖 RDMA 设施来降低延迟。</p>
+<h3 id="ziplog-a-step-further">Ziplog a step further</h3>
+<p>核心点：同时兼具 low latency 和 scalable throughput</p>
+<p>一些研究 LogDevice、Oracle Message Queue、vCorfu 和 Scalog 关注在使用 shared log 抽象构建高性能带有容错性的系统。这些工作表名可以协调 total order 和诸如 high scalability（通过 multi-shards），应用友好的数据布局以及平滑的重配置。</p>
+<p>但低延迟要求依然困难：</p>
+<ul>
+<li>Scalog append: 1.2ms</li>
+<li>NOPaxos:
+<ul>
+<li>111 us(特殊定制的硬件，比得上一个 non-replicated 系统)</li>
+<li>200 us（不使用）</li>
+</ul></li>
+</ul>
+<p>作者认为更深的原因是：在 multi-shard log 中支持 linearizable append 操作使得低延迟几乎不可能。</p>
+<p>而当今的系统是在 total order、scalable throughput 和 latency 中做取舍：</p>
+<ul>
+<li>Scalog：total order+scalable throughput</li>
+<li>NOPaxos：total order+low latency（for a single shard）</li>
+<li>Kafka：scalable throughput + low latency</li>
+</ul>
+<p>Ziplog 以牺牲？第四维（shared log's API）的代价来换取以上三者的优势。</p>
+<p><span class="math inline">\(InsertAfter(R, rid&#39;)\)</span>允许 clients 指定一个入口<span class="math inline">\(rid&#39;\)</span>，Ziplog 会在其后寻找位置插入<span class="math inline">\(R\)</span>。查询可以根据指定的<span class="math inline">\(rid\)</span>获取对应记录或者从某个起始开始获取<span class="math inline">\((R,rid)\)</span>对的记录。</p>
+<p>（有关 linearizability 的讨论）：API 修改仍保证可以构建相同一致性保证的应用（easily why？）。这里是个问题，作者表示利用新的 API，clients 订阅操作得到的<span class="math inline">\(rid&#39;\)</span>之后的序列，从而根据 API 设定语义，让 casual dependent 的操作满足<span class="math inline">\(rid&#39;&#39; &gt; rid&#39;\)</span>即可满足一致性要求。</p>
+<p>Ziplog 的性能</p>
+<ul>
+<li>without contention，2 message delays， 150 us</li>
+<li>with contention， 3 message delays， 220 us</li>
+</ul>
+<p>cross-shard 的同步仅发生于处理失败的情况和重配置中。</p>
+<h4 id="goals-and-non-goals">Goals and Non-goals</h4>
+<ul>
+<li>Goals
+<ul>
+<li>同步实现匹敌 Scalog 的吞吐量和匹敌 NOPaxos 的 latency</li>
+<li>不使用定制的专门硬件</li>
+<li>从根源（API 设计）来达成目标</li>
+<li>设计用于数据中心（大量的 application servers 作为使用 Ziplog 的 clients）</li>
+<li>假设为 crash failure 模型</li>
+</ul></li>
+<li>Non-goals
+<ul>
+<li>绝对最优 latency（比如使用 RDMA 和 DPDK 等网络层面优化）</li>
+<li>不假设为拜占庭故障</li>
+</ul></li>
+</ul>
+<p>每个 Ziplog 的 partition storage 由一组 shards 组成，<span class="math inline">\(f+1\)</span>，其中<span class="math inline">\(f\)</span>为可容忍错误数量。</p>
+<h4 id="ziplog-api">Ziplog API</h4>
+<ul>
+<li><span class="math inline">\(InsertAfter\)</span>
+<ul>
+<li>定义了一个<span class="math inline">\(RID_GENESIS\)</span>（初始位置，对于没有依赖/放置随意的记录）</li>
+</ul></li>
+<li><span class="math inline">\(SetPolicy\)</span>
+<ul>
+<li>允许 client 选择放置策略（类似的在 vCorfu 和 Scalog 中也有）</li>
+</ul></li>
+<li><span class="math inline">\(Subscribe\)</span>
+<ul>
+<li>允许应用从<span class="math inline">\(rid\)</span>参数起开始顺序地读取日志</li>
+<li>特殊参数<span class="math inline">\(RID_GENESIS\)</span>，则从初始位置开始读取日志</li>
+<li>特殊参数<span class="math inline">\(RID_RECENT\)</span>，则从最近地插入（不一定是最新）位置开始读取</li>
+</ul></li>
+<li><span class="math inline">\(Trim\)</span>
+<ul>
+<li>进行垃圾回收，删除某个记录之前地记录标识</li>
+</ul></li>
+</ul>
+<h4 id="design-overview">Design Overview</h4>
+<p>对于插入一条操作来说，关键路径</p>
+<ol type="1">
+<li>由 client 使用本地地 client library 调度 SetPolicy 确定放置策略选择 shard 发送记录</li>
+<li>shard 接收到记录后进行 replication（容错要求）并独立（无需跨 shard 通信）赋给记录 gsn 标识（global sequence number）</li>
+<li>shard 将 gsn 发送回 client 端，client library 接收到 gsn 后返回 rid 给上层application</li>
+<li>client application最终获取 rid（record identifier）
+<ul>
+<li>对于application来说，不透明的是一个由gsn和shard identifier构成元组。</li>
+</ul></li>
+</ol>
+<p>三个要点：</p>
+<ul>
+<li>GSNA</li>
+<li>Replication</li>
+<li>Failure Recovery</li>
+</ul>
+<h4 id="gsna">GSNA</h4>
 <a id="more"></a>
 
             </div>
