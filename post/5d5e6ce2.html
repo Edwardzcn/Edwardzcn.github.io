@@ -259,7 +259,7 @@ Challenges
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      2.7k 字
+      3.8k 字
     </span>
   
 
@@ -269,7 +269,7 @@ Challenges
       <i class="iconfont icon-clock-fill"></i>
       
       
-      32
+      45
        分钟
     </span>
   
@@ -454,12 +454,12 @@ Challenges
 <h4 id="design-overview">Design Overview</h4>
 <p>对于插入一条操作来说，关键路径</p>
 <ol type="1">
-<li>由 client 使用本地地 client library 调度 SetPolicy 确定放置策略选择 shard 发送记录</li>
+<li>由 client 使用本地的 client library 调度 SetPolicy 确定放置策略选择 shard 发送记录</li>
 <li>shard 接收到记录后进行 replication（容错要求）并独立（无需跨 shard 通信）赋给记录 gsn 标识（global sequence number）</li>
-<li>shard 将 gsn 发送回 client 端，client library 接收到 gsn 后返回 rid 给上层application</li>
-<li>client application最终获取 rid（record identifier）
+<li>shard 将 gsn 发送回 client 端，client library 接收到 gsn 后返回 rid 给上层 application</li>
+<li>client application 最终获取 rid（record identifier）
 <ul>
-<li>对于application来说，不透明的是一个由gsn和shard identifier构成元组。</li>
+<li>对于 application 来说，不透明的是一个由 gsn 和 shard identifier 构成元组。</li>
 </ul></li>
 </ol>
 <p>三个要点：</p>
@@ -469,7 +469,139 @@ Challenges
 <li>Failure Recovery</li>
 </ul>
 <h4 id="gsna">GSNA</h4>
+<p>保证低延时的关键点是允许不同 shard 独立分发 global sequence number，同时保证：</p>
+<ol type="1">
+<li>一个 gsn 不会对应多个 shard</li>
+<li>每个 gsn 都会对应到一个 shard</li>
+</ol>
+<p>实践遇到的困难：</p>
+<ol type="1">
+<li>shards 集合可能由于重配置或者 failure 产生变化。</li>
+<li>不同 shards 会看到不同比例的变更：计算 gsn 的算法不考虑这种差异会造成延迟增大
+<ol type="1">
+<li>高速分配的 log 更新到靠前地方，低速分配的 log 需要使用 no-op（无操作）来填补空白。</li>
+<li>填补是一种空间上的浪费，也会消耗一些无意义的带宽</li>
+</ol></li>
+</ol>
+<p>Ziplog 的 membership management service（MMS）解决了两个问题，这里的 membership 就是指 shards 集合。</p>
+<ul>
+<li>告知每个 shard 可用的添加新记录的 shard 集合</li>
+<li>广播消息划分任期/版本 epochs</li>
+</ul>
+<p>通过调整一个 epoch 的长度来防止出界。32 位长度来表示一个 epoch 内的 gsn 号，周期最长为 10ms。</p>
+<p>Transition 的不理解？</p>
 <a id="more"></a>
+<h1 id="meeting">7.28 meeting</h1>
+<h2 id="交流内容">交流内容</h2>
+<ol type="1">
+<li>简述 shared log systems 发展过程，阐述我们的构想（Serverless 场景下 partial order shared log runtime）</li>
+<li>简述 Ziplog 设计，交流对 key point 的理解是否正确</li>
+<li>针对 Ziplog Q&amp;A，以及我们的构想是否可行</li>
+</ol>
+<h2 id="要点记录">要点记录</h2>
+<h3 id="shared-log-systems-development">Shared Log Systems Development</h3>
+<ul>
+<li>丁博建议补充阅读 Virtual Consensus [OSDI'20]（同为 Mahash 的工作）
+<ul>
+<li>针对 LogDevice 比较详尽的</li>
+</ul></li>
+<li>针对我们提出的想法，在 Serverless 场景下做 Multi-level consistency，丁博表示他对 partial order 发面了解不是很多，之前的工作都是在 total order 这个要求下做的，idea 可行主要要看有没有需求场景（他们组 ziplog 后续投稿都因类似原因被拒了）
+<ul>
+<li>以及如果要优化 latency，也要考虑平台影响，他们实验在 AWS 上的延迟约为 CloudLab（最终选用）10 倍</li>
+</ul></li>
+</ul>
+<h3 id="ziplog-1">Ziplog</h3>
+<p>现有的 shared log 设计是在 total order、low latency、scalable throughput 三者间做取舍。</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;"></th>
+<th style="text-align: center;">total order</th>
+<th style="text-align: center;">low latency</th>
+<th>scalable throughput</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Kafka*</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">✅</td>
+<td>✅</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Scalog [NSDI ‘20]</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">❌</td>
+<td>✅</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NOPaxos [OSDI ‘16]</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td>❌</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Ziplog</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<p>（*丁博解释 latency 这个维度叙述比较 trick，kafka 实际的 latency 并不好，现在很多工作也是在做这上面的优化）</p>
+<p>Ziplog 的设计，为了同时达到这三条性质，引入新的维度：API design</p>
+<ul>
+<li>将原有语义为添加的日志 tail 的<span class="math inline">\(Append(R)/Insert(R)\)</span>修改为<span class="math inline">\(InsertAfter(R,rid)\)</span>，<span class="math inline">\(rid\)</span>表示某条已经加入 log 的记录的 position，如果操作间存在依赖关系则由使用的 client 自己关系。</li>
+<li>对于 latency 的优化，主要在于移除了中心化的 sequencer/ordering layer，而是可以在每个 shard 在本地跑序列号计算算法（配合新 API 实际上预先给不同 shard 分配了 slot，得到的仍然是全局的序列号）</li>
+<li>理解：实际上是将部分维护一致性的负担转移给程序员（丁博承认这点），但整体上仍可以保证 linearizability（这一点比较难以理解，审稿人也针对这一点进行过提问）</li>
+</ul>
+<!-- Latency 的影响，
+
+AWS 1-2ms
+
+Cloudlab latency 0.100-0.200ms -->
+<p>Ziplog 的后续工作：</p>
+<ul>
+<li>丁博所在组后面的工作主要是网络通信的优化，使用 RDMA 技术压低 latency，文章被拒原因还是：
+<ul>
+<li>没有讲好 shared log 有什么用（应用场景）</li>
+<li>使用新 API 以后，仍能保证 linearizability 没有说服审稿人（一致性等级）</li>
+</ul></li>
+</ul>
+<p>聊完 Ziplog 以后主要针对我们的 idea 可行性，在 shared log 这个话题上讲故事的主要问题，Kafka 相关可以发掘的 idea 进行了讨论。</p>
+<ul>
+<li><p>丁博建议对于 shared log 有什么用、优势和局限是什么要考虑清楚：</p>
+<ul>
+<li><p>场景：</p>
+<ul>
+<li>价于一个无限拓展的单机日志</li>
+<li>用于 message queue 服务（比如 AWS 和 Oracle）的</li>
+</ul></li>
+<li><p>shared log 最主要的性质是 scalability（主要是持久存储的）</p></li>
+<li><p>基于 shared log 使用的窘境；如果要求 total order 现实中读的要求不需要达到这么高的 thoughput，如果不要求 total order 那就退化成 Kafaka，可以 cover 90%的情况。（他文章中所提淘宝对 throughput 的需求最后就是牺牲了 total order 用 Kafka 解决的）</p></li>
+</ul></li>
+<li>Kafka 的 research 的点：
+<ul>
+<li>cost 问题（hybrid 存储迁移）</li>
+<li>latency 问题（读、写、replication 三个操作）
+<ul>
+<li>page-cache 崩掉， tail latency 的问题</li>
+<li>读-写 pattern latency 希望都低</li>
+</ul></li>
+</ul></li>
+</ul>
+<h2 id="todo">TODO</h2>
+<p>对于应用来说：</p>
+<ul>
+<li>使用单机 in memory 的场景的局限（message queue）</li>
+<li>shared log 有什么作用？
+<ul>
+<li>现阶段款</li>
+<li>存储的量很大，append 这么多，但是中心化的读用不到如此 throughput</li>
+</ul></li>
+</ul>
+<p>total order 的价值在哪里</p>
+<p>丁博回顾读博期间做 shared log 的模型，只关心一个 partition，写就写，读就读。</p>
 
             </div>
             <hr>
